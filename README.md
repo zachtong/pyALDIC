@@ -1,6 +1,6 @@
 # STAQ-DIC-GUI
 
-**S**elf-adaptive **T**uning **A**ugmented Lagrangian **Q**uadtree Digital Image Correlation
+**S**patio**T**emporally **A**daptive **Q**uadtree Mesh Digital Image Correlation
 
 A MATLAB toolkit for full-field displacement and strain measurement using DIC with adaptive quadtree mesh refinement and RBF-based smoothing.
 
