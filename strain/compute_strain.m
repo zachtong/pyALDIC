@@ -70,8 +70,9 @@ switch DICpara.MethodToComputeStrain
 
 
         Rad = 1*ceil(mean(DICpara.winstepsize)/minCoordStep/2);
-        [UNew,dudx,dudy,iGrid,jGrid] = plane_fit(reshape(uGrid,length(xList),length(yList)), minCoordStep, minCoordStep, Rad);
-        [VNew,dvdx,dvdy,iGrid,jGrid] = plane_fit(reshape(vGrid,length(xList),length(yList)), minCoordStep, minCoordStep, Rad);
+        if isfield(DICpara, 'showPlots'), showWB = DICpara.showPlots; else, showWB = true; end
+        [UNew,dudx,dudy,iGrid,jGrid] = plane_fit(reshape(uGrid,length(xList),length(yList)), minCoordStep, minCoordStep, Rad, showWB);
+        [VNew,dvdx,dvdy,iGrid,jGrid] = plane_fit(reshape(vGrid,length(xList),length(yList)), minCoordStep, minCoordStep, Rad, showWB);
 
         [row,col] = find(isnan(VNew)==1);
         nonNanIndtemp = sub2ind([length(xList)-2*Rad,length(yList)-2*Rad], row,col);

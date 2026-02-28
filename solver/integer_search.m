@@ -26,7 +26,13 @@ gridyROIRange = DICpara.gridxyROIRange.gridy;
 winsize = DICpara.winsize;
 winstepsize = DICpara.winstepsize;
 
-try 
+if isfield(DICpara, 'showPlots')
+    showPlots = DICpara.showPlots;
+else
+    showPlots = true;
+end
+
+try
     InitFFTSearchMethod = DICpara.InitFFTSearchMethod;
     % disp(num2str(InitFFTSearchMethod));
 catch
@@ -44,16 +50,20 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
         if length(tempSizeOfSearchRegion) == 1, tempSizeOfSearchRegion = tempSizeOfSearchRegion*[1,1]; end
 
 
-        if (InitFFTSearchMethod == 1) % whole field for initial guess, 
-            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,0,winstepsize);
+        if (InitFFTSearchMethod == 1) % whole field for initial guess,
+            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,0,winstepsize,showPlots);
 
         else % (InitFFTSearchMethod == 1), several local seeds for initial guess
-            
-            % Open DIC image, and manually click several local seeds.
-            figure; imshow( (imread(file_name{1})) ); % surf(fNormalized,'EdgeColor','none','LineStyle','none'); view(2);
-            [row1, col1] = ginput; row = floor(col1); col = floor(row1); 
- 
-            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,1,[row,col]);
+
+            if showPlots
+                % Open DIC image, and manually click several local seeds.
+                figure; imshow( (imread(file_name{1})) );
+                [row1, col1] = ginput; row = floor(col1); col = floor(row1);
+            else
+                error('InitFFTSearchMethod=2 (manual seeds) requires showPlots=true.');
+            end
+
+            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,1,[row,col],showPlots);
 
         end
 
@@ -73,36 +83,31 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Have a look at the integer search results
         % --------------------------------------
-        close all;
-        figure; surf(u); colorbar;
-        title('Displacement u','fontweight','normal')
-        set(gca,'fontSize',18);
-        title('$x-$displacement $u$','FontWeight','Normal','Interpreter','latex');
-        axis tight; %axis equal; % set(gca,'XTick',[] );
-        xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
-        set(gcf,'color','w');
-        a = gca; a.TickLabelInterpreter = 'latex';
-        b = colorbar; b.TickLabelInterpreter = 'latex';
-        box on; colormap jet;
-        pause(0.5);
- 
-        figure; surf(v); colorbar;
-        title('Displacement v','fontweight','normal')
-        set(gca,'fontSize',18);
-        title('$y-$displacement $v$','FontWeight','Normal','Interpreter','latex');
-        axis tight; %axis equal; % set(gca,'XTick',[] );
-        xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
-        set(gcf,'color','w');
-        a = gca; a.TickLabelInterpreter = 'latex';
-        b = colorbar; b.TickLabelInterpreter = 'latex';
-        box on; colormap jet;
-        pause(0.5);
+        if showPlots
+            close all;
+            figure; surf(u); colorbar;
+            title('$x-$displacement $u$','FontWeight','Normal','Interpreter','latex');
+            set(gca,'fontSize',18);
+            axis tight;
+            xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
+            set(gcf,'color','w');
+            a = gca; a.TickLabelInterpreter = 'latex';
+            b = colorbar; b.TickLabelInterpreter = 'latex';
+            box on; colormap jet;
+
+            figure; surf(v); colorbar;
+            title('$y-$displacement $v$','FontWeight','Normal','Interpreter','latex');
+            set(gca,'fontSize',18);
+            axis tight;
+            xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
+            set(gcf,'color','w');
+            a = gca; a.TickLabelInterpreter = 'latex';
+            b = colorbar; b.TickLabelInterpreter = 'latex';
+            box on; colormap jet;
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%        fprintf('--- Are you satisfied with initial guess with current search region? (0-yes; 1-no)? ---  \n')
-%        prompt = 'Input here: ';
-%        InitialGuessSatisfied = input(prompt);
-     InitialGuessSatisfied = 0;
+        InitialGuessSatisfied = 0;
 
     end
     
@@ -115,7 +120,7 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
 else % Multigrid search
     
     tempSizeOfSearchRegion = 0;
-    [x0,y0,u,v,cc] = integer_search_mg(ImgRef,ImgDef,gridxROIRange,gridyROIRange,winsize,winstepsize,winstepsize);
+    [x0,y0,u,v,cc] = integer_search_mg(ImgRef,ImgDef,gridxROIRange,gridyROIRange,winsize,winstepsize,winstepsize,showPlots);
 
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -129,35 +134,32 @@ else % Multigrid search
     catch
     end
     % --------------------------------------
-        
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Plotting initial guess
     % --------------------------------------
-    close all;
-    figure; surf(u); colorbar;
-    title('Displacement u','fontweight','normal')
-    set(gca,'fontSize',18);
-    title('$x-$displacement $u$','FontWeight','Normal','Interpreter','latex');
-    axis tight; %axis equal; % set(gca,'XTick',[] );
-    xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
-    set(gcf,'color','w');
-    a = gca; a.TickLabelInterpreter = 'latex';
-    b = colorbar; b.TickLabelInterpreter = 'latex';
-    box on; colormap jet;
-    pause(0.5);
-    
-    
-    figure; surf(v); colorbar;
-    title('Displacement v','fontweight','normal')
-    set(gca,'fontSize',18);
-    title('$y-$displacement $v$','FontWeight','Normal','Interpreter','latex');
-    axis tight; %axis equal; % set(gca,'XTick',[] );
-    xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
-    set(gcf,'color','w');
-    a = gca; a.TickLabelInterpreter = 'latex';
-    b = colorbar; b.TickLabelInterpreter = 'latex';
-    box on; colormap jet;
-    pause(0.5);
+    if showPlots
+        close all;
+        figure; surf(u); colorbar;
+        title('$x-$displacement $u$','FontWeight','Normal','Interpreter','latex');
+        set(gca,'fontSize',18);
+        axis tight;
+        xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
+        set(gcf,'color','w');
+        a = gca; a.TickLabelInterpreter = 'latex';
+        b = colorbar; b.TickLabelInterpreter = 'latex';
+        box on; colormap jet;
+
+        figure; surf(v); colorbar;
+        title('$y-$displacement $v$','FontWeight','Normal','Interpreter','latex');
+        set(gca,'fontSize',18);
+        axis tight;
+        xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
+        set(gcf,'color','w');
+        a = gca; a.TickLabelInterpreter = 'latex';
+        b = colorbar; b.TickLabelInterpreter = 'latex';
+        box on; colormap jet;
+    end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 end

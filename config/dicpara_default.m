@@ -31,6 +31,15 @@ function DICpara = dicpara_default(varargin)
     % Set interactively by ReadImage / ReadImageQuadtree if left empty.
     DICpara.gridxyROIRange = struct('gridx', [], 'gridy', []);
 
+    % Image folder path ('' = prompt with uigetdir).
+    DICpara.imgFolder = '';
+
+    % Mask folder path ('' = prompt with uigetdir).
+    DICpara.maskFolder = '';
+
+    % Show figure windows during computation (false for GUI/batch mode).
+    DICpara.showPlots = true;
+
     % Image size [rows, cols]. Populated automatically after loading.
     DICpara.ImgSize = [];
 
@@ -54,7 +63,7 @@ function DICpara = dicpara_default(varargin)
     DICpara.winsize = 40;
 
     % Subset step size in pixels (spacing between grid nodes). Scalar or [sx, sy].
-    DICpara.winstepsize = 20;
+    DICpara.winstepsize = 16;
 
     % Finest element size for adaptive quadtree mesh. Only used when
     % meshType = 'quadtree'.
@@ -96,7 +105,7 @@ function DICpara = dicpara_default(varargin)
 
     % Size of FFT search region in pixels. Scalar or [size_x, size_y].
     % Must be larger than the expected maximum displacement magnitude.
-    DICpara.SizeOfFFTSearchRegion = 120;
+    DICpara.SizeOfFFTSearchRegion = 10;
 
     % Cross-correlation threshold to classify points as discontinuous.
     % Points below this threshold get special RBF treatment (quadtree only).

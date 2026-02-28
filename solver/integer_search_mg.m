@@ -2,6 +2,13 @@
 
 function [xGrid,yGrid,uGrid,vGrid,cc] = integer_search_mg(f,g,gridx,gridy,winsize,winstepsize,varargin)
 
+% Parse optional showWaitbar flag (last varargin if logical)
+showWaitbar = true;
+if ~isempty(varargin) && islogical(varargin{end})
+    showWaitbar = varargin{end};
+    varargin(end) = [];
+end
+
 gridxBackup = gridx; gridyBackup = gridy; % may lose boundary regions, backup first
 borderGapx = 1+round(0.75*winsize); borderGapy = borderGapx;
 if gridx(1) < borderGapx, gridx(1) = borderGapx; end
@@ -73,7 +80,7 @@ while gridxWidthNewtemp/gridyWidthNewtemp > 0
 end
 
 %TotalNo = 3*(gridx(2)-gridx(1))*(gridy(2)-gridy(1))/winsize^2; 
-IterNo=0; hbar = waitbar(0,'FFT initial guess, it is fast and please wait.');
+IterNo=0; if showWaitbar, hbar = waitbar(0,'FFT initial guess, it is fast and please wait.'); end
 while gridxyRatioCurr > 0
     levelNo=levelNo+1;
     clear utempNew vtempNew Phitemp
@@ -159,7 +166,7 @@ while gridxyRatioCurr > 0
     
     for tempi = 1:size(gridx_fNew,1)
         IterNo = IterNo+1;
-        waitbar(IterNo/TotalNo);
+        if showWaitbar, waitbar(IterNo/TotalNo); end
         
         try
             C = f(gridx_fNew(tempi,1):gridx_fNew(tempi,2), gridy_fNew(tempi,1):gridy_fNew(tempi,2));
@@ -245,8 +252,8 @@ while gridxyRatioCurr > 0
     
 end
 
-close(hbar);
- 
+if showWaitbar, close(hbar); end
+
 
 %%
 tempx=0.5*(gridx_fNew(:,1)+gridx_fNew(:,2));
@@ -284,7 +291,7 @@ cc.max = PhiGrid; cc.A = []; cc.qfactors =[qf_1Grid(:),qf_2Grid(:)];
  
 end
 
-function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize)
+function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar)
 
 %cj1 = 1; ci1 = 1; % index to count main loop
 
@@ -308,7 +315,8 @@ utemp = cj1temp; vtemp = cj1temp;
 xtemp = cj1temp; ytemp = cj1temp; Phitemp = cj1temp;
 
 %% ========== Start initial integer search ==========
-hbar = waitbar(0,'FFT initial guess, it is fast and please wait.');
+if nargin < 8, showWaitbar = true; end
+if showWaitbar, hbar = waitbar(0,'FFT initial guess, it is fast and please wait.'); end
 % hbar = parfor_progressbar(temparrayLength,'Please wait for integer search!');
 
 % sizeOfx1 = floor((gridx(2)-gridx(1)-winsize)/winstepsize)+1;
@@ -318,8 +326,8 @@ x = zeros(length(YList),length(XList)); y = x; u = x; v = x; Phi = x;
 
 for tempi = 1:temparrayLength
     
-    waitbar(tempi/temparrayLength);
-    
+    if showWaitbar, waitbar(tempi/temparrayLength); end
+
     jj = PtPosSeq(tempi,2); % for jj = gridy(1) : winstepsize : gridy(end)-winsize
     % jj is for y -or- vertical direction of images
     
@@ -372,7 +380,7 @@ for tempi = 1:temparrayLength
     
 end
 
-close(hbar);
+if showWaitbar, close(hbar); end
 
 for k = 1:2
     qf_ = (qfactors(:,k)-min(qfactors(:,k)));
@@ -380,7 +388,7 @@ for k = 1:2
 end
 
 % hbar = parfor_progressbar(temparrayLegTotal,'Assign results to variables.');
-hbar = waitbar(0,'Assign results to variables.');
+if showWaitbar, hbar = waitbar(0,'Assign results to variables.'); end
 for tempi = 1:temparrayLength
     
     ci1 = ci1temp(tempi); cj1 = cj1temp(tempi);
@@ -393,10 +401,11 @@ for tempi = 1:temparrayLength
     x(cj1,ci1) = xtemp(tempi);
     y(cj1,ci1) = ytemp(tempi);
     
-    waitbar(tempi/temparrayLength);
+    if showWaitbar, waitbar(tempi/temparrayLength); end
     % hbar.iterate(1);
 end
-close(hbar); disp('Finish initial guess search!');
+if showWaitbar, close(hbar); end
+disp('Finish initial guess search!');
 % -------- End of Local integer search --------
 
 

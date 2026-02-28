@@ -51,31 +51,34 @@ epsilon = 0.1;
 normFluctMag =  normFluct{1}.^2 + normFluct{2}.^2  ;
 normFluctMag = sqrt(normFluctMag);
 
-MedFilterOrNot = 0; 
+MedFilterOrNot = 0;
+showFigures = isempty(Thr0) || (Thr0 == 0);
 while MedFilterOrNot < 1
-    
-    figure, surf(normFluctMag); axis equal; axis tight; view(2); caxis auto; colorbar;
-	if isempty(Thr0) || (Thr0 == 0)
+
+    if showFigures, figure, surf(normFluctMag); axis equal; axis tight; view(2); caxis auto; colorbar; end
+	if showFigures
 		prompt = '--- Threshold for median test --- Input here: ';
 		Thr = input(prompt); % Thr = 50;
 	else
 		Thr = Thr0;
 	end
     RemoveOutliersList = find( normFluctMag > Thr ); % detection criterion
-    
+
     % ============== remove bad points ===============
     u2 = u; u2(qDICpceRmList) = NaN; u2(qDICppeRmList) = NaN; u2(RemoveOutliersList) = NaN;
     v2 = v; v2(qDICpceRmList) = NaN; v2(qDICppeRmList) = NaN; v2(RemoveOutliersList) = NaN;
     u2 = inpaint_nans(u2,4); v2 = inpaint_nans(v2,4);
     % --------------------------------------
-    close all;
     u2(HolePtInd) = nan;  v2(HolePtInd) = nan; % Set points where is a hole as nans
-    figure; surf(u2); colorbar; title('Displacement u','fontweight','normal'); 
-    colormap(jet); set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    figure; surf(v2); colorbar; title('Displacement v','fontweight','normal'); colormap(jet);
-    colormap(jet); set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    
-    if isempty(Thr0) || (Thr0 == 0)
+    if showFigures
+        close all;
+        figure; surf(u2); colorbar; title('Displacement u','fontweight','normal');
+        colormap(jet); set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex';
+        figure; surf(v2); colorbar; title('Displacement v','fontweight','normal'); colormap(jet);
+        colormap(jet); set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex';
+    end
+
+    if showFigures
         fprintf('Do you want to redo Median test: 0(Yes, redo it!); 1(No, it is good!)  \n')
         prompt = 'Input here: ';
         MedFilterOrNot = input(prompt); % Thr = 50;

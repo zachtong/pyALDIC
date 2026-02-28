@@ -5,6 +5,13 @@ function [x,y,u,v,cc] = integer_search_kernel(f,g,tempSizeOfSearchRegion,gridx,g
 if length(winsize)==1, winsize = winsize*[1,1]; end
 if length(winstepsize)==1, winstepsize = winstepsize*[1,1]; end
 
+% Parse optional showWaitbar flag (last argument if logical)
+showWaitbar = true;
+if ~isempty(varargin) && islogical(varargin{end})
+    showWaitbar = varargin{end};
+    varargin(end) = [];
+end
+
 switch tempNoOfInitPt % 0- whole field; 1- several seeds points;
     case 0 % 0- whole field;
         
@@ -30,7 +37,7 @@ switch tempNoOfInitPt % 0- whole field; 1- several seeds points;
                 gridx(1), gridx(end), gridy(1), gridy(end));
             gridx = gridxBackup; gridy = gridyBackup;
         end
-       [x0,y0,u0,v0,cc0] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize);
+       [x0,y0,u0,v0,cc0] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar);
         x=x0; y=y0; u=u0; v=v0; cc=cc0;
 %         xList = gridxBackup(1)+4:winstepsize:gridxBackup(end)-4; 
 %         yList = gridyBackup(1)+4:winstepsize:gridyBackup(end)-4;
@@ -85,7 +92,7 @@ end
 
 end
 
-function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize)
+function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar)
 
 %cj1 = 1; ci1 = 1; % index to count main loop
 
@@ -105,9 +112,11 @@ utemp = cj1temp; vtemp = cj1temp;
 xtemp = cj1temp; ytemp = cj1temp; Phitemp = cj1temp;
 qfactors = zeros(temparrayLength, 2);
 
-%% ========== Start initial integer search ========== 
-hbar = waitbar(0,'FFT initial guess, it is fast and please wait.'); 
-% hbar = parfor_progressbar(temparrayLength,'Please wait for integer search!');
+%% ========== Start initial integer search ==========
+if nargin < 8, showWaitbar = true; end
+if showWaitbar
+    hbar = waitbar(0,'FFT initial guess, it is fast and please wait.');
+end
 
 % sizeOfx1 = floor((gridx(2)-gridx(1)-winsize)/winstepsize)+1;
 % sizeOfx2 = floor((gridy(2)-gridy(1)-winsize)/winstepsize)+1;
@@ -116,9 +125,8 @@ x = zeros(length(YList),length(XList)); y = x; u = x; v = x; Phi = x;
 
 for tempi = 1:temparrayLength
     
-    waitbar(tempi/temparrayLength);
-    
-  
+    if showWaitbar, waitbar(tempi/temparrayLength); end
+
     jj = PtPosSeq(tempi,2); % for jj = gridy(1) : winstepsize : gridy(end)-winsize
     % jj is for y -or- vertical direction of images
     
@@ -181,15 +189,16 @@ for tempi = 1:temparrayLength
     
 end
 
-close(hbar);
+if showWaitbar, close(hbar); end
 
 for k = 1:2
     qf_ = (qfactors(:,k)-min(qfactors(:,k)));
     cc.qfactors(:,k) = qf_/max(qf_);
 end
 
-% hbar = parfor_progressbar(temparrayLegTotal,'Assign results to variables.');
-hbar = waitbar(0,'Assign results to variables.'); 
+if showWaitbar
+    hbar = waitbar(0,'Assign results to variables.');
+end
 for tempi = 1:temparrayLength
     
     ci1 = ci1temp(tempi); cj1 = cj1temp(tempi); 
@@ -202,10 +211,10 @@ for tempi = 1:temparrayLength
     x(cj1,ci1) = xtemp(tempi); 
     y(cj1,ci1) = ytemp(tempi);    
      
-    waitbar(tempi/temparrayLength);
-    % hbar.iterate(1);
+    if showWaitbar, waitbar(tempi/temparrayLength); end
 end
-close(hbar); disp('Finish initial guess search!');  
+if showWaitbar, close(hbar); end
+disp('Finish initial guess search!');  
 % -------- End of Local integer search --------
 
 
