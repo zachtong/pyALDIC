@@ -36,27 +36,11 @@ end
 %% prompt = 'Do you want to smooth displacement? (0-yes; 1-no)';
 DoYouWantToSmoothOnceMore = 0; % DoYouWantToSmoothOnceMore = input(prompt);
 if DoYouWantToSmoothOnceMore == 0  
-    if isempty(FilterStd) == 1
-        prompt = 'Choose filter standard deviation(0-default): ';
-        FilterStd = input(prompt);
-        if FilterStd == 0
-            FilterStd = 0.5; 
-        end
-    else
-        if FilterStd == 0
-            FilterStd = 0.5;
-        end
+    if isempty(FilterStd) || FilterStd == 0
+        FilterStd = 0.5;
     end
-    if isempty(FilterSizeInput) == 1
-        prompt = 'Choose Gaussian filter size(0-default): ';
-        FilterSizeInput = input(prompt);
-        if FilterSizeInput == 0
-            FilterSizeInput = 2*ceil(2*FilterStd)+1; 
-        end
-    else
-        if FilterSizeInput == 0
-            FilterSizeInput = 2*ceil(2*FilterStd)+1;
-        end
+    if isempty(FilterSizeInput) || FilterSizeInput == 0
+        FilterSizeInput = 2*ceil(2*FilterStd)+1;
     end
 end
  

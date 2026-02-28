@@ -65,8 +65,12 @@ function [file_name, Img, DICpara] = read_images(varargin)
 
         switch LoadImgMethod
             case 0
-                imgfoldername = uigetdir(pwd, 'Select images folder');
-                addpath([imgfoldername, '\']);
+                if needsInput(DICpara, 'imgFolder')
+                    imgfoldername = uigetdir(pwd, 'Select images folder');
+                else
+                    imgfoldername = DICpara.imgFolder;
+                end
+                addpath(imgfoldername);
                 img1 = dir(fullfile(imgfoldername, '*.jpg'));
                 img2 = dir(fullfile(imgfoldername, '*.jpeg'));
                 img3 = dir(fullfile(imgfoldername, '*.tif'));

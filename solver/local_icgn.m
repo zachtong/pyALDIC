@@ -42,6 +42,7 @@ warning('off');
 winsize = DICpara.winsize;
 winstepsize = DICpara.winstepsize;
 ClusterNo = DICpara.ClusterNo;
+if isfield(DICpara, 'showPlots'), showWaitbar = DICpara.showPlots; else, showWaitbar = true; end
 
 temp = zeros(size(coordinatesFEM,1),1); UtempPar = temp; VtempPar = temp; % UtempPar = UPar{1}; VtempPar = UPar{2};
 F11tempPar = temp; F21tempPar = temp; F12tempPar = temp; F22tempPar = temp;% F11tempPar = FPar{1}; F21tempPar = FPar{2}; F12tempPar = FPar{3}; F22tempPar = FPar{4};
@@ -62,8 +63,9 @@ markCoordHoleStrainOrNot = zeros(size(coordinatesFEM,1),1);
 %% ClusterNo == 0 or 1: Sequential computing
 if (ClusterNo == 0) || (ClusterNo == 1)
 
-    h = waitbar(0,'Please wait for Subproblem 1 IC-GN iterations!'); tic;
-     
+    if showWaitbar, h = waitbar(0,'Please wait for Subproblem 1 IC-GN iterations!'); end
+    tic;
+
     for tempj = 1 : size(coordinatesFEM,1)  % tempj is the element index
         
         x0temp = round(coordinatesFEM(tempj,1)); y0temp = round(coordinatesFEM(tempj,2));  
@@ -93,10 +95,11 @@ if (ClusterNo == 0) || (ClusterNo == 1)
            ConvItPerEle(tempj) = -1;
            UtempPar(tempj) = nan; VtempPar(tempj) = nan;
            F11tempPar(tempj) = nan; F21tempPar(tempj) = nan; F12tempPar(tempj) = nan; F22tempPar(tempj) = nan;
-           waitbar(tempj/(size(coordinatesFEM,1)));
+           if showWaitbar, waitbar(tempj/(size(coordinatesFEM,1))); end
        end
     end
-    close(h); LocalTime = toc;
+    if showWaitbar, close(h); end
+    LocalTime = toc;
     
 %% ClusterNo > 1: parallel computing
 else
@@ -104,7 +107,7 @@ else
     % Start parallel computing
     % ****** This step needs to be careful: may be out of memory ******
     disp('--- Set up Parallel pool ---'); tic;
-    hbar = parfor_progressbar(size(coordinatesFEM,1),'Please wait for Subproblem 1 IC-GN iterations!');
+    if showWaitbar, hbar = parfor_progressbar(size(coordinatesFEM,1),'Please wait for Subproblem 1 IC-GN iterations!'); end
     parfor tempj = 1:size(coordinatesFEM,1)  % tempj is the element index
         
         x0temp = round(coordinatesFEM(tempj,1)); y0temp = round(coordinatesFEM(tempj,2));  
@@ -129,16 +132,16 @@ else
             % ------ Store solved deformation gradients ------
             UtempPar(tempj) = Utemp(1); VtempPar(tempj) = Utemp(2); 
             F11tempPar(tempj) = Ftemp(1); F21tempPar(tempj) = Ftemp(2); F12tempPar(tempj) = Ftemp(3); F22tempPar(tempj) = Ftemp(4);
-            hbar.iterate(1);
+            if showWaitbar, hbar.iterate(1); end
         catch
             ConvItPerEle(tempj) = -1;
             UtempPar(tempj) = nan; VtempPar(tempj) = nan;
             F11tempPar(tempj) = nan; F21tempPar(tempj) = nan; F12tempPar(tempj) = nan; F22tempPar(tempj) = nan;
-            hbar.iterate(1); 
+            if showWaitbar, hbar.iterate(1); end
         end
     end
-     
-    close(hbar); 
+
+    if showWaitbar, close(hbar); end 
     LocalTime = toc;
     
 end

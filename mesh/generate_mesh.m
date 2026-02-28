@@ -146,17 +146,21 @@ DICmesh.dirichlet = DICmesh.markCoordHoleEdge;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%% Plot %%%%%
-figure;
-patch('Faces', elementsFEMQuadtree(:,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','white','linewidth',1);
-patch('Faces', elementsFEMQuadtree(markEleHoleEdge4,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','yellow','linewidth',1);
-hold on; patch('Faces', elementsFEMQuadtree(markEleHoleEdgeNeigh4,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','yellow','linewidth',1);
-axis equal; axis tight; set(gca,'fontsize',18); set(gcf,'color','w'); box on;
-xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
-title('Quadtree mesh','Interpreter','latex');
-a = gca; a.TickLabelInterpreter = 'latex';
+if isfield(DICpara, 'showPlots') && ~DICpara.showPlots
+    % Skip mesh visualization
+else
+    figure;
+    patch('Faces', elementsFEMQuadtree(:,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','white','linewidth',1);
+    patch('Faces', elementsFEMQuadtree(markEleHoleEdge4,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','yellow','linewidth',1);
+    hold on; patch('Faces', elementsFEMQuadtree(markEleHoleEdgeNeigh4,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','yellow','linewidth',1);
+    axis equal; axis tight; set(gca,'fontsize',18); set(gcf,'color','w'); box on;
+    xlabel('$x$ (pixels)','Interpreter','latex'); ylabel('$y$ (pixels)','Interpreter','latex');
+    title('Quadtree mesh','Interpreter','latex');
+    a = gca; a.TickLabelInterpreter = 'latex';
 
-lgd = legend('Quadtree mesh elements','Elements near the edge','interpreter','latex','location','northeastoutside');
-set(lgd,'fontsize',13);
+    lgd = legend('Quadtree mesh elements','Elements near the edge','interpreter','latex','location','northeastoutside');
+    set(lgd,'fontsize',13);
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

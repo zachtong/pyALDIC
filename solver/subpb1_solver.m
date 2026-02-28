@@ -45,6 +45,7 @@ warning('off');
 winsize = DICpara.winsize;
 winstepsize = DICpara.winstepsize;
 ClusterNo = DICpara.ClusterNo;
+if isfield(DICpara, 'showPlots'), showWaitbar = DICpara.showPlots; else, showWaitbar = true; end
 
 temp = zeros(size(coordinatesFEM,1),1); UPar = cell(2,1); UPar{1} = temp; UPar{2} = temp;
 ConvItPerEle = zeros(size(coordinatesFEM,1),1);
@@ -70,8 +71,9 @@ winsize_y = DICpara.winsize_List(:,2);
 %% ClusterNo == 0 or 1: Sequential computing
 if (ClusterNo == 0) || (ClusterNo == 1)
     
-    h = waitbar(0,'Please wait for Subproblem 1 IC-GN iterations!'); tic;
-    
+    if showWaitbar, h = waitbar(0,'Please wait for Subproblem 1 IC-GN iterations!'); end
+    tic;
+
     for tempj = 1 : size(coordinatesFEM,1)  % tempj is the element index
         x0temp = round(coordinatesFEM(tempj,1)); y0temp = round(coordinatesFEM(tempj,2)); HLocal = zeros(6,6);
         if ALSolveStep > 1
@@ -107,7 +109,8 @@ if (ClusterNo == 0) || (ClusterNo == 1)
         end
         % waitbar(tempj/(size(coordinatesFEM,1)));
     end
-    close(h); ALSub1Time = toc;
+    if showWaitbar, close(h); end
+    ALSub1Time = toc;
     
 
 %% ClusterNo > 1: parallel computing
@@ -116,7 +119,7 @@ else
     % Start parallel computing
     % ****** This step needs to be careful: may be out of memory ******
     % delete(gcp);parpool(ClusterNo); tic;
-    hbar = parfor_progressbar(size(coordinatesFEM,1),'Please wait for Subproblem 1 IC-GN iterations!');
+    if showWaitbar, hbar = parfor_progressbar(size(coordinatesFEM,1),'Please wait for Subproblem 1 IC-GN iterations!'); end
     HPar1 = HPar{1}; HPar2 = HPar{2}; HPar3 = HPar{3}; HPar4 = HPar{4}; HPar5 = HPar{5}; HPar6 = HPar{6}; HPar7 = HPar{7};
     HPar8 = HPar{8}; HPar9 = HPar{9}; HPar10 = HPar{10}; HPar11 = HPar{11}; HPar12 = HPar{12}; HPar13 = HPar{13}; HPar14 = HPar{14};
     HPar15 = HPar{15}; HPar16 = HPar{16}; HPar17 = HPar{17}; HPar18 = HPar{18}; HPar19 = HPar{19}; HPar20 = HPar{20}; HPar21 = HPar{21};
@@ -154,9 +157,10 @@ else
             HPar15(tempj) = Htemp(18); HPar16(tempj) = Htemp(22); HPar17(tempj) = Htemp(23); HPar18(tempj) = Htemp(24);
             HPar19(tempj) = Htemp(29); HPar20(tempj) = Htemp(30); HPar21(tempj) = Htemp(36);
         end
-        hbar.iterate(1);
+        if showWaitbar, hbar.iterate(1); end
     end
-    close(hbar); ALSub1Time = toc;
+    if showWaitbar, close(hbar); end
+    ALSub1Time = toc;
     HPar{1} = HPar1; HPar{2} = HPar2; HPar{3} = HPar3; HPar{4} = HPar4; HPar{5} = HPar5; HPar{6} = HPar6; HPar{7} = HPar7;
     HPar{8} = HPar8; HPar{9} = HPar9; HPar{10} = HPar10; HPar{11} = HPar11; HPar{12} = HPar12; HPar{13} = HPar13; HPar{14} = HPar14;
     HPar{15} = HPar15; HPar{16} = HPar16; HPar{17} = HPar17; HPar{18} = HPar18; HPar{19} = HPar19; HPar{20} = HPar20; HPar{21} = HPar21;
