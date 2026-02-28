@@ -27,14 +27,15 @@ function gui_aldic()
     app.stopRequested = false;
     app.isRunning = false;
 
-    % Region state (unified ROI/Mask)
-    app.regionType = 'none';     % 'none', 'rect', 'polygon', 'imported'
-    app.regionRect = [];          % [x,y,w,h] in display coords (rect mode)
-    app.regionVertices = [];      % Outer polygon vertices Nx2 display coords
-    app.holeVertices = {};        % Cell array of hole polygon vertices
-    app.roiGridx = [];
-    app.roiGridy = [];
+    % Region state (composable operation list)
+    app.regionOps = {};   % ordered cell array of operation structs
+                          % .type: 'rect'|'polygon'|'circle'|'cut_polygon'|'imported'
+                          % .data: shape-specific (display coords or code-space masks)
+    app.roiGridx = [];    % [xmin, xmax] code space
+    app.roiGridy = [];    % [ymin, ymax] code space
     app.advancedVisible = false;
+    app.lastImgDir = pwd;     % session path memory (reset on GUI restart)
+    app.lastMaskDir = pwd;
 
     %% Create main figure (HandleVisibility='off' to survive close all)
     app.fig = uifigure('Name', 'STAQ-DIC GUI', ...
@@ -49,14 +50,14 @@ function gui_aldic()
     mainGrid.ColumnSpacing = 5;
 
     % --- Left panel ---
-    leftPanel = uigridlayout(mainGrid, [6, 1]);
-    leftPanel.RowHeight = {130, 150, '1x', 35, 35, 35};
+    leftPanel = uigridlayout(mainGrid, [7, 1]);
+    leftPanel.RowHeight = {130, 130, '1x', 35, 35, 35, 35};
     leftPanel.Padding = [0 0 0 0];
     leftPanel.RowSpacing = 5;
 
     % --- Right panel ---
     rightPanel = uigridlayout(mainGrid, [4, 1]);
-    rightPanel.RowHeight = {'1x', 35, 30, 160};
+    rightPanel.RowHeight = {'1x', 35, 55, 160};
     rightPanel.Padding = [0 0 0 0];
     rightPanel.RowSpacing = 5;
 
@@ -73,36 +74,36 @@ function gui_aldic()
 
     %% ====== LEFT: Region section (unified ROI + Mask) ======
     regionPanel = uipanel(leftPanel, 'Title', 'Region');
-    regionGrid = uigridlayout(regionPanel, [4, 3]);
+    regionGrid = uigridlayout(regionPanel, [3, 3]);
     regionGrid.ColumnWidth = {'1x', '1x', '1x'};
-    regionGrid.RowHeight = {28, 28, 22, 22};
+    regionGrid.RowHeight = {28, 28, 22};
     regionGrid.Padding = [5 2 5 2];
     regionGrid.RowSpacing = 2;
 
+    % Row 1: additive shape buttons
     app.btnDrawRect = uibutton(regionGrid, 'Text', 'Draw Rect', ...
         'ButtonPushedFcn', @onDrawRect);
     app.btnDrawPoly = uibutton(regionGrid, 'Text', 'Draw Poly', ...
         'ButtonPushedFcn', @onDrawPolygon);
+    app.btnAddCircle = uibutton(regionGrid, 'Text', 'Add Circle', ...
+        'ButtonPushedFcn', @onAddCircle);
+
+    % Row 2: import, cut, clear
     app.btnImportMasks = uibutton(regionGrid, 'Text', 'Import Masks', ...
         'ButtonPushedFcn', @onImportMasks);
-
-    app.btnAddHole = uibutton(regionGrid, 'Text', 'Add Hole', ...
-        'Enable', 'off', 'ButtonPushedFcn', @onAddHole);
+    app.btnCutPolygon = uibutton(regionGrid, 'Text', 'Cut Polygon', ...
+        'ButtonPushedFcn', @onCutPolygon);
     app.btnClearRegion = uibutton(regionGrid, 'Text', 'Clear', ...
         'ButtonPushedFcn', @onClearRegion);
-    uilabel(regionGrid, 'Text', '');  % empty slot
 
     app.lblRegionStatus = uilabel(regionGrid, 'Text', 'No region defined');
     app.lblRegionStatus.Layout.Column = [1 3];
 
-    app.lblROIInfo = uilabel(regionGrid, 'Text', 'ROI: [ - ]');
-    app.lblROIInfo.Layout.Column = [1 3];
-
     %% ====== LEFT: Parameters section ======
     paramPanel = uipanel(leftPanel, 'Title', 'Parameters');
-    paramGrid = uigridlayout(paramPanel, [11, 2]);
+    paramGrid = uigridlayout(paramPanel, [12, 2]);
     paramGrid.ColumnWidth = {'1x', '1x'};
-    paramGrid.RowHeight = {22, 22, 22, 22, 22, 22, 22, 25, 0, 0, 0};
+    paramGrid.RowHeight = {22, 22, 22, 22, 22, 22, 22, 22, 25, 0, 0, 0};
     paramGrid.Padding = [5 2 5 2];
     paramGrid.RowSpacing = 2;
 
@@ -145,24 +146,29 @@ function gui_aldic()
     app.edtPlaneFitRad = uieditfield(paramGrid, 'numeric', 'Value', 20, ...
         'Tooltip', 'Search radius in pixels for plane-fit strain computation. (StrainPlaneFitRad)');
 
-    % Row 8: Advanced toggle button
+    % Row 8: Compute Strain checkbox
+    uilabel(paramGrid, 'Text', 'Compute Strain');
+    app.cbComputeStrain = uicheckbox(paramGrid, 'Text', '', 'Value', true, ...
+        'Tooltip', 'Compute strain fields after displacement. Uncheck for displacement-only run.');
+
+    % Row 9: Advanced toggle button
     app.btnAdvanced = uibutton(paramGrid, 'Text', [char(9654), ' Advanced'], ...
         'ButtonPushedFcn', @onToggleAdvanced);
     app.btnAdvanced.Layout.Column = [1 2];
 
-    % Row 9: mu (advanced, hidden by default)
+    % Row 10: mu (advanced, hidden by default)
     app.lblAdvMu = uilabel(paramGrid, 'Text', 'Penalty mu', 'Visible', 'off');
     app.edtMu = uieditfield(paramGrid, 'numeric', 'Value', 1e-3, ...
         'ValueDisplayFormat', '%.1e', 'Visible', 'off', ...
         'Tooltip', 'ADMM augmented Lagrangian penalty weight. (mu)');
 
-    % Row 10: alpha (advanced, hidden by default)
+    % Row 11: alpha (advanced, hidden by default)
     app.lblAdvAlpha = uilabel(paramGrid, 'Text', 'Regularize alpha', 'Visible', 'off');
     app.edtAlpha = uieditfield(paramGrid, 'numeric', 'Value', 0, ...
         'Visible', 'off', ...
         'Tooltip', 'Regularization parameter in global subproblem. (alpha)');
 
-    % Row 11: ADMM_maxIter (advanced, hidden by default)
+    % Row 12: ADMM_maxIter (advanced, hidden by default)
     app.lblAdvADMM = uilabel(paramGrid, 'Text', 'ADMM Iters', 'Visible', 'off');
     app.edtADMM = uieditfield(paramGrid, 'numeric', 'Value', 3, ...
         'Visible', 'off', ...
@@ -183,6 +189,12 @@ function gui_aldic()
     app.btnSave = uibutton(leftPanel, 'Text', 'Save Results', ...
         'Enable', 'off', ...
         'ButtonPushedFcn', @onSave);
+
+    %% ====== LEFT: Compute Strain (post-hoc) ======
+    app.btnComputeStrain = uibutton(leftPanel, 'Text', 'Compute Strain', ...
+        'Enable', 'off', ...
+        'Tooltip', 'Compute strain on existing displacement results', ...
+        'ButtonPushedFcn', @onComputeStrain);
 
     %% ====== RIGHT: Main axes ======
     app.axMain = uiaxes(rightPanel);
@@ -210,11 +222,14 @@ function gui_aldic()
         'Value', 'Disp U', 'Enable', 'off', ...
         'ValueChangedFcn', @onFieldChanged);
 
-    %% ====== RIGHT: Color Range controls ======
-    climGrid = uigridlayout(rightPanel, [1, 6]);
-    climGrid.ColumnWidth = {80, 50, 60, 80, 60, '1x'};
+    %% ====== RIGHT: Color Range + Overlay controls (2 rows) ======
+    climGrid = uigridlayout(rightPanel, [2, 6]);
+    climGrid.ColumnWidth = {80, 55, 60, 80, 60, '1x'};
+    climGrid.RowHeight = {25, 25};
     climGrid.Padding = [5 0 5 0];
+    climGrid.RowSpacing = 2;
 
+    % Row 1: Color range
     uilabel(climGrid, 'Text', 'Color Range:');
     app.cbAutoClim = uicheckbox(climGrid, 'Text', 'Auto', 'Value', true, ...
         'ValueChangedFcn', @onAutoClimChanged);
@@ -225,15 +240,38 @@ function gui_aldic()
     app.efClimMax = uieditfield(climGrid, 'numeric', 'Value', 1, ...
         'Enable', 'off', 'ValueChangedFcn', @(~,~) updateDisplay());
 
+    % Row 2: Colormap, Show Image, Alpha
+    uilabel(climGrid, 'Text', 'Colormap:');
+    app.ddColormap = uidropdown(climGrid, ...
+        'Items', {'jet','parula','hot','turbo','gray','coolwarm','RdYlBu'}, ...
+        'Value', 'jet', 'ValueChangedFcn', @(~,~) updateDisplay());
+    app.cbShowImage = uicheckbox(climGrid, 'Text', 'Show Image', 'Value', true, ...
+        'ValueChangedFcn', @(~,~) updateDisplay());
+    uilabel(climGrid, 'Text', 'Alpha:', 'HorizontalAlignment', 'right');
+    app.efAlpha = uieditfield(climGrid, 'numeric', 'Value', 70, ...
+        'Limits', [0 100], 'ValueChangedFcn', @(~,~) updateDisplay(), ...
+        'Tooltip', 'Overlay transparency 0-100%');
+    uilabel(climGrid, 'Text', '%');
+
     %% ====== RIGHT: Progress + Log ======
     progGrid = uigridlayout(rightPanel, [2, 1]);
-    progGrid.RowHeight = {45, '1x'};
+    progGrid.RowHeight = {24, '1x'};
     progGrid.Padding = [5 5 5 5];
     progGrid.RowSpacing = 5;
 
-    app.gauge = uigauge(progGrid, 'linear', 'Limits', [0 100], 'Value', 0);
-    app.gauge.ScaleColors = {[0.2 0.6 1]};
-    app.gauge.ScaleColorLimits = [0 100];
+    % Custom progress bar: outer panel with 3-col grid (fill | space | label)
+    app.progOuter = uipanel(progGrid, 'BorderType', 'line', ...
+        'BackgroundColor', [0.92 0.92 0.92]);
+    app.progOuterGrid = uigridlayout(app.progOuter, [1, 3]);
+    app.progOuterGrid.ColumnWidth = {0, '1x', 35};
+    app.progOuterGrid.Padding = [0 0 0 0];
+    app.progOuterGrid.ColumnSpacing = 0;
+    app.progBar = uipanel(app.progOuterGrid, 'BorderType', 'none', ...
+        'BackgroundColor', [0.2 0.6 1]);
+    uilabel(app.progOuterGrid, 'Text', '');  % spacer (gray shows through)
+    app.progLabel = uilabel(app.progOuterGrid, 'Text', '0%', ...
+        'HorizontalAlignment', 'center', ...
+        'FontSize', 11, 'FontColor', [0.3 0.3 0.3]);
 
     app.txtLog = uitextarea(progGrid, 'Value', {'Ready.'}, 'Editable', 'off');
 
@@ -246,8 +284,10 @@ function gui_aldic()
     end
 
     function onLoadImages(~, ~)
-        folder = uigetdir(pwd, 'Select images folder');
-        if folder == 0, return; end
+        folder = uigetdir(app.lastImgDir, 'Select images folder');
+        if folder == 0, figure(app.fig); return; end
+        figure(app.fig);  % restore focus after system dialog
+        app.lastImgDir = folder;
         app.imgFolder = folder;
 
         % Find image files
@@ -304,8 +344,17 @@ function gui_aldic()
     function showImage(idx)
         if idx > 0 && idx <= length(app.Img)
             cla(app.axMain);
-            imshow(app.Img{idx}', [], 'Parent', app.axMain);
+            imgDisp = app.Img{idx}';  % transpose code-space → display orientation
+            [imgH, imgW] = size(imgDisp);
+            imgRGB = repmat(mat2gray(imgDisp), [1, 1, 3]);
+            image(app.axMain, 'XData', [1, imgW], 'YData', [imgH, 1], 'CData', imgRGB);
+            set(app.axMain, 'YDir', 'normal');
+            axis(app.axMain, 'equal');
+            xlim(app.axMain, [1, imgW]);
+            ylim(app.axMain, [1, imgH]);
             app.axMain.Title.String = sprintf('Image %d: %s', idx, app.file_name{1,idx});
+            app.axMain.XLabel.String = 'x (pixels)';
+            app.axMain.YLabel.String = 'y (pixels)';
         end
     end
 
@@ -315,15 +364,17 @@ function gui_aldic()
         if isempty(app.Img)
             uialert(app.fig, 'Load images first.', 'Error'); return;
         end
-        showImage(1);
+        % Show existing mask overlay so user sees current regions
+        if ~isempty(app.regionOps) && ~isempty(app.ImgMask)
+            showMaskOverlay();
+        else
+            showImage(1);
+        end
         app.axMain.Title.String = 'Draw rectangle ROI, then double-click to confirm';
         roi = drawrectangle(app.axMain, 'Label', 'ROI');
         if isempty(roi.Position), return; end
-        app.regionType = 'rect';
-        app.regionRect = roi.Position;
-        app.regionVertices = [];
-        app.holeVertices = {};
-        computeMaskFromShape();
+        app.regionOps{end+1} = struct('type','rect', 'data',roi.Position);
+        recomputeMask();
         updateRegionInfo();
     end
 
@@ -331,34 +382,59 @@ function gui_aldic()
         if isempty(app.Img)
             uialert(app.fig, 'Load images first.', 'Error'); return;
         end
-        showImage(1);
+        if ~isempty(app.regionOps) && ~isempty(app.ImgMask)
+            showMaskOverlay();
+        else
+            showImage(1);
+        end
         app.axMain.Title.String = 'Draw polygon ROI, then double-click to close';
         roi = drawpolygon(app.axMain, 'Label', 'ROI');
         if isempty(roi.Position), return; end
-        app.regionType = 'polygon';
-        app.regionVertices = roi.Position;
-        app.regionRect = [];
-        app.holeVertices = {};
-        computeMaskFromShape();
+        app.regionOps{end+1} = struct('type','polygon', 'data',roi.Position);
+        recomputeMask();
         updateRegionInfo();
     end
 
-    function onAddHole(~, ~)
-        if ~strcmp(app.regionType, 'polygon')
-            uialert(app.fig, 'Draw a polygon first.', 'Add Hole'); return;
+    function onAddCircle(~, ~)
+        if isempty(app.Img)
+            uialert(app.fig, 'Load images first.', 'Error'); return;
+        end
+        if ~isempty(app.regionOps) && ~isempty(app.ImgMask)
+            showMaskOverlay();
+        else
+            showImage(1);
+        end
+        app.axMain.Title.String = 'Draw circle ROI, then confirm';
+        roi = drawcircle(app.axMain, 'Label', 'Circle');
+        if roi.Radius <= 0, return; end
+        app.regionOps{end+1} = struct('type','circle', ...
+            'data',[roi.Center(1), roi.Center(2), roi.Radius]);
+        recomputeMask();
+        updateRegionInfo();
+    end
+
+    function onCutPolygon(~, ~)
+        if isempty(app.Img)
+            uialert(app.fig, 'Load images first.', 'Error'); return;
+        end
+        if isempty(app.regionOps)
+            uialert(app.fig, 'Define a region first before cutting.', 'Cut Polygon');
+            return;
         end
         showMaskOverlay();
-        app.axMain.Title.String = 'Draw hole polygon, then double-click to close';
-        roi = drawpolygon(app.axMain, 'Label', 'Hole', 'Color', 'r');
+        app.axMain.Title.String = 'Draw cut polygon, then double-click to close';
+        roi = drawpolygon(app.axMain, 'Label', 'Cut', 'Color', 'r');
         if isempty(roi.Position), return; end
-        app.holeVertices{end+1} = roi.Position;
-        computeMaskFromShape();
+        app.regionOps{end+1} = struct('type','cut_polygon', 'data',roi.Position);
+        recomputeMask();
         updateRegionInfo();
     end
 
     function onImportMasks(~, ~)
-        folder = uigetdir(pwd, 'Select mask files folder');
-        if folder == 0, return; end
+        folder = uigetdir(app.lastMaskDir, 'Select mask files folder');
+        if folder == 0, figure(app.fig); return; end
+        figure(app.fig);  % restore focus after system dialog
+        app.lastMaskDir = folder;
         app.maskFolder = folder;
 
         exts = {'*.jpg','*.jpeg','*.tif','*.tiff','*.bmp','*.png','*.jp2'};
@@ -376,7 +452,7 @@ function gui_aldic()
 
         nFiles = length(allFiles);
         app.mask_file_name = cell(6, nFiles);
-        app.ImgMask = cell(1, nFiles);
+        importedMasks = cell(1, nFiles);
         for k = 1:nFiles
             fpath = fullfile(allFiles(k).folder, allFiles(k).name);
             app.mask_file_name{1,k} = allFiles(k).name;
@@ -384,91 +460,111 @@ function gui_aldic()
             img = imread(fpath);
             [~, ~, nc] = size(img);
             if nc == 3, img = rgb2gray(img); end
-            app.ImgMask{k} = logical(img)';
+            importedMasks{k} = logical(img)';
         end
 
-        app.regionType = 'imported';
-        app.regionRect = [];
-        app.regionVertices = [];
-        app.holeVertices = {};
-        computROIFromImportedMask();
+        % Use {cellArray} syntax to prevent MATLAB struct expansion
+        app.regionOps{end+1} = struct('type','imported', 'data',{importedMasks});
+        recomputeMask();
         updateRegionInfo();
-        showMaskOverlay();
         logMsg(sprintf('Imported %d masks from %s', nFiles, folder));
     end
 
     function onClearRegion(~, ~)
-        app.regionType = 'none';
-        app.regionRect = [];
-        app.regionVertices = [];
-        app.holeVertices = {};
+        app.regionOps = {};
         app.ImgMask = {};
         app.roiGridx = [];
         app.roiGridy = [];
-        app.btnAddHole.Enable = 'off';
         updateRegionInfo();
         if ~isempty(app.Img), showImage(1); end
     end
 
-    function computeMaskFromShape()
-        imgSize = size(app.Img{1}); % [originalCols, originalRows] (transposed)
-        dispRows = imgSize(2);      % originalRows = display rows
-        dispCols = imgSize(1);      % originalCols = display cols
-
-        if strcmp(app.regionType, 'rect')
-            pos = app.regionRect;
-            displayMask = false(dispRows, dispCols);
-            r1 = max(1, round(pos(2)));
-            r2 = min(dispRows, round(pos(2)+pos(4)));
-            c1 = max(1, round(pos(1)));
-            c2 = min(dispCols, round(pos(1)+pos(3)));
-            displayMask(r1:r2, c1:c2) = true;
-        elseif strcmp(app.regionType, 'polygon')
-            displayMask = poly2mask(app.regionVertices(:,1), ...
-                app.regionVertices(:,2), dispRows, dispCols);
-        else
+    function recomputeMask()
+        if isempty(app.regionOps)
+            app.ImgMask = {};
+            app.roiGridx = [];
+            app.roiGridy = [];
             return;
         end
 
-        % Subtract holes
-        for k = 1:length(app.holeVertices)
-            hv = app.holeVertices{k};
-            holeMask = poly2mask(hv(:,1), hv(:,2), dispRows, dispCols);
-            displayMask = displayMask & ~holeMask;
-        end
-
-        % Transpose to code space (matching Img{k} orientation)
-        codeMask = logical(displayMask');
-
-        % Replicate to all frames
+        imgSize = size(app.Img{1}); % [originalCols, originalRows] (transposed)
+        dispRows = imgSize(2);
+        dispCols = imgSize(1);
         nFrames = length(app.Img);
-        app.ImgMask = repmat({codeMask}, 1, nFrames);
 
-        % Compute bounding rect for gridxyROIRange
-        % gridx = dim 1 of code space (horizontal in display)
-        % gridy = dim 2 of code space (vertical in display)
-        [d1idx, d2idx] = find(codeMask);
-        app.roiGridx = [min(d1idx), max(d1idx)];
-        app.roiGridy = [min(d2idx), max(d2idx)];
-
-        % Enable Add Hole only for polygon
-        if strcmp(app.regionType, 'polygon')
-            app.btnAddHole.Enable = 'on';
-        else
-            app.btnAddHole.Enable = 'off';
+        % Check if any 'imported' ops exist (per-frame masks)
+        hasImported = false;
+        for k = 1:length(app.regionOps)
+            if strcmp(app.regionOps{k}.type, 'imported')
+                hasImported = true; break;
+            end
         end
 
-        % Show mask overlay
+        if ~hasImported
+            % No imports: compute mask once, replicate to all frames
+            mask = applyOps(false(dispRows, dispCols), app.regionOps, 1, dispRows, dispCols);
+            codeMask = logical(mask');
+            app.ImgMask = repmat({codeMask}, 1, nFrames);
+        else
+            % Per-frame computation (imported masks may differ per frame)
+            app.ImgMask = cell(1, nFrames);
+            for f = 1:nFrames
+                mask = applyOps(false(dispRows, dispCols), app.regionOps, f, dispRows, dispCols);
+                app.ImgMask{f} = logical(mask');
+            end
+        end
+
+        % Compute ROI bounding box from first frame mask
+        firstMask = app.ImgMask{1};
+        [d1idx, d2idx] = find(firstMask);
+        if ~isempty(d1idx)
+            app.roiGridx = [min(d1idx), max(d1idx)];
+            app.roiGridy = [min(d2idx), max(d2idx)];
+        else
+            app.roiGridx = [];
+            app.roiGridy = [];
+        end
+
         showMaskOverlay();
     end
 
-    function computROIFromImportedMask()
-        if isempty(app.ImgMask), return; end
-        firstMask = app.ImgMask{1};
-        [d1idx, d2idx] = find(firstMask);
-        if isempty(d1idx), return; end
-        app.roiGridx = [min(d1idx), max(d1idx)];
-        app.roiGridy = [min(d2idx), max(d2idx)];
+    function mask = applyOps(mask, ops, frameIdx, dispRows, dispCols)
+        % Apply operations in order to produce the final display-space mask.
+        for k = 1:length(ops)
+            op = ops{k};
+            switch op.type
+                case 'rect'
+                    pos = op.data;  % [x, y, w, h]
+                    r1 = max(1, round(pos(2)));
+                    r2 = min(dispRows, round(pos(2)+pos(4)));
+                    c1 = max(1, round(pos(1)));
+                    c2 = min(dispCols, round(pos(1)+pos(3)));
+                    rectMask = false(dispRows, dispCols);
+                    rectMask(r1:r2, c1:c2) = true;
+                    mask = mask | rectMask;
+
+                case 'polygon'
+                    polyMask = poly2mask(op.data(:,1), op.data(:,2), dispRows, dispCols);
+                    mask = mask | polyMask;
+
+                case 'circle'
+                    cx = op.data(1); cy = op.data(2); r = op.data(3);
+                    [cc, rr] = meshgrid(1:dispCols, 1:dispRows);
+                    circleMask = ((cc - cx).^2 + (rr - cy).^2) <= r^2;
+                    mask = mask | circleMask;
+
+                case 'cut_polygon'
+                    cutMask = poly2mask(op.data(:,1), op.data(:,2), dispRows, dispCols);
+                    mask = mask & ~cutMask;
+
+                case 'imported'
+                    importedMasks = op.data;
+                    idx = min(frameIdx, length(importedMasks));
+                    % Imported masks are already in code space — transpose to display
+                    impDispMask = importedMasks{idx}';
+                    mask = mask | impDispMask;
+            end
+        end
     end
 
     function showMaskOverlay()
@@ -483,32 +579,28 @@ function gui_aldic()
         h = imshow(redOverlay, 'Parent', app.axMain);
         set(h, 'AlphaData', 0.3 * double(mask));
         hold(app.axMain, 'off');
-        app.axMain.Title.String = sprintf('Region: %s', app.regionType);
+        nOps = length(app.regionOps);
+        app.axMain.Title.String = sprintf('Region: %d operation(s)', nOps);
     end
 
     function updateRegionInfo()
-        switch app.regionType
-            case 'none'
-                app.lblRegionStatus.Text = 'No region defined';
-                app.lblROIInfo.Text = 'ROI: [ - ]';
-            case 'rect'
-                app.lblRegionStatus.Text = 'Rectangle drawn';
-                app.lblROIInfo.Text = sprintf('ROI: x=[%d,%d]  y=[%d,%d]', ...
-                    app.roiGridx(1), app.roiGridx(2), app.roiGridy(1), app.roiGridy(2));
-            case 'polygon'
-                nHoles = length(app.holeVertices);
-                if nHoles > 0
-                    app.lblRegionStatus.Text = sprintf('Polygon + %d hole(s)', nHoles);
-                else
-                    app.lblRegionStatus.Text = 'Polygon drawn';
-                end
-                app.lblROIInfo.Text = sprintf('ROI: x=[%d,%d]  y=[%d,%d]', ...
-                    app.roiGridx(1), app.roiGridx(2), app.roiGridy(1), app.roiGridy(2));
-            case 'imported'
-                app.lblRegionStatus.Text = sprintf('%d masks imported', length(app.ImgMask));
-                app.lblROIInfo.Text = sprintf('ROI: x=[%d,%d]  y=[%d,%d]', ...
-                    app.roiGridx(1), app.roiGridx(2), app.roiGridy(1), app.roiGridy(2));
+        if isempty(app.regionOps)
+            app.lblRegionStatus.Text = 'No region defined';
+            return;
         end
+
+        % Count operations by type
+        types = cellfun(@(op) op.type, app.regionOps, 'UniformOutput', false);
+        parts = {};
+        typeNames = {'rect','polygon','circle','cut_polygon','imported'};
+        displayNames = {'rect','poly','circle','cut','imported'};
+        for k = 1:length(typeNames)
+            n = sum(strcmp(types, typeNames{k}));
+            if n > 0
+                parts{end+1} = sprintf('%d %s', n, displayNames{k}); %#ok<AGROW>
+            end
+        end
+        app.lblRegionStatus.Text = strjoin(parts, ' + ');
     end
 
     %% ====== Parameter auto-rounding callbacks ======
@@ -535,11 +627,11 @@ function gui_aldic()
         app.advancedVisible = ~app.advancedVisible;
         if app.advancedVisible
             vis = 'on';
-            paramGrid.RowHeight(9:11) = {22, 22, 22};
+            paramGrid.RowHeight(10:12) = {22, 22, 22};
             app.btnAdvanced.Text = [char(9660), ' Advanced'];
         else
             vis = 'off';
-            paramGrid.RowHeight(9:11) = {0, 0, 0};
+            paramGrid.RowHeight(10:12) = {0, 0, 0};
             app.btnAdvanced.Text = [char(9654), ' Advanced'];
         end
         app.lblAdvMu.Visible = vis;
@@ -557,12 +649,11 @@ function gui_aldic()
         if isempty(app.Img)
             uialert(app.fig, 'Load images first.', 'Error'); return;
         end
-        if strcmp(app.regionType, 'none')
+        if isempty(app.regionOps)
             uialert(app.fig, 'Define a region first (draw ROI or import masks).', 'Error'); return;
         end
-        if strcmp(app.regionType, 'imported') && length(app.Img) ~= length(app.ImgMask)
-            uialert(app.fig, sprintf('Image count (%d) != Mask count (%d).', ...
-                length(app.Img), length(app.ImgMask)), 'Error'); return;
+        if isempty(app.ImgMask) || isempty(app.roiGridx)
+            uialert(app.fig, 'Region mask is empty. Redefine the region.', 'Error'); return;
         end
 
         % Build DICpara from GUI fields
@@ -600,14 +691,15 @@ function gui_aldic()
         app.isRunning = true;
         app.btnRun.Enable = 'off';
         app.btnStop.Enable = 'on';
-        app.gauge.Value = 0;
+        setProgress(0);
         logMsg('Starting DIC computation...');
 
         % Run pipeline
         try
             app.results = run_aldic(DICpara, app.file_name, app.Img, app.ImgMask, ...
                 'ProgressFcn', @guiProgress, ...
-                'StopFcn', @() app.stopRequested);
+                'StopFcn', @() app.stopRequested, ...
+                'ComputeStrain', app.cbComputeStrain.Value);
             logMsg('Computation complete!');
             enableResultsControls();
         catch ME
@@ -627,7 +719,7 @@ function gui_aldic()
     end
 
     function guiProgress(frac, msg)
-        app.gauge.Value = frac * 100;
+        setProgress(frac);
         logMsg(msg);
         drawnow;
     end
@@ -637,8 +729,21 @@ function gui_aldic()
         timestamp = datestr(now, 'HH:MM:SS');
         newLine = sprintf('[%s] %s', timestamp, msg);
         app.txtLog.Value = [currentLog; {newLine}];
-        % Scroll to bottom
         app.txtLog.scroll('bottom');
+    end
+
+    function setProgress(frac)
+        % Update custom progress bar (frac: 0.0 to 1.0)
+        pct = max(0, min(100, round(frac * 100)));
+        % Resize filled portion via grid column widths
+        if pct == 0
+            app.progOuterGrid.ColumnWidth = {0, '1x', 35};
+        elseif pct >= 100
+            app.progOuterGrid.ColumnWidth = {'1x', 0, 35};
+        else
+            app.progOuterGrid.ColumnWidth = {sprintf('%dx', pct), sprintf('%dx', 100-pct), 35};
+        end
+        app.progLabel.Text = sprintf('%d%%', pct);
     end
 
     function enableResultsControls()
@@ -655,6 +760,19 @@ function gui_aldic()
         app.btnNextFrame.Enable = 'on';
         app.ddField.Enable = 'on';
         app.btnSave.Enable = 'on';
+
+        % Detect whether strain was computed
+        hasStrain = isfield(app.results.ResultStrain{1}, 'strain_exx');
+        if hasStrain
+            app.ddField.Items = {'Disp U','Disp V','exx','exy','eyy', ...
+                'vonMises','maxshear','principal max','principal min'};
+            app.btnComputeStrain.Enable = 'off';
+        else
+            app.ddField.Items = {'Disp U','Disp V'};
+            app.btnComputeStrain.Enable = 'on';
+        end
+        % Reset to Disp U when items change
+        app.ddField.Value = 'Disp U';
 
         updateDisplay();
     end
@@ -713,6 +831,122 @@ function gui_aldic()
         logMsg(sprintf('Results saved to %s', fullfile(fpath, fname)));
     end
 
+    function onComputeStrain(~, ~)
+        % Post-hoc strain computation on existing displacement results
+        if isempty(app.results)
+            uialert(app.fig, 'Run DIC first to get displacement results.', 'Error');
+            return;
+        end
+
+        % Check if strain already computed
+        RS1 = app.results.ResultStrain{1};
+        if isfield(RS1, 'strain_exx')
+            uialert(app.fig, 'Strain fields already computed.', 'Info');
+            return;
+        end
+
+        DICpara = app.results.DICpara;
+        DICmesh = app.results.DICmesh;
+
+        app.btnComputeStrain.Enable = 'off';
+        setProgress(0);
+        logMsg('Computing strain fields from existing displacements...');
+
+        try
+            % Normalize images (same as run_aldic Section 2b)
+            [ImgNormalized, ~] = normalize_img(app.Img, DICpara.gridxyROIRange);
+            nFrames = length(ImgNormalized);
+
+            coordinatesFEM = app.results.ResultFEMeshEachFrame{1}.coordinatesFEM;
+            elementsFEM = app.results.ResultFEMeshEachFrame{1}.elementsFEM;
+            DICmesh.coordinatesFEM = coordinatesFEM;
+            DICmesh.elementsFEM = elementsFEM;
+            coordinatesFEMWorld = DICpara.um2px * [coordinatesFEM(:,1), ...
+                size(ImgNormalized{1},2)+1-coordinatesFEM(:,2)];
+
+            Rad = [];
+            if DICpara.MethodToComputeStrain == 2
+                Rad = DICpara.StrainPlaneFitRad;
+            end
+            if DICpara.smoothness > 0
+                DICpara.DoYouWantToSmoothOnceMore = 0;
+            else
+                DICpara.DoYouWantToSmoothOnceMore = 1;
+            end
+
+            for ImgSeqNum = 2:nFrames
+                setProgress((ImgSeqNum-2)/(nFrames-1) * 0.9);
+                logMsg(sprintf('Computing strain for frame %d/%d', ImgSeqNum, nFrames));
+                drawnow;
+
+                % Get accumulated displacement
+                ULocal = app.results.ResultDisp{ImgSeqNum-1}.U_accum;
+                UWorld = DICpara.um2px * ULocal;
+                UWorld(2:2:end) = -UWorld(2:2:end);
+
+                % Image gradients for reference and deformed
+                if strcmp(DICpara.referenceMode, 'accumulative')
+                    fNormalizedMask = double(app.ImgMask{1});
+                    fNormalized = ImgNormalized{1} .* fNormalizedMask;
+                else
+                    fNormalizedMask = double(app.ImgMask{ImgSeqNum-1});
+                    fNormalized = ImgNormalized{ImgSeqNum-1} .* fNormalizedMask;
+                end
+                Df = img_gradient(fNormalized, fNormalized, fNormalizedMask);
+
+                gNormalizedMask = double(app.ImgMask{ImgSeqNum});
+                gNormalized = ImgNormalized{ImgSeqNum} .* gNormalizedMask;
+                Dg = img_gradient(gNormalized, gNormalized, gNormalizedMask);
+                DICpara.ImgRefMask = fNormalizedMask;
+
+                % Smooth displacements
+                SmoothTimes = 0;
+                while DICpara.DoYouWantToSmoothOnceMore == 0 && SmoothTimes < 3
+                    ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
+                    SmoothTimes = SmoothTimes + 1;
+                end
+
+                % Compute strain field
+                [FStraintemp, FStrainWorld] = compute_strain(ULocal, [], coordinatesFEM, ...
+                    DICmesh, DICpara, Df, Dg, Rad);
+
+                % Extract strain components
+                u_x = FStrainWorld(1:4:end); v_x = FStrainWorld(2:4:end);
+                u_y = FStrainWorld(3:4:end); v_y = FStrainWorld(4:4:end);
+                strain_exx = u_x;
+                strain_exy = 0.5*(v_x + u_y);
+                strain_eyy = v_y;
+                strain_maxshear = sqrt((0.5*(strain_exx-strain_eyy)).^2 + strain_exy.^2);
+                strain_principal_max = 0.5*(strain_exx+strain_eyy) + strain_maxshear;
+                strain_principal_min = 0.5*(strain_exx+strain_eyy) - strain_maxshear;
+                strain_vonMises = sqrt(strain_principal_max.^2 + strain_principal_min.^2 - ...
+                    strain_principal_max.*strain_principal_min + 3*strain_maxshear.^2);
+
+                % Update ResultStrain with full data
+                app.results.ResultStrain{ImgSeqNum-1} = struct( ...
+                    'strainxCoord', coordinatesFEMWorld(:,1), ...
+                    'strainyCoord', coordinatesFEMWorld(:,2), ...
+                    'dispu', UWorld(1:2:end), 'dispv', UWorld(2:2:end), ...
+                    'dudx', FStraintemp(1:4:end), 'dvdx', FStraintemp(2:4:end), ...
+                    'dudy', FStraintemp(3:4:end), 'dvdy', FStraintemp(4:4:end), ...
+                    'strain_exx', strain_exx, 'strain_exy', strain_exy, ...
+                    'strain_eyy', strain_eyy, ...
+                    'strain_principal_max', strain_principal_max, ...
+                    'strain_principal_min', strain_principal_min, ...
+                    'strain_maxshear', strain_maxshear, ...
+                    'strain_vonMises', strain_vonMises);
+            end
+
+            setProgress(1);
+            logMsg('Strain computation complete!');
+            enableResultsControls();
+        catch ME
+            logMsg(sprintf('ERROR: %s', ME.message));
+            uialert(app.fig, ME.message, 'Strain Computation Error');
+        end
+        app.btnComputeStrain.Enable = 'on';
+    end
+
     function updateDisplay()
         if isempty(app.results), return; end
 
@@ -726,40 +960,70 @@ function gui_aldic()
         RS = app.results.ResultStrain{frameIdx};
         if isempty(RS), return; end
 
-        % Select data field
+        % Select data field (gracefully handle missing strain fields)
+        hasStrain = isfield(RS, 'strain_exx');
         switch fieldName
             case 'Disp U',          data = RS.dispu;
             case 'Disp V',          data = RS.dispv;
-            case 'exx',             data = RS.strain_exx;
-            case 'exy',             data = RS.strain_exy;
-            case 'eyy',             data = RS.strain_eyy;
-            case 'vonMises',        data = RS.strain_vonMises;
-            case 'maxshear',        data = RS.strain_maxshear;
-            case 'principal max',   data = RS.strain_principal_max;
-            case 'principal min',   data = RS.strain_principal_min;
+            case 'exx',             if hasStrain, data = RS.strain_exx; else, data = RS.dispu; end
+            case 'exy',             if hasStrain, data = RS.strain_exy; else, data = RS.dispu; end
+            case 'eyy',             if hasStrain, data = RS.strain_eyy; else, data = RS.dispu; end
+            case 'vonMises',        if hasStrain, data = RS.strain_vonMises; else, data = RS.dispu; end
+            case 'maxshear',        if hasStrain, data = RS.strain_maxshear; else, data = RS.dispu; end
+            case 'principal max',   if hasStrain, data = RS.strain_principal_max; else, data = RS.dispu; end
+            case 'principal min',   if hasStrain, data = RS.strain_principal_min; else, data = RS.dispu; end
             otherwise,              data = RS.dispu;
         end
 
         coordWorld = [RS.strainxCoord, RS.strainyCoord];
         elemFEM = app.results.ResultFEMeshEachFrame{1}.elementsFEM;
+        um2px = app.results.DICpara.um2px;
 
-        % Plot using patch (more reliable in uiaxes than show())
         cla(app.axMain);
 
-        % Build patch data for quadrilateral elements
+        % --- Background image (grayscale, rendered as RGB truecolor) ---
+        if app.cbShowImage.Value && ~isempty(app.Img)
+            imgIdx = min(frameIdx + 1, length(app.Img));  % ResultStrain{k} → Img{k+1}
+            imgCode = app.Img{imgIdx};              % code-space (transposed)
+            imgDisp = imgCode';                     % display orientation [H x W]
+            [imgH, imgW] = size(imgDisp);
+
+            % Convert to RGB so it doesn't compete with the overlay colormap
+            imgRGB = repmat(mat2gray(imgDisp), [1, 1, 3]);
+
+            % World-space extents: x_world = um2px*col, y_world = um2px*(H+1-row)
+            xLim = um2px * [1, imgW];
+            yLim = um2px * [imgH, 1];  % row 1 → top (high y), last row → bottom (low y)
+
+            image(app.axMain, 'XData', xLim, 'YData', yLim, 'CData', imgRGB);
+            hold(app.axMain, 'on');
+        end
+
+        % --- Overlay: colored DIC result patch with transparency ---
         faces = elemFEM(:, 1:4);
         vertices = coordWorld;
+        faceAlpha = app.efAlpha.Value / 100;
 
         patch(app.axMain, 'Faces', faces, 'Vertices', vertices, ...
             'FaceVertexCData', data(:), ...
-            'FaceColor', 'interp', 'EdgeColor', 'none');
+            'FaceColor', 'interp', 'EdgeColor', 'none', ...
+            'FaceAlpha', faceAlpha);
 
+        hold(app.axMain, 'off');
         view(app.axMain, 2);
-        axis(app.axMain, 'tight');
         axis(app.axMain, 'equal');
         set(app.axMain, 'YDir', 'normal');
+
+        % Fit axes to full image if shown, otherwise to patch extent
+        if app.cbShowImage.Value && ~isempty(app.Img)
+            xlim(app.axMain, xLim);
+            ylim(app.axMain, sort(yLim));
+        else
+            axis(app.axMain, 'tight');
+        end
+
         colorbar(app.axMain);
-        colormap(app.axMain, 'jet');
+        colormap(app.axMain, getColormapData(app.ddColormap.Value));
 
         % Apply color range
         if app.cbAutoClim.Value
@@ -787,6 +1051,24 @@ function gui_aldic()
         app.axMain.Title.String = sprintf('Frame %d - %s', frameIdx, fieldName);
         app.axMain.XLabel.String = 'x (pixels)';
         app.axMain.YLabel.String = 'y (pixels)';
+    end
+
+    function cmap = getColormapData(name)
+        % Return Nx3 colormap matrix for the given name
+        switch name
+            case 'coolwarm'
+                try cmap = coolwarm(256); catch, cmap = jet(256); end
+            case 'RdYlBu'
+                try
+                    s = load('./plotting/colormap_RdYlBu.mat', 'cMap');
+                    cmap = s.cMap;
+                catch
+                    cmap = jet(256);
+                end
+            otherwise
+                % Built-in MATLAB colormaps: jet, parula, hot, turbo, gray
+                try cmap = feval(name, 256); catch, cmap = jet(256); end
+        end
     end
 
 end

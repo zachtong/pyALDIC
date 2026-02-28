@@ -12,8 +12,10 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 %       ImgMask   - cell array of mask images (logical, transposed)
 %
 %   Name-value pairs:
-%     'ProgressFcn'  function handle(fraction, message) for progress updates
-%     'StopFcn'      function handle() returning true to abort computation
+%     'ProgressFcn'    function handle(fraction, message) for progress updates
+%     'StopFcn'        function handle() returning true to abort computation
+%     'ComputeStrain'  logical (default true). If false, skip strain computation
+%                      and return results without ResultStrain field.
 %
 %   OUTPUT:
 %       results - struct with fields:
@@ -30,9 +32,11 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
     p = inputParser;
     addParameter(p, 'ProgressFcn', @(frac,msg) default_progress(frac,msg));
     addParameter(p, 'StopFcn', @() false);
+    addParameter(p, 'ComputeStrain', true);
     parse(p, varargin{:});
     progressFcn = p.Results.ProgressFcn;
     stopFcn = p.Results.StopFcn;
+    computeStrain = p.Results.ComputeStrain;
     showPlots = DICpara.showPlots;
 
     %% Section 2b: Normalize images and initialize storage
@@ -447,12 +451,12 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
             op2_x = rbfcreate([tempx,tempy]', [tempu]', 'RBFFunction', 'thinplate');
             rbfcheck_maxdiff = rbfcheck(op2_x);
-            if rbfcheck_maxdiff > 1e-3, disp('Please check rbf interpolation! Pause here.'); pause; end
+            if rbfcheck_maxdiff > 1e-3, warning('run_aldic:rbfCheck', 'RBF interpolation maxdiff=%.4f > 1e-3.', rbfcheck_maxdiff); end
             disp_x = rbfinterp([coordCurr(:,1),coordCurr(:,2)]', op2_x);
 
             op2_y = rbfcreate([tempx,tempy]', [tempv]', 'RBFFunction', 'thinplate');
             rbfcheck_maxdiff = rbfcheck(op2_y);
-            if rbfcheck_maxdiff > 1e-3, disp('Please check rbf interpolation! Pause here.'); pause; end
+            if rbfcheck_maxdiff > 1e-3, warning('run_aldic:rbfCheck', 'RBF interpolation maxdiff=%.4f > 1e-3.', rbfcheck_maxdiff); end
             disp_y = rbfinterp([coordCurr(:,1),coordCurr(:,2)]', op2_y);
 
             coordCurr = coordCurr + [disp_x(:), disp_y(:)];
@@ -467,41 +471,35 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
     end
 
 
-    %% Section 8: Compute strains
+    %% Section 8: Compute world-space displacements (always) and strains (optional)
     fprintf('------------ Section 8 Start ------------ \n')
-    progressFcn(0.7, 'Computing strains...');
-    Rad = [];
-    if DICpara.MethodToComputeStrain == 2
-        Rad = DICpara.StrainPlaneFitRad;
-    end
-    if DICpara.smoothness > 0
-        DICpara.DoYouWantToSmoothOnceMore = 0;
+
+    coordinatesFEM = ResultFEMeshEachFrame{1}.coordinatesFEM;
+    elementsFEM = ResultFEMeshEachFrame{1}.elementsFEM;
+    DICmesh.coordinatesFEM = coordinatesFEM;
+    DICmesh.elementsFEM = elementsFEM;
+    coordinatesFEMWorld = DICpara.um2px*[coordinatesFEM(:,1), size(ImgNormalized{1},2)+1-coordinatesFEM(:,2)];
+
+    if computeStrain
+        progressFcn(0.7, 'Computing strains...');
+        Rad = [];
+        if DICpara.MethodToComputeStrain == 2
+            Rad = DICpara.StrainPlaneFitRad;
+        end
+        if DICpara.smoothness > 0
+            DICpara.DoYouWantToSmoothOnceMore = 0;
+        else
+            DICpara.DoYouWantToSmoothOnceMore = 1;
+        end
     else
-        DICpara.DoYouWantToSmoothOnceMore = 1;
+        progressFcn(0.7, 'Computing world-space displacements (strain skipped)...');
     end
 
     for ImgSeqNum = 2 : nFrames
         if showPlots, close all; end
         disp(['Current image frame #: ', num2str(ImgSeqNum), '/', num2str(nFrames)]);
 
-        gNormalizedMask = double(ImgMask{ImgSeqNum});
-        gNormalized = ImgNormalized{ImgSeqNum} .* gNormalizedMask;
-        Dg = img_gradient(gNormalized, gNormalized, gNormalizedMask);
-
-        fNormalizedMask = double(ImgMask{1});
-        DICpara.ImgRefMask = fNormalizedMask;
-
         USubpb2 = ResultDisp{ImgSeqNum-1}.U_accum;
-        coordinatesFEM = ResultFEMeshEachFrame{1}.coordinatesFEM;
-        elementsFEM = ResultFEMeshEachFrame{1}.elementsFEM;
-
-        if isfield(ResultFEMeshEachFrame{ImgSeqNum-1}, 'markCoordHoleEdge')
-            markCoordHoleEdge = ResultFEMeshEachFrame{ImgSeqNum-1}.markCoordHoleEdge;
-        end
-        DICmesh.coordinatesFEM = coordinatesFEM;
-        DICmesh.elementsFEM = elementsFEM;
-        coordinatesFEMWorld = DICpara.um2px*[coordinatesFEM(:,1), size(ImgNormalized{1},2)+1-coordinatesFEM(:,2)];
-
         if size(USubpb2,1) == 1
             ULocal = USubpb2_New.USubpb2;
         else
@@ -509,61 +507,71 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         end
         UWorld = DICpara.um2px*ULocal; UWorld(2:2:end) = -UWorld(2:2:end);
 
-        % Smooth displacements
-        SmoothTimes = 0;
-        while DICpara.DoYouWantToSmoothOnceMore == 0 && SmoothTimes < 3
-            ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
-            SmoothTimes = SmoothTimes + 1;
-        end
+        if computeStrain
+            % Compute image gradients for strain
+            gNormalizedMask = double(ImgMask{ImgSeqNum});
+            gNormalized = ImgNormalized{ImgSeqNum} .* gNormalizedMask;
+            Dg = img_gradient(gNormalized, gNormalized, gNormalizedMask);
+            fNormalizedMask = double(ImgMask{1});
+            DICpara.ImgRefMask = fNormalizedMask;
 
-        % Compute strain field
-        [FStraintemp, FStrainWorld] = compute_strain(ULocal, [], coordinatesFEM, DICmesh, DICpara, Df, Dg, Rad);
-
-        % Compute strain components
-        if showPlots
-            % Plot disp and strain
-            if DICpara.OrigDICImgTransparency == 1
-                plot_disp_show(UWorld, coordinatesFEMWorld, DICmesh.elementsFEM(:,1:4), DICpara, 'NoEdgeColor');
-                [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min,strain_maxshear,strain_vonMises] = ...
-                    plot_strain_no_img(FStrainWorld, coordinatesFEMWorld, elementsFEM(:,1:4), DICpara);
-            else
-                if DICpara.Image2PlotResults == 0
-                    plot_disp(UWorld, coordinatesFEMWorld, elementsFEM(:,1:4), file_name{1,1}, DICpara);
-                    [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min, ...
-                        strain_maxshear,strain_vonMises] = plot_strain(UWorld, FStrainWorld, ...
-                        coordinatesFEMWorld, elementsFEM(:,1:4), file_name{1,1}, DICpara);
-                else
-                    fullFilePath = fullfile(file_name{2,ImgSeqNum}, file_name{1,ImgSeqNum});
-                    plot_disp_masks(UWorld, coordinatesFEMWorld, elementsFEM(:,1:4), ...
-                        fullFilePath, ImgMask{ImgSeqNum}, DICpara);
-                    [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min, ...
-                        strain_maxshear,strain_vonMises] = plot_strain_masks(UWorld, FStrainWorld, ...
-                        coordinatesFEMWorld, elementsFEM(:,1:4), fullFilePath, ...
-                        ImgMask{ImgSeqNum}, DICpara);
-                end
+            % Smooth displacements
+            SmoothTimes = 0;
+            while DICpara.DoYouWantToSmoothOnceMore == 0 && SmoothTimes < 3
+                ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
+                SmoothTimes = SmoothTimes + 1;
             end
-            DICpara = save_fig_disp_strain(file_name, ImgSeqNum, DICpara);
-        else
-            % Compute strain components without plotting
-            u_x = FStrainWorld(1:4:end); v_x = FStrainWorld(2:4:end);
-            u_y = FStrainWorld(3:4:end); v_y = FStrainWorld(4:4:end);
-            strain_exx = u_x;
-            strain_exy = 0.5*(v_x + u_y);
-            strain_eyy = v_y;
-            strain_maxshear = sqrt((0.5*(strain_exx-strain_eyy)).^2 + strain_exy.^2);
-            strain_principal_max = 0.5*(strain_exx+strain_eyy) + strain_maxshear;
-            strain_principal_min = 0.5*(strain_exx+strain_eyy) - strain_maxshear;
-            strain_vonMises = sqrt(strain_principal_max.^2 + strain_principal_min.^2 - ...
-                strain_principal_max.*strain_principal_min + 3*strain_maxshear.^2);
-        end
 
-        % Save strain results
-        ResultStrain{ImgSeqNum-1} = struct('strainxCoord',coordinatesFEMWorld(:,1),'strainyCoord',coordinatesFEMWorld(:,2), ...
-            'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end), ...
-            'dudx',FStraintemp(1:4:end),'dvdx',FStraintemp(2:4:end),'dudy',FStraintemp(3:4:end),'dvdy',FStraintemp(4:4:end), ...
-            'strain_exx',strain_exx,'strain_exy',strain_exy,'strain_eyy',strain_eyy, ...
-            'strain_principal_max',strain_principal_max,'strain_principal_min',strain_principal_min, ...
-            'strain_maxshear',strain_maxshear,'strain_vonMises',strain_vonMises);
+            % Compute strain field
+            [FStraintemp, FStrainWorld] = compute_strain(ULocal, [], coordinatesFEM, DICmesh, DICpara, Df, Dg, Rad);
+
+            % Compute strain components
+            if showPlots
+                if DICpara.OrigDICImgTransparency == 1
+                    plot_disp_show(UWorld, coordinatesFEMWorld, DICmesh.elementsFEM(:,1:4), DICpara, 'NoEdgeColor');
+                    [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min,strain_maxshear,strain_vonMises] = ...
+                        plot_strain_no_img(FStrainWorld, coordinatesFEMWorld, elementsFEM(:,1:4), DICpara);
+                else
+                    if DICpara.Image2PlotResults == 0
+                        plot_disp(UWorld, coordinatesFEMWorld, elementsFEM(:,1:4), file_name{1,1}, DICpara);
+                        [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min, ...
+                            strain_maxshear,strain_vonMises] = plot_strain(UWorld, FStrainWorld, ...
+                            coordinatesFEMWorld, elementsFEM(:,1:4), file_name{1,1}, DICpara);
+                    else
+                        fullFilePath = fullfile(file_name{2,ImgSeqNum}, file_name{1,ImgSeqNum});
+                        plot_disp_masks(UWorld, coordinatesFEMWorld, elementsFEM(:,1:4), ...
+                            fullFilePath, ImgMask{ImgSeqNum}, DICpara);
+                        [strain_exx,strain_exy,strain_eyy,strain_principal_max,strain_principal_min, ...
+                            strain_maxshear,strain_vonMises] = plot_strain_masks(UWorld, FStrainWorld, ...
+                            coordinatesFEMWorld, elementsFEM(:,1:4), fullFilePath, ...
+                            ImgMask{ImgSeqNum}, DICpara);
+                    end
+                end
+                DICpara = save_fig_disp_strain(file_name, ImgSeqNum, DICpara);
+            else
+                u_x = FStrainWorld(1:4:end); v_x = FStrainWorld(2:4:end);
+                u_y = FStrainWorld(3:4:end); v_y = FStrainWorld(4:4:end);
+                strain_exx = u_x;
+                strain_exy = 0.5*(v_x + u_y);
+                strain_eyy = v_y;
+                strain_maxshear = sqrt((0.5*(strain_exx-strain_eyy)).^2 + strain_exy.^2);
+                strain_principal_max = 0.5*(strain_exx+strain_eyy) + strain_maxshear;
+                strain_principal_min = 0.5*(strain_exx+strain_eyy) - strain_maxshear;
+                strain_vonMises = sqrt(strain_principal_max.^2 + strain_principal_min.^2 - ...
+                    strain_principal_max.*strain_principal_min + 3*strain_maxshear.^2);
+            end
+
+            ResultStrain{ImgSeqNum-1} = struct('strainxCoord',coordinatesFEMWorld(:,1),'strainyCoord',coordinatesFEMWorld(:,2), ...
+                'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end), ...
+                'dudx',FStraintemp(1:4:end),'dvdx',FStraintemp(2:4:end),'dudy',FStraintemp(3:4:end),'dvdy',FStraintemp(4:4:end), ...
+                'strain_exx',strain_exx,'strain_exy',strain_exy,'strain_eyy',strain_eyy, ...
+                'strain_principal_max',strain_principal_max,'strain_principal_min',strain_principal_min, ...
+                'strain_maxshear',strain_maxshear,'strain_vonMises',strain_vonMises);
+        else
+            % Displacement-only: store world-space displacements without strain
+            ResultStrain{ImgSeqNum-1} = struct('strainxCoord',coordinatesFEMWorld(:,1),'strainyCoord',coordinatesFEMWorld(:,2), ...
+                'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end));
+        end
     end
     fprintf('------------ Section 8 Done ------------ \n\n')
 

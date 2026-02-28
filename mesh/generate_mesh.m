@@ -146,9 +146,8 @@ DICmesh.dirichlet = DICmesh.markCoordHoleEdge;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%% Plot %%%%%
-if isfield(DICpara, 'showPlots') && ~DICpara.showPlots
-    % Skip mesh visualization
-else
+showPlots = ~isfield(DICpara, 'showPlots') || DICpara.showPlots;
+if showPlots
     figure;
     patch('Faces', elementsFEMQuadtree(:,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','white','linewidth',1);
     patch('Faces', elementsFEMQuadtree(markEleHoleEdge4,1:4), 'Vertices', coordinatesFEMQuadtree, 'Facecolor','yellow','linewidth',1);
@@ -207,7 +206,9 @@ U0 = U0Quadtree;
 % temp = F_dispu(coordinatesFEMQuadtree(:,1),coordinatesFEMQuadtree(:,2)); U0(1:2:end)=temp(:);
 % temp = F_dispv(coordinatesFEMQuadtree(:,1),coordinatesFEMQuadtree(:,2)); U0(2:2:end)=temp(:);
 
-plot_disp_show( -U0,coordinatesFEMQuadtree,elementsFEMQuadtree(:,1:4),DICpara,'NoEdgeColor');
+if showPlots
+    plot_disp_show( -U0,coordinatesFEMQuadtree,elementsFEMQuadtree(:,1:4),DICpara,'NoEdgeColor');
+end
 
 if size(elementsFEMQuadtree,2)<8 % make sure the column# of elementsFEMQuadtree is 8
     elementsFEMQuadtree(:,8) = 0*elementsFEMQuadtree(:,1);
