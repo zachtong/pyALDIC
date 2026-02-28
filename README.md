@@ -9,7 +9,7 @@ A MATLAB toolkit for full-field displacement and strain measurement using DIC wi
 - Augmented Lagrangian DIC (AL-DIC) formulation for robust displacement tracking
 - Adaptive quadtree mesh with automatic refinement near boundaries and high-gradient regions
 - RBF (Radial Basis Function) smoothing for displacement and strain fields
-- Programmatic GUI (`gui_aldic`) with interactive ROI drawing (rectangle, polygon, polygon with holes), mask import, parameter editing, progress tracking, and results visualization
+- Programmatic GUI (`gui_aldic`) with composable region tools (rectangle, polygon, circle, cut polygon, import masks), parameter editing, progress tracking, and full-image overlay visualization with configurable colormap and transparency
 - CLI entry point (`main_aldic`) for scripting and batch processing
 - Incremental and accumulative reference frame modes
 - Optional POD-GPR prediction for multi-frame sequences
@@ -32,9 +32,10 @@ gui_aldic
 ```
 
 1. Click **Browse Folder** to load images.
-2. Define a region: **Draw Rect**, **Draw Poly**, or **Import Masks**. Use **Add Hole** to cut polygonal holes inside a polygon ROI.
-3. Adjust parameters (subset size, grid spacing, etc.) and click **Run DIC**.
-4. Browse results with the frame slider and field dropdown. Save results via **Save Results**.
+2. Define a region: **Draw Rect**, **Draw Poly**, **Add Circle**, or **Import Masks**. All operations are additive (stackable). Use **Cut Polygon** to subtract areas. **Clear** resets everything.
+3. Adjust parameters (subset size, grid spacing, etc.). Uncheck **Compute Strain** for a displacement-only run.
+4. Click **Run DIC**. Results overlay on the full original image with configurable colormap, transparency, and color range.
+5. Use **Compute Strain** button post-hoc to add strain fields to displacement-only results. Save via **Save Results**.
 
 ### CLI mode
 
@@ -127,7 +128,7 @@ main_aldic.m ─┘         │
                          └── Section 8: compute_strain → ResultStrain output
 ```
 
-Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer).
+Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` / `ComputeStrain` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer with full-image overlay).
 
 ## Key Parameters
 
