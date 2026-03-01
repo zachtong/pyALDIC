@@ -264,6 +264,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         % --- Validation: local ICGN result ---
         assert(~all(isnan(USubpb1)), 'run_aldic:USubpb1allNaN', ...
             'Section 4: USubpb1 is entirely NaN after local_icgn.');
+        assert(length(FSubpb1) == 4*nNodes, 'run_aldic:FSubpb1dim', ...
+            'Section 4: FSubpb1 length (%d) != 4*nNodes (%d).', length(FSubpb1), 4*nNodes);
 
         if UseGlobal
             %% Section 5: Subproblem 2
@@ -329,6 +331,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
             assert(~all(isnan(USubpb2)), 'run_aldic:USubpb2initNaN', ...
                 'Section 5: USubpb2 is entirely NaN after initial subpb2_solver.');
+            assert(length(USubpb2) == 2*nNodes, 'run_aldic:USubpb2dim', ...
+                'Section 5: USubpb2 length (%d) != 2*nNodes (%d).', length(USubpb2), 2*nNodes);
 
             %% Section 6: ADMM iterations
             fprintf('------------ Section 6 Start ------------ \n')
@@ -368,6 +372,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 stepData(ALSolveStep).FSubpb2 = FSubpb2;
                 assert(~all(isnan(USubpb2)), 'run_aldic:ADMMSub2NaN', ...
                     'ADMM step %d: USubpb2 is entirely NaN.', ALSolveStep);
+                assert(length(USubpb2) == 2*nNodes, 'run_aldic:USubpb2dimADMM', ...
+                    'Section 6 step %d: USubpb2 length mismatch.', ALSolveStep);
 
                 % Convergence check (in-memory, no file I/O)
                 if (mod(ImgSeqNum-2,DICpara.ImgSeqIncUnit) ~= 0 && (ImgSeqNum>2)) || (ImgSeqNum < DICpara.ImgSeqIncUnit)
@@ -502,6 +508,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         end
     end
 
+    assert(length(ResultDisp{end}.U_accum) == 2*size(ResultFEMeshEachFrame{1}.coordinatesFEM,1), ...
+        'run_aldic:ResultDispDim', 'Cumulative ResultDisp size mismatch.');
 
     %% Section 8: Compute world-space displacements (always) and strains (optional)
     fprintf('------------ Section 8 Start ------------ \n')

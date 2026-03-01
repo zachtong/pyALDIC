@@ -28,13 +28,10 @@ coordinatesFEM = DICmesh.coordinatesFEM;
 FilterSizeInput = DICpara.DispFilterSize;
 FilterStd = DICpara.DispFilterStd;
 U = full(U);
-try smoothness = DICpara.DispSmoothness; 
-catch smoothness = 5e-4;
-end
+smoothness = DICpara.DispSmoothness;
 
 
-%% prompt = 'Do you want to smooth displacement? (0-yes; 1-no)';
-DoYouWantToSmoothOnceMore = 0; % DoYouWantToSmoothOnceMore = input(prompt);
+DoYouWantToSmoothOnceMore = 0;
 if DoYouWantToSmoothOnceMore == 0  
     if isempty(FilterStd) || FilterStd == 0
         FilterStd = 0.5;
@@ -47,8 +44,6 @@ end
 SmoothTimes = 1;
 while (DoYouWantToSmoothOnceMore==0)
      
-    % dilatedI = ( imgaussfilt(double(DICpara.ImgRefMask),0.5) );
-    % dilatedI = logical( dilatedI > 0.01);
     dilatedI = logical(DICpara.ImgRefMask);
     cc = bwconncomp(dilatedI,8);
     indPxAll = sub2ind( DICpara.ImgSize, round(coordinatesFEM(:,1)), round(coordinatesFEM(:,2)) );

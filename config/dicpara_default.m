@@ -211,11 +211,13 @@ function DICpara = dicpara_default(varargin)
     % Gaussian filter standard deviation for strain smoothing.
     DICpara.StrainFilterStd = 0;
 
-    % RBF regularization smoothness for displacement (quadtree only, 0 = none).
-    DICpara.DispSmoothness = 0;
+    % RBF regularization smoothness for displacement (quadtree only).
+    % Passed to rbfcreate as 'RBFSmooth'. Typical value: 5e-4.
+    DICpara.DispSmoothness = 5e-4;
 
-    % RBF regularization smoothness for strain (quadtree only, 0 = none).
-    DICpara.StrainSmoothness = 0;
+    % RBF regularization smoothness for strain (quadtree only).
+    % Passed to rbfcreate as 'RBFSmooth'. Typical value: 1e-5.
+    DICpara.StrainSmoothness = 1e-5;
 
     % Whether to apply additional smoothing in post-processing (Section 8).
     % 0 = yes, 1 = no.
@@ -226,7 +228,7 @@ function DICpara = dicpara_default(varargin)
 
     % RBF smoothness for global_nodal_strain_rbf (ADMM strain computation).
     % 0 = exact interpolation, 1e-3 = mild smoothing (default).
-    DICpara.strainRBFSmoothness = 1e-3;
+    DICpara.StrainRBFSmoothness = 1e-3;
 
     %% ====================================================================
     %  10. STRAIN COMPUTATION
@@ -363,4 +365,31 @@ function validate_dicpara(p)
     % ClusterNo: non-negative integer
     assert(p.ClusterNo >= 0 && mod(p.ClusterNo, 1) == 0, ...
         'DICpara:invalidParam', 'ClusterNo must be a non-negative integer.');
+
+    % ICGNMaxIter: positive integer
+    assert(p.ICGNMaxIter >= 1 && mod(p.ICGNMaxIter, 1) == 0, ...
+        'DICpara:invalidParam', 'ICGNMaxIter must be a positive integer.');
+
+    % SizeOfFFTSearchRegion: positive
+    sffr = p.SizeOfFFTSearchRegion;
+    if isscalar(sffr)
+        assert(sffr > 0, 'DICpara:invalidParam', ...
+            'SizeOfFFTSearchRegion must be positive (got %g).', sffr);
+    end
+
+    % StrainPlaneFitRad: positive
+    assert(p.StrainPlaneFitRad > 0, 'DICpara:invalidParam', ...
+        'StrainPlaneFitRad must be positive (got %g).', p.StrainPlaneFitRad);
+
+    % Smoothness values: non-negative
+    assert(p.DispSmoothness >= 0, 'DICpara:invalidParam', ...
+        'DispSmoothness must be non-negative (got %g).', p.DispSmoothness);
+    assert(p.StrainSmoothness >= 0, 'DICpara:invalidParam', ...
+        'StrainSmoothness must be non-negative (got %g).', p.StrainSmoothness);
+    assert(p.StrainRBFSmoothness >= 0, 'DICpara:invalidParam', ...
+        'StrainRBFSmoothness must be non-negative (got %g).', p.StrainRBFSmoothness);
+
+    % alpha: non-negative
+    assert(p.alpha >= 0, 'DICpara:invalidParam', ...
+        'alpha must be non-negative (got %g).', p.alpha);
 end
