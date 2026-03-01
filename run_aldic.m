@@ -138,10 +138,12 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             smooth_indices = setdiff(valid_indices, discontinuity_indices);
 
             if ~isempty(smooth_indices)
-                op1_smooth = rbfcreate([x0temp_f(smooth_indices), y0temp_f(smooth_indices)]', [u_f(smooth_indices)]', 'RBFFunction', 'thinplate');
-                u_smooth = rbfinterp([x0temp(:), y0temp(:)]', op1_smooth);
-                op2_smooth = rbfcreate([x0temp_f(smooth_indices), y0temp_f(smooth_indices)]', [v_f(smooth_indices)]', 'RBFFunction', 'thinplate');
-                v_smooth = rbfinterp([x0temp(:), y0temp(:)]', op2_smooth);
+                F_u = scatteredInterpolant(x0temp_f(smooth_indices), y0temp_f(smooth_indices), ...
+                    u_f(smooth_indices), 'natural', 'nearest');
+                u_smooth = F_u(x0temp(:), y0temp(:));
+                F_v = scatteredInterpolant(x0temp_f(smooth_indices), y0temp_f(smooth_indices), ...
+                    v_f(smooth_indices), 'natural', 'nearest');
+                v_smooth = F_v(x0temp(:), y0temp(:));
                 u_final = regularizeNd([x0temp(:), y0temp(:)], u_smooth(:), {xnodes', ynodes'}, 1e-3);
                 v_final = regularizeNd([x0temp(:), y0temp(:)], v_smooth(:), {xnodes', ynodes'}, 1e-3);
             else
@@ -285,7 +287,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 for tempk = 1:length(betaList)
                     beta = betaList(tempk); display(['Try #',num2str(tempk),' beta = ',num2str(beta)]);
                     alpha=0; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
-                    FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
+                    FSubpb2 = global_nodal_strain_fem(DICmesh,DICpara,USubpb2);
                     Err1(tempk) = norm(USubpb1-USubpb2,2);
                     Err2(tempk) = norm(FSubpb1-FSubpb2,2);
                 end
@@ -311,7 +313,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
             if abs(beta-betaList(end))>abs(eps)
                 [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
-                FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
+                FSubpb2 = global_nodal_strain_fem(DICmesh,DICpara,USubpb2);
                 ALSub2Time(ALSolveStep) = toc; toc
             end
 
@@ -359,7 +361,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 % Subproblem 2
                 disp(['***** Start step',num2str(ALSolveStep),' Subproblem2 *****'])
                 tic; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
-                FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
+                FSubpb2 = global_nodal_strain_fem(DICmesh,DICpara,USubpb2);
                 ALSub2Time(ALSolveStep) = toc; toc
 
                 if DICpara.DispSmoothness>1e-6, USubpb2 = smooth_disp_rbf(USubpb2,DICmesh,DICpara); end
@@ -487,15 +489,11 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             tempu = ResultDisp{ImgSeqNum-1}.U(1:2:end);
             tempv = ResultDisp{ImgSeqNum-1}.U(2:2:end);
 
-            op2_x = rbfcreate([tempx,tempy]', [tempu]', 'RBFFunction', 'thinplate');
-            rbfcheck_maxdiff = rbfcheck(op2_x);
-            if rbfcheck_maxdiff > 1e-3, warning('run_aldic:rbfCheck', 'RBF interpolation maxdiff=%.4f > 1e-3.', rbfcheck_maxdiff); end
-            disp_x = rbfinterp([coordCurr(:,1),coordCurr(:,2)]', op2_x);
+            F_interp_x = scatteredInterpolant(tempx, tempy, tempu, 'natural', 'nearest');
+            disp_x = F_interp_x(coordCurr(:,1), coordCurr(:,2));
 
-            op2_y = rbfcreate([tempx,tempy]', [tempv]', 'RBFFunction', 'thinplate');
-            rbfcheck_maxdiff = rbfcheck(op2_y);
-            if rbfcheck_maxdiff > 1e-3, warning('run_aldic:rbfCheck', 'RBF interpolation maxdiff=%.4f > 1e-3.', rbfcheck_maxdiff); end
-            disp_y = rbfinterp([coordCurr(:,1),coordCurr(:,2)]', op2_y);
+            F_interp_y = scatteredInterpolant(tempx, tempy, tempv, 'natural', 'nearest');
+            disp_y = F_interp_y(coordCurr(:,1), coordCurr(:,2));
 
             coordCurr = coordCurr + [disp_x(:), disp_y(:)];
             U_accum = (coordCurr - coord)'; U_accum = U_accum(:);

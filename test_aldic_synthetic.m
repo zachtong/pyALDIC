@@ -23,7 +23,7 @@ fprintf('============================================================\n\n');
 
 %% Part 0: Configuration
 addpath('./config','./io','./mesh','./solver','./strain','./plotting',...
-    './third_party','./third_party/rbfinterp');
+    './third_party');
 
 % Compile MEX if needed
 try

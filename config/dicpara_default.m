@@ -211,12 +211,12 @@ function DICpara = dicpara_default(varargin)
     % Gaussian filter standard deviation for strain smoothing.
     DICpara.StrainFilterStd = 0;
 
-    % RBF regularization smoothness for displacement (quadtree only).
-    % Passed to rbfcreate as 'RBFSmooth'. Typical value: 5e-4.
+    % Gaussian kernel smoothness for displacement (quadtree only).
+    % Controls sparse Gaussian smoothing width. Typical value: 5e-4.
     DICpara.DispSmoothness = 5e-4;
 
-    % RBF regularization smoothness for strain (quadtree only).
-    % Passed to rbfcreate as 'RBFSmooth'. Typical value: 1e-5.
+    % Gaussian kernel smoothness for strain (quadtree only).
+    % Controls sparse Gaussian smoothing width. Typical value: 1e-5.
     DICpara.StrainSmoothness = 1e-5;
 
     % Whether to apply additional smoothing in post-processing (Section 8).
@@ -225,10 +225,6 @@ function DICpara = dicpara_default(varargin)
 
     % Regularization smoothness for Section 8 strain computation (quadtree).
     DICpara.smoothness = 0;
-
-    % RBF smoothness for global_nodal_strain_rbf (ADMM strain computation).
-    % 0 = exact interpolation, 1e-3 = mild smoothing (default).
-    DICpara.StrainRBFSmoothness = 1e-3;
 
     %% ====================================================================
     %  10. STRAIN COMPUTATION
@@ -386,9 +382,6 @@ function validate_dicpara(p)
         'DispSmoothness must be non-negative (got %g).', p.DispSmoothness);
     assert(p.StrainSmoothness >= 0, 'DICpara:invalidParam', ...
         'StrainSmoothness must be non-negative (got %g).', p.StrainSmoothness);
-    assert(p.StrainRBFSmoothness >= 0, 'DICpara:invalidParam', ...
-        'StrainRBFSmoothness must be non-negative (got %g).', p.StrainRBFSmoothness);
-
     % alpha: non-negative
     assert(p.alpha >= 0, 'DICpara:invalidParam', ...
         'alpha must be non-negative (got %g).', p.alpha);
