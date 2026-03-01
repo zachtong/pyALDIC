@@ -27,6 +27,16 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 % Original author: Jin Yang, PhD @Caltech
 % Refactored: 02/2026
 % ==============================================
+% PIPELINE SECTIONS:
+%   Section 2b  - Normalize images, initialize storage        (line ~42)
+%   Section 3   - Compute initial guess (FFT + mesh)          (line ~107)
+%   Section 4   - Local ICGN (Subproblem 1)                   (line ~227)
+%   Section 5   - Global solve (Subproblem 2)                 (line ~259)
+%   Section 6   - ADMM iterations                             (line ~323)
+%   Section 7   - Convergence check                           (line ~421)
+%   Cumulative  - Transform incremental -> cumulative disps   (line ~457)
+%   Section 8   - Compute strains (optional)                  (line ~496)
+% ==============================================
 
     %% Parse name-value pairs
     p = inputParser;

@@ -119,87 +119,19 @@ end
 U = UOld(:);
 U(1:2:end) = UPar{1}; U(2:2:end) = UPar{2};
 
-% ------ Clear bad points for Local DIC ------
-% find bad points after Local Subset ICGN
-if isfield(DICpara, 'ICGNMaxIter')
-    maxIterNum = DICpara.ICGNMaxIter;
-else
-    maxIterNum = 100;
-end
-[row1,~] = find(ConvItPerEle(:)<0);
-[row2,~] = find(ConvItPerEle(:)>maxIterNum-1);
-[row3,~] = find(ConvItPerEle(:)==maxIterNum+2);
-LocalICGNBadPt = unique(union(row1,row2)); LocalICGNBadPtNum = length(LocalICGNBadPt)-length(row3);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Though some subsets are converged, but their accuracy is worse than most
-% other subsets. This step is to remove those subsets with abnormal convergence steps
-LocalICGNGoodPt = setdiff([1:1:size(coordinatesFEM,1)],LocalICGNBadPt);
-ConvItPerEleMean = mean(ConvItPerEle(LocalICGNGoodPt));
-ConvItPerEleStd = std(ConvItPerEle(LocalICGNGoodPt));
+% ------ Clear bad points ------
+if isfield(DICpara, 'ICGNMaxIter'), maxIterNum = DICpara.ICGNMaxIter; else, maxIterNum = 100; end
 if isfield(DICpara, 'outlierSigmaFactor'), osf = DICpara.outlierSigmaFactor; else, osf = 0.25; end
 if isfield(DICpara, 'outlierMinThreshold'), omt = DICpara.outlierMinThreshold; else, omt = 10; end
-[row4,~] = find(ConvItPerEle(:) > max([ConvItPerEleMean + osf*ConvItPerEleStd, omt]));
-LocalICGNBadPt = unique(union(LocalICGNBadPt,row4));
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[LocalICGNBadPt, LocalICGNBadPtNum] = detect_bad_points(ConvItPerEle, maxIterNum, coordinatesFEM, osf, omt);
 
-disp(['Local ICGN bad subsets %: ', num2str(LocalICGNBadPtNum),'/',num2str(size(coordinatesFEM,1)-length(row3)), ...
-    '=',num2str(100*(LocalICGNBadPtNum)/(size(coordinatesFEM,1)-length(row3))),'%']);
+nMaskOnly = length(find(ConvItPerEle(:)==maxIterNum+2));
+disp(['Local ICGN bad subsets %: ', num2str(LocalICGNBadPtNum),'/',num2str(size(coordinatesFEM,1)-nMaskOnly), ...
+    '=',num2str(100*(LocalICGNBadPtNum)/(size(coordinatesFEM,1)-nMaskOnly)),'%']);
 U(2*LocalICGNBadPt-1) = NaN; U(2*LocalICGNBadPt) = NaN;
 
-%%%%%% Fill nans %%%%%%
-nanindex = find(isnan(U(1:2:end))==1); notnanindex = setdiff([1:1:size(coordinatesFEM,1)],nanindex);
- 
-% dilatedI = ( imgaussfilt(double(Df.ImgRefMask),0.5) );
-% dilatedI = logical( dilatedI > 0.01); % figure, imshow(dilatedI)
-dilatedI = logical(DICpara.ImgRefMask);
-cc = bwconncomp(dilatedI,8);
-indPxAll = sub2ind( Df.imgSize, round(coordinatesFEM(:,1)),round(coordinatesFEM(:,2)));
-indPxNotNanAll = sub2ind( Df.imgSize, round(coordinatesFEM(notnanindex,1)), round(coordinatesFEM(notnanindex,2)) );
-stats = regionprops(cc,'Area','PixelList'); 
-
-for tempi = 1:length(stats)
-    
-    try % if stats(tempi).Area > 20
-        
-        %%%%% Find those nodes %%%%%
-        indPxtempi = sub2ind( Df.imgSize, stats(tempi).PixelList(:,2), stats(tempi).PixelList(:,1) );
-        Lia = ismember(indPxAll,indPxtempi); [LiaList,~] = find(Lia==1);
-        Lib = ismember(indPxNotNanAll,indPxtempi); [LibList,~] = find(Lib==1);
-
-        %%%%% RBF (Radial basis function) works better than "scatteredInterpolant" %%%%%
-        % ------ Disp u ------
-        op1 = rbfcreate( round([coordinatesFEM(notnanindex(LibList),1:2)]'),[U(2*notnanindex(LibList)-1)]','RBFFunction', 'thinplate'); rbfcheck(op1);
-        fi1 = rbfinterp( [coordinatesFEM(LiaList,1:2)]', op1);
-        U(2*LiaList-1) = fi1(:);
-
-        % ------ Disp v ------
-        op1 = rbfcreate( round([coordinatesFEM(notnanindex(LibList),1:2)]'),[U(2*notnanindex(LibList) )]','RBFFunction', 'thinplate'); rbfcheck(op1);
-        fi1 = rbfinterp( [coordinatesFEM(LiaList,1:2)]', op1);
-        U(2*LiaList ) = fi1(:);
-
-    catch ME
-        warning('subpb1_solver:rbfNanFill', 'RBF NaN fill failed for region %d: %s', tempi, ME.message);
-    end
-
-end
-
-%% Final NaN filling (scatteredInterpolant fallback)
-nanindex = find(isnan(U(1:2:end))==1); notnanindex = setdiff([1:1:size(coordinatesFEM,1)],nanindex);
-
-if ~isempty(nanindex) && ~isempty(notnanindex)
-
-    Ftemp = scatteredInterpolant(coordinatesFEM(notnanindex,1),coordinatesFEM(notnanindex,2),U(2*notnanindex-1),'natural','nearest');
-    U1 = Ftemp(coordinatesFEM(:,1),coordinatesFEM(:,2));
-    Ftemp = scatteredInterpolant(coordinatesFEM(notnanindex,1),coordinatesFEM(notnanindex,2),U(2*notnanindex),'natural','nearest');
-    U2 = Ftemp(coordinatesFEM(:,1),coordinatesFEM(:,2));
-
-    U = [U1(:),U2(:)]'; U = U(:);
-elseif ~isempty(nanindex) && isempty(notnanindex)
-    % All nodes are NaN (all ICGN calls failed) — fall back to previous result
-    warning('subpb1_solver:allNaN', 'All ICGN nodes failed, falling back to UOld.');
-    U = UOld(:);
-end
+% Fill NaN displacements
+U = fill_nan_rbf(U, coordinatesFEM, Df.imgSize, DICpara.ImgRefMask, 2);
 
 
 

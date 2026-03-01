@@ -231,27 +231,9 @@ if DfDxImgMaskIndCount <= Threshold*(winsize+1)^2
                 % tempb = b;
                 % DeltaP(5:6) = -tempH(5:6,5:6)\tempb(5:6);
                 DeltaP = -(H + delta*diag(diag(H))) \ b;
-                detDeltaP =  ((1+DeltaP(1))*(1+DeltaP(4)) - DeltaP(2)*DeltaP(3));
-                if (detDeltaP ~= 0)
-                    tempP1 =  (-DeltaP(1)-DeltaP(1)*DeltaP(4)+DeltaP(2)*DeltaP(3))/detDeltaP;
-                    tempP2 =  -DeltaP(2)/detDeltaP;
-                    tempP3 =  -DeltaP(3)/detDeltaP;
-                    tempP4 =  (-DeltaP(4)-DeltaP(1)*DeltaP(4)+DeltaP(2)*DeltaP(3))/detDeltaP;
-                    tempP5 =  (-DeltaP(5)-DeltaP(4)*DeltaP(5)+DeltaP(3)*DeltaP(6))/detDeltaP;
-                    tempP6 =  (-DeltaP(6)-DeltaP(1)*DeltaP(6)+DeltaP(2)*DeltaP(5))/detDeltaP;
-                    
-                    tempMatrix = [1+P(1) P(3) P(5); P(2) 1+P(4) P(6); 0 0 1]*...
-                        [1+tempP1 tempP3 tempP5; tempP2 1+tempP4 tempP6; 0 0 1];
-                    
-                    P1 = tempMatrix(1,1)-1;
-                    P2 = tempMatrix(2,1);
-                    P3 = tempMatrix(1,2);
-                    P4 = tempMatrix(2,2)-1;
-                    P5 = tempMatrix(1,3);
-                    P6 = tempMatrix(2,3);
-                    P = [P1 P2 P3 P4 P5 P6]';
-                else
-                    disp(['Det(DeltaP)==0!'])
+                P = icgn_compose_warp(P, DeltaP);
+                if isempty(P)
+                    disp('Det(DeltaP)==0!')
                     break
                 end
                 
