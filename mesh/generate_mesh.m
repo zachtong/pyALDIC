@@ -117,9 +117,8 @@ yMin = min(DICmesh.coordinatesFEM(:,2)); yMax = max(DICmesh.coordinatesFEM(:,2))
 
 markEleHoleEdge4 =  union(row4,union(row3,union(row2,union(row1,markEleRefine4))));
 markCoordHoleEdge = unique(elementsFEMQuadtree(markEleHoleEdge4,:));
-try
-    if markCoordHoleEdge(1)==0, markCoordHoleEdge = markCoordHoleEdge(2:end); end
-catch
+if ~isempty(markCoordHoleEdge) && markCoordHoleEdge(1)==0
+    markCoordHoleEdge = markCoordHoleEdge(2:end);
 end
 
 %%%%%% New codes: Find elements near marked elements %%%%%%
@@ -132,9 +131,8 @@ for tempi = 1:2 % 2+(round( 32 / mean(DICpara.winstepsize) )^2)
     [markEleHoleEdgeNeigh4,~] = find(markEleHoleEdgeNeigh4>0);
     %%%%%%%%%
     markCoordHoleEdge = unique(elementsFEMQuadtree(markEleHoleEdgeNeigh4,:)) ;
-    try
-        if markCoordHoleEdge(1) == 0, markCoordHoleEdge = markCoordHoleEdge(2:end); end
-    catch
+    if ~isempty(markCoordHoleEdge) && markCoordHoleEdge(1)==0
+        markCoordHoleEdge = markCoordHoleEdge(2:end);
     end
 
 end
@@ -193,7 +191,8 @@ for tempi = 1:length(stats)
         fi1 = rbfinterp( [coordinatesFEMQuadtree(LiaList,1:2)]', op1);
         U0Quadtree(2*LiaList) = fi1(:);
 
-    catch
+    catch ME
+        warning('generate_mesh:rbfInterp', 'RBF interpolation failed for region %d: %s', tempi, ME.message);
     end
 end
 

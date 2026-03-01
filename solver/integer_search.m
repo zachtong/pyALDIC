@@ -34,9 +34,14 @@ end
 
 try
     InitFFTSearchMethod = DICpara.InitFFTSearchMethod;
-    % disp(num2str(InitFFTSearchMethod));
 catch
-    InitFFTSearchMethod = 1; % funParaInput('InitFFTSearchMethod');
+    InitFFTSearchMethod = 1;
+end
+
+if isfield(DICpara, 'ClusterNo')
+    ClusterNo = DICpara.ClusterNo;
+else
+    ClusterNo = 0;  % default: serial
 end
 
 
@@ -51,7 +56,7 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
 
 
         if (InitFFTSearchMethod == 1) % whole field for initial guess,
-            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,0,winstepsize,showPlots);
+            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,0,winstepsize,showPlots,ClusterNo);
 
         else % (InitFFTSearchMethod == 1), several local seeds for initial guess
 
@@ -63,7 +68,7 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
                 error('InitFFTSearchMethod=2 (manual seeds) requires showPlots=true.');
             end
 
-            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,1,[row,col],showPlots);
+            [x0,y0,u,v,cc] = integer_search_kernel(ImgRef,ImgDef,tempSizeOfSearchRegion,gridxROIRange,gridyROIRange,winsize,winstepsize,1,[row,col],showPlots,ClusterNo);
 
         end
 
@@ -75,11 +80,11 @@ if (InitFFTSearchMethod == 1) || (InitFFTSearchMethod == 2)
             temp1(~logical(temp1))=nan;
             HolePtIndMat=reshape(temp1,size(x0));
             u = u.*HolePtIndMat; v = v.*HolePtIndMat;
-        catch
-            
+        catch ME
+            warning('integer_search:maskApply', 'Failed to apply ImgRefMask: %s', ME.message);
         end
         % --------------------------------------
-        
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Have a look at the integer search results
         % --------------------------------------
@@ -131,7 +136,8 @@ else % Multigrid search
         temp1(~logical(temp1))=nan;
         HolePtIndMat=reshape(temp1,size(x0));
         u = u.*HolePtIndMat; v = v.*HolePtIndMat;
-    catch
+    catch ME
+        warning('integer_search:maskApply', 'Failed to apply ImgRefMask: %s', ME.message);
     end
     % --------------------------------------
 

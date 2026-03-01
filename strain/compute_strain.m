@@ -138,7 +138,8 @@ switch DICpara.MethodToComputeStrain
                 end
                 % figure, plot3(coordinatesFEM(:,1), coordinatesFEM(:,2), FSubpb2(1:4:end),'.');
 
-            catch
+            catch ME
+                warning('compute_strain:planeFit', 'Plane fit failed for region %d: %s', tempi, ME.message);
             end
 
         end
@@ -183,7 +184,8 @@ switch DICpara.MethodToComputeStrain
                     FSubpb2(4*DICmesh.markCoordHoleEdge-tempk) = FLocal(4*DICmesh.markCoordHoleEdge-tempk);
                 end
             end
-        catch
+        catch ME
+            warning('compute_strain:smoothOnceMore', 'Extra smoothing failed: %s', ME.message);
         end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

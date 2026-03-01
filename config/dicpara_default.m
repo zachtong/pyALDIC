@@ -138,9 +138,6 @@ function DICpara = dicpara_default(varargin)
     %  6. IC-GN SOLVER (SUBPROBLEM 1 - LOCAL)
     % =====================================================================
 
-    % IC-GN iteration method: 'GaussNewton' or 'LevenbergMarquardt'.
-    DICpara.ICGNmethod = 'GaussNewton';
-
     % IC-GN local convergence tolerance (norm of update / norm of solution).
     DICpara.tol = 1e-2;
 

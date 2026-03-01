@@ -1,22 +1,20 @@
-function [U,F,stepwithinwhile,HGlobal] = icgn_solver(U0,x0,y0,Df,ImgRef,ImgDef,winsize,tol,ICGNmethod)
-%FUNCTION [U,F,stepwithinwhile,HGlobal] = icgn_solver(U0,x0,y0,Df,ImgRef,ImgDef,winsize,tol,method)
-% The Local ICGN subset solver (part II): ICGN iteration 
-% (see part I: ./func/LocalICGN.m)
+function [U,F,stepwithinwhile] = icgn_solver(U0,x0,y0,Df,ImgRef,ImgDef,winsize,tol)
+%FUNCTION [U,F,stepwithinwhile] = icgn_solver(U0,x0,y0,Df,ImgRef,ImgDef,winsize,tol)
+% The Local ICGN subset solver: Gauss-Newton IC-GN iteration (6-DOF)
+% (see dispatcher: ./solver/local_icgn.m)
 % ----------------------------------------------
 %   INPUT: U0                   Initial guess of the displacement fields
 %          x0,y0                FE mesh nodal coordinates
 %          Df                   Image grayscale value gradients
 %          ImgRef               Reference image
 %          ImgDef               Deformed image
-%          winsize              DIC parameter subset size  
-%          ICGNmethod           ICGN iteration scheme: 'GaussNewton' -or- 'LevenbergMarquardt'
+%          winsize              DIC parameter subset size
 %          tol                  ICGN iteration stopping threshold
 %
 %   OUTPUT: U                   Disp vector: [Ux_node1, Uy_node1, ... , Ux_nodeN, Uy_nodeN]';
 %           F                   Deformation gradient tensor
 %                               F = [F11_node1, F21_node1, F12_node1, F22_node1, ... , F11_nodeN, F21_nodeN, F12_nodeN, F22_nodeN]';
 %           stepwithinwhile     ICGN iteration step for convergence
-%           HGlobal             Hessian matrix for each local subset
 %
 % ----------------------------------------------
 % Author: Jin Yang.  
@@ -25,7 +23,8 @@ function [U,F,stepwithinwhile,HGlobal] = icgn_solver(U0,x0,y0,Df,ImgRef,ImgDef,w
 % ==============================================
 
 %% Initialization
-warning('off');
+warnState = warning('off', 'MATLAB:nearlySingularMatrix');
+cleanupWarn = onCleanup(@() warning(warnState));
 DfCropWidth = Df.DfCropWidth;
 imgSize = Df.imgSize;
 winsize0 = winsize;
@@ -103,34 +102,15 @@ if DfDxImgMaskIndCount <= Threshold*(winsize+1)^2
     H2(5,6) = sum(sum(DfDxDfDy)); H2(6,6) = sum(sum(DfDySq));
     H = H2 + H2' - diag(diag(H2));
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % %%%% Old codes: to compute H matrix by a for loop %%%%
-    % tempCoordx = XX(:); tempCoordy = YY(:);
-    % for tempij = 1:size(tempCoordx,1)
-    %
-    %         H = H + ([DfDx(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth) DfDy(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth)]*...
-    %             [tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1 0; 0 tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1])'* ...
-    %             ([DfDx(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth) DfDy(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth)]*...
-    %             [tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1 0; 0 tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1]);
-    %
-    % end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     %%%%%%%%%% !!!Mask: START %%%%%%%%%%%%
     meanf = mean(tempf(abs(tempf)>1e-10));
     bottomf = sqrt((length(tempf(abs(tempf)>1e-10))-1)*var(tempf(abs(tempf)>1e-10)));
     %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
     
     % --------------------------
-    % Initialize while loop
+    % Initialize while loop (Gauss-Newton: delta=0)
     normOfWOld=2; normOfWNew=1; normOfWNewAbs=1; stepwithinwhile=0;
-    switch ICGNmethod   % For Gauss-Newton method
-        case 'LevenbergMarquardt'
-            delta = 0.001; % For Levenberg-Marquardt method
-            KappaOld=1e10; KappaNew=1e10; KappaStore=zeros(10,1); PStore=zeros(10,6);
-        otherwise % 'GaussNewton'
-            delta = 0;
-    end
+    delta = 0;
     
     while( (stepwithinwhile <= maxIterNum) && (normOfWNew>tol) && (normOfWNewAbs>tol) )
         
@@ -208,155 +188,18 @@ if DfDxImgMaskIndCount <= Threshold*(winsize+1)^2
                 bottomf = sqrt((length(tempf(abs(tempf)>1e-10))-1)*var(tempf(abs(tempf)>1e-10)));
                 %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
 
-%                 figure(1); clf;
-%                 subplot(3,2,1), surf(DfDx,'edgecolor','none'); title('DfDx');view(2); axis equal; axis tight;
-%                 subplot(3,2,2), surf(DfDy,'edgecolor','none'); title('DfDy');view(2); axis equal; axis tight;
-%                 subplot(3,2,3), surf(tempf0,'edgecolor','none'); title('tempf'); view(2); axis equal; axis tight;caxis([-1,1]);
-%                 subplot(3,2,4), surf(tempg0,'edgecolor','none'); title('tempg'); view(2); axis equal; axis tight; caxis([-1,1]);
-%                 subplot(3,2,5), imshow(flipud( tempfImgMask) ); title('im f mask');
-%                 subplot(3,2,6), imshow(flipud( tempg_BW2) ); title('im g mask');
-% 
-%                 pause;
 
             end
             %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
     
     
-%              figure(1); clf;
-%                 subplot(3,2,1), surf(DfDx,'edgecolor','none'); title('DfDx');view(2); axis equal; axis tight;
-%                 subplot(3,2,2), surf(DfDy,'edgecolor','none'); title('DfDy');view(2); axis equal; axis tight;
-%                 subplot(3,2,3), surf(tempf,'edgecolor','none'); title('tempf'); view(2); axis equal; axis tight;caxis([-1,1]);
-%                 subplot(3,2,4), surf(tempg,'edgecolor','none'); title('tempg'); view(2); axis equal; axis tight; caxis([-1,1]);
-%                 subplot(3,2,5), imshow(flipud( tempfImgMask) ); title('im f mask');
-%               
-% 
-%                 pause;
-                
-                
-            % ====== Old version codes ======
-            % tempg = zeros(size(tempf,1)*size(tempf,2),1);
-            % [tempCoordy, tempCoordx] = meshgrid(1:winsize+1,1:winsize+1);
-            % tempCoordx = tempCoordx(:); tempCoordy = tempCoordy(:);
-            %
-            % for tempij = 1:size(tempCoordx,1)
-            %     tempg(tempij)= ...
-            %         fungInterpolation_g(u22(tempCoordx(tempij),tempCoordy(tempij)), v22(tempCoordx(tempij),tempCoordy(tempij)), ...
-            %         g(floor(u22(tempCoordx(tempij),tempCoordy(tempij)))-1:floor(u22(tempCoordx(tempij),tempCoordy(tempij)))+2, ...
-            %         floor(v22(tempCoordx(tempij),tempCoordy(tempij)))-1:floor(v22(tempCoordx(tempij),tempCoordy(tempij)))+2));
-            % end
-            %
-            % tempg = reshape(tempg, winsize+1, winsize+1);
-            % ===============================
-            
-            % A = [1+P(1) P(2) 0; P(3) 1+P(4) 0; P(5) P(6) 1];
-            % tform = affine2d((A));
-            %
-            % tempg2 = g((x(1)-winsize/2):(x(3)+winsize/2), (y(1)-winsize/2):(y(3)+winsize/2));
-            % tempg3 = imwarp(tempg2,tform,'cubic');
-            %
-            % figure; imshow(tempf,[]);
-            % figure; imshow(tempg2,[]);
-            % figure; imshow(tempg3,[]);
-            %
-            % [M,N] = size(tempg3)
-            % tempg = tempg3(ceil((M+1)/2)-winsize/2:ceil((M+1)/2)+winsize/2, ceil((N+1)/2)-winsize/2:ceil((N+1)/2)+winsize/2);
-            % figure; imshow(tempg,[]);
-            
             %%%%%%%%%% !!!Mask: START %%%%%%%%%%%%
             %%%%% Find connected region to deal with possible continuities %%%%%
             meang = mean(tempg(abs(tempg)>1e-10));
             bottomg = sqrt((length(tempg(abs(tempg)>1e-10))-1)*var(tempg(abs(tempg)>1e-10)));
             %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
             
-            % ============ For Levenberg-Marquardt method ============
-            switch ICGNmethod
-                case 'LevenbergMarquardt'
-                    % Compute functinoal error
-                    KappaOld = KappaNew;
-                    Kappatemp = (tempf-meanf)/bottomf - (tempg-meang)/bottomg;
-                    Kappatemp = Kappatemp.*Kappatemp;
-                    KappaNew = sum(Kappatemp(:));
-                    
-                    if KappaNew < 1.02*KappaOld
-                        delta = delta/10;
-                    else
-                        delta = delta*10;
-                        % Perform P inverse
-                        DeltaP = -DeltaP;
-                        tempP1 =  (-DeltaP(1)-DeltaP(1)*DeltaP(4)+DeltaP(2)*DeltaP(3))/temp;
-                        tempP2 =  -DeltaP(2)/temp;
-                        tempP3 =  -DeltaP(3)/temp;
-                        tempP4 =  (-DeltaP(4)-DeltaP(1)*DeltaP(4)+DeltaP(2)*DeltaP(3))/temp;
-                        tempP5 =  (-DeltaP(5)-DeltaP(4)*DeltaP(5)+DeltaP(3)*DeltaP(6))/temp;
-                        tempP6 =  (-DeltaP(6)-DeltaP(1)*DeltaP(6)+DeltaP(2)*DeltaP(5))/temp;
-                        
-                        tempMatrix = [1+P(1) P(3) P(5); P(2) 1+P(4) P(6); 0 0 1]*...
-                            [1+tempP1 tempP3 tempP5; tempP2 1+tempP4 tempP6; 0 0 1];
-                        
-                        P1 = tempMatrix(1,1)-1;
-                        P2 = tempMatrix(2,1);
-                        P3 = tempMatrix(1,2);
-                        P4 = tempMatrix(2,2)-1;
-                        P5 = tempMatrix(1,3);
-                        P6 = tempMatrix(2,3);
-                        P = [P1 P2 P3 P4 P5 P6]';
-                    end
-                    
-                    % Find region for g
-                    % [tempCoordy, tempCoordx] = meshgrid(y(1):y(3),x(1):x(3));
-                    %Repeated! tempCoordx = XX - x0*ones(winsize+1,winsize+1);
-                    %Repeated! tempCoordy = YY - y0*ones(winsize+1,winsize+1);
-                    u22 = (1+P(1))*tempCoordxMat + P(3)*tempCoordyMat + (x0+P(5))*ones(winsize+1,winsize+1);
-                    v22 = P(2)*tempCoordxMat + (1+P(4))*tempCoordyMat + (y0+P(6))*ones(winsize+1,winsize+1);
-                    
-                    tempg = ImgDef.eval(u22,v22);
-                    
-                    %%%%%%%%%% !!!Mask: START %%%%%%%%%%%%
-                    %%%%% Find connected region to deal with possible continuities %%%%%
-                    tempg_BW2 = bwselect(logical(tempg), floor((winsize+1)/2), floor((winsize+1)/2), 4 );
-                    tempg = tempg .* double(tempg_BW2);
-                    %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
-            
-                    % ====== Old version codes ======
-                    % tempg = zeros(size(tempf,1)*size(tempf,2),1);
-                    %
-                    % [tempCoordy, tempCoordx] = meshgrid(1:winsize+1,1:winsize+1);
-                    % tempCoordx = tempCoordx(:); tempCoordy = tempCoordy(:);
-                    %
-                    % parfor tempij = 1:size(tempCoordx,1)
-                    %     tempg(tempij)= ...
-                    %         fungInterpolation_g(u22(tempCoordx(tempij),tempCoordy(tempij)), v22(tempCoordx(tempij),tempCoordy(tempij)), ...
-                    %         g(floor(u22(tempCoordx(tempij),tempCoordy(tempij)))-1:floor(u22(tempCoordx(tempij),tempCoordy(tempij)))+2, ...
-                    %         floor(v22(tempCoordx(tempij),tempCoordy(tempij)))-1:floor(v22(tempCoordx(tempij),tempCoordy(tempij)))+2));
-                    % end
-                    %
-                    % tempg = reshape(tempg, winsize+1, winsize+1);
-                    % ==================================
-                    
-                    %%%%%%%%%% !!!Mask: START %%%%%%%%%%%%
-                    %%%%% Find connected region to deal with possible continuities %%%%%
-                    meang = mean(tempg(abs(tempg)>1e-10));
-                    bottomg = sqrt((length(tempg(abs(tempg)>1e-10))-1)*var(tempg(abs(tempg)>1e-10)));
-                    %%%%%%%%%% !!!Mask: END %%%%%%%%%%%%
-                    
-                otherwise
-            end
-            
-            % % ============ End of Levenberg-Marquardt method ============
-            
-            % ====== Assemble b vector old version ======
-            % b = zeros(6,1);
-            %
-            % %[tempCoordy, tempCoordx] = meshgrid(y(1):y(3),x(1):x(3));
-            % %tempCoordx = tempCoordx(:); tempCoordy = tempCoordy(:);
-            %
-            % for tempij = 1:size(tempCoordx,1)
-            %     b = b + bottomf*([DfDx(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth) DfDy(tempCoordx(tempij)-DfCropWidth,tempCoordy(tempij)-DfCropWidth)]*...
-            %             [tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1 0; 0 tempCoordx(tempij)-x0 0 tempCoordy(tempij)-y0 0 1])'* ...
-            %             ((tempf(tempCoordx(tempij)+1-x(1), tempCoordy(tempij)+1-y(1))-meanf)/bottomf - ...
-            %             (tempg(tempCoordx(tempij)+1-x(1), tempCoordy(tempij)+1-y(1))-meang)/bottomg);
-            % end
-            % ====== Assemble b vector fast version ======
+            % ====== Assemble b vector (vectorized) ======
             b2 = zeros(6,1);
             tempfMinustempg = (tempf-meanf*ones(winsize+1,winsize+1))/bottomf - (tempg-meang*ones(winsize+1,winsize+1))/bottomg;
             b2(1) = sum(sum( (XX-x0).*DfDx.*tempfMinustempg ));
@@ -444,7 +287,6 @@ end
 
 U(1) = P(5); U(2) = P(6);
 F(1) = P(1); F(2) = P(2); F(3) = P(3); F(4) = P(4);
-HGlobal = [H(1:6) H(8:12) H(15:18) H(22:24) H(29:30) H(36)];
  
 
 end

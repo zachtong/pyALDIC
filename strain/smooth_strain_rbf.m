@@ -86,7 +86,8 @@ while (DoYouWantToSmoothOnceMore==0)
             fi1 = rbfinterp( [coordinatesFEM(LiaList,1:2)]', op1);
             F(4*LiaList ) = fi1(:);
             
-        catch
+        catch ME
+            warning('smooth_strain_rbf:rbfFit', 'RBF strain smoothing failed for region %d: %s', tempi, ME.message);
         end
     end
     
