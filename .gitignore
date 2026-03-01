@@ -20,6 +20,12 @@ test_data/
 CLAUDE.md
 .claude/
 
+# Git worktrees
+.worktrees/
+
+# Figma design files
+Figma_design_files/
+
 # OS files
 Thumbs.db
 .DS_Store
