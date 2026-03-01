@@ -88,26 +88,7 @@ while (DoYouWantToSmoothOnceMore==0)
         
         U = [U1(:),U2(:)]'; U = U(:);
     end
-    %     Coordxnodes = [min(coordinatesFEM(:,1)):h:max(coordinatesFEM(:,1))]'; 
-    %     Coordynodes = [min(coordinatesFEM(:,2)):h:max(coordinatesFEM(:,2))]';
-    %     %Iblur_10 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), U(1:2:end),Coordxnodes,Coordynodes, 'regularizer','springs'); Iblur_10=Iblur_10';
-    %     %Iblur_20 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), U(2:2:end),Coordxnodes,Coordynodes,  'regularizer','springs'); Iblur_20=Iblur_20';
-    %     Iblur_10 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],U(1:2:end),{Coordxnodes,Coordynodes},smoothness);
-    %     Iblur_20 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],U(2:2:end),{Coordxnodes,Coordynodes},smoothness);
-    %     
-    %     imageFilter=fspecial('gaussian',FilterSizeInput,FilterStd);
-    %      
-    %     Iblur_1 = nanconv(Iblur_10,imageFilter,'edge','nanout');
-    %     Iblur_2 = nanconv(Iblur_20,imageFilter,'edge','nanout');
-    %     for tempi = 1:size(coordinatesFEM,1)
-    %         [row1,~] = find(Coordxnodes==coordinatesFEM(tempi,1));
-    %         [row2,~] = find(Coordynodes==coordinatesFEM(tempi,2));
-    %         U(2*tempi-1) = Iblur_1(row1,row2);
-    %         U(2*tempi)   = Iblur_2(row1,row2);
-    %     end
-     
-    % prompt = 'Do you want to smooth displacement once more? (0-yes; 1-no)';
-    % DoYouWantToSmoothOnceMore = input(prompt); 
+
     SmoothTimes = SmoothTimes+1;
     if SmoothTimes > 1
         DoYouWantToSmoothOnceMore = 1;

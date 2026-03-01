@@ -27,7 +27,11 @@ function [StrainNodalPt] = global_nodal_strain_rbf(DICmesh,DICpara,U)
 coordinatesFEM = DICmesh.coordinatesFEM; 
 winstepsize = DICpara.winstepsize;
 SizeCoords = size(coordinatesFEM,1);
-smoothness = 1e-3; % an empirical value; if apply some smoothness, use "1e-3" by default
+if isfield(DICpara, 'strainRBFSmoothness')
+    smoothness = DICpara.strainRBFSmoothness;
+else
+    smoothness = 1e-3;
+end
 
  
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -217,6 +217,12 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
         fprintf('------------ Section 3 Done ------------ \n\n')
 
+        % --- Validation: mesh and initial guess ---
+        nNodes = size(DICmesh.coordinatesFEM, 1);
+        assert(nNodes > 0, 'run_aldic:emptyMesh', 'Section 3: coordinatesFEM is empty.');
+        assert(length(U0) == 2*nNodes, 'run_aldic:U0size', ...
+            'Section 3: U0 length (%d) != 2*nNodes (%d).', length(U0), 2*nNodes);
+        assert(~all(isnan(U0)), 'run_aldic:U0allNaN', 'Section 3: U0 is entirely NaN.');
 
         %% Section 4: ALDIC Subproblem 1
         fprintf('------------ Section 4 Start ------------ \n')
@@ -245,12 +251,14 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
         fprintf('------------ Section 4 Done ------------ \n\n')
 
+        % --- Validation: local ICGN result ---
+        assert(~all(isnan(USubpb1)), 'run_aldic:USubpb1allNaN', ...
+            'Section 4: USubpb1 is entirely NaN after local_icgn.');
 
         if UseGlobal
             %% Section 5: Subproblem 2
             fprintf('------------ Section 5 Start ------------ \n'); tic;
 
-            LevelNo=1;
             if DICpara.DispSmoothness>1e-6, USubpb1 = smooth_disp_rbf(USubpb1,DICmesh,DICpara); end
             if DICpara.StrainSmoothness>1e-6, FSubpb1 = smooth_strain_rbf(FSubpb1,DICmesh,DICpara); end
 
@@ -309,6 +317,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             stepData(ALSolveStep).vdual = vdual;
             fprintf('------------ Section 5 Done ------------ \n\n')
 
+            assert(~all(isnan(USubpb2)), 'run_aldic:USubpb2initNaN', ...
+                'Section 5: USubpb2 is entirely NaN after initial subpb2_solver.');
 
             %% Section 6: ADMM iterations
             fprintf('------------ Section 6 Start ------------ \n')
@@ -329,6 +339,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 ALSub1Time(ALSolveStep) = ALSub1Timetemp; ConvItPerEle(:,ALSolveStep) = ConvItPerEletemp; ALSub1BadPtNum(ALSolveStep) = LocalICGNBadPtNumtemp;
                 stepData(ALSolveStep).USubpb1 = USubpb1;
                 stepData(ALSolveStep).FSubpb1 = FSubpb1;
+                assert(~all(isnan(USubpb1)), 'run_aldic:ADMMSub1NaN', ...
+                    'ADMM step %d: USubpb1 is entirely NaN.', ALSolveStep);
 
                 % Subproblem 2
                 disp(['***** Start step',num2str(ALSolveStep),' Subproblem2 *****'])
@@ -344,6 +356,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
                 stepData(ALSolveStep).USubpb2 = USubpb2;
                 stepData(ALSolveStep).FSubpb2 = FSubpb2;
+                assert(~all(isnan(USubpb2)), 'run_aldic:ADMMSub2NaN', ...
+                    'ADMM step %d: USubpb2 is entirely NaN.', ALSolveStep);
 
                 % Convergence check (in-memory, no file I/O)
                 if (mod(ImgSeqNum-2,DICpara.ImgSeqIncUnit) ~= 0 && (ImgSeqNum>2)) || (ImgSeqNum < DICpara.ImgSeqIncUnit)
@@ -365,6 +379,18 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 end
             end
             fprintf('------------ Section 6 Done ------------ \n\n')
+        end
+
+        % When UseGlobal is false, USubpb2/FSubpb2 are not defined by Sections 5-6.
+        % Initialize them so Section 7 convergence check and post-loop plots work.
+        if ~UseGlobal
+            USubpb2 = USubpb1;
+            FSubpb2 = FSubpb1;
+            ALSolveStep = 1;
+            stepData(1).USubpb2 = USubpb2;
+            stepData(1).FSubpb2 = FSubpb2;
+            stepData(1).udual = zeros(size(FSubpb1));
+            stepData(1).vdual = zeros(size(USubpb1));
         end
 
         % Save frame results
@@ -483,9 +509,9 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             Rad = DICpara.StrainPlaneFitRad;
         end
         if DICpara.smoothness > 0
-            DICpara.DoYouWantToSmoothOnceMore = 0;
+            DICpara.skipExtraSmoothing = 0;
         else
-            DICpara.DoYouWantToSmoothOnceMore = 1;
+            DICpara.skipExtraSmoothing = 1;
         end
     else
         progressFcn(0.7, 'Computing world-space displacements (strain skipped)...');
@@ -495,12 +521,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         if showPlots, close all; end
         disp(['Current image frame #: ', num2str(ImgSeqNum), '/', num2str(nFrames)]);
 
-        USubpb2 = ResultDisp{ImgSeqNum-1}.U_accum;
-        if size(USubpb2,1) == 1
-            ULocal = USubpb2_New.USubpb2;
-        else
-            ULocal = USubpb2;
-        end
+        ULocal = ResultDisp{ImgSeqNum-1}.U_accum;
         UWorld = DICpara.um2px*ULocal; UWorld(2:2:end) = -UWorld(2:2:end);
 
         if computeStrain
@@ -513,7 +534,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
             % Smooth displacements
             SmoothTimes = 0;
-            while DICpara.DoYouWantToSmoothOnceMore == 0 && SmoothTimes < 3
+            while DICpara.skipExtraSmoothing == 0 && SmoothTimes < 3
                 ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
                 SmoothTimes = SmoothTimes + 1;
             end

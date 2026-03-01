@@ -121,19 +121,25 @@ U(1:2:end) = UPar{1}; U(2:2:end) = UPar{2};
 
 % ------ Clear bad points for Local DIC ------
 % find bad points after Local Subset ICGN
-maxIterNum = 100;
+if isfield(DICpara, 'ICGNMaxIter')
+    maxIterNum = DICpara.ICGNMaxIter;
+else
+    maxIterNum = 100;
+end
 [row1,~] = find(ConvItPerEle(:)<0);
 [row2,~] = find(ConvItPerEle(:)>maxIterNum-1);
 [row3,~] = find(ConvItPerEle(:)==maxIterNum+2);
 LocalICGNBadPt = unique(union(row1,row2)); LocalICGNBadPtNum = length(LocalICGNBadPt)-length(row3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % Though some subsets are converged, but their accuracy is worse than most
-% % other subsets. This step is to remove those subsets with abnormal convergence steps
+% Though some subsets are converged, but their accuracy is worse than most
+% other subsets. This step is to remove those subsets with abnormal convergence steps
 LocalICGNGoodPt = setdiff([1:1:size(coordinatesFEM,1)],LocalICGNBadPt);
 ConvItPerEleMean = mean(ConvItPerEle(LocalICGNGoodPt));
 ConvItPerEleStd = std(ConvItPerEle(LocalICGNGoodPt));
-[row4,~] = find(ConvItPerEle(:) > max([ConvItPerEleMean+0.25*ConvItPerEleStd, 10])); % Here "0.25" is an empirical value
+if isfield(DICpara, 'outlierSigmaFactor'), osf = DICpara.outlierSigmaFactor; else, osf = 0.25; end
+if isfield(DICpara, 'outlierMinThreshold'), omt = DICpara.outlierMinThreshold; else, omt = 10; end
+[row4,~] = find(ConvItPerEle(:) > max([ConvItPerEleMean + osf*ConvItPerEleStd, omt]));
 LocalICGNBadPt = unique(union(LocalICGNBadPt,row4));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

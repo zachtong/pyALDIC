@@ -869,9 +869,9 @@ function gui_aldic()
                 Rad = DICpara.StrainPlaneFitRad;
             end
             if DICpara.smoothness > 0
-                DICpara.DoYouWantToSmoothOnceMore = 0;
+                DICpara.skipExtraSmoothing = 0;
             else
-                DICpara.DoYouWantToSmoothOnceMore = 1;
+                DICpara.skipExtraSmoothing = 1;
             end
 
             for ImgSeqNum = 2:nFrames
@@ -901,7 +901,7 @@ function gui_aldic()
 
                 % Smooth displacements
                 SmoothTimes = 0;
-                while DICpara.DoYouWantToSmoothOnceMore == 0 && SmoothTimes < 3
+                while DICpara.skipExtraSmoothing == 0 && SmoothTimes < 3
                     ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
                     SmoothTimes = SmoothTimes + 1;
                 end

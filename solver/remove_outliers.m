@@ -1,15 +1,19 @@
 function [u,v,cc,BadptRow,BadptCol,RemoveOutliersList] = remove_outliers(u,v,cc,qDICOrNot,Thr0,varargin)
 % =========================================================================
-% Objective: to manually remove outliers or remove outliers using the 
+% Objective: to manually remove outliers or remove outliers using the
 % universal outlier test based on
 %
 % J. Westerweel and F. Scarano. Universal outlier detection for PIV data.
 % Exp. Fluids, 39(6):1096{1100, August 2005. doi: 10.1007/s00348-005-0016-6
 % -------------------------------------------------------------------------
+% CALL SITES:
+%   solver/integer_search.m (line 122): qDICOrNot=0, Thr0=100
+%   In this mode, all interactive sections (input/ginput) are bypassed.
+% -------------------------------------------------------------------------
 % NOTES
 % -------------------------------------------------------------------------
-% needs medFilt3 and John D'Errico's inpaint_nans3 
-% (http://www.mathworks.com/matlabcentral/fileexchange/4551-inpaint-nans)function. 
+% needs medFilt3 and John D'Errico's inpaint_nans3
+% (http://www.mathworks.com/matlabcentral/fileexchange/4551-inpaint-nans)function.
 % =========================================================================
 
 %% Find u,v indices where are holes
@@ -267,156 +271,6 @@ while ClearBadInitialPointsOrNot == 0
     
 end
 
-% %%%%% Old codes to remove bad {F11, F21, F12, F22} %%%%%
-% prompt = 'Do you clear bad points by directly pointing F11 bad points? (0-yes; 1-no)';
-% ClearBadInitialPointsOrNot = input(prompt);
-% 
-% while ClearBadInitialPointsOrNot == 0
-%     
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     % Have a look at integer search
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f11); colorbar; view(2)
-%     title('Displacement u','fontweight','normal')
-%     % figure; surf(v); colorbar; view(2)
-%     % title('Displacement v','fontweight','normal')
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     
-%     [row1, col1] = ginput; 
-%     row = floor(col1); col = floor(row1);
-%     
-%     for tempi = 1:length(row)
-%         u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-%         f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-%         f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-%     end
-%     u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-%     f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-%     f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-%     
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f11); colorbar; title('Displacement u','fontweight','normal');
-%     % figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-%     
-%     prompt = 'Do you clear bad points by directly pointing x-disp bad points more? (0-yes; 1-no)';
-%     ClearBadInitialPointsOrNot = input(prompt);
-%     
-% end
-% 
-% 
-% prompt = 'Do you clear bad points by directly pointing F21 bad points? (0-yes; 1-no)';
-% ClearBadInitialPointsOrNot = input(prompt);
-% 
-% while ClearBadInitialPointsOrNot == 0
-%     
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     % Have a look at integer search
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f21); colorbar; view(2)
-%     title('Displacement u','fontweight','normal')
-%     % figure; surf(v); colorbar; view(2)
-%     % title('Displacement v','fontweight','normal')
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     
-%     [row1, col1] = ginput; 
-%     row = floor(col1); col = floor(row1);
-%     
-%     for tempi = 1:length(row)
-%         u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-%         f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-%         f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-%     end
-%     u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-%     f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-%     f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-%     
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f21); colorbar; title('Displacement u','fontweight','normal');
-%     % figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-%     
-%     prompt = 'Do you clear bad points by directly pointing x-disp bad points more? (0-yes; 1-no)';
-%     ClearBadInitialPointsOrNot = input(prompt);
-%     
-% end
-% 
-% 
-% prompt = 'Do you clear bad points by directly pointing F12 bad points? (0-yes; 1-no)';
-% ClearBadInitialPointsOrNot = input(prompt);
-% 
-% while ClearBadInitialPointsOrNot == 0
-%     
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     % Have a look at integer search
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f12); colorbar; view(2)
-%     title('Displacement u','fontweight','normal')
-%     % figure; surf(v); colorbar; view(2)
-%     % title('Displacement v','fontweight','normal')
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     
-%     [row1, col1] = ginput; 
-%     row = floor(col1); col = floor(row1);
-%     
-%     for tempi = 1:length(row)
-%         u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-%         f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-%         f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-%     end
-%     u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-%     f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-%     f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-%     
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f12); colorbar; title('Displacement u','fontweight','normal');
-%     % figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-%     
-%     prompt = 'Do you clear bad points by directly pointing x-disp bad points more? (0-yes; 1-no)';
-%     ClearBadInitialPointsOrNot = input(prompt);
-%     
-% end
-% 
-% 
-% prompt = 'Do you clear bad points by directly pointing F22 bad points? (0-yes; 1-no)';
-% ClearBadInitialPointsOrNot = input(prompt);
-% 
-% while ClearBadInitialPointsOrNot == 0
-%     
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     % Have a look at integer search
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f22); colorbar; view(2)
-%     title('Displacement u','fontweight','normal')
-%     % figure; surf(v); colorbar; view(2)
-%     % title('Displacement v','fontweight','normal')
-%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     
-%     [row1, col1] = ginput; 
-%     row = floor(col1); col = floor(row1);
-%     
-%     for tempi = 1:length(row)
-%         u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-%         f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-%         f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-%     end
-%     u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-%     f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-%     f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-%     
-%     % --------------------------------------
-%     close all;
-%     figure; surf(f22); colorbar; title('Displacement u','fontweight','normal');
-%     % figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-%     
-%     prompt = 'Do you clear bad points by directly pointing x-disp bad points more? (0-yes; 1-no)';
-%     ClearBadInitialPointsOrNot = input(prompt);
-    
 end
 end
 

@@ -80,21 +80,21 @@ strain_vonMises = sqrt(strain_principal_max.^2 + strain_principal_min.^2 - ...
 %     GradF = eye(size(Du)) + Du; % Real deformation gradient tensor
 %     C = GradF.' * GradF;
 % 
-%     % 检查是否包含NaN
+%     % Check if C contains NaN
 %     if any(isnan(C), 'all')
 %         theta(i,1) = NaN;
 %         continue
 %     end
 % 
-%     % 极分解
+%     % Polar decomposition: C = F^T * F, U = sqrt(C), R = F / U
 %     U_right = sqrtm(C);
 %     R = GradF / U_right;
 % 
-%     % 保证数值正交性
+%     % Enforce numerical orthogonality via SVD
 %     [Uq,~,Vq] = svd(R);
 %     R = Uq * Vq.';
 % 
-%     % 提取旋转角 (2D)
+%     % Extract rotation angle (2D)
 %     theta(i,1) = rad2deg(atan2(R(2,1), R(1,1)));
 % end
 % %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
