@@ -102,13 +102,8 @@ nGP = length(ksiList);
 nnzPerEle = 256;  % 16 x 16
 [localR, localC] = ndgrid(1:16, 1:16);
 localR = localR(:)'; localC = localC(:)';  % 1 x 256
-tripI = zeros(nEle * nnzPerEle, 1);
-tripJ = zeros(nEle * nnzPerEle, 1);
-for e = 1:nEle
-    idx = (e-1)*nnzPerEle + (1:nnzPerEle);
-    tripI(idx) = allIndexU(e, localR);
-    tripJ(idx) = allIndexU(e, localC);
-end
+tripI = reshape(allIndexU(:, localR)', [], 1);  % nEle*256 x 1
+tripJ = reshape(allIndexU(:, localC)', [], 1);  % nEle*256 x 1
 
 % Gather element-level vectors from global vectors
 UMinusv_ele = UMinusv(allIndexU);  % nEle x 16
@@ -131,23 +126,31 @@ for gp = 1:nGP
 
     weight = Jdet * (wk * we);  % nEle x 1
 
-    for e = 1:nEle
-        Ne = N_all(:,:,e);    % 2 x 16
-        DNe = DN_all(:,:,e);  % 4 x 16
-        w = weight(e);
+    % Batch matrix products via pagemtimes (R2020b+): 16x16xnEle
+    NtN = pagemtimes(permute(N_all,[2,1,3]), N_all);    % 16x16xnEle
+    DtD = pagemtimes(permute(DN_all,[2,1,3]), DN_all);   % 16x16xnEle
 
-        % Stiffness: tempA += w * ((beta+alpha)*DN'*DN + mu*N'*N)
-        NtN = Ne' * Ne;        % 16 x 16
-        DtD = DNe' * DNe;      % 16 x 16
-        tempA_all(e,:) = tempA_all(e,:) + w * ((beta+alpha)*DtD(:)' + mu*NtN(:)');
+    % Stiffness: reshape to nEle x 256, scale by weight
+    NtN_flat = reshape(NtN, 256, nEle)';   % nEle x 256
+    DtD_flat = reshape(DtD, 256, nEle)';   % nEle x 256
+    tempA_all = tempA_all + weight .* ((beta+alpha)*DtD_flat + mu*NtN_flat);
 
-        % Load: tempb += w * (beta*diag(DN'*FW') + mu*N'*N*Uv + alpha*DN'*DN*U)
-        FW_e = squeeze(FMinusW_ele(e,:,:));  % 16 x 4
-        be = w * ( beta * sum(DNe' .* FW_e, 2) ...
-             + mu * NtN * UMinusv_ele(e,:)' ...
-             + alpha * DtD * U_ele(e,:)' );
-        bV_all(e,:) = bV_all(e,:) + be';
-    end
+    % Load vector: three terms
+    % Term 1: beta * sum(DN' .* FW, 2)  per element
+    DNt = permute(DN_all, [2,1,3]);              % 16x4xnEle
+    FW_paged = permute(FMinusW_ele, [2,3,1]);    % 16x4xnEle
+    term1 = squeeze(sum(DNt .* FW_paged, 2));    % 16xnEle
+
+    % Term 2: mu * N'*N * UMinusv
+    Uv_paged = reshape(UMinusv_ele', 16, 1, nEle);  % 16x1xnEle
+    term2 = reshape(pagemtimes(NtN, Uv_paged), 16, nEle);
+
+    % Term 3: alpha * DN'*DN * U
+    Ue_paged = reshape(U_ele', 16, 1, nEle);  % 16x1xnEle
+    term3 = reshape(pagemtimes(DtD, Ue_paged), 16, nEle);
+
+    be = weight' .* (beta * term1 + mu * term2 + alpha * term3);  % 16 x nEle
+    bV_all = bV_all + be';
 end
 
 % ====== Sparse assembly (single call each) ======
@@ -192,7 +195,26 @@ end
 b = b - A * Uhat;
 
 % Solve FEM problem
-Uhat(FreeNodes) = A(FreeNodes,FreeNodes) \ b(FreeNodes);
+Afree = A(FreeNodes, FreeNodes);
+bfree = b(FreeNodes);
+nFree = length(FreeNodes);
+if nFree > 50000
+    % Large system: use PCG with incomplete Cholesky preconditioner
+    try
+        L = ichol(Afree, struct('type','ict','droptol',1e-3));
+        [x_pcg, flag] = pcg(Afree, bfree, 1e-6, 1000, L, L');
+        if flag ~= 0
+            warning('subpb2_solver:pcgNoConverge', ...
+                'pcg flag=%d, falling back to direct solver.', flag);
+            x_pcg = Afree \ bfree;
+        end
+    catch
+        x_pcg = Afree \ bfree;
+    end
+    Uhat(FreeNodes) = x_pcg;
+else
+    Uhat(FreeNodes) = Afree \ bfree;
+end
 Uhat = full(Uhat(1:FEMSize));
 
 
