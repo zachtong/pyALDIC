@@ -27,20 +27,14 @@ function [StrainNodalPt] = global_nodal_strain_rbf(DICmesh,DICpara,U)
 coordinatesFEM = DICmesh.coordinatesFEM; 
 winstepsize = DICpara.winstepsize;
 SizeCoords = size(coordinatesFEM,1);
-if isfield(DICpara, 'strainRBFSmoothness')
-    smoothness = DICpara.strainRBFSmoothness;
-else
-    smoothness = 1e-3;
-end
+smoothness = DICpara.StrainRBFSmoothness;
 
  
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 StrainNodalPt = NaN(4*size(coordinatesFEM,1),1);
 
-% dilatedI = ( imgaussfilt(double(DICpara.ImgRefMask),0.5) );
-% dilatedI = logical( dilatedI > 0.01);
-dilatedI = logical(DICpara.ImgRefMask); % figure, imshow(dilatedI);
+dilatedI = logical(DICpara.ImgRefMask);
 cc = bwconncomp(dilatedI,8);
 indPxAll = sub2ind( DICpara.ImgSize, round(coordinatesFEM(:,1)), round(coordinatesFEM(:,2)) );
  

@@ -103,7 +103,7 @@ while PhiFilterOrNot < 1
 		prompt = '--- Threshold for Phi test --- Input here: ';
 		PhiThr = input(prompt); % Thr = 50;
 	else
-		PhiThr = PhiThr0;
+		PhiThr = Thr0;
     end
     try 
         RemoveOutliersList = find( cc.max < PhiThr ); % detection criterion
@@ -142,136 +142,6 @@ u = u2; v = v2;
  
 
 
-%% ==============================================
-% Manually remove bad points.
-if abs(qDICOrNot) > 0
-fprintf('Do you clear bad points by setting upper/lower bounds? (0-yes; 1-no)  \n')
-prompt = 'Input here: ';
-ClearBadInitialPointsOrNot = input(prompt);
-
-while ClearBadInitialPointsOrNot == 0
-    
-    prompt = 'What is the upper bound for x-disp? Input: ';
-    upperbound = input(prompt);
-    [row1,col1] = find(u>upperbound);
-    prompt = 'What is the lower bound for x-disp? Input: ';
-    lowerbound = input(prompt);
-    [row2,col2] = find(u<lowerbound);
-    prompt = 'What is the upper bound for y-disp? Input: ';
-    upperbound = input(prompt);
-    [row3,col3] = find(v>upperbound);
-    prompt = 'What is the lower bound for y-disp? Input: ';
-    lowerbound = input(prompt);
-    [row4,col4] = find(v<lowerbound);
-    
-    row = [row1; row2; row3; row4]; col = [col1; col2; col3; col4];
-    
-    for tempi = 1:length(row)
-        u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-        %f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-        %f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-    end
-    
-    u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-    %f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-    %f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-    
-    % --------------------------------------
-    close all;
-    u(HolePtInd) = nan;  v(HolePtInd) = nan; % Set points where is a hole as nans
-    figure; surf(u); colorbar; title('Displacement u','fontweight','normal');
-    colormap(jet);  set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-    colormap(jet);  set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    
-    prompt = 'Do you want to reset upper/lower bounds? (0-yes; 1-no) Input: ';
-    ClearBadInitialPointsOrNot = input(prompt);
-end
-
-
-%% =========
-fprintf('Do you clear bad points by directly clicking x-disp bad points? (0-yes; 1-no)  \n')
-prompt = 'Input here: ';
-ClearBadInitialPointsOrNot = input(prompt);
-
-while ClearBadInitialPointsOrNot == 0
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Have a look at integer search
-    % --------------------------------------
-    close all;
-    figure; surf(u); colorbar; view(2)
-    title('Displacement u','fontweight','normal')
-    colormap(jet);  set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    [row1, col1] = ginput; row = floor(col1); col = floor(row1); row=row(:); col=col(:);
-    BadptRow=[BadptRow;row]; BadptCol=[BadptCol;col]; row=BadptRow; col=BadptCol;
-    for tempi = 1:length(row)
-        if row(tempi)>0 && col(tempi)>0 && row(tempi)<size(u,1) && col(tempi)<size(u,2)
-        u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-        %f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-        %f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-        end
-    end
-    u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-    %f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-    %f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-    
-    % --------------------------------------
-    close all;
-    u(HolePtInd) = nan; v(HolePtInd) = nan; % Set points where is a hole as nans
-    figure; surf(u); colorbar; title('Displacement u','fontweight','normal');
-    colormap(jet);  set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    
-    prompt = 'Do you want to remove more x-disp bad points? (0-yes; 1-no) Input: ';
-    ClearBadInitialPointsOrNot = input(prompt);
-    
-end
-
-%prompt = 'Do you clear bad points by directly pointing y-disp bad points? (0-yes; 1-no)';
-fprintf('Do you clear bad points by directly clicking y-disp bad points? (0-yes; 1-no)  \n')
-prompt = 'Input here: ';
-ClearBadInitialPointsOrNot = input(prompt);
-
-while ClearBadInitialPointsOrNot == 0
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Have a look at integer search
-    % --------------------------------------
-    close all;
-    figure; surf(v); colorbar; view(2)
-    title('Displacement v','fontweight','normal')
-    colormap(jet); set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    [row1, col1] = ginput; row = floor(col1); col = floor(row1); row=row(:); col=col(:);
-    BadptRow=[BadptRow;row]; BadptCol=[BadptCol;col]; row=BadptRow; col=BadptCol;
-    
-    for tempi = 1:length(row)
-        if row(tempi)>0 && col(tempi)>0 && row(tempi)<size(u,1) && col(tempi)<size(u,2)
-        u(row(tempi),col(tempi))=NaN; v(row(tempi),col(tempi))=NaN;
-        %f11(row(tempi),col(tempi))=NaN; f21(row(tempi),col(tempi))=NaN;
-        %f12(row(tempi),col(tempi))=NaN; f22(row(tempi),col(tempi))=NaN;
-        end
-    end
-    u = inpaint_nans(u,4); v = inpaint_nans(v,4);
-    %f11 = inpaint_nans(f11,4); f21 = inpaint_nans(f21,4);
-    %f12 = inpaint_nans(f12,4); f22 = inpaint_nans(f22,4);
-    
-    % --------------------------------------
-    close all;
-    u(HolePtInd) = nan; v(HolePtInd) = nan; % Set points where is a hole as nans
-    figure; surf(v); colorbar; title('Displacement v','fontweight','normal');
-    colormap(jet);  set(gca,'fontsize',18); set(gcf,'color','w'); a = gca; a.TickLabelInterpreter = 'latex'; 
-    
-    % prompt = 'Do you clear bad points by directly pointing y-disp bad points more? (0-yes; 1-no)';
-    prompt = 'Do you want to remove more y-disp bad points? (0-yes; 1-no) Input: ';
-    ClearBadInitialPointsOrNot = input(prompt);
-    
-end
-
-end
 end
 
 %% ========================================================================
