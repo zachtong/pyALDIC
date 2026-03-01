@@ -15,7 +15,7 @@ function gui_aldic()
     setenv('MW_MINGW64_LOC', 'C:\\TDM-GCC-64');
     try mex -O -outdir ./third_party ./third_party/ba_interp2_spline.cpp; catch; end
     addpath('./config','./io','./mesh','./solver','./strain','./plotting',...
-            './third_party','./third_party/rbfinterp');
+            './third_party');
 
     %% App state
     app = struct();

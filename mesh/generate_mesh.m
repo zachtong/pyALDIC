@@ -180,16 +180,19 @@ for tempi = 1:length(stats)
         Lia = ismember(indPxAll,indPxtempi); [LiaList,~] = find(Lia==1);
         Lib = ismember(indPxNotNanAll,indPxtempi); [LibList,~] = find(Lib==1);
 
-        %%%%% RBF (Radial basis function) works better than "scatteredInterpolant" %%%%%
+        %%%%% Interpolate U0 from coarse to quadtree mesh %%%%%
+        srcX = DICmesh.coordinatesFEM(U0NotNanInd(LibList), 1);
+        srcY = DICmesh.coordinatesFEM(U0NotNanInd(LibList), 2);
+        dstX = coordinatesFEMQuadtree(LiaList, 1);
+        dstY = coordinatesFEMQuadtree(LiaList, 2);
+
         % ------ Disp u ------
-        op1 = rbfcreate( [DICmesh.coordinatesFEM(U0NotNanInd(LibList),1:2)]',[U0(2*U0NotNanInd(LibList)-1)]','RBFFunction', 'thinplate'); rbfcheck(op1);
-        fi1 = rbfinterp( [coordinatesFEMQuadtree(LiaList,1:2)]', op1);
-        U0Quadtree(2*LiaList-1) = fi1(:);
+        F_u = scatteredInterpolant(srcX, srcY, U0(2*U0NotNanInd(LibList)-1), 'natural', 'nearest');
+        U0Quadtree(2*LiaList-1) = F_u(dstX, dstY);
 
         % ------ Disp v ------
-        op1 = rbfcreate( [DICmesh.coordinatesFEM(U0NotNanInd(LibList),1:2)]',[U0(2*U0NotNanInd(LibList))]','RBFFunction', 'thinplate'); rbfcheck(op1);
-        fi1 = rbfinterp( [coordinatesFEMQuadtree(LiaList,1:2)]', op1);
-        U0Quadtree(2*LiaList) = fi1(:);
+        F_v = scatteredInterpolant(srcX, srcY, U0(2*U0NotNanInd(LibList)), 'natural', 'nearest');
+        U0Quadtree(2*LiaList) = F_v(dstX, dstY);
 
     catch ME
         warning('generate_mesh:rbfInterp', 'RBF interpolation failed for region %d: %s', tempi, ME.message);

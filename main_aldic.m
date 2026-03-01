@@ -19,7 +19,7 @@ catch ME
     errordlg(errorMessage, 'Compilation Error');
 end
 addpath('./config','./io','./mesh','./solver','./strain','./plotting',...
-        './third_party','./third_party/rbfinterp');
+        './third_party');
 fprintf('------------ Section 1 Done ------------ \n\n')
 
 
