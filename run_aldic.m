@@ -224,8 +224,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         ConvItPerEle=zeros(size(DICmesh.coordinatesFEM,1),6); ALSub1BadPtNum=zeros(6,1);
         disp(['***** Start step',num2str(ALSolveStep),' Subproblem1 *****'])
 
-        [USubpb1,FSubpb1,HtempPar,ALSub1Timetemp,ConvItPerEletemp,LocalICGNBadPtNumtemp,markCoordHoleStrain] = ...
-            local_icgn(U0,DICmesh.coordinatesFEM,Df,fNormalized,gNormalized,DICpara,DICpara.ICGNmethod,tol);
+        [USubpb1,FSubpb1,ALSub1Timetemp,ConvItPerEletemp,LocalICGNBadPtNumtemp,markCoordHoleStrain] = ...
+            local_icgn(U0,DICmesh.coordinatesFEM,Df,fNormalized,gNormalized,DICpara,tol);
         ALSub1Time(ALSolveStep) = ALSub1Timetemp; ConvItPerEle(:,ALSolveStep) = ConvItPerEletemp; ALSub1BadPtNum(ALSolveStep) = LocalICGNBadPtNumtemp; toc
 
         coordinatesFEM = DICmesh.coordinatesFEM;
@@ -261,13 +261,10 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             disp(['***** Start step',num2str(ALSolveStep),' Subproblem2 *****']);
             alpha = DICpara.alpha;
 
-            % Determine waitbar display flag for subpb2_solver
-            waitbarFlag = double(~showPlots);  % 0=display, 1=suppress
-
             if ImgSeqNum == 2
                 for tempk = 1:length(betaList)
                     beta = betaList(tempk); display(['Try #',num2str(tempk),' beta = ',num2str(beta)]);
-                    alpha=0; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize),waitbarFlag);
+                    alpha=0; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
                     FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
                     Err1(tempk) = norm(USubpb1-USubpb2,2);
                     Err2(tempk) = norm(FSubpb1-FSubpb2,2);
@@ -293,7 +290,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             end
 
             if abs(beta-betaList(end))>abs(eps)
-                [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize),waitbarFlag);
+                [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
                 FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
                 ALSub2Time(ALSolveStep) = toc; toc
             end
@@ -316,7 +313,6 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             %% Section 6: ADMM iterations
             fprintf('------------ Section 6 Start ------------ \n')
             ALSolveStep = 1; tol2 = DICpara.ADMM_tol; UpdateY = 1e4;
-            HPar = cell(21,1); for tempj = 1:21, HPar{tempj} = HtempPar(:,tempj); end
 
             while (ALSolveStep < DICpara.ADMM_maxIter)
                 ALSolveStep = ALSolveStep + 1;
@@ -326,9 +322,9 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
                 % Subproblem 1
                 disp(['***** Start step',num2str(ALSolveStep),' Subproblem1 *****']);
-                tic; [USubpb1,~,ALSub1Timetemp,ConvItPerEletemp,LocalICGNBadPtNumtemp] = subpb1_solver(...
+                tic; [USubpb1,ALSub1Timetemp,ConvItPerEletemp,LocalICGNBadPtNumtemp] = subpb1_solver(...
                     USubpb2,FSubpb2,udual,vdual,DICmesh.coordinatesFEM,...
-                    Df,fNormalized,gNormalized,mu,beta,HPar,ALSolveStep,DICpara,DICpara.ICGNmethod,tol);
+                    Df,fNormalized,gNormalized,mu,beta,DICpara,tol);
                 FSubpb1 = FSubpb2; toc
                 ALSub1Time(ALSolveStep) = ALSub1Timetemp; ConvItPerEle(:,ALSolveStep) = ConvItPerEletemp; ALSub1BadPtNum(ALSolveStep) = LocalICGNBadPtNumtemp;
                 stepData(ALSolveStep).USubpb1 = USubpb1;
@@ -336,7 +332,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
                 % Subproblem 2
                 disp(['***** Start step',num2str(ALSolveStep),' Subproblem2 *****'])
-                tic; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize),waitbarFlag);
+                tic; [USubpb2] = subpb2_solver(DICmesh,DICpara.GaussPtOrder,beta,mu,USubpb1,FSubpb1,udual,vdual,alpha,mean(DICpara.winstepsize));
                 FSubpb2 = global_nodal_strain_rbf(DICmesh,DICpara,USubpb2);
                 ALSub2Time(ALSolveStep) = toc; toc
 

@@ -5,8 +5,15 @@ function [x,y,u,v,cc] = integer_search_kernel(f,g,tempSizeOfSearchRegion,gridx,g
 if length(winsize)==1, winsize = winsize*[1,1]; end
 if length(winstepsize)==1, winstepsize = winstepsize*[1,1]; end
 
-% Parse optional showWaitbar flag (last argument if logical)
+% Parse optional trailing arguments: showWaitbar (logical) and ClusterNo (numeric)
 showWaitbar = true;
+ClusterNo = 0;
+% Extract ClusterNo if last arg is numeric
+if ~isempty(varargin) && isnumeric(varargin{end})
+    ClusterNo = varargin{end};
+    varargin(end) = [];
+end
+% Extract showWaitbar if next-to-last arg is logical
 if ~isempty(varargin) && islogical(varargin{end})
     showWaitbar = varargin{end};
     varargin(end) = [];
@@ -37,7 +44,7 @@ switch tempNoOfInitPt % 0- whole field; 1- several seeds points;
                 gridx(1), gridx(end), gridy(1), gridy(end));
             gridx = gridxBackup; gridy = gridyBackup;
         end
-       [x0,y0,u0,v0,cc0] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar);
+       [x0,y0,u0,v0,cc0] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar,ClusterNo);
         x=x0; y=y0; u=u0; v=v0; cc=cc0;
 %         xList = gridxBackup(1)+4:winstepsize:gridxBackup(end)-4; 
 %         yList = gridyBackup(1)+4:winstepsize:gridyBackup(end)-4;
@@ -92,14 +99,13 @@ end
 
 end
 
-function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar)
+function [x,y,u,v,cc] = funIntegerSearchWholeField(f,g,tempSizeOfSearchRegion,gridx,gridy,winsize,winstepsize,showWaitbar,ClusterNo)
 
-%cj1 = 1; ci1 = 1; % index to count main loop
-
+if nargin < 8, showWaitbar = true; end
+if nargin < 9, ClusterNo = 0; end
 if length(winstepsize)==1, winstepsize = repmat(winstepsize,1,2); end
 if length(winsize)==1, winsize = repmat(winsize,1,2); end
 
-% disp('Assemble point position sequence.');
 XList = [gridx(1) : winstepsize(1) : gridx(2)-winstepsize(1)];
 YList = [gridy(1) : winstepsize(2) : gridy(2)-winstepsize(2)];
 [XX,YY] = ndgrid(XList,YList);
@@ -107,116 +113,89 @@ temparrayLength = length(XList)*length(YList);
 PtPosSeq = zeros(temparrayLength,2);
 PtPosSeq(:,1) = XX(:); PtPosSeq(:,2) = YY(:);
 
-cj1temp = zeros(temparrayLength,1); ci1temp = cj1temp;
-utemp = cj1temp; vtemp = cj1temp;
-xtemp = cj1temp; ytemp = cj1temp; Phitemp = cj1temp;
+utemp = zeros(temparrayLength,1); vtemp = utemp;
+xtemp = utemp; ytemp = utemp; Phitemp = utemp;
 qfactors = zeros(temparrayLength, 2);
 
-%% ========== Start initial integer search ==========
-if nargin < 8, showWaitbar = true; end
-if showWaitbar
-    hbar = waitbar(0,'FFT initial guess, it is fast and please wait.');
-end
-
-% sizeOfx1 = floor((gridx(2)-gridx(1)-winsize)/winstepsize)+1;
-% sizeOfx2 = floor((gridy(2)-gridy(1)-winsize)/winstepsize)+1;
-% disp(['Init search using FFT cross correlation on grid: ',num2str(sizeOfx1),'x',num2str(sizeOfx2)]);
+nXList = length(XList);
 x = zeros(length(YList),length(XList)); y = x; u = x; v = x; Phi = x;
 
-for tempi = 1:temparrayLength
-    
-    if showWaitbar, waitbar(tempi/temparrayLength); end
-
-    jj = PtPosSeq(tempi,2); % for jj = gridy(1) : winstepsize : gridy(end)-winsize
-    % jj is for y -or- vertical direction of images
-    
-    ii = PtPosSeq(tempi,1);%for ii = gridx(1) : winstepsize : gridx(end)-winsize
-        % ii is for x -or- horizontal direction of images
-        
-        C = f(ii:ii+winsize(1), jj:jj+winsize(2)); % Gray values of pixels in one subset
-        
+%% ========== Start initial integer search ==========
+if ClusterNo > 1
+    % ------ Parallel computing ------
+    if showWaitbar, hbar = parfor_progressbar(temparrayLength,'FFT initial guess (parallel)...'); end
+    parfor tempi = 1:temparrayLength
+        jj = PtPosSeq(tempi,2);
+        ii = PtPosSeq(tempi,1);
+        C = f(ii:ii+winsize(1), jj:jj+winsize(2));
         D = g(ii-tempSizeOfSearchRegion(1):ii+winsize(1)+tempSizeOfSearchRegion(1), ...
-            jj-tempSizeOfSearchRegion(2):jj+winsize(2)+tempSizeOfSearchRegion(2) );  % Gray values of pixels in one (subset + search region)
-        
-        try 
+            jj-tempSizeOfSearchRegion(2):jj+winsize(2)+tempSizeOfSearchRegion(2));
+        try
             XCORRF2OfCD0 = normxcorr2(C,D);
-
-            %find qfactors
-            cc.A{1} = real(XCORRF2OfCD0);
-            qfactors(tempi,:) = compute_qFactor(cc,tempi);
-
-            % find maximum index of the cross-correlaiton
+            ccLocal = struct('A', {{real(XCORRF2OfCD0)}});
+            qfactors(tempi,:) = compute_qFactor(ccLocal, tempi);
             [v1temp, u1temp, max_f] = findpeak(XCORRF2OfCD0(winsize(1):end-winsize(1)+1,winsize(2):end-winsize(2)+1),1);
-
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % I tried following code, unfortunately it doesn't work very well
-            % [v1temp1, u1temp1, max_f1] = findpeak(XCORRF2OfCD0(winsize:end-winsize+1,winsize:end-winsize+1),1);
-            % [v1temp2, u1temp2, max_f2] = findpeak(XCORRF2OfCD0(winsize:end-winsize+1,winsize:end-winsize+1),0);
-            %
-            % if max_f2 > 0.999
-            %    v1temp = v1temp2; u1temp = u1temp2; max_f = max_f2;
-            % else
-            %    v1temp = v1temp1; u1temp = u1temp1; max_f = max_f1;
-            % end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
             zero_disp = ceil(size(XCORRF2OfCD0(winsize(1):end-winsize(1)+1,winsize(2):end-winsize(2)+1))/2);
-
-            utemp(tempi) = u1temp-zero_disp(1); % u(cj1,ci1)   = u1temp-zero_disp(1);
-            vtemp(tempi) = v1temp-zero_disp(2); % v(cj1,ci1)   = v1temp-zero_disp(2);
-            Phitemp(tempi) = max_f; % Phi(cj1,ci1) = max_f;
+            utemp(tempi) = u1temp-zero_disp(1);
+            vtemp(tempi) = v1temp-zero_disp(2);
+            Phitemp(tempi) = max_f;
         catch
             utemp(tempi)=nan; vtemp(tempi)=nan; Phitemp(tempi)=nan;
-            %cc.A{1} = [0];
-             qfactors(tempi,:) = [Inf,Inf];
+            qfactors(tempi,:) = [Inf,Inf];
         end
-        ytemp(tempi) = (jj+jj+winsize(2))/2; % y(cj1,ci1)=(jj+jj+winsize)/2;   % vertical position in image
-        xtemp(tempi) = (ii+ii+winsize(1))/2; % x(cj1,ci1)=(ii+ii+winsize)/2;   % horizontal position in image
-        
-        % Zach's revision:
-        %ytemp(tempi) = (jj+jj)/2; % y(cj1,ci1)=(jj+jj+winsize)/2;   % vertical position in image
-        %xtemp(tempi) = (ii+ii)/2; % x(cj1,ci1)=(ii+ii+winsize)/2;   % horizontal position in image
+        ytemp(tempi) = (jj+jj+winsize(2))/2;
+        xtemp(tempi) = (ii+ii+winsize(1))/2;
+        if showWaitbar, hbar.iterate(1); end
+    end
+    if showWaitbar, close(hbar); end
 
-
-        % Update counters
-        %ci1 = ci1 + 1;  % ci1 is moving horizontally for subsets
-        
-    %end
-    
-    %ci1=1; cj1=cj1+1;  % cj1 is moving vertically for subsets
-    cj1temp(tempi) = ceil(tempi/length(XList));
-    ci1temp(tempi) = tempi - (cj1temp(tempi)-1) * length(XList)  ;
-    
+else
+    % ------ Serial computing ------
+    if showWaitbar, hbar = waitbar(0,'FFT initial guess, please wait...'); end
+    for tempi = 1:temparrayLength
+        if showWaitbar, waitbar(tempi/temparrayLength); end
+        jj = PtPosSeq(tempi,2);
+        ii = PtPosSeq(tempi,1);
+        C = f(ii:ii+winsize(1), jj:jj+winsize(2));
+        D = g(ii-tempSizeOfSearchRegion(1):ii+winsize(1)+tempSizeOfSearchRegion(1), ...
+            jj-tempSizeOfSearchRegion(2):jj+winsize(2)+tempSizeOfSearchRegion(2));
+        try
+            XCORRF2OfCD0 = normxcorr2(C,D);
+            ccLocal = struct('A', {{real(XCORRF2OfCD0)}});
+            qfactors(tempi,:) = compute_qFactor(ccLocal, tempi);
+            [v1temp, u1temp, max_f] = findpeak(XCORRF2OfCD0(winsize(1):end-winsize(1)+1,winsize(2):end-winsize(2)+1),1);
+            zero_disp = ceil(size(XCORRF2OfCD0(winsize(1):end-winsize(1)+1,winsize(2):end-winsize(2)+1))/2);
+            utemp(tempi) = u1temp-zero_disp(1);
+            vtemp(tempi) = v1temp-zero_disp(2);
+            Phitemp(tempi) = max_f;
+        catch
+            utemp(tempi)=nan; vtemp(tempi)=nan; Phitemp(tempi)=nan;
+            qfactors(tempi,:) = [Inf,Inf];
+        end
+        ytemp(tempi) = (jj+jj+winsize(2))/2;
+        xtemp(tempi) = (ii+ii+winsize(1))/2;
+    end
+    if showWaitbar, close(hbar); end
 end
 
-if showWaitbar, close(hbar); end
+%% Compute grid indices and assemble results
+cj1temp = ceil((1:temparrayLength)' / nXList);
+ci1temp = (1:temparrayLength)' - (cj1temp-1) * nXList;
 
 for k = 1:2
     qf_ = (qfactors(:,k)-min(qfactors(:,k)));
     cc.qfactors(:,k) = qf_/max(qf_);
 end
 
-if showWaitbar
-    hbar = waitbar(0,'Assign results to variables.');
-end
 for tempi = 1:temparrayLength
-    
-    ci1 = ci1temp(tempi); cj1 = cj1temp(tempi); 
-    
+    ci1 = ci1temp(tempi); cj1 = cj1temp(tempi);
     u(cj1,ci1) = utemp(tempi);
     v(cj1,ci1) = vtemp(tempi);
-     
     Phi(cj1,ci1) = Phitemp(tempi);
-    
-    x(cj1,ci1) = xtemp(tempi); 
-    y(cj1,ci1) = ytemp(tempi);    
-     
-    if showWaitbar, waitbar(tempi/temparrayLength); end
+    x(cj1,ci1) = xtemp(tempi);
+    y(cj1,ci1) = ytemp(tempi);
 end
-if showWaitbar, close(hbar); end
-disp('Finish initial guess search!');  
-% -------- End of Local integer search --------
-
+disp('Finish initial guess search!');
 
 cc.max = Phi; cc.A = [];
 
