@@ -146,12 +146,16 @@ markCoordHoleStrain = find(markCoordHoleStrainOrNot==1);
 
 % ------ Clear bad points for Local DIC ------
 % find bad points after Local Subset ICGN
-maxIterNum = 100;
-[row1,~] = find(ConvItPerEle(:)<0); 
+if isfield(DICpara, 'ICGNMaxIter')
+    maxIterNum = DICpara.ICGNMaxIter;
+else
+    maxIterNum = 100;
+end
+[row1,~] = find(ConvItPerEle(:)<0);
 [row2,~] = find(ConvItPerEle(:)>maxIterNum-1);
 [row3,~] = find(ConvItPerEle(:)==maxIterNum+2);
 LocalICGNBadPt = unique(union(row1,row2)); LocalICGNBadPtNum = length(LocalICGNBadPt)-length(row3);
- 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Though some subsets are converged, but their accuracy is worse than most
 % other subsets. This step is to remove those subsets with abnormal convergence steps

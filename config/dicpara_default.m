@@ -144,6 +144,10 @@ function DICpara = dicpara_default(varargin)
     % Number of parallel workers. 0 = serial; N = use N workers.
     DICpara.ClusterNo = 0;
 
+    % Maximum IC-GN iterations per subset. Subsets exceeding this are
+    % marked as bad points. Used in local_icgn and subpb1_solver.
+    DICpara.ICGNMaxIter = 100;
+
     %% ====================================================================
     %  7. ADMM / AUGMENTED LAGRANGIAN SOLVER
     % =====================================================================
@@ -170,6 +174,12 @@ function DICpara = dicpara_default(varargin)
 
     % Regularization parameter alpha in Subproblem 2 FEM solver.
     DICpara.alpha = 0;
+
+    % Outlier detection: subsets converging slower than
+    %   max(mean + outlierSigmaFactor*std, outlierMinThreshold)
+    % are flagged as bad points in subpb1_solver.
+    DICpara.outlierSigmaFactor = 0.25;
+    DICpara.outlierMinThreshold = 10;
 
     % Debug flag: skip global ADMM step (Sections 5-6) if set to false.
     % true = normal operation, false = local-only (for debugging).
@@ -209,10 +219,14 @@ function DICpara = dicpara_default(varargin)
 
     % Whether to apply additional smoothing in post-processing (Section 8).
     % 0 = yes, 1 = no.
-    DICpara.DoYouWantToSmoothOnceMore = 1;
+    DICpara.skipExtraSmoothing = 1;
 
     % Regularization smoothness for Section 8 strain computation (quadtree).
     DICpara.smoothness = 0;
+
+    % RBF smoothness for global_nodal_strain_rbf (ADMM strain computation).
+    % 0 = exact interpolation, 1e-3 = mild smoothing (default).
+    DICpara.strainRBFSmoothness = 1e-3;
 
     %% ====================================================================
     %  10. STRAIN COMPUTATION
@@ -295,4 +309,58 @@ function DICpara = dicpara_default(varargin)
         end
     end
 
+    % Validate merged parameters
+    validate_dicpara(DICpara);
+
+end  % end of dicpara_default function
+
+
+function validate_dicpara(p)
+%VALIDATE_DICPARA  Check DICpara fields for common configuration errors.
+
+    isPow2 = @(v) v > 0 && mod(v, 1) == 0 && bitand(v, v-1) == 0;
+
+    % winstepsize: power of 2
+    ws = p.winstepsize;
+    if isscalar(ws)
+        assert(isPow2(ws), 'DICpara:invalidParam', ...
+            'winstepsize=%d must be a positive power of 2.', ws);
+    end
+
+    % winsizeMin: power of 2, <= winstepsize
+    assert(isPow2(p.winsizeMin), 'DICpara:invalidParam', ...
+        'winsizeMin=%d must be a positive power of 2.', p.winsizeMin);
+    assert(p.winsizeMin <= min(ws), 'DICpara:invalidParam', ...
+        'winsizeMin=%d must be <= winstepsize=%d.', p.winsizeMin, min(ws));
+
+    % winsize: positive even integer
+    wz = p.winsize;
+    if isscalar(wz)
+        assert(wz > 0 && mod(wz, 2) == 0, 'DICpara:invalidParam', ...
+            'winsize=%d must be a positive even integer.', wz);
+    end
+
+    % mu: positive
+    assert(p.mu > 0, 'DICpara:invalidParam', 'mu must be positive (got %g).', p.mu);
+
+    % tol: (0, 1)
+    assert(p.tol > 0 && p.tol < 1, 'DICpara:invalidParam', ...
+        'tol must be in (0,1) (got %g).', p.tol);
+
+    % ADMM_maxIter: >= 1
+    assert(p.ADMM_maxIter >= 1 && mod(p.ADMM_maxIter, 1) == 0, ...
+        'DICpara:invalidParam', 'ADMM_maxIter must be a positive integer >= 1.');
+
+    % GaussPtOrder: 2 or 3
+    assert(ismember(p.GaussPtOrder, [2 3]), 'DICpara:invalidParam', ...
+        'GaussPtOrder must be 2 or 3 (got %d).', p.GaussPtOrder);
+
+    % referenceMode: enum
+    assert(ismember(p.referenceMode, {'incremental', 'accumulative'}), ...
+        'DICpara:invalidParam', ...
+        'referenceMode must be ''incremental'' or ''accumulative'' (got ''%s'').', p.referenceMode);
+
+    % ClusterNo: non-negative integer
+    assert(p.ClusterNo >= 0 && mod(p.ClusterNo, 1) == 0, ...
+        'DICpara:invalidParam', 'ClusterNo must be a non-negative integer.');
 end

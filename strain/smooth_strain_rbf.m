@@ -90,25 +90,7 @@ while (DoYouWantToSmoothOnceMore==0)
             warning('smooth_strain_rbf:rbfFit', 'RBF strain smoothing failed for region %d: %s', tempi, ME.message);
         end
     end
-    
-    
-    % %     %%%%% Remove outliers %%%%%
-    % %     [~,F11RemoveOutlier] = rmoutliers(F(1:4:end), 'movmedian', 1+winstepsize);
-    % %     [~,F21RemoveOutlier] = rmoutliers(F(2:4:end), 'movmedian', 1+winstepsize);
-    % %     [~,F12RemoveOutlier] = rmoutliers(F(3:4:end), 'movmedian', 1+winstepsize);
-    % %     [~,F22RemoveOutlier] = rmoutliers(F(4:4:end), 'movmedian', 1+winstepsize);
-    % %     [F11RemoveOutlierInd,~] = find(F11RemoveOutlier==1);
-    % %     [F21RemoveOutlierInd,~] = find(F21RemoveOutlier==1);
-    % %     [F12RemoveOutlierInd,~] = find(F12RemoveOutlier==1);
-    % %     [F22RemoveOutlierInd,~] = find(F22RemoveOutlier==1);
-    % % 
-    % %     for tempj=1:4
-    % %         F(4*F11RemoveOutlierInd-4+tempj) = nan;
-    % %         F(4*F21RemoveOutlierInd-4+tempj) = nan;
-    % %         F(4*F12RemoveOutlierInd-4+tempj) = nan;
-    % %         F(4*F22RemoveOutlierInd-4+tempj) = nan;
-    % %     end
-    
+
     %%%%%% Fill nans %%%%%%
     nanindexF = find(isnan(F(1:4:end))==1); notnanindexF = setdiff([1:1:size(coordinatesFEM,1)],nanindexF);
     
@@ -124,45 +106,9 @@ while (DoYouWantToSmoothOnceMore==0)
         F22 = Ftemp(coordinatesFEM(:,1),coordinatesFEM(:,2));
         
         F = [F11(:),F21(:),F12(:),F22(:)]'; F = F(:);
-        
+
     end
-    
-    %     Coordxnodes = [min(coordinatesFEM(:,1)):h:max(coordinatesFEM(:,1))]'; 
-    %     Coordynodes = [min(coordinatesFEM(:,2)):h:max(coordinatesFEM(:,2))]';
-    %     % Iblur_11 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), F(1:4:end),Coordxnodes,Coordynodes,'regularizer','springs'); 
-    %     % Iblur_11=Iblur_11';
-    %     % Iblur_22 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), F(4:4:end),Coordxnodes,Coordynodes,'regularizer','springs');  
-    %     % Iblur_22=Iblur_22';
-    %     % Iblur_21 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), F(2:4:end),Coordxnodes,Coordynodes,'regularizer','springs'); 
-    %     % Iblur_21=Iblur_21';
-    %     % Iblur_12 = gridfit(coordinatesFEM(:,1), coordinatesFEM(:,2), F(3:4:end),Coordxnodes,Coordynodes,'regularizer','springs');
-    %     % Iblur_12=Iblur_12';
-    %     
-    %     Iblur_11 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],F(1:4:end),{Coordxnodes,Coordynodes},smoothness);
-    %     Iblur_22 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],F(4:4:end),{Coordxnodes,Coordynodes},smoothness);
-    %     Iblur_21 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],F(2:4:end),{Coordxnodes,Coordynodes},smoothness);
-    %     Iblur_12 = regularizeNd([coordinatesFEM(:,1), coordinatesFEM(:,2)],F(3:4:end),{Coordxnodes,Coordynodes},smoothness);
-    %     
-    %     % -------------------------------------------------------
-    %     imageFilter=fspecial('gaussian',FilterSizeInput,FilterStd);
-    %     Iblur_1 = nanconv(Iblur_11,imageFilter,'edge','nanout');
-    %     Iblur_4 = nanconv(Iblur_22,imageFilter,'edge','nanout');
-    %     Iblur_2 = nanconv(Iblur_21,imageFilter,'edge','nanout');
-    %     Iblur_3 = nanconv(Iblur_12,imageFilter,'edge','nanout');
-    %     
-    %     for tempi = 1:size(coordinatesFEM,1)
-    %         [row1,~] = find(Coordxnodes==coordinatesFEM(tempi,1));
-    %         [row2,~] = find(Coordynodes==coordinatesFEM(tempi,2));
-    %         F(4*tempi-3) = Iblur_1(row1,row2);
-    %         F(4*tempi)   = Iblur_4(row1,row2);
-    %         F(4*tempi-2) = Iblur_2(row1,row2);
-    %         F(4*tempi-1) = Iblur_3(row1,row2);
-    %     end
-    %      
-    % prompt = 'Do you want to smooth displacement once more? (0-yes; 1-no)';
-    % DoYouWantToSmoothOnceMore = input(prompt); 
-    
-    
+
     SmoothTimes = SmoothTimes+1;
     if SmoothTimes > 1
         DoYouWantToSmoothOnceMore = 1;

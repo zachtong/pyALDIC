@@ -1,12 +1,12 @@
-function [XY,U,F] = comp_def_grad(uv, parCoord, f_o_s, n_neighbors, ImgMask)
+function [XY,U,F] = comp_def_grad(uv, parCoord, search_radius_px, n_neighbors, ImgMask)
 %comp_def_grad: to compute tracked displacements and deformation gradient
 %                 tensor based on the moving least square fitting method
-%   [XY,U,F] = comp_def_grad(uv, parCoord, f_o_s, n_neighbors, ImgMask)
+%   [XY,U,F] = comp_def_grad(uv, parCoord, search_radius_px, n_neighbors, ImgMask)
 % ---------------------------------------------------
 %
 %   INPUT:  uv                      Tracked displacement components [n x 2]
 %           parCoord                Coordinates of particles
-%           f_o_s                   field of search [px]
+%           search_radius_px        plane-fit search radius [px]
 %           n_neighbors             (unused, kept for backward compatibility)
 %           ImgMask                 Image mask (optional, can be [])
 
@@ -28,8 +28,8 @@ function [XY,U,F] = comp_def_grad(uv, parCoord, f_o_s, n_neighbors, ImgMask)
 U = nan(size(uv,1)*2,1); F = repmat(U,2,1); XY = nan(size(uv,1),2);
 
 %%
-% Calculate neighbourhood indices within radius f_o_s (rangesearch: O(N log N))
-neighborInd = rangesearch(parCoord(:,1:2), parCoord(:,1:2), f_o_s);
+% Calculate neighbourhood indices within radius search_radius_px (rangesearch: O(N log N))
+neighborInd = rangesearch(parCoord(:,1:2), parCoord(:,1:2), search_radius_px);
 
 for parInd = 1:size(parCoord,1)
 
@@ -39,14 +39,14 @@ for parInd = 1:size(parCoord,1)
 
         if ~isempty(ImgMask) % Use image mask file
 
-            tempfImgMask = ImgMask( round([parCoord(parInd,1)-f_o_s : parCoord(parInd,1)+f_o_s]) , ...
-                                round([parCoord(parInd,2)-f_o_s : parCoord(parInd,2)+f_o_s]) );
+            tempfImgMask = ImgMask( round([parCoord(parInd,1)-search_radius_px : parCoord(parInd,1)+search_radius_px]) , ...
+                                round([parCoord(parInd,2)-search_radius_px : parCoord(parInd,2)+search_radius_px]) );
 
-            tempf_BW2 = bwselect(logical(tempfImgMask), f_o_s+1, f_o_s+1, 4 );
+            tempf_BW2 = bwselect(logical(tempfImgMask), search_radius_px+1, search_radius_px+1, 4 );
 
             % Only use neighbors that are single-connected
-            parNeighborInd2 = sub2ind( (2*f_o_s+1)*[1,1], round(parCoord(parNeighborInd,1)-(parCoord(parInd,1)-f_o_s)+1), ...
-               round(parCoord(parNeighborInd,2)-(parCoord(parInd,2)-f_o_s)+1)  );
+            parNeighborInd2 = sub2ind( (2*search_radius_px+1)*[1,1], round(parCoord(parNeighborInd,1)-(parCoord(parInd,1)-search_radius_px)+1), ...
+               round(parCoord(parNeighborInd,2)-(parCoord(parInd,2)-search_radius_px)+1)  );
 
             [parNeighborInd3,~] = find(tempf_BW2(parNeighborInd2)>0);
             parNeighborInd = parNeighborInd(parNeighborInd3);
@@ -71,7 +71,7 @@ for parInd = 1:size(parCoord,1)
                                                    parCoord(parNeighborInd,2)-parCoord(parInd,2) ];
          
         %%%%% Weighted least square fitting (Gaussian weight) %%%%%
-        WeightMatrix = diag(exp(-((AMatrix(:,2)/f_o_s).^2+(AMatrix(:,3)/f_o_s).^2)));
+        WeightMatrix = diag(exp(-((AMatrix(:,2)/search_radius_px).^2+(AMatrix(:,3)/search_radius_px).^2)));
 
         UPara = (WeightMatrix * AMatrix) \ (WeightMatrix * uv(parNeighborInd,1));
         VPara = (WeightMatrix * AMatrix) \ (WeightMatrix * uv(parNeighborInd,2));

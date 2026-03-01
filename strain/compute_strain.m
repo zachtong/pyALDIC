@@ -7,7 +7,7 @@ function [FStraintemp, FStrainWorld] = compute_strain(ULocal, FLocal, coordinate
 %   coordinatesFEM - FEM node coordinates [nNode x 2]
 %   DICmesh        - mesh structure (.elementMinSize, .markCoordHoleEdge)
 %   DICpara        - parameters (.MethodToComputeStrain, .winstepsize, .StrainType,
-%                    .ImgRefMask, .smoothness, .DoYouWantToSmoothOnceMore)
+%                    .ImgRefMask, .smoothness, .skipExtraSmoothing)
 %   Df             - reference image structure (.ImgRefMask, .imgSize)
 %   Dg             - deformed image structure (.imgSize)
 %   Rad            - half window size for plane fitting (case 2); can be [] for other cases
@@ -178,7 +178,7 @@ switch DICpara.MethodToComputeStrain
 
         FSubpb2 = FLocal;
         try
-            if DICpara.DoYouWantToSmoothOnceMore == 0
+            if DICpara.skipExtraSmoothing == 0
                 FSubpb2 = smooth_strain_rbf(FSubpb2,DICmesh,DICpara);
                 for tempk=0:3
                     FSubpb2(4*DICmesh.markCoordHoleEdge-tempk) = FLocal(4*DICmesh.markCoordHoleEdge-tempk);
