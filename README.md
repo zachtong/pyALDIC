@@ -75,6 +75,7 @@ STAQ-DIC-GUI/
 ├── run_aldic.m               Core DIC pipeline (callable function)
 ├── main_aldic.m              CLI entry point (thin interactive wrapper)
 ├── test_aldic_synthetic.m    Automated synthetic test suite (5 cases)
+├── test_case6_profile.m      Performance profiling on real experimental data
 ├── config/                   Parameter defaults (dicpara_default.m)
 ├── io/                       Image I/O and preprocessing
 │   ├── read_images.m         Load images (interactive or programmatic)
@@ -87,7 +88,8 @@ STAQ-DIC-GUI/
 │   ├── qrefine_r.m           Red-refinement of quadrilateral elements
 │   ├── mark_edge.m           Mark elements for refinement
 │   ├── mark_inside.m         Identify elements inside/outside mask
-│   └── provide_geometric_data.m
+│   ├── provide_geometric_data.m
+│   └── precompute_node_regions.m  One-time mask→node region mapping for smoothing
 ├── solver/                   DIC solvers
 │   ├── integer_search.m      FFT-based integer displacement search
 │   ├── local_icgn.m          Inverse Compositional Gauss-Newton (IC-GN)
@@ -97,11 +99,15 @@ STAQ-DIC-GUI/
 │   ├── remove_outliers.m     Outlier detection and removal
 │   └── por_gpr.m             POD-GPR displacement prediction
 ├── strain/                   Strain computation and smoothing
-│   ├── compute_strain.m      Main strain computation dispatcher
-│   ├── plane_fit.m           Local plane-fit strain method
+│   ├── apply_strain_type.m   Vectorized strain type conversion (infinitesimal/Eulerian/Green-Lagrangian)
+│   ├── compute_strain.m      Legacy strain dispatcher (plane-fit/FD, retained as alternative)
+│   ├── comp_def_grad.m       Local weighted LSQ deformation gradient (used by compute_strain)
+│   ├── global_nodal_strain_fem.m  FEM-based nodal strain (primary method, O(nEle))
 │   ├── global_nodal_strain_rbf.m  RBF-based global strain
-│   ├── smooth_disp_rbf.m     RBF displacement smoothing
-│   └── smooth_strain_rbf.m   RBF strain smoothing
+│   ├── plane_fit.m           Local plane-fit strain method
+│   ├── smooth_disp_rbf.m     Sparse Gaussian displacement smoothing
+│   ├── smooth_strain_rbf.m   Sparse Gaussian strain smoothing
+│   └── smooth_field_sparse.m Core sparse Gaussian kernel smoother
 ├── plotting/                 Visualization functions and colormaps
 ├── third_party/              External dependencies
 │   ├── ba_interp2_spline.cpp MEX source for bicubic spline interpolation
@@ -125,7 +131,7 @@ main_aldic.m ─┘         │
                          ├── Section 5: subpb2_solver (FEM Subproblem 2)
                          ├── Section 6: ADMM iterations (Subpb1 ↔ Subpb2)
                          ├── Section 7: Convergence check
-                         └── Section 8: compute_strain → ResultStrain output
+                         └── Section 8: global_nodal_strain_fem + apply_strain_type → ResultStrain
 ```
 
 Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` / `ComputeStrain` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer with full-image overlay).
@@ -145,8 +151,7 @@ All parameters are defined in `config/dicpara_default.m` with inline documentati
 | `ADMM_maxIter` | 3 | Maximum ADMM outer iterations |
 | `tol` | 1e-2 | IC-GN convergence tolerance |
 | `referenceMode` | 'incremental' | `'incremental'` or `'accumulative'` |
-| `StrainPlaneFitRad` | 20 | Search radius (px) for plane-fit strain |
-| `MethodToComputeStrain` | 2 | 0=deformation gradient, 1=FD, 2=plane fit, 3=FEM |
+| `StrainType` | 0 | 0=infinitesimal, 1=Eulerian-Almansi, 2=Green-Lagrangian |
 
 > **Why power of 2?** Quadtree refinement (`qrefine_r.m`) halves element sizes by computing midpoints `(a+b)/2`. Non-power-of-2 step sizes eventually produce fractional pixel coordinates, which crash `mark_edge.m` when used as array indices.
 
