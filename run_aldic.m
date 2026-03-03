@@ -229,8 +229,13 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
         fprintf('------------ Section 3 Done ------------ \n\n')
 
+        % Precompute node-to-region mapping for smoothing calls
+        nodeRegionMap = precompute_node_regions(DICmesh.coordinatesFEM, DICpara);
+
         % --- Validation: mesh and initial guess ---
         nNodes = size(DICmesh.coordinatesFEM, 1);
+        progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S3 done (%d nodes, %d elems)', ...
+            ImgSeqNum, nNodes, size(DICmesh.elementsFEM,1)));
         assert(nNodes > 0, 'run_aldic:emptyMesh', 'Section 3: coordinatesFEM is empty.');
         assert(length(U0) == 2*nNodes, 'run_aldic:U0size', ...
             'Section 3: U0 length (%d) != 2*nNodes (%d).', length(U0), 2*nNodes);
@@ -262,6 +267,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         stepData(ALSolveStep).FSubpb1 = FSubpb1;
 
         fprintf('------------ Section 4 Done ------------ \n\n')
+        progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S4 done (local IC-GN)', ImgSeqNum));
 
         % --- Validation: local ICGN result ---
         assert(~all(isnan(USubpb1)), 'run_aldic:USubpb1allNaN', ...
@@ -273,8 +279,8 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             %% Section 5: Subproblem 2
             fprintf('------------ Section 5 Start ------------ \n'); tic;
 
-            if DICpara.DispSmoothness>1e-6, USubpb1 = smooth_disp_rbf(USubpb1,DICmesh,DICpara); end
-            if DICpara.StrainSmoothness>1e-6, FSubpb1 = smooth_strain_rbf(FSubpb1,DICmesh,DICpara); end
+            if DICpara.DispSmoothness>1e-6, USubpb1 = smooth_disp_rbf(USubpb1,DICmesh,DICpara,nodeRegionMap); end
+            if DICpara.StrainSmoothness>1e-6, FSubpb1 = smooth_strain_rbf(FSubpb1,DICmesh,DICpara,nodeRegionMap); end
 
             mu = DICpara.mu; udual = 0*FSubpb1; vdual = 0*USubpb1;
             betaList = DICpara.betaRange * mean(DICpara.winstepsize).^2 .* mu;
@@ -317,9 +323,9 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 ALSub2Time(ALSolveStep) = toc; toc
             end
 
-            if DICpara.DispSmoothness>1e-6, USubpb2 = smooth_disp_rbf(USubpb2,DICmesh,DICpara); end
+            if DICpara.DispSmoothness>1e-6, USubpb2 = smooth_disp_rbf(USubpb2,DICmesh,DICpara,nodeRegionMap); end
             for tempk=0:3, FSubpb2(4*DICmesh.markCoordHoleEdge-tempk) = FSubpb1(4*DICmesh.markCoordHoleEdge-tempk); end
-            if DICpara.StrainSmoothness>1e-6, FSubpb2 = smooth_strain_rbf(0.1*FSubpb2+0.9*FSubpb1,DICmesh,DICpara); end
+            if DICpara.StrainSmoothness>1e-6, FSubpb2 = smooth_strain_rbf(0.1*FSubpb2+0.9*FSubpb1,DICmesh,DICpara,nodeRegionMap); end
             for tempk=0:1, USubpb2(2*markCoordHoleStrain-tempk) = USubpb1(2*markCoordHoleStrain-tempk); end
             for tempk=0:3, FSubpb2(4*markCoordHoleStrain-tempk) = FSubpb1(4*markCoordHoleStrain-tempk); end
 
@@ -330,6 +336,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             stepData(ALSolveStep).udual = udual;
             stepData(ALSolveStep).vdual = vdual;
             fprintf('------------ Section 5 Done ------------ \n\n')
+            progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S5 done (subpb2 init)', ImgSeqNum));
 
             assert(~all(isnan(USubpb2)), 'run_aldic:USubpb2initNaN', ...
                 'Section 5: USubpb2 is entirely NaN after initial subpb2_solver.');
@@ -364,9 +371,9 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 FSubpb2 = global_nodal_strain_fem(DICmesh,DICpara,USubpb2);
                 ALSub2Time(ALSolveStep) = toc; toc
 
-                if DICpara.DispSmoothness>1e-6, USubpb2 = smooth_disp_rbf(USubpb2,DICmesh,DICpara); end
+                if DICpara.DispSmoothness>1e-6, USubpb2 = smooth_disp_rbf(USubpb2,DICmesh,DICpara,nodeRegionMap); end
                 for tempk=0:3, FSubpb2(4*DICmesh.markCoordHoleEdge-tempk) = FSubpb1(4*DICmesh.markCoordHoleEdge-tempk); end
-                if DICpara.StrainSmoothness>1e-6, FSubpb2 = smooth_strain_rbf(0.1*FSubpb2+0.9*FSubpb1,DICmesh,DICpara); end
+                if DICpara.StrainSmoothness>1e-6, FSubpb2 = smooth_strain_rbf(0.1*FSubpb2+0.9*FSubpb1,DICmesh,DICpara,nodeRegionMap); end
                 for tempk=0:1, USubpb2(2*markCoordHoleStrain-tempk) = USubpb1(2*markCoordHoleStrain-tempk); end
                 for tempk=0:3, FSubpb2(4*markCoordHoleStrain-tempk) = FSubpb1(4*markCoordHoleStrain-tempk); end
 
@@ -397,6 +404,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 end
             end
             fprintf('------------ Section 6 Done ------------ \n\n')
+            progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S6 done (ADMM %d steps)', ImgSeqNum, ALSolveStep));
         end
 
         % When UseGlobal is false, USubpb2/FSubpb2 are not defined by Sections 5-6.
@@ -520,15 +528,10 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
     if computeStrain
         progressFcn(0.7, 'Computing strains...');
-        Rad = [];
-        if DICpara.MethodToComputeStrain == 2
-            Rad = DICpara.StrainPlaneFitRad;
-        end
-        if DICpara.smoothness > 0
-            DICpara.skipExtraSmoothing = 0;
-        else
-            DICpara.skipExtraSmoothing = 1;
-        end
+        doExtraSmoothing = DICpara.smoothness > 0;
+        % Set mask for S8 (always use frame 1 mask for cumulative coords)
+        DICpara.ImgRefMask = double(ImgMask{1});
+        nodeRegionMap = precompute_node_regions(coordinatesFEM, DICpara);
     else
         progressFcn(0.7, 'Computing world-space displacements (strain skipped)...');
     end
@@ -541,22 +544,20 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         UWorld = DICpara.um2px*ULocal; UWorld(2:2:end) = -UWorld(2:2:end);
 
         if computeStrain
-            % Compute image gradients for strain
-            gNormalizedMask = double(ImgMask{ImgSeqNum});
-            gNormalized = ImgNormalized{ImgSeqNum} .* gNormalizedMask;
-            Dg = img_gradient(gNormalized, gNormalized, gNormalizedMask);
-            fNormalizedMask = double(ImgMask{1});
-            DICpara.ImgRefMask = fNormalizedMask;
 
             % Smooth displacements
             SmoothTimes = 0;
-            while DICpara.skipExtraSmoothing == 0 && SmoothTimes < 3
-                ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
+            while doExtraSmoothing && SmoothTimes < 3
+                ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara, nodeRegionMap);
                 SmoothTimes = SmoothTimes + 1;
             end
 
-            % Compute strain field
-            [FStraintemp, FStrainWorld] = compute_strain(ULocal, [], coordinatesFEM, DICmesh, DICpara, Df, Dg, Rad);
+            % FEM strain + strain type conversion
+            FSubpb2_S8 = global_nodal_strain_fem(DICmesh, DICpara, ULocal);
+            if doExtraSmoothing
+                FSubpb2_S8 = smooth_strain_rbf(FSubpb2_S8, DICmesh, DICpara, nodeRegionMap);
+            end
+            [FStraintemp, FStrainWorld] = apply_strain_type(FSubpb2_S8, DICpara);
 
             % Compute strain components
             if showPlots
@@ -606,6 +607,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end));
         end
     end
+    progressFcn(0.9, 'S8 done (strain/disp)');
     fprintf('------------ Section 8 Done ------------ \n\n')
 
 

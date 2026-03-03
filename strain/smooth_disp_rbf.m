@@ -1,22 +1,26 @@
-function U = smooth_disp_rbf(U,DICmesh,DICpara)
+function U = smooth_disp_rbf(U, DICmesh, DICpara, nodeRegionMap)
 %SMOOTH_DISP_RBF  Smooth displacement fields by sparse Gaussian kernel.
 %
 %   U = smooth_disp_rbf(U, DICmesh, DICpara)
+%   U = smooth_disp_rbf(U, DICmesh, DICpara, nodeRegionMap)
 %
-%   INPUT:  U        - Displacement vector [u1,v1,...,uN,vN]'
-%           DICmesh  - DIC mesh structure
-%           DICpara  - DIC parameters (.DispSmoothness, .ImgRefMask, etc.)
+%   INPUT:  U              - Displacement vector [u1,v1,...,uN,vN]'
+%           DICmesh        - DIC mesh structure
+%           DICpara        - DIC parameters (.DispSmoothness, .ImgRefMask, etc.)
+%           nodeRegionMap  - (optional) precomputed struct from precompute_node_regions
 %
 %   OUTPUT: U        - Smoothed displacement field
 %
 % Uses sparse Gaussian kernel smoothing (O(N log N)) instead of global RBF.
+
+if nargin < 4, nodeRegionMap = []; end
 
 coordinatesFEM = DICmesh.coordinatesFEM;
 U = full(U);
 smoothness = DICpara.DispSmoothness;
 
 %% Sparse Gaussian smoothing
-U = smooth_field_sparse(U, coordinatesFEM, DICpara, 2, smoothness);
+U = smooth_field_sparse(U, coordinatesFEM, DICpara, 2, smoothness, nodeRegionMap);
 
 %% Fill NaN values
 nanindex = find(isnan(U(1:2:end))==1);
