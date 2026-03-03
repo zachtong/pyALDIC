@@ -1,22 +1,26 @@
-function F = smooth_strain_rbf(F,DICmesh,DICpara)
+function F = smooth_strain_rbf(F, DICmesh, DICpara, nodeRegionMap)
 %SMOOTH_STRAIN_RBF  Smooth strain/deformation gradient fields by sparse Gaussian kernel.
 %
 %   F = smooth_strain_rbf(F, DICmesh, DICpara)
+%   F = smooth_strain_rbf(F, DICmesh, DICpara, nodeRegionMap)
 %
-%   INPUT:  F        - Deformation gradient [F11,F21,F12,F22,...,F11_N,F21_N,F12_N,F22_N]'
-%           DICmesh  - DIC mesh structure
-%           DICpara  - DIC parameters (.StrainSmoothness, .ImgRefMask, etc.)
+%   INPUT:  F              - Deformation gradient [F11,F21,F12,F22,...,F11_N,F21_N,F12_N,F22_N]'
+%           DICmesh        - DIC mesh structure
+%           DICpara        - DIC parameters (.StrainSmoothness, .ImgRefMask, etc.)
+%           nodeRegionMap  - (optional) precomputed struct from precompute_node_regions
 %
 %   OUTPUT: F        - Smoothed strain field
 %
 % Uses sparse Gaussian kernel smoothing (O(N log N)) instead of global RBF.
+
+if nargin < 4, nodeRegionMap = []; end
 
 coordinatesFEM = DICmesh.coordinatesFEM;
 F = full(F);
 smoothness = DICpara.StrainSmoothness;
 
 %% Sparse Gaussian smoothing
-F = smooth_field_sparse(F, coordinatesFEM, DICpara, 4, smoothness);
+F = smooth_field_sparse(F, coordinatesFEM, DICpara, 4, smoothness, nodeRegionMap);
 
 %% Fill NaN values
 nanindexF = find(isnan(F(1:4:end))==1);

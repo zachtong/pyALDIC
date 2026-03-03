@@ -864,15 +864,9 @@ function gui_aldic()
             coordinatesFEMWorld = DICpara.um2px * [coordinatesFEM(:,1), ...
                 size(ImgNormalized{1},2)+1-coordinatesFEM(:,2)];
 
-            Rad = [];
-            if DICpara.MethodToComputeStrain == 2
-                Rad = DICpara.StrainPlaneFitRad;
-            end
-            if DICpara.smoothness > 0
-                DICpara.skipExtraSmoothing = 0;
-            else
-                DICpara.skipExtraSmoothing = 1;
-            end
+            doExtraSmoothing = DICpara.smoothness > 0;
+            DICpara.ImgRefMask = double(app.ImgMask{1});
+            nodeRegionMap = precompute_node_regions(coordinatesFEM, DICpara);
 
             for ImgSeqNum = 2:nFrames
                 setProgress((ImgSeqNum-2)/(nFrames-1) * 0.9);
@@ -884,31 +878,19 @@ function gui_aldic()
                 UWorld = DICpara.um2px * ULocal;
                 UWorld(2:2:end) = -UWorld(2:2:end);
 
-                % Image gradients for reference and deformed
-                if strcmp(DICpara.referenceMode, 'accumulative')
-                    fNormalizedMask = double(app.ImgMask{1});
-                    fNormalized = ImgNormalized{1} .* fNormalizedMask;
-                else
-                    fNormalizedMask = double(app.ImgMask{ImgSeqNum-1});
-                    fNormalized = ImgNormalized{ImgSeqNum-1} .* fNormalizedMask;
-                end
-                Df = img_gradient(fNormalized, fNormalized, fNormalizedMask);
-
-                gNormalizedMask = double(app.ImgMask{ImgSeqNum});
-                gNormalized = ImgNormalized{ImgSeqNum} .* gNormalizedMask;
-                Dg = img_gradient(gNormalized, gNormalized, gNormalizedMask);
-                DICpara.ImgRefMask = fNormalizedMask;
-
                 % Smooth displacements
                 SmoothTimes = 0;
-                while DICpara.skipExtraSmoothing == 0 && SmoothTimes < 3
-                    ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara);
+                while doExtraSmoothing && SmoothTimes < 3
+                    ULocal = smooth_disp_rbf(ULocal, DICmesh, DICpara, nodeRegionMap);
                     SmoothTimes = SmoothTimes + 1;
                 end
 
-                % Compute strain field
-                [FStraintemp, FStrainWorld] = compute_strain(ULocal, [], coordinatesFEM, ...
-                    DICmesh, DICpara, Df, Dg, Rad);
+                % FEM strain + strain type conversion
+                FSubpb2_S8 = global_nodal_strain_fem(DICmesh, DICpara, ULocal);
+                if doExtraSmoothing
+                    FSubpb2_S8 = smooth_strain_rbf(FSubpb2_S8, DICmesh, DICpara, nodeRegionMap);
+                end
+                [FStraintemp, FStrainWorld] = apply_strain_type(FSubpb2_S8, DICpara);
 
                 % Extract strain components
                 u_x = FStrainWorld(1:4:end); v_x = FStrainWorld(2:4:end);
