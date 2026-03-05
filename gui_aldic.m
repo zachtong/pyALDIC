@@ -57,7 +57,7 @@ function gui_aldic()
 
     % --- Right panel ---
     rightPanel = uigridlayout(mainGrid, [4, 1]);
-    rightPanel.RowHeight = {'1x', 35, 55, 160};
+    rightPanel.RowHeight = {'1x', 35, 80, 160};
     rightPanel.Padding = [0 0 0 0];
     rightPanel.RowSpacing = 5;
 
@@ -223,9 +223,9 @@ function gui_aldic()
         'ValueChangedFcn', @onFieldChanged);
 
     %% ====== RIGHT: Color Range + Overlay controls (2 rows) ======
-    climGrid = uigridlayout(rightPanel, [2, 6]);
+    climGrid = uigridlayout(rightPanel, [3, 6]);
     climGrid.ColumnWidth = {80, 55, 60, 80, 60, '1x'};
-    climGrid.RowHeight = {25, 25};
+    climGrid.RowHeight = {25, 25, 25};
     climGrid.Padding = [5 0 5 0];
     climGrid.RowSpacing = 2;
 
@@ -252,6 +252,14 @@ function gui_aldic()
         'Limits', [0 100], 'ValueChangedFcn', @(~,~) updateDisplay(), ...
         'Tooltip', 'Overlay transparency 0-100%');
     uilabel(climGrid, 'Text', '%');
+
+    % Row 3: Export Image button
+    app.btnExportImage = uibutton(climGrid, 'Text', 'Export Image', ...
+        'Enable', 'off', ...
+        'Tooltip', 'Export current display as PNG or PDF', ...
+        'ButtonPushedFcn', @onExportImage);
+    app.btnExportImage.Layout.Row = 3;
+    app.btnExportImage.Layout.Column = [5 6];
 
     %% ====== RIGHT: Progress + Log ======
     progGrid = uigridlayout(rightPanel, [2, 1]);
@@ -760,6 +768,7 @@ function gui_aldic()
         app.btnNextFrame.Enable = 'on';
         app.ddField.Enable = 'on';
         app.btnSave.Enable = 'on';
+        app.btnExportImage.Enable = 'on';
 
         % Detect whether strain was computed
         hasStrain = isfield(app.results.ResultStrain{1}, 'strain_exx');
@@ -813,22 +822,129 @@ function gui_aldic()
             return;
         end
 
-        % Build default filename
+        % Build default filename (use first/reference image name)
         if ~isempty(app.file_name) && size(app.file_name,2) >= 1
-            [~, imgname, ~] = fileparts(app.file_name{1,end});
+            [~, imgname, ~] = fileparts(app.file_name{1,1});
         else
             imgname = 'unknown';
         end
         ws = app.results.DICpara.winsize;
         st = app.results.DICpara.winstepsize;
-        defaultName = sprintf('results_%s_ws%d_st%d.mat', imgname, ws, st);
+        defaultBase = sprintf('results_%s_ws%d_st%d', imgname, ws, st);
 
-        [fname, fpath] = uiputfile('*.mat', 'Save Results As', defaultName);
-        if fname == 0, return; end  % user cancelled
+        [fname, fpath, ~] = uiputfile({ ...
+            '*.mat', 'MATLAB Data (.mat)'; ...
+            '*.csv', 'CSV Table (.csv)'; ...
+            '*.xlsx', 'Excel Workbook (.xlsx)'}, ...
+            'Save Results As', [defaultBase '.mat']);
+        if fname == 0, figure(app.fig); return; end
+        figure(app.fig);
 
-        results = app.results; %#ok<NASGU>
-        save(fullfile(fpath, fname), '-struct', 'results');
-        logMsg(sprintf('Results saved to %s', fullfile(fpath, fname)));
+        [~, ~, ext] = fileparts(fname);
+        outPath = fullfile(fpath, fname);
+        switch lower(ext)
+            case '.mat'
+                results = app.results; %#ok<NASGU>
+                save(outPath, '-struct', 'results');
+            case '.csv'
+                exportCSV(outPath);
+            case '.xlsx'
+                exportExcel(outPath);
+            otherwise
+                results = app.results; %#ok<NASGU>
+                save(outPath, '-struct', 'results');
+        end
+        logMsg(sprintf('Results saved to %s', outPath));
+    end
+
+    function exportCSV(filepath)
+        coords = app.results.coordinatesFEMWorld;
+        nFrames = length(app.results.ResultStrain);
+        hasStrain = isfield(app.results.ResultStrain{1}, 'strain_exx');
+
+        header = {'frame','x','y','u','v'};
+        if hasStrain
+            header = [header, {'dudx','dvdx','dudy','dvdy', ...
+                'exx','exy','eyy','principal_max','principal_min','maxshear','vonMises'}];
+        end
+
+        nNodes = size(coords, 1);
+        nCols = length(header);
+        data = zeros(nFrames * nNodes, nCols);
+
+        for k = 1:nFrames
+            RS = app.results.ResultStrain{k};
+            rows = (k-1)*nNodes + (1:nNodes);
+            data(rows, 1) = k;
+            data(rows, 2:3) = coords;
+            data(rows, 4) = RS.dispu;
+            data(rows, 5) = RS.dispv;
+            if hasStrain
+                data(rows, 6:16) = [RS.dudx, RS.dvdx, RS.dudy, RS.dvdy, ...
+                    RS.strain_exx, RS.strain_exy, RS.strain_eyy, ...
+                    RS.strain_principal_max, RS.strain_principal_min, ...
+                    RS.strain_maxshear, RS.strain_vonMises];
+            end
+        end
+
+        T = array2table(data, 'VariableNames', header);
+        writetable(T, filepath);
+    end
+
+    function exportExcel(filepath)
+        coords = app.results.coordinatesFEMWorld;
+        nFrames = length(app.results.ResultStrain);
+        hasStrain = isfield(app.results.ResultStrain{1}, 'strain_exx');
+
+        header = {'x','y','u','v'};
+        if hasStrain
+            header = [header, {'dudx','dvdx','dudy','dvdy', ...
+                'exx','exy','eyy','principal_max','principal_min','maxshear','vonMises'}];
+        end
+
+        for k = 1:nFrames
+            RS = app.results.ResultStrain{k};
+            nNodes = size(coords, 1);
+            sheetData = zeros(nNodes, length(header));
+            sheetData(:, 1:2) = coords;
+            sheetData(:, 3) = RS.dispu;
+            sheetData(:, 4) = RS.dispv;
+            if hasStrain
+                sheetData(:, 5:end) = [RS.dudx, RS.dvdx, RS.dudy, RS.dvdy, ...
+                    RS.strain_exx, RS.strain_exy, RS.strain_eyy, ...
+                    RS.strain_principal_max, RS.strain_principal_min, ...
+                    RS.strain_maxshear, RS.strain_vonMises];
+            end
+            T = array2table(sheetData, 'VariableNames', header);
+            writetable(T, filepath, 'Sheet', sprintf('Frame_%d', k));
+        end
+
+        % Parameters sheet
+        dp = app.results.DICpara;
+        paramNames = {'winsize';'winstepsize';'winsizeMin';'mu';'alpha'; ...
+            'StrainPlaneFitRad';'um2px';'referenceMode'};
+        paramValues = {dp.winsize; dp.winstepsize; dp.winsizeMin; dp.mu; dp.alpha; ...
+            dp.StrainPlaneFitRad; dp.um2px; dp.referenceMode};
+        Tp = table(paramNames, paramValues, 'VariableNames', {'Parameter','Value'});
+        writetable(Tp, filepath, 'Sheet', 'Parameters');
+    end
+
+    function onExportImage(~, ~)
+        frameIdx = round(app.sldFrame.Value);
+        fieldName = app.ddField.Value;
+        defaultName = sprintf('frame%d_%s.png', frameIdx, strrep(fieldName, ' ', '_'));
+
+        [fname, fpath] = uiputfile({ ...
+            '*.png', 'PNG Image (.png)'; ...
+            '*.pdf', 'PDF Document (.pdf)'; ...
+            '*.svg', 'SVG Vector (.svg)'}, ...
+            'Export Image As', defaultName);
+        if fname == 0, figure(app.fig); return; end
+        figure(app.fig);
+
+        outPath = fullfile(fpath, fname);
+        exportgraphics(app.axMain, outPath, 'Resolution', 300);
+        logMsg(sprintf('Image exported to %s', outPath));
     end
 
     function onComputeStrain(~, ~)
@@ -864,6 +980,7 @@ function gui_aldic()
             coordinatesFEMWorld = DICpara.um2px * [coordinatesFEM(:,1), ...
                 size(ImgNormalized{1},2)+1-coordinatesFEM(:,2)];
 
+            app.results.coordinatesFEMWorld = coordinatesFEMWorld;
             doExtraSmoothing = DICpara.smoothness > 0;
             DICpara.ImgRefMask = double(app.ImgMask{1});
             nodeRegionMap = precompute_node_regions(coordinatesFEM, DICpara);
@@ -906,8 +1023,6 @@ function gui_aldic()
 
                 % Update ResultStrain with full data
                 app.results.ResultStrain{ImgSeqNum-1} = struct( ...
-                    'strainxCoord', coordinatesFEMWorld(:,1), ...
-                    'strainyCoord', coordinatesFEMWorld(:,2), ...
                     'dispu', UWorld(1:2:end), 'dispv', UWorld(2:2:end), ...
                     'dudx', FStraintemp(1:4:end), 'dvdx', FStraintemp(2:4:end), ...
                     'dudy', FStraintemp(3:4:end), 'dvdy', FStraintemp(4:4:end), ...
@@ -957,7 +1072,7 @@ function gui_aldic()
             otherwise,              data = RS.dispu;
         end
 
-        coordWorld = [RS.strainxCoord, RS.strainyCoord];
+        coordWorld = app.results.coordinatesFEMWorld;
         elemFEM = app.results.ResultFEMeshEachFrame{1}.elementsFEM;
         um2px = app.results.DICpara.um2px;
 

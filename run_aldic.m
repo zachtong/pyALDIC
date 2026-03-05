@@ -595,7 +595,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                     strain_principal_max.*strain_principal_min + 3*strain_maxshear.^2);
             end
 
-            ResultStrain{ImgSeqNum-1} = struct('strainxCoord',coordinatesFEMWorld(:,1),'strainyCoord',coordinatesFEMWorld(:,2), ...
+            ResultStrain{ImgSeqNum-1} = struct( ...
                 'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end), ...
                 'dudx',FStraintemp(1:4:end),'dvdx',FStraintemp(2:4:end),'dudy',FStraintemp(3:4:end),'dvdy',FStraintemp(4:4:end), ...
                 'strain_exx',strain_exx,'strain_exy',strain_exy,'strain_eyy',strain_eyy, ...
@@ -603,7 +603,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 'strain_maxshear',strain_maxshear,'strain_vonMises',strain_vonMises);
         else
             % Displacement-only: store world-space displacements without strain
-            ResultStrain{ImgSeqNum-1} = struct('strainxCoord',coordinatesFEMWorld(:,1),'strainyCoord',coordinatesFEMWorld(:,2), ...
+            ResultStrain{ImgSeqNum-1} = struct( ...
                 'dispu',UWorld(1:2:end),'dispv',UWorld(2:2:end));
         end
     end
@@ -615,6 +615,7 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
     results.DICpara = DICpara;
     results.DICmesh = DICmesh;
     results.file_name = file_name;
+    results.coordinatesFEMWorld = coordinatesFEMWorld;
     results.ResultDisp = ResultDisp;
     results.ResultDefGrad = ResultDefGrad;
     results.ResultStrain = ResultStrain;
