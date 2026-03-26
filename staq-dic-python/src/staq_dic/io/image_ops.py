@@ -91,29 +91,28 @@ def compute_image_gradient(
     # 7-point finite difference kernel
     kernel = np.array([-1 / 60, 3 / 20, -3 / 4, 0, 3 / 4, -3 / 20, 1 / 60])
 
-    # Crop region: 3 pixels from each border (0-based)
-    # MATLAB uses DfDxStartx = 4 (1-based) -> Python: row_start = 3 (0-based)
-    row_start = 3
-    row_end = h - 3  # exclusive
-    col_start = 3
-    col_end = w - 3  # exclusive
+    # The 7-point stencil needs 3 neighbors on each side, so the gradient
+    # is only valid for pixels [3, H-4] x [3, W-4].  MATLAB stores a
+    # cropped (H-6)×(W-6) array and adjusts indices with DfCropWidth in
+    # every consumer.  For simplicity, we return FULL-SIZE (H, W) arrays
+    # with zeros in the 3-pixel border, so df_dx[y, x] directly gives the
+    # gradient at pixel (y, x) without any offset arithmetic.
+    crop = 3  # half-width of the 7-point stencil
 
-    # Extract padded region for convolution
-    I = img_ref[row_start - 3 : row_end + 3, col_start - 3 : col_end + 3]
-
-    # Apply 1D correlation along each axis (matches MATLAB imfilter behavior)
+    # Apply 1D correlation along each axis on the full image
     # axis=0 -> y-derivative (df/dy), axis=1 -> x-derivative (df/dx)
-    df_dx_padded = correlate1d(I, kernel, axis=1, mode="nearest")
-    df_dy_padded = correlate1d(I, kernel, axis=0, mode="nearest")
+    df_dx_full = correlate1d(img_ref, kernel, axis=1, mode="nearest")
+    df_dy_full = correlate1d(img_ref, kernel, axis=0, mode="nearest")
 
-    # Crop the 3-pixel border caused by the filter
-    df_dx = df_dx_padded[3:-3, 3:-3]
-    df_dy = df_dy_padded[3:-3, 3:-3]
+    # Zero out the 3-pixel border where the stencil is unreliable
+    df_dx = np.zeros((h, w), dtype=np.float64)
+    df_dy = np.zeros((h, w), dtype=np.float64)
+    df_dx[crop:h - crop, crop:w - crop] = df_dx_full[crop:h - crop, crop:w - crop]
+    df_dy[crop:h - crop, crop:w - crop] = df_dy_full[crop:h - crop, crop:w - crop]
 
-    # Apply mask to the cropped region
-    mask_crop = img_ref_mask[row_start:row_end, col_start:col_end]
-    df_dx = df_dx * mask_crop
-    df_dy = df_dy * mask_crop
+    # Apply mask
+    df_dx *= img_ref_mask
+    df_dy *= img_ref_mask
 
     return ImageGradients(
         df_dx=df_dx,

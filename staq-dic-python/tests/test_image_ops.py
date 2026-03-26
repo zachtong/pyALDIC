@@ -66,9 +66,14 @@ class TestComputeImageGradient:
         img = np.random.default_rng(42).random((h, w))
         grad = compute_image_gradient(img)
 
-        # Cropped by 3 pixels on each side
-        assert grad.df_dx.shape == (h - 6, w - 6)
-        assert grad.df_dy.shape == (h - 6, w - 6)
+        # Full-size output with zeros in the 3-pixel border
+        assert grad.df_dx.shape == (h, w)
+        assert grad.df_dy.shape == (h, w)
+        # Border pixels should be zero
+        assert np.all(grad.df_dx[:3, :] == 0)
+        assert np.all(grad.df_dx[-3:, :] == 0)
+        assert np.all(grad.df_dx[:, :3] == 0)
+        assert np.all(grad.df_dx[:, -3:] == 0)
         assert grad.img_size == (h, w)
 
     def test_mask_applied(self):

@@ -72,6 +72,11 @@ def apply_displacement(
 
     warped(y, x) = ref(y - v(y,x), x - u(y,x))
 
+    Uses order=5 (quintic B-spline) intentionally: the IC-GN solver samples
+    with order=3 (cubic). Using a higher order here avoids the "double
+    interpolation" artifact where cubic(cubic(ref, +d), -d) != ref, which
+    would create an irreducible residual floor and prevent IC-GN convergence.
+
     Args:
         ref_image: (H, W) reference image.
         u_field: (H, W) x-displacement field.
@@ -87,7 +92,7 @@ def apply_displacement(
     src_y = yy - v_field
     src_x = xx - u_field
     coords = np.array([src_y.ravel(), src_x.ravel()])
-    warped = map_coordinates(ref_image, coords, order=3, mode="constant", cval=0.0)
+    warped = map_coordinates(ref_image, coords, order=5, mode="constant", cval=0.0)
     return warped.reshape(h, w)
 
 
