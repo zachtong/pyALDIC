@@ -210,6 +210,14 @@ def icgn_solver(
         except np.linalg.LinAlgError:
             break
 
+        # Supplementary convergence: parameter update negligible means the
+        # solver is at the optimum regardless of the gradient norm (which is
+        # amplified by bottomf and may remain above tol due to interpolation noise).
+        if np.linalg.norm(delta_P) < tol:
+            norm_new = 0.0
+            norm_abs = 0.0
+            break
+
         # Compose warp
         result = compose_warp(P, delta_P)
         if result is None:

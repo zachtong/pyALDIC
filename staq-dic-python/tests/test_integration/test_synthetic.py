@@ -56,8 +56,8 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.5,
-        strain_tol=0.03,
+        disp_tol=0.01,    # Measured RMSE = 0.000 (exact)
+        strain_tol=0.01,
     ),
     "case2_translation": dict(
         u2=lambda x, y: np.full_like(x, 2.5),
@@ -67,8 +67,8 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.5,
-        strain_tol=0.03,
+        disp_tol=0.3,     # Measured RMSE ~0.11
+        strain_tol=0.01,
     ),
     "case3_affine": dict(
         u2=lambda x, y: 0.02 * (x - CX),
@@ -78,8 +78,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=1.0,    # Measured RMSE ~0.62; MATLAB tol 0.5 used MATLAB-specific speckle
-        strain_tol=0.03,
+        disp_tol=0.5,     # Measured RMSE ~0.26
+        strain_tol=0.02,   # Measured max ~0.011
     ),
     "case4_annular": dict(
         u2=lambda x, y: 0.02 * (x - CX),
@@ -89,8 +89,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="annular",
         overrides=dict(winsize_min=4),
-        disp_tol=1.0,    # Measured RMSE ~0.74
-        strain_tol=0.03,
+        disp_tol=0.5,     # Measured RMSE ~0.29
+        strain_tol=0.02,   # Measured max ~0.013
     ),
     "case5_shear": dict(
         u2=lambda x, y: 0.015 * (y - CY),
@@ -100,8 +100,8 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.015, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=1.0,    # Measured RMSE ~0.58
-        strain_tol=0.05,  # Measured F12 RMSE ~0.031
+        disp_tol=0.3,     # Measured RMSE ~0.09
+        strain_tol=0.04,   # Measured F12 RMSE ~0.027
     ),
     "case6_large_deform": dict(
         u2=lambda x, y: 0.10 * (x - CX) + 0.05 * (y - CY),
@@ -144,8 +144,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="solid",
         overrides=dict(use_global_step=False),
-        disp_tol=1.5,    # Measured RMSE ~0.84; no ADMM smoothing → noisier
-        strain_tol=0.03,
+        disp_tol=0.5,     # Measured RMSE ~0.24; no ADMM smoothing → noisier
+        strain_tol=0.02,   # Measured max ~0.011
     ),
     "case10_rotation": dict(
         u2=lambda x, y: (
@@ -170,8 +170,8 @@ CASES: dict[str, dict] = {
         F21=np.sin(np.pi / 90),
         mask="solid",
         overrides={},
-        disp_tol=1.0,    # Measured RMSE ~0.68
-        strain_tol=0.10,  # Measured off-diag strain RMSE ~0.058
+        disp_tol=0.3,     # Measured RMSE ~0.12
+        strain_tol=0.08,   # Measured off-diag strain RMSE ~0.066
     ),
 }
 
@@ -388,8 +388,8 @@ class TestSyntheticDisplacement:
 STRAIN_CASES = [
     "case3_affine",
     "case5_shear",
-    # case6_large_deform excluded: ICGN fails with zero-gradient init for 10% strain.
-    # Will be testable once integer_search provides initial gradient estimates.
+    # case6_large_deform excluded: GT U0 only gives displacement, not F gradients.
+    # ICGN must discover 10%+ strain from scratch; needs initial gradient estimates.
     "case9_local_only",
     "case10_rotation",
 ]
@@ -435,20 +435,10 @@ class TestSyntheticStrain:
 class TestSyntheticLargeDeform:
     """Large deformation case (10% stretch + 5% shear).
 
-    Currently xfail: The 6-DOF ICGN initializes warp gradients (du/dx, etc.)
-    to zero. For 10% strain, this zero-gradient initialization prevents
-    convergence even when U0 contains the exact (u,v) ground truth.
-    The MATLAB test passes because FFT search provides initial displacement,
-    and the ICGN can converge from the coarse FFT guess.
-    This test will pass once integer_search.py provides initial gradient
-    estimates or the ICGN is modified to accept initial F0.
+    Tests ICGN convergence with 10% strain and 5% shear.
+    Ground-truth U0 provides displacement, ICGN iterates to find F.
     """
 
-    @pytest.mark.xfail(
-        reason="ICGN cannot converge from zero-gradient init for 10% strain; "
-               "needs FFT initial guess (integer_search not yet implemented)",
-        strict=False,
-    )
     def test_case6_frame2_displacement(self, ref_speckle):
         """Case 6 displacement RMSE should be within tolerance."""
         data = _build_test_data("case6_large_deform", ref_speckle)
@@ -559,8 +549,8 @@ class TestSyntheticMultiFrame:
             U, result.dic_mesh.coordinates_fem,
             data["gt_u3"], data["gt_v3"], data["mask_img"],
         )
-        assert rmse_u < 1.0, f"case8 frame3 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 1.0, f"case8 frame3 RMSE_v={rmse_v:.4f}"
+        assert rmse_u < 0.5, f"case8 frame3 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < 0.5, f"case8 frame3 RMSE_v={rmse_v:.4f}"
 
 
 # ---------------------------------------------------------------------------
@@ -588,8 +578,8 @@ class TestSyntheticRotation:
         rmse_u, rmse_v = compute_disp_rmse(
             U, coords, data["gt_u2"], data["gt_v2"], data["mask_img"],
         )
-        assert rmse_u < 1.0, f"case10 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 1.0, f"case10 RMSE_v={rmse_v:.4f}"
+        assert rmse_u < 0.3, f"case10 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < 0.3, f"case10 RMSE_v={rmse_v:.4f}"
 
     def test_case10_strain(self, ref_speckle):
         """Rotation strain should match analytical gradients."""
@@ -613,4 +603,4 @@ class TestSyntheticRotation:
         )
 
         for key, val in rmses.items():
-            assert val < 0.10, f"case10 {key}={val:.5f} >= 0.10"
+            assert val < 0.08, f"case10 {key}={val:.5f} >= 0.08"

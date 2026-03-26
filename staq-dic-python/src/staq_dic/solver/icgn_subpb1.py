@@ -227,6 +227,12 @@ def icgn_subpb1(
         except np.linalg.LinAlgError:
             break
 
+        # Supplementary convergence: displacement update negligible
+        if np.linalg.norm(delta_uv) < tol:
+            norm_new = 0.0
+            norm_abs = 0.0
+            break
+
         # Build 6-DOF delta_P (only translation components)
         delta_P = np.array([0.0, 0.0, 0.0, 0.0, delta_uv[0], delta_uv[1]])
 
