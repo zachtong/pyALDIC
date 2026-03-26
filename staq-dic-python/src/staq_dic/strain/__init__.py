@@ -1,0 +1,1 @@
+"""Strain computation and smoothing."""
