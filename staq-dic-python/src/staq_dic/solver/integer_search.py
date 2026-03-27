@@ -246,7 +246,7 @@ def _findpeak_subpixel(
         return float(px), float(py), float(max_val)
 
     x_offset = (-A[2] * A[3] + 2 * A[5] * A[1]) / denom
-    y_offset = (-A[3] * A[1] + 2 * A[4] * A[2]) / (-denom)
+    y_offset = (-A[3] * A[1] + 2 * A[4] * A[2]) / denom
 
     # If offset exceeds ±1, fall back to integer peak
     if abs(x_offset) > 1.0 or abs(y_offset) > 1.0:
