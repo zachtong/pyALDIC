@@ -50,7 +50,7 @@ from .data_structures import (
 from ..io.image_ops import compute_image_gradient, normalize_images
 from ..mesh.mesh_setup import mesh_setup
 from ..solver.init_disp import init_disp
-from ..solver.integer_search import integer_search
+from ..solver.integer_search import integer_search, integer_search_pyramid
 from ..solver.local_icgn import local_icgn
 from ..solver.subpb1_solver import subpb1_solver
 from ..solver.subpb2_solver import subpb2_solver
@@ -430,10 +430,17 @@ def run_aldic(
         if frame_idx == 1 or dic_mesh is None:
             if dic_mesh is None or current_U0 is None:
                 # No pre-built mesh/U0: use FFT integer search
-                logger.info("Running FFT integer search for initial guess...")
-                x0, y0, u_grid, v_grid, fft_info = integer_search(
-                    f_img, g_img, para,
-                )
+                use_pyramid = para.init_fft_search_method >= 2
+                if use_pyramid:
+                    logger.info("Running pyramid NCC search for initial guess...")
+                    x0, y0, u_grid, v_grid, fft_info = integer_search_pyramid(
+                        f_img, g_img, para,
+                    )
+                else:
+                    logger.info("Running FFT integer search for initial guess...")
+                    x0, y0, u_grid, v_grid, fft_info = integer_search(
+                        f_img, g_img, para,
+                    )
                 current_U0 = init_disp(
                     u_grid, v_grid, fft_info["cc_max"], x0, y0,
                 )

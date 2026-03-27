@@ -1,4 +1,4 @@
-"""FFT-based integer-pixel displacement search.
+"""NCC-based displacement search with optional image pyramid.
 
 Port of MATLAB solver/integer_search.m + integer_search_kernel.m
 (Jin Yang, Caltech).  Redesigned for Python using OpenCV matchTemplate.
@@ -8,14 +8,16 @@ Computes the initial displacement guess by normalized cross-correlation
 neighbourhood in the reference image is matched against a search region
 in the deformed image.
 
-MATLAB/Python differences:
-    - MATLAB ``normxcorr2`` -> ``cv2.matchTemplate`` with
-      ``cv2.TM_CCOEFF_NORMED``.
-    - MATLAB uses transposed images ``f(x, y)``; Python keeps standard
-      ``f[y, x]``.  All coordinate handling is adjusted accordingly.
-    - Sub-pixel refinement via 9-point quadratic polynomial fit
-      (same as MATLAB ``findpeak.m``).
-    - The 3-file MATLAB structure is consolidated here.
+Two search strategies:
+    - **Direct search** (default): Fixed search region per node.
+      Good for small-to-medium displacements (< search_region pixels).
+    - **Pyramid search**: Multi-scale coarse-to-fine NCC.
+      Handles large displacements without increasing search region.
+      Uses ``cv2.pyrDown`` image pyramid; at the coarsest level the
+      effective search range is ``search * 2^(n_levels-1)`` pixels.
+
+Sub-pixel refinement uses a 9-point quadratic polynomial fit
+(same as MATLAB ``findpeak.m``).
 """
 
 from __future__ import annotations
@@ -198,9 +200,363 @@ def integer_search(
     return x0, y0, u_grid, v_grid, info
 
 
+def integer_search_pyramid(
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    para: DICPara,
+    n_levels: int | None = None,
+    refine_search: int = 3,
+) -> tuple[
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    dict,
+]:
+    """Multi-scale NCC search using image pyramid.
+
+    Builds a Gaussian pyramid (via ``cv2.pyrDown``), performs NCC search
+    at the coarsest level to capture large displacements, then refines
+    at progressively finer levels with a small search window.
+
+    Effective search range at full resolution:
+        ``search_region * 2^(n_levels - 1) + refine_search * sum(2^k)``
+
+    For a 512×512 image with search=10 and 3 levels, this covers
+    ~40 + 14 = 54 pixels vs the direct method's 10 pixels.
+
+    Args:
+        f_img: Reference image (H, W), float64.
+        g_img: Deformed image (H, W), float64.
+        para: DIC parameters (same as ``integer_search``).
+        n_levels: Number of pyramid levels (1 = no pyramid, same as direct).
+            Default: auto-determined from image size (up to 4 levels).
+        refine_search: Search radius at refinement levels (pixels at that
+            level's resolution). Default 3.
+
+    Returns:
+        Same as ``integer_search``: ``(x0, y0, u, v, info)``.
+    """
+    h, w = f_img.shape
+    winsize = para.winsize
+    search = para.size_of_fft_search_region
+
+    # Auto-determine pyramid levels: stop when image is < 64px or winsize < 5px
+    if n_levels is None:
+        n_levels = 1
+        test_h, test_w, test_win = h, w, winsize
+        while test_h >= 128 and test_w >= 128 and test_win >= 10 and n_levels < 4:
+            n_levels += 1
+            test_h //= 2
+            test_w //= 2
+            test_win //= 2
+
+    if n_levels <= 1:
+        return integer_search(f_img, g_img, para)
+
+    # Build image pyramids
+    f_pyr = [f_img]
+    g_pyr = [g_img]
+    for _ in range(n_levels - 1):
+        f_pyr.append(cv2.pyrDown(f_pyr[-1].astype(np.float32)).astype(np.float64))
+        g_pyr.append(cv2.pyrDown(g_pyr[-1].astype(np.float32)).astype(np.float64))
+
+    logger.info(
+        "Pyramid search: %d levels, sizes %s",
+        n_levels,
+        [f.shape for f in f_pyr],
+    )
+
+    # Coarsest level: full search with scaled parameters
+    scale = 2 ** (n_levels - 1)
+    coarse_h, coarse_w = f_pyr[-1].shape
+    from dataclasses import replace
+    coarse_para = replace(
+        para,
+        winsize=max(5, winsize // scale),
+        winstepsize=max(1, para.winstepsize // scale),
+        size_of_fft_search_region=max(3, search),
+        gridxy_roi_range=GridxyROIRange(
+            gridx=(max(0, para.gridxy_roi_range.gridx[0] // scale),
+                   min(coarse_w - 1, para.gridxy_roi_range.gridx[1] // scale)),
+            gridy=(max(0, para.gridxy_roi_range.gridy[0] // scale),
+                   min(coarse_h - 1, para.gridxy_roi_range.gridy[1] // scale)),
+        ),
+        img_size=(coarse_h, coarse_w),
+        img_ref_mask=None,  # Mask applied at finest level only
+    )
+
+    x0_c, y0_c, u_c, v_c, info_c = integer_search(
+        f_pyr[-1], g_pyr[-1], coarse_para,
+    )
+
+    # Refine through intermediate levels
+    for level in range(n_levels - 2, 0, -1):
+        scale_l = 2 ** level
+        img_f = f_pyr[level]
+        img_g = g_pyr[level]
+        lh, lw = img_f.shape
+
+        # Scale up coordinates and displacements from previous level
+        x0_l = np.clip(x0_c * 2, 0, lw - 1)
+        y0_l = np.clip(y0_c * 2, 0, lh - 1)
+        u_l = u_c * 2
+        v_l = v_c * 2
+
+        # Refine at this level: small search around predicted position
+        u_l, v_l, cc_l = _refine_at_level(
+            img_f, img_g, x0_l, y0_l, u_l, v_l,
+            half_w=max(2, winsize // scale_l // 2),
+            search=refine_search,
+        )
+        x0_c, y0_c, u_c, v_c = x0_l, y0_l, u_l, v_l
+
+    # Final refinement at full resolution
+    x0_full = np.clip(x0_c * 2, 0, w - 1)
+    y0_full = np.clip(y0_c * 2, 0, h - 1)
+    u_full = u_c * 2
+    v_full = v_c * 2
+
+    half_w = winsize // 2
+    u_full, v_full, cc_full = _refine_at_level(
+        f_img, g_img, x0_full, y0_full, u_full, v_full,
+        half_w=half_w,
+        search=refine_search,
+    )
+
+    # Snap grid to the standard winstepsize grid expected by mesh_setup
+    # The pyramid may produce non-standard coordinates; remap to standard grid
+    x0_std, y0_std, u_std, v_std, cc_std = _remap_to_standard_grid(
+        x0_full, y0_full, u_full, v_full, cc_full,
+        para, h, w,
+    )
+
+    ny, nx = len(y0_std), len(x0_std)
+    qfactors = np.zeros((ny, nx, 2), dtype=np.float64)  # Not computed for pyramid
+
+    # Apply reference mask
+    if para.img_ref_mask is not None:
+        mask = para.img_ref_mask
+        for iy in range(ny):
+            for ix in range(nx):
+                cx = int(round(x0_std[ix]))
+                cy = int(round(y0_std[iy]))
+                if 0 <= cy < h and 0 <= cx < w:
+                    if mask[cy, cx] < 0.5:
+                        u_std[iy, ix] = np.nan
+                        v_std[iy, ix] = np.nan
+
+    n_valid = np.sum(np.isfinite(u_std))
+    logger.info(
+        "Pyramid search complete: %d/%d valid (%dx%d grid), "
+        "mean cc=%.3f",
+        n_valid, ny * nx, ny, nx,
+        np.nanmean(cc_std),
+    )
+
+    info = dict(
+        cc_max=cc_std,
+        qfactors=qfactors,
+        search_region_warning=False,
+    )
+    return x0_std, y0_std, u_std, v_std, info
+
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+
+
+def _refine_at_level(
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    x0: NDArray[np.float64],
+    y0: NDArray[np.float64],
+    u_init: NDArray[np.float64],
+    v_init: NDArray[np.float64],
+    half_w: int,
+    search: int,
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+    """Refine displacement at a single pyramid level via NCC.
+
+    For each grid node, extracts a template from the reference at (x0, y0)
+    and searches in the deformed image at (x0 + u_init, y0 + v_init) ± search.
+
+    Args:
+        f_img: Reference at this level.
+        g_img: Deformed at this level.
+        x0: Grid x-coords (M,).
+        y0: Grid y-coords (N,).
+        u_init: Initial u-displacement (N, M).
+        v_init: Initial v-displacement (N, M).
+        half_w: Half subset size.
+        search: Search radius.
+
+    Returns:
+        (u_refined, v_refined, cc_max) all shape (N, M).
+    """
+    h, w = f_img.shape
+    ny, nx = len(y0), len(x0)
+    u_out = u_init.copy()
+    v_out = v_init.copy()
+    cc_out = np.zeros((ny, nx), dtype=np.float64)
+
+    f32 = f_img.astype(np.float32)
+    g32 = g_img.astype(np.float32)
+
+    for iy in range(ny):
+        for ix in range(nx):
+            cx = int(round(x0[ix]))
+            cy = int(round(y0[iy]))
+
+            # Template from reference
+            t_y0 = cy - half_w
+            t_y1 = cy + half_w + 1
+            t_x0 = cx - half_w
+            t_x1 = cx + half_w + 1
+
+            if t_y0 < 0 or t_x0 < 0 or t_y1 > h or t_x1 > w:
+                u_out[iy, ix] = np.nan
+                v_out[iy, ix] = np.nan
+                continue
+
+            template = f32[t_y0:t_y1, t_x0:t_x1]
+            if np.std(template) < 1e-6:
+                u_out[iy, ix] = np.nan
+                v_out[iy, ix] = np.nan
+                continue
+
+            # Search in deformed image centered at predicted position
+            pred_cx = int(round(cx + u_init[iy, ix]))
+            pred_cy = int(round(cy + v_init[iy, ix]))
+            s_y0 = pred_cy - half_w - search
+            s_y1 = pred_cy + half_w + 1 + search
+            s_x0 = pred_cx - half_w - search
+            s_x1 = pred_cx + half_w + 1 + search
+
+            # Clamp to image bounds
+            s_y0_c = max(0, s_y0)
+            s_y1_c = min(h, s_y1)
+            s_x0_c = max(0, s_x0)
+            s_x1_c = min(w, s_x1)
+
+            search_img = g32[s_y0_c:s_y1_c, s_x0_c:s_x1_c]
+            if (search_img.shape[0] < template.shape[0] or
+                    search_img.shape[1] < template.shape[1]):
+                # Search region too small after clamping
+                continue
+
+            ncc_map = cv2.matchTemplate(
+                search_img, template, cv2.TM_CCOEFF_NORMED,
+            )
+
+            if ncc_map.size == 0:
+                continue
+
+            peak_x, peak_y, peak_val = _findpeak_subpixel(ncc_map)
+
+            # Convert peak position to displacement
+            # Peak (0,0) in ncc_map means template top-left is at search_img[0,0]
+            # Template center is at (half_w, half_w) relative to template top-left
+            # Search image starts at (s_x0_c, s_y0_c) in global coords
+            match_x = s_x0_c + peak_x + half_w
+            match_y = s_y0_c + peak_y + half_w
+            u_out[iy, ix] = match_x - cx
+            v_out[iy, ix] = match_y - cy
+            cc_out[iy, ix] = peak_val
+
+    return u_out, v_out, cc_out
+
+
+def _remap_to_standard_grid(
+    x0_pyr: NDArray[np.float64],
+    y0_pyr: NDArray[np.float64],
+    u_pyr: NDArray[np.float64],
+    v_pyr: NDArray[np.float64],
+    cc_pyr: NDArray[np.float64],
+    para: DICPara,
+    img_h: int,
+    img_w: int,
+) -> tuple[
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+]:
+    """Remap pyramid grid results to the standard winstepsize grid.
+
+    The pyramid may produce grid coordinates at slightly different positions
+    than the direct search. This function interpolates the pyramid results
+    onto the standard grid expected by mesh_setup.
+    """
+    from scipy.interpolate import RegularGridInterpolator
+
+    roi = para.gridxy_roi_range
+    winsize = para.winsize
+    winstepsize = para.winstepsize
+    half_w = winsize // 2
+    search = para.size_of_fft_search_region
+
+    # Standard grid (same as direct integer_search would produce)
+    min_x = max(roi.gridx[0], half_w + 1)
+    max_x = min(roi.gridx[1], img_w - 1 - half_w - 1)
+    min_y = max(roi.gridy[0], half_w + 1)
+    max_y = min(roi.gridy[1], img_h - 1 - half_w - 1)
+
+    x0_std = np.arange(min_x, max_x + 1, winstepsize, dtype=np.float64)
+    y0_std = np.arange(min_y, max_y + 1, winstepsize, dtype=np.float64)
+
+    if len(x0_std) == 0 or len(y0_std) == 0:
+        raise ValueError("Cannot generate standard grid from pyramid results.")
+
+    ny_std, nx_std = len(y0_std), len(x0_std)
+
+    # If pyramid grid matches standard grid, no interpolation needed
+    if (len(x0_pyr) == nx_std and len(y0_pyr) == ny_std and
+            np.allclose(x0_pyr, x0_std) and np.allclose(y0_pyr, y0_std)):
+        return x0_std, y0_std, u_pyr, v_pyr, cc_pyr
+
+    # Interpolate pyramid results onto standard grid
+    # Replace NaN with nearest valid value for interpolation
+    u_filled = u_pyr.copy()
+    v_filled = v_pyr.copy()
+    nan_mask = np.isnan(u_filled) | np.isnan(v_filled)
+    if np.all(nan_mask):
+        # All NaN — return NaN grid
+        u_std = np.full((ny_std, nx_std), np.nan)
+        v_std = np.full((ny_std, nx_std), np.nan)
+        cc_std = np.zeros((ny_std, nx_std))
+        return x0_std, y0_std, u_std, v_std, cc_std
+
+    if np.any(nan_mask):
+        from scipy.ndimage import generic_filter
+        for arr in [u_filled, v_filled]:
+            mask = np.isnan(arr)
+            if np.any(mask):
+                mean_val = np.nanmean(arr)
+                arr[mask] = mean_val
+
+    try:
+        interp_u = RegularGridInterpolator(
+            (y0_pyr, x0_pyr), u_filled,
+            method="linear", bounds_error=False, fill_value=None,
+        )
+        interp_v = RegularGridInterpolator(
+            (y0_pyr, x0_pyr), v_filled,
+            method="linear", bounds_error=False, fill_value=None,
+        )
+        yy, xx = np.meshgrid(y0_std, x0_std, indexing="ij")
+        pts = np.column_stack([yy.ravel(), xx.ravel()])
+        u_std = interp_u(pts).reshape(ny_std, nx_std)
+        v_std = interp_v(pts).reshape(ny_std, nx_std)
+    except ValueError:
+        # Interpolation failed — fall back to nearest
+        u_std = np.full((ny_std, nx_std), np.nanmean(u_filled))
+        v_std = np.full((ny_std, nx_std), np.nanmean(v_filled))
+
+    cc_std = np.zeros((ny_std, nx_std), dtype=np.float64)
+    return x0_std, y0_std, u_std, v_std, cc_std
 
 
 def _findpeak_subpixel(

@@ -1,8 +1,10 @@
-"""Tests for solver/integer_search.py — FFT-based NCC integer displacement search.
+"""Tests for solver/integer_search.py — NCC-based integer displacement search.
 
 Covers:
     - integer_search: zero displacement, known integer shift, known sub-pixel shift,
       grid generation, return shapes, constant template, search region warning
+    - integer_search_pyramid: large displacement, same-as-direct for small displacement,
+      n_levels=1 fallback, non-uniform displacement
     - _findpeak_subpixel: synthetic NCC map with known peak
     - _compute_qfactors: finite output for a well-formed NCC map
 """
@@ -18,6 +20,7 @@ from staq_dic.solver.integer_search import (
     _compute_qfactors,
     _findpeak_subpixel,
     integer_search,
+    integer_search_pyramid,
 )
 
 
@@ -448,3 +451,163 @@ class TestNoGridPointsRaisesError:
 
         with pytest.raises(ValueError, match="No grid points generated"):
             integer_search(tiny, tiny, para)
+
+
+# ---------------------------------------------------------------------------
+# Tests: integer_search_pyramid
+# ---------------------------------------------------------------------------
+
+# Larger image for pyramid tests (needs enough pixels for multi-level downsampling)
+PYR_SIZE = 256
+PYR_WINSIZE = 32
+PYR_STEP = 32
+PYR_SEARCH = 10
+
+
+def _make_pyr_para(
+    h: int = PYR_SIZE,
+    w: int = PYR_SIZE,
+    **overrides,
+) -> DICPara:
+    """Build DICPara for pyramid tests."""
+    defaults = dict(
+        winsize=PYR_WINSIZE,
+        winstepsize=PYR_STEP,
+        size_of_fft_search_region=PYR_SEARCH,
+        winsize_min=8,
+        tol=1e-2,
+        mu=1e-3,
+        admm_max_iter=2,
+        admm_tol=1e-2,
+        gauss_pt_order=2,
+        alpha=0.0,
+        use_global_step=True,
+        disp_smoothness=0.0,
+        strain_smoothness=0.0,
+        smoothness=0.0,
+        method_to_compute_strain=3,
+        strain_type=0,
+        gridxy_roi_range=GridxyROIRange(gridx=(10, w - 10), gridy=(10, h - 10)),
+        img_size=(h, w),
+        icgn_max_iter=50,
+    )
+    defaults.update(overrides)
+    return DICPara(**defaults)
+
+
+def _make_pyr_speckle(h: int = PYR_SIZE, w: int = PYR_SIZE, seed: int = 42):
+    """Gaussian-smoothed speckle for pyramid tests (larger sigma for pyramid)."""
+    rng = np.random.RandomState(seed)
+    raw = rng.rand(h, w)
+    smoothed = gaussian_filter(raw, sigma=3.0)
+    smoothed -= smoothed.min()
+    smoothed /= smoothed.max() + 1e-12
+    return smoothed.astype(np.float64)
+
+
+class TestPyramidSearchLargeDisplacement:
+    """Pyramid search should handle displacements beyond direct search range."""
+
+    def test_large_x_shift(self):
+        """25px x-shift exceeds search_region=10; pyramid should still work."""
+        ref = _make_pyr_speckle()
+        deformed = _fourier_shift(ref, dx=25.0, dy=0.0)
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, deformed, para)
+
+        assert np.sum(np.isnan(u)) < u.size * 0.5  # At least half valid
+        u_err = np.nanmean(np.abs(u - 25.0))
+        assert u_err < 1.0, f"u MAE {u_err:.3f} > 1.0 for 25px shift"
+
+    def test_large_xy_shift(self):
+        """Combined 20px x, -12px y shift."""
+        ref = _make_pyr_speckle()
+        deformed = _fourier_shift(ref, dx=20.0, dy=-12.0)
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, deformed, para)
+
+        u_err = np.nanmean(np.abs(u - 20.0))
+        v_err = np.nanmean(np.abs(v - (-12.0)))
+        assert u_err < 1.0, f"u MAE {u_err:.3f}"
+        assert v_err < 1.0, f"v MAE {v_err:.3f}"
+
+
+class TestPyramidSearchSmallDisplacement:
+    """Pyramid should not degrade accuracy for small displacements."""
+
+    def test_zero_displacement(self):
+        """Identical images → u≈0, v≈0."""
+        ref = _make_pyr_speckle()
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, ref, para)
+
+        assert np.nanmean(np.abs(u)) < 0.5
+        assert np.nanmean(np.abs(v)) < 0.5
+
+    def test_small_shift_accuracy(self):
+        """3.7px shift: pyramid should match direct search accuracy."""
+        ref = _make_pyr_speckle()
+        deformed = _fourier_shift(ref, dx=3.7, dy=-2.3)
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, deformed, para)
+
+        u_err = np.nanmean(np.abs(u - 3.7))
+        v_err = np.nanmean(np.abs(v - (-2.3)))
+        assert u_err < 0.5, f"u MAE {u_err:.3f}"
+        assert v_err < 0.5, f"v MAE {v_err:.3f}"
+
+
+class TestPyramidFallback:
+    """n_levels=1 should fall back to direct integer_search."""
+
+    def test_n_levels_1_matches_direct(self):
+        """With n_levels=1, pyramid should give same result as direct."""
+        ref = _make_pyr_speckle()
+        deformed = _fourier_shift(ref, dx=3.0, dy=0.0)
+        para = _make_pyr_para()
+
+        _, _, u_d, v_d, _ = integer_search(ref, deformed, para)
+        _, _, u_p, v_p, _ = integer_search_pyramid(
+            ref, deformed, para, n_levels=1,
+        )
+
+        np.testing.assert_array_equal(u_d, u_p)
+        np.testing.assert_array_equal(v_d, v_p)
+
+
+class TestPyramidReturnFormat:
+    """Pyramid should return same format as direct search."""
+
+    def test_return_types(self):
+        """All return arrays should have correct dtype and shapes."""
+        ref = _make_pyr_speckle()
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, ref, para)
+
+        assert x0.dtype == np.float64
+        assert y0.dtype == np.float64
+        assert u.dtype == np.float64
+        assert v.dtype == np.float64
+        assert u.shape == (len(y0), len(x0))
+        assert v.shape == (len(y0), len(x0))
+        assert "cc_max" in info
+        assert "qfactors" in info
+
+    def test_grid_uses_winstepsize(self):
+        """Grid spacing should match winstepsize."""
+        ref = _make_pyr_speckle()
+        para = _make_pyr_para()
+
+        x0, y0, u, v, info = integer_search_pyramid(ref, ref, para)
+
+        if len(x0) > 1:
+            dx = np.diff(x0)
+            assert np.allclose(dx, PYR_STEP), f"x spacing {dx} != {PYR_STEP}"
+        if len(y0) > 1:
+            dy = np.diff(y0)
+            assert np.allclose(dy, PYR_STEP), f"y spacing {dy} != {PYR_STEP}"
