@@ -128,13 +128,16 @@ class TestRunALDICValidation:
         with pytest.raises(ValueError, match="masks length"):
             run_aldic(para, images, masks)
 
-    def test_missing_mesh_and_U0(self):
-        """Should raise RuntimeError when mesh/U0 not provided."""
-        para = _make_default_para()
-        images = [np.zeros((64, 64)), np.zeros((64, 64))]
-        masks = [np.ones((64, 64)), np.ones((64, 64))]
-        with pytest.raises(RuntimeError, match="mesh and U0"):
-            run_aldic(para, images, masks)
+    def test_auto_fft_search_when_no_mesh(self):
+        """Pipeline should auto-generate mesh/U0 via FFT when not provided."""
+        h, w = 128, 128
+        ref, deformed = _make_speckle_pair(h, w, shift_x=2.0)
+        para = _make_default_para(h, w)
+        masks = [np.ones((h, w)), np.ones((h, w))]
+        # No mesh, no U0 — pipeline should use integer_search
+        result = run_aldic(para, [ref, deformed], masks, compute_strain=False)
+        assert result.dic_mesh is not None
+        assert len(result.result_disp) >= 1
 
     def test_stop_fn_aborts(self):
         """stop_fn returning True should raise RuntimeError."""

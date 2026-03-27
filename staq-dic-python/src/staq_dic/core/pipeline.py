@@ -48,6 +48,9 @@ from .data_structures import (
     StrainResult,
 )
 from ..io.image_ops import compute_image_gradient, normalize_images
+from ..mesh.mesh_setup import mesh_setup
+from ..solver.init_disp import init_disp
+from ..solver.integer_search import integer_search
 from ..solver.local_icgn import local_icgn
 from ..solver.subpb1_solver import subpb1_solver
 from ..solver.subpb2_solver import subpb2_solver
@@ -326,12 +329,10 @@ def run_aldic(
             Checked between major pipeline steps.
         compute_strain: If ``False``, skip Section 8 (strain computation)
             and return ``PipelineResult`` with empty ``result_strain``.
-        mesh: Pre-built DICMesh.  Required for the first frame when
-            ``integer_search`` is not yet implemented.  Subsequent frames
-            reuse this mesh.
-        U0: Initial displacement guess (2*n_nodes,).  Required for the
-            first frame when ``integer_search``/``init_disp`` are not
-            yet implemented.
+        mesh: Pre-built DICMesh.  If ``None``, a mesh is generated
+            automatically from the FFT search grid.
+        U0: Initial displacement guess (2*n_nodes,).  If ``None``,
+            computed via FFT cross-correlation (``integer_search``).
 
     Returns:
         PipelineResult containing per-frame displacements, deformation
@@ -427,13 +428,19 @@ def run_aldic(
         logger.info("--- Section 3 Start ---")
 
         if frame_idx == 1 or dic_mesh is None:
-            # First frame: need pre-built mesh and initial guess
             if dic_mesh is None or current_U0 is None:
-                raise RuntimeError(
-                    "First frame requires mesh and U0. Provide them via the "
-                    "'mesh' and 'U0' parameters. (integer_search/init_disp "
-                    "are not yet implemented.)"
+                # No pre-built mesh/U0: use FFT integer search
+                logger.info("Running FFT integer search for initial guess...")
+                x0, y0, u_grid, v_grid, fft_info = integer_search(
+                    f_img, g_img, para,
                 )
+                current_U0 = init_disp(
+                    u_grid, v_grid, fft_info["cc_max"], x0, y0,
+                )
+
+                # Build mesh from the FFT grid if not provided
+                if dic_mesh is None:
+                    dic_mesh = mesh_setup(x0, y0, para)
 
             # Apply mask: NaN for nodes in masked-out regions
             n_nodes = dic_mesh.coordinates_fem.shape[0]

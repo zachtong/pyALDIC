@@ -18,8 +18,10 @@ class TestMeshSetup:
 
         assert mesh.coordinates_fem.shape == (9, 2)
         assert mesh.elements_fem.shape == (4, 8)
-        assert mesh.elements_fem.min() >= 0
+        assert mesh.elements_fem[:, :4].min() >= 0
         assert mesh.elements_fem[:, :4].max() < 9
+        # Midside nodes should be -1 (no hanging nodes for uniform mesh)
+        np.testing.assert_array_equal(mesh.elements_fem[:, 4:], -1)
 
     def test_node_coordinates(self):
         """Node coordinates should match the grid."""
@@ -51,14 +53,14 @@ class TestMeshSetup:
         assert c0[1, 1] < c0[2, 1]  # node1.y < node2.y
         assert c0[3, 0] < c0[2, 0]  # node3.x < node2.x
 
-    def test_q8_midside_zeros(self):
-        """Q8 midside nodes (columns 4-7) should be 0 for uniform mesh."""
+    def test_q8_midside_absent(self):
+        """Q8 midside nodes (columns 4-7) should be -1 for uniform mesh."""
         x0 = np.array([0.0, 16.0, 32.0])
         y0 = np.array([0.0, 16.0, 32.0])
         para = dicpara_default(img_size=(64, 64))
         mesh = mesh_setup(x0, y0, para)
 
-        np.testing.assert_array_equal(mesh.elements_fem[:, 4:], 0)
+        np.testing.assert_array_equal(mesh.elements_fem[:, 4:], -1)
 
     def test_too_few_points(self):
         """Should raise ValueError with < 2 points."""
