@@ -4,7 +4,7 @@ Port of MATLAB mesh/mesh_setup.m.
 
 Constructs the starting uniform mesh from DIC grid coordinates before
 quadtree refinement. Uses Q8 (8-node quadrilateral) elements where
-nodes 5-8 are midside nodes set to 0 in the uniform case.
+nodes 5-8 are midside nodes set to -1 in the uniform case (no hanging nodes).
 
 MATLAB/Python differences:
     - MATLAB uses 1-based indices; we use 0-based.
@@ -68,14 +68,15 @@ def mesh_setup(
     node2 = (ii + 1) * ny + (jj + 1)  # top-right
     node3 = ii * ny + (jj + 1)      # top-left
 
-    # Q8 format: 4 corners + 4 midside nodes (0 = no midside node yet)
+    # Q8 format: 4 corners + 4 midside nodes (-1 = no midside node)
+    # Convention: midside >= 0 means hanging node exists; -1 means Q4 edge
     n_elem = len(node0)
-    elements_fem = np.zeros((n_elem, 8), dtype=np.int64)
+    elements_fem = np.full((n_elem, 8), -1, dtype=np.int64)
     elements_fem[:, 0] = node0
     elements_fem[:, 1] = node1
     elements_fem[:, 2] = node2
     elements_fem[:, 3] = node3
-    # Columns 4-7 remain 0 (no midside/hanging nodes for uniform mesh)
+    # Columns 4-7 remain -1 (no midside/hanging nodes for uniform mesh)
 
     # World coordinates: flip y-axis
     img_h = para.img_size[0] if para.img_size[0] > 0 else int(np.max(yy)) + 1
