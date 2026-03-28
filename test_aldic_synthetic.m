@@ -6,12 +6,17 @@
 % runs the full ALDIC pipeline via run_aldic(), and validates results
 % against ground truth.
 %
-% Five test cases:
+% Ten test cases:
 %   1. Zero displacement
 %   2. Uniform translation (u=2.5, v=-1.8)
 %   3. Affine deformation (2% uniform expansion)
 %   4. Annular mask with affine deformation (ring mask, winsizeMin=4)
 %   5. Simple shear (du/dy = 0.015)
+%   6. Large deformation (10% stretch + 5% shear)
+%   7. Multi-frame incremental (1 px/frame translation, 3 frames)
+%   8. Multi-frame accumulative (same as 7, accumulative mode)
+%   9. Local-only DIC (UseGlobalStep=false, compare with case3)
+%  10. Pure rotation (2-degree rigid rotation)
 %
 % Usage: Run this script in MATLAB from the STAQ-DIC-GUI root directory.
 % =========================================================================
@@ -35,23 +40,40 @@ H = 256; W = 256;
 
 % Define test cases: {name, frame2_u_func, frame2_v_func, frame3_u_func, frame3_v_func,
 %                      GT_strain_F11, GT_strain_F22, mask_type, DICpara_overrides,
-%                      GT_strain_F12, GT_strain_F21}
+%                      GT_strain_F12, GT_strain_F21, disp_tol, strain_tol}
 test_cases = {
     'case1_zero',        @(x,y) zeros(size(x)), @(x,y) zeros(size(x)), ...
                          @(x,y) zeros(size(x)), @(x,y) zeros(size(x)), ...
-                         0, 0, 'solid', struct(), 0, 0;
+                         0, 0, 'solid', struct(), 0, 0, 0.5, 0.03;
     'case2_translation', @(x,y)  2.5*ones(size(x)), @(x,y) -1.8*ones(size(x)), ...
                          @(x,y)  5.0*ones(size(x)), @(x,y) -3.6*ones(size(x)), ...
-                         0, 0, 'solid', struct(), 0, 0;
+                         0, 0, 'solid', struct(), 0, 0, 0.5, 0.03;
     'case3_affine',      @(x,y) 0.02*(x-128), @(x,y) 0.02*(y-128), ...
                          @(x,y) 0.04*(x-128), @(x,y) 0.04*(y-128), ...
-                         0.02, 0.02, 'solid', struct(), 0, 0;
+                         0.02, 0.02, 'solid', struct(), 0, 0, 0.5, 0.03;
     'case4_annular',     @(x,y) 0.02*(x-128), @(x,y) 0.02*(y-128), ...
                          @(x,y) 0.04*(x-128), @(x,y) 0.04*(y-128), ...
-                         0.02, 0.02, 'annular', struct('winsizeMin', 4), 0, 0;
+                         0.02, 0.02, 'annular', struct('winsizeMin', 4), 0, 0, 0.5, 0.03;
     'case5_shear',       @(x,y) 0.015*(y-128), @(x,y) zeros(size(x)), ...
                          @(x,y) 0.030*(y-128), @(x,y) zeros(size(x)), ...
-                         0, 0, 'solid', struct(), 0.015, 0;
+                         0, 0, 'solid', struct(), 0.015, 0, 0.5, 0.03;
+    'case6_large_deform', @(x,y) 0.10*(x-128)+0.05*(y-128), @(x,y) 0.05*(x-128)+0.10*(y-128), ...
+                          @(x,y) 0.20*(x-128)+0.10*(y-128), @(x,y) 0.10*(x-128)+0.20*(y-128), ...
+                          0.10, 0.10, 'solid', struct('winsize',48,'SizeOfFFTSearchRegion',25), 0.05, 0.05, 1.0, 0.05;
+    'case7_multiframe_incr', @(x,y) 1.0*ones(size(x)), @(x,y) zeros(size(x)), ...
+                              @(x,y) 2.0*ones(size(x)), @(x,y) zeros(size(x)), ...
+                              0, 0, 'solid', struct('referenceMode','incremental'), 0, 0, 0.5, 0.03;
+    'case8_multiframe_accum', @(x,y) 1.0*ones(size(x)), @(x,y) zeros(size(x)), ...
+                               @(x,y) 2.0*ones(size(x)), @(x,y) zeros(size(x)), ...
+                               0, 0, 'solid', struct(), 0, 0, 0.5, 0.03;
+    'case9_local_only',  @(x,y) 0.02*(x-128), @(x,y) 0.02*(y-128), ...
+                         @(x,y) 0.04*(x-128), @(x,y) 0.04*(y-128), ...
+                         0.02, 0.02, 'solid', struct('UseGlobalStep',false), 0, 0, 0.5, 0.03;
+    'case10_rotation',   @(x,y) (x-128)*(cos(pi/90)-1)-(y-128)*sin(pi/90), ...
+                         @(x,y) (x-128)*sin(pi/90)+(y-128)*(cos(pi/90)-1), ...
+                         @(x,y) (x-128)*(cos(pi/45)-1)-(y-128)*sin(pi/45), ...
+                         @(x,y) (x-128)*sin(pi/45)+(y-128)*(cos(pi/45)-1), ...
+                         cos(pi/90)-1, cos(pi/90)-1, 'solid', struct(), -sin(pi/90), sin(pi/90), 0.5, 0.03;
 };
 
 % Masks (in file coordinates: rows=y_file, cols=x_file)
@@ -186,7 +208,10 @@ for tc = 1:size(test_cases, 1)
     results = run_aldic(DICpara, file_name, Img, ImgMask);
 
     % ====== Validate results ======
-    % Use frame 2 (index 1) for summary — always computed
+    disp_tol = test_cases{tc, 12};
+    strain_tol = test_cases{tc, 13};
+
+    % --- Frame 2 (index 1) validation ---
     finalU = results.ResultDisp{1}.U_accum;
     finalCoord = results.ResultFEMeshEachFrame{1}.coordinatesFEM;
     final_mask = double(ImgMask{1});
@@ -194,13 +219,31 @@ for tc = 1:size(test_cases, 1)
     gt_u_final = gt_u2(finalCoord(:,1), finalCoord(:,2));
     gt_v_final = gt_v2(finalCoord(:,1), finalCoord(:,2));
     stats_final = compare_disp_GT(finalU, finalCoord, gt_u_final, gt_v_final, final_mask);
-    debug_print(sprintf('%s displacement', caseName), stats_final);
+    debug_print(sprintf('%s frame2 displacement', caseName), stats_final);
 
     summary(tc).name = caseName;
     summary(tc).rmse_u = stats_final.rmse_u;
     summary(tc).rmse_v = stats_final.rmse_v;
-    summary(tc).pass_disp = (stats_final.rmse_u < 0.5) && (stats_final.rmse_v < 0.5);
+    summary(tc).pass_disp = (stats_final.rmse_u < disp_tol) && (stats_final.rmse_v < disp_tol);
 
+    % --- Frame 3 (last frame) cumulative displacement validation ---
+    if length(results.ResultDisp) >= 2
+        finalU3 = results.ResultDisp{2}.U_accum;
+        gt_u3_final = gt_u3(finalCoord(:,1), finalCoord(:,2));
+        gt_v3_final = gt_v3(finalCoord(:,1), finalCoord(:,2));
+        stats_f3 = compare_disp_GT(finalU3, finalCoord, gt_u3_final, gt_v3_final, final_mask);
+        debug_print(sprintf('%s frame3 displacement', caseName), stats_f3);
+        summary(tc).rmse_u_f3 = stats_f3.rmse_u;
+        summary(tc).rmse_v_f3 = stats_f3.rmse_v;
+        summary(tc).pass_disp_f3 = (stats_f3.rmse_u < disp_tol) && (stats_f3.rmse_v < disp_tol);
+        summary(tc).pass_disp = summary(tc).pass_disp && summary(tc).pass_disp_f3;
+    else
+        summary(tc).rmse_u_f3 = NaN;
+        summary(tc).rmse_v_f3 = NaN;
+        summary(tc).pass_disp_f3 = true;
+    end
+
+    % --- Strain validation (frame 2) ---
     if gt_F11 ~= 0 || gt_F22 ~= 0 || gt_F12 ~= 0 || gt_F21 ~= 0
         FStrainVec = [results.ResultStrain{1}.dudx(:), results.ResultStrain{1}.dvdx(:), ...
                       results.ResultStrain{1}.dudy(:), results.ResultStrain{1}.dvdy(:)]';
@@ -216,7 +259,6 @@ for tc = 1:size(test_cases, 1)
         summary(tc).rmse_F22 = stats_strain_final.rmse_F22;
         summary(tc).rmse_F12 = stats_strain_final.rmse_F12;
         summary(tc).rmse_F21 = stats_strain_final.rmse_F21;
-        strain_tol = 0.03;
         summary(tc).pass_strain = (stats_strain_final.rmse_F11 < strain_tol) && (stats_strain_final.rmse_F22 < strain_tol) ...
             && (stats_strain_final.rmse_F12 < strain_tol) && (stats_strain_final.rmse_F21 < strain_tol);
     else
@@ -233,17 +275,31 @@ end
 
 %% Part 3: Final Summary
 fprintf('\n\n');
-fprintf('================ SYNTHETIC TEST SUMMARY ================\n');
+fprintf('==================== SYNTHETIC TEST SUMMARY ====================\n');
 all_pass = true;
 for tc = 1:length(summary)
     s = summary(tc);
+    dtol = test_cases{tc, 12};
+    stol = test_cases{tc, 13};
+
     if s.pass_disp
         disp_status = 'PASS';
     else
         disp_status = 'FAIL'; all_pass = false;
     end
-    fprintf('%-25s RMSE_u = %.4f  RMSE_v = %.4f  [%s]\n', ...
-        s.name, s.rmse_u, s.rmse_v, disp_status);
+    fprintf('%-25s F2: RMSE_u=%.4f RMSE_v=%.4f (tol=%.1f) [%s]\n', ...
+        s.name, s.rmse_u, s.rmse_v, dtol, disp_status);
+
+    % Show frame 3 results if available
+    if ~isnan(s.rmse_u_f3)
+        if s.pass_disp_f3
+            f3_status = 'PASS';
+        else
+            f3_status = 'FAIL';
+        end
+        fprintf('%-25s F3: RMSE_u=%.4f RMSE_v=%.4f [%s]\n', ...
+            '', s.rmse_u_f3, s.rmse_v_f3, f3_status);
+    end
 
     if ~isnan(s.rmse_F11)
         if s.pass_strain
@@ -251,17 +307,17 @@ for tc = 1:length(summary)
         else
             strain_status = 'FAIL'; all_pass = false;
         end
-        fprintf('%-25s RMSE_F11=%.4f F22=%.4f F12=%.4f F21=%.4f [%s]\n', ...
-            '', s.rmse_F11, s.rmse_F22, s.rmse_F12, s.rmse_F21, strain_status);
+        fprintf('%-25s Strain: F11=%.5f F22=%.5f F12=%.5f F21=%.5f (tol=%.2f) [%s]\n', ...
+            '', s.rmse_F11, s.rmse_F22, s.rmse_F12, s.rmse_F21, stol, strain_status);
     end
 end
-fprintf('========================================================\n');
+fprintf('================================================================\n');
 if all_pass
-    fprintf('  ALL TESTS PASSED\n');
+    fprintf('  ALL %d TESTS PASSED\n', length(summary));
 else
     fprintf('  SOME TESTS FAILED\n');
 end
-fprintf('========================================================\n');
+fprintf('================================================================\n');
 
 
 %% =====================================================================

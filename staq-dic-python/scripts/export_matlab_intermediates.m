@@ -2,11 +2,16 @@
 % Run STAQ-DIC on a synthetic test case with ExportIntermediates=true
 % to generate checkpoint .mat files for Python cross-validation.
 %
-% Usage: Run from the STAQ-DIC-GUI root directory.
-%   >> cd path/to/STAQ-DIC-GUI
-%   >> run('staq-dic-python/scripts/export_matlab_intermediates.m')
+% Usage: Run from anywhere — the script auto-detects STAQ-DIC-GUI root.
+%   >> run('path/to/staq-dic-python/scripts/export_matlab_intermediates.m')
 
 close all; clear; clc;
+
+% Auto-detect project root: this script lives in <root>/staq-dic-python/scripts/
+scriptDir = fileparts(mfilename('fullpath'));
+projectRoot = fullfile(scriptDir, '..', '..');
+cd(projectRoot);
+fprintf('Working directory: %s\n', pwd);
 
 addpath('./config', './io', './mesh', './solver', './strain', './plotting', ...
     './third_party');
