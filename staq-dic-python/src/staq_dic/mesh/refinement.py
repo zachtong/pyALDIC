@@ -63,7 +63,7 @@ class RefinementContext:
     Df: ImageGradients | None = None
     U: NDArray[np.float64] | None = None
     F: NDArray[np.float64] | None = None
-    conv_iterations: NDArray[np.int32] | None = None
+    conv_iterations: NDArray[np.int64] | None = None
     user_marks: NDArray[np.int64] | None = None
 
 

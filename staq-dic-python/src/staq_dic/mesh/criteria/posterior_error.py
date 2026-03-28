@@ -68,12 +68,9 @@ class PosteriorErrorCriterion:
         if len(bad_nodes) == 0:
             return marks
 
-        # Vectorized element marking: check if any corner node is bad
-        bad_set = set(bad_nodes)
+        # Vectorized element marking: mark if any corner node is bad
         corners = ctx.mesh.elements_fem[:, :4]
-        for i in range(n_elem):
-            if any(int(n) in bad_set for n in corners[i]):
-                marks[i] = True
+        marks = np.isin(corners, bad_nodes).any(axis=1)
 
         return marks
 
