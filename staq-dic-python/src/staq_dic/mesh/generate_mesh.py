@@ -37,9 +37,6 @@ from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
 from scipy.ndimage import gaussian_filter, label
 
 from ..core.data_structures import DICMesh, DICPara, ImageGradients
-from .mark_edge import mark_edge
-from .mark_inside import mark_inside
-from .qrefine_r import qrefine_r
 
 
 def generate_mesh(
@@ -50,11 +47,8 @@ def generate_mesh(
 ) -> tuple[DICMesh, NDArray[np.float64]]:
     """Generate an adaptive quadtree mesh from a uniform starting mesh.
 
-    Iteratively refines elements that straddle mask edges until no further
-    refinement is needed (or elements reach ``element_min_size``).  After
-    refinement, nodes inside mask holes are identified and the displacement
-    field ``U0`` is interpolated from the old uniform mesh onto the new
-    quadtree mesh.
+    This is the legacy entry point. Internally delegates to refine_mesh()
+    with MaskBoundaryCriterion for backward compatibility.
 
     Args:
         mesh: Initial uniform DICMesh (from ``mesh_setup``).
@@ -73,63 +67,20 @@ def generate_mesh(
             - ``U0_qt``: Displacement vector interpolated onto the quadtree
               mesh, shape (2*n_nodes_qt,).
     """
+    from .criteria.mask_boundary import MaskBoundaryCriterion
+    from .refinement import RefinementContext, refine_mesh
+
     mask = para.img_ref_mask
     if mask is None:
         raise ValueError("DICPara.img_ref_mask must be set for quadtree mesh generation")
 
-    coords_qt = mesh.coordinates_fem.copy()
-    elems_qt = mesh.elements_fem[:, :4].copy()  # Work with Q4 during refinement
-    irregular = np.empty((0, 3), dtype=np.int64)
+    criterion = MaskBoundaryCriterion(min_element_size=mesh.element_min_size)
+    ctx = RefinementContext(mesh=mesh, mask=mask, Df=Df)
 
-    # --- Step 1: Iterative quadtree refinement ---
-    while True:
-        marks = mark_edge(coords_qt, elems_qt, mask, mesh.element_min_size)
-        marked_idx = np.where(marks)[0]
-        coords_qt, elems_qt, irregular = qrefine_r(
-            coords_qt, elems_qt, irregular, marked_idx
-        )
-        if len(marked_idx) == 0:
-            break
-
-    # --- Step 2: Reorder element nodes to CCW (BL, BR, TR, TL) ---
-    _reorder_element_nodes_ccw(coords_qt, elems_qt)
-
-    # --- Step 3: Build Q8 elements with hanging nodes ---
-    elems_q8 = _inject_hanging_nodes(elems_qt, irregular)
-
-    # --- Step 4: Remove elements inside holes ---
-    _, outside_idx = mark_inside(coords_qt, elems_q8, mask)
-    elems_q8 = elems_q8[outside_idx]
-
-    # --- Step 5: Identify boundary-adjacent nodes ---
-    mark_coord_hole_edge = _find_boundary_nodes(
-        coords_qt, elems_q8, mesh.coordinates_fem, para.winstepsize
+    return refine_mesh(
+        mesh, [criterion], ctx, U0,
+        mask=mask, img_size=Df.img_size,
     )
-
-    # --- Step 6: Interpolate U0 from uniform to quadtree mesh ---
-    U0_qt = _interpolate_u0(
-        mesh.coordinates_fem, coords_qt, U0, Df.img_ref_mask, Df.img_size
-    )
-
-    # --- Step 7: Assemble output mesh ---
-    h, _w = Df.img_size
-    coords_world = np.column_stack([
-        coords_qt[:, 0],
-        h + 1 - coords_qt[:, 1],
-    ])
-
-    mesh_qt = DICMesh(
-        coordinates_fem=coords_qt,
-        elements_fem=elems_q8,
-        irregular=irregular,
-        mark_coord_hole_edge=mark_coord_hole_edge,
-        coordinates_fem_world=coords_world,
-        x0=mesh.x0,
-        y0=mesh.y0,
-        element_min_size=mesh.element_min_size,
-    )
-
-    return mesh_qt, U0_qt
 
 
 def _reorder_element_nodes_ccw(
