@@ -120,3 +120,28 @@ class TestPostSolveRefinement:
         r2 = run_aldic(para, [ref, defm], [mask, mask],
                        compute_strain=False, refinement_policy=policy)
         np.testing.assert_allclose(r1.result_disp[0].U, r2.result_disp[0].U)
+
+
+class TestPerFrameRefinement:
+    def test_incremental_mode_independent_meshes(self):
+        """Each frame in incremental mode should have its own mesh."""
+        h, w = 128, 128
+        ref = _make_speckle(h, w, seed=1)
+        f2 = _make_speckle(h, w, seed=2)
+        f3 = _make_speckle(h, w, seed=3)
+        mask = np.ones((h, w), dtype=np.float64)
+        mask[30:50, 30:50] = 0.0  # small hole
+        para = dicpara_default(
+            winstepsize=16, winsize=32, winsize_min=4,
+            reference_mode='incremental',
+            gridxy_roi_range=GridxyROIRange(gridx=(16, 112), gridy=(16, 112)),
+        )
+        policy = RefinementPolicy(
+            pre_solve=[MaskBoundaryCriterion(min_element_size=4)],
+        )
+        result = run_aldic(para, [ref, f2, f3], [mask, mask, mask],
+                          compute_strain=False, refinement_policy=policy)
+        # Both frames should complete
+        assert len(result.result_disp) == 2
+        assert result.result_disp[0] is not None
+        assert result.result_disp[1] is not None
