@@ -590,13 +590,6 @@ def run_aldic(
             n_nodes = dic_mesh.coordinates_fem.shape[0]
             progress(frac, f"Frame {frame_idx + 1}: refined to {n_nodes} nodes")
 
-        # Snapshot mesh for this frame
-        result_fe_mesh[frame_idx - 1] = DICMesh(
-            coordinates_fem=dic_mesh.coordinates_fem.copy(),
-            elements_fem=dic_mesh.elements_fem.copy(),
-            mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge.copy(),
-        )
-
         # Precompute node-to-region mapping for smoothing
         n_nodes = dic_mesh.coordinates_fem.shape[0]
         node_region_map = precompute_node_regions(
@@ -805,6 +798,98 @@ def run_aldic(
             # No global step: local ICGN result is final
             U_final = U_subpb1
             F_final = F_subpb1
+
+        # =============================================================
+        # Post-solve refinement loop
+        # =============================================================
+        if (
+            refinement_policy is not None
+            and refinement_policy.has_post_solve
+        ):
+            for cycle in range(refinement_policy.max_post_solve_cycles):
+                logger.info(
+                    "Post-solve refinement cycle %d/%d",
+                    cycle + 1, refinement_policy.max_post_solve_cycles,
+                )
+                post_ctx = RefinementContext(
+                    mesh=dic_mesh,
+                    mask=f_mask,
+                    Df=Df,
+                    U=U_final,
+                    F=F_final,
+                    conv_iterations=conv_iter_s4,
+                )
+                new_mesh, new_U0 = refine_mesh(
+                    dic_mesh, refinement_policy.post_solve, post_ctx,
+                    U_final, mask=f_mask, img_size=(img_h, img_w),
+                )
+                if new_mesh.coordinates_fem.shape[0] == dic_mesh.coordinates_fem.shape[0]:
+                    logger.info("No elements marked — stopping post-solve refinement")
+                    break
+
+                # Update mesh and re-solve
+                dic_mesh = new_mesh
+                current_U0 = new_U0
+                n_nodes = dic_mesh.coordinates_fem.shape[0]
+
+                # Recompute node region map
+                node_region_map = precompute_node_regions(
+                    dic_mesh.coordinates_fem, f_mask, (img_h, img_w),
+                )
+
+                # Re-run Section 4 (local IC-GN)
+                (
+                    U_subpb1, F_subpb1, local_time, conv_iter_s4,
+                    bad_pt_num_s4, mark_hole_strain,
+                ) = local_icgn(
+                    current_U0, dic_mesh.coordinates_fem, Df,
+                    f_img_raw, g_img, para, tol,
+                )
+
+                if para.use_global_step:
+                    # Invalidate subpb2 cache (mesh changed)
+                    subpb2_cache_obj = None
+                    subpb2_cache_beta = None
+
+                    # Re-tune beta for new mesh
+                    beta_val = _auto_tune_beta(
+                        dic_mesh, para, para.mu, U_subpb1, F_subpb1,
+                    )
+
+                    # Fresh ADMM dual variables
+                    grad_dual = np.zeros(4 * n_nodes, dtype=np.float64)
+                    disp_dual = np.zeros(2 * n_nodes, dtype=np.float64)
+
+                    # Re-run Subpb2
+                    U_subpb2 = subpb2_solver(
+                        dic_mesh, para.gauss_pt_order, beta_val, para.mu,
+                        U_subpb1, F_subpb1, grad_dual, disp_dual,
+                        para.alpha, para.winstepsize,
+                    )
+                    F_subpb2 = global_nodal_strain_fem(dic_mesh, para, U_subpb2)
+
+                    U_subpb2, F_subpb2 = _apply_post_solve_corrections(
+                        U_subpb2, F_subpb2, U_subpb1, F_subpb1,
+                        dic_mesh, para, node_region_map, mark_hole_strain,
+                    )
+
+                    U_final = U_subpb2
+                    F_final = F_subpb2
+                else:
+                    U_final = U_subpb1
+                    F_final = F_subpb1
+
+                logger.info(
+                    "Post-solve cycle %d: %d nodes",
+                    cycle + 1, n_nodes,
+                )
+
+        # Update mesh snapshot for this frame (may have been refined)
+        result_fe_mesh[frame_idx - 1] = DICMesh(
+            coordinates_fem=dic_mesh.coordinates_fem.copy(),
+            elements_fem=dic_mesh.elements_fem.copy(),
+            mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge.copy(),
+        )
 
         # Store frame results (with ref_frame metadata)
         result_disp[frame_idx - 1] = FrameResult(
