@@ -75,3 +75,48 @@ class TestPreSolveRefinement:
         r2 = run_aldic(para, [ref, defm], [mask, mask], compute_strain=False,
                       refinement_policy=None)
         np.testing.assert_allclose(r1.result_disp[0].U, r2.result_disp[0].U)
+
+
+from staq_dic.mesh.criteria.posterior_error import PosteriorErrorCriterion
+
+
+class TestPostSolveRefinement:
+    def test_post_solve_refines_on_poor_convergence(self):
+        """Post-solve criterion should trigger re-solve with finer mesh."""
+        h, w = 128, 128
+        ref = _make_speckle(h, w, seed=1)
+        from scipy.ndimage import shift
+        defm = shift(ref, [0, 8.0], order=3, mode='reflect')
+        mask = np.ones((h, w), dtype=np.float64)
+        para = dicpara_default(
+            winstepsize=16, winsize=32, winsize_min=4,
+            gridxy_roi_range=GridxyROIRange(gridx=(16, 112), gridy=(16, 112)),
+            size_of_fft_search_region=15,
+        )
+        policy = RefinementPolicy(
+            post_solve=[PosteriorErrorCriterion(sigma_factor=0.5, min_element_size=4)],
+            max_post_solve_cycles=1,
+        )
+        result = run_aldic(para, [ref, defm], [mask, mask],
+                          compute_strain=False, refinement_policy=policy)
+        assert result.result_disp[0] is not None
+
+    def test_zero_cycles_skips_post_solve(self):
+        """max_post_solve_cycles=0 should skip post-solve even with criteria."""
+        h, w = 128, 128
+        ref = _make_speckle(h, w, seed=1)
+        defm = _make_speckle(h, w, seed=1)
+        mask = np.ones((h, w), dtype=np.float64)
+        para = dicpara_default(
+            winstepsize=16, winsize=32, winsize_min=4,
+            gridxy_roi_range=GridxyROIRange(gridx=(16, 112), gridy=(16, 112)),
+        )
+        policy = RefinementPolicy(
+            post_solve=[PosteriorErrorCriterion()],
+            max_post_solve_cycles=0,
+        )
+        r1 = run_aldic(para, [ref, defm], [mask, mask],
+                       compute_strain=False, refinement_policy=None)
+        r2 = run_aldic(para, [ref, defm], [mask, mask],
+                       compute_strain=False, refinement_policy=policy)
+        np.testing.assert_allclose(r1.result_disp[0].U, r2.result_disp[0].U)
