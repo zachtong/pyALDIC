@@ -26,6 +26,9 @@ CLAUDE.md
 # Figma design files
 Figma_design_files/
 
+# Sample datasets (large binary files)
+examples/
+
 # OS files
 Thumbs.db
 .DS_Store

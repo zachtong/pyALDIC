@@ -16,6 +16,10 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 %     'StopFcn'        function handle() returning true to abort computation
 %     'ComputeStrain'  logical (default true). If false, skip strain computation
 %                      and return results without ResultStrain field.
+%     'ExportIntermediates'  logical (default false). If true, save checkpoint
+%                      .mat files (-v7 for Python compatibility) at each section
+%                      boundary. Used for Python port cross-validation.
+%     'ExportDir'      char (default './checkpoints'). Directory for checkpoint files.
 %
 %   OUTPUT:
 %       results - struct with fields:
@@ -43,11 +47,20 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
     addParameter(p, 'ProgressFcn', @(frac,msg) default_progress(frac,msg));
     addParameter(p, 'StopFcn', @() false);
     addParameter(p, 'ComputeStrain', true);
+    addParameter(p, 'ExportIntermediates', false);
+    addParameter(p, 'ExportDir', './checkpoints');
     parse(p, varargin{:});
     progressFcn = p.Results.ProgressFcn;
     stopFcn = p.Results.StopFcn;
     computeStrain = p.Results.ComputeStrain;
+    exportIntermed = p.Results.ExportIntermediates;
+    exportDir = p.Results.ExportDir;
     showPlots = DICpara.showPlots;
+
+    if exportIntermed
+        if ~exist(exportDir, 'dir'), mkdir(exportDir); end
+        fprintf('[export] Checkpoint dir: %s\n', exportDir);
+    end
 
     %% Section 2b: Normalize images and initialize storage
     fprintf('------------ Section 2 Start ------------ \n')
@@ -71,6 +84,15 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
     ResultFEMeshEachFrame = cell(length(ImgNormalized)-1, 1);
     ResultFEMesh = cell(ceil((length(ImgNormalized)-1)/DICpara.ImgSeqIncUnit), 1);
     fprintf('------------ Section 2 Done ------------ \n\n')
+
+    % Checkpoint S2b
+    if exportIntermed
+        gridxyROIRange = DICpara.gridxyROIRange;
+        ImgSize = DICpara.ImgSize;
+        save(fullfile(exportDir, 'checkpoint_S2b.mat'), ...
+            'ImgNormalized', 'gridxyROIRange', 'ImgSize', '-v7');
+        fprintf('[export] Saved checkpoint_S2b.mat\n');
+    end
 
     %% Debug options
     UseGlobal = DICpara.UseGlobalStep;
@@ -229,6 +251,16 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
 
         fprintf('------------ Section 3 Done ------------ \n\n')
 
+        % Checkpoint S3
+        if exportIntermed
+            ckpt_coordFEM = DICmesh.coordinatesFEM;
+            ckpt_elemFEM = DICmesh.elementsFEM;
+            ckpt_irregular = DICmesh.irregular;
+            save(fullfile(exportDir, sprintf('checkpoint_S3_frame%d.mat', ImgSeqNum)), ...
+                'ckpt_coordFEM', 'ckpt_elemFEM', 'ckpt_irregular', 'U0', '-v7');
+            fprintf('[export] Saved checkpoint_S3_frame%d.mat\n', ImgSeqNum);
+        end
+
         % Precompute node-to-region mapping for smoothing calls
         nodeRegionMap = precompute_node_regions(DICmesh.coordinatesFEM, DICpara);
 
@@ -267,6 +299,14 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         stepData(ALSolveStep).FSubpb1 = FSubpb1;
 
         fprintf('------------ Section 4 Done ------------ \n\n')
+
+        % Checkpoint S4
+        if exportIntermed
+            save(fullfile(exportDir, sprintf('checkpoint_S4_frame%d.mat', ImgSeqNum)), ...
+                'USubpb1', 'FSubpb1', 'ConvItPerEle', 'markCoordHoleStrain', '-v7');
+            fprintf('[export] Saved checkpoint_S4_frame%d.mat\n', ImgSeqNum);
+        end
+
         progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S4 done (local IC-GN)', ImgSeqNum));
 
         % --- Validation: local ICGN result ---
@@ -336,6 +376,14 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
             stepData(ALSolveStep).udual = udual;
             stepData(ALSolveStep).vdual = vdual;
             fprintf('------------ Section 5 Done ------------ \n\n')
+
+            % Checkpoint S5
+            if exportIntermed
+                save(fullfile(exportDir, sprintf('checkpoint_S5_frame%d.mat', ImgSeqNum)), ...
+                    'USubpb2', 'FSubpb2', 'beta', 'udual', 'vdual', '-v7');
+                fprintf('[export] Saved checkpoint_S5_frame%d.mat\n', ImgSeqNum);
+            end
+
             progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S5 done (subpb2 init)', ImgSeqNum));
 
             assert(~all(isnan(USubpb2)), 'run_aldic:USubpb2initNaN', ...
@@ -404,6 +452,17 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
                 end
             end
             fprintf('------------ Section 6 Done ------------ \n\n')
+
+            % Checkpoint S6: per-ADMM-step data
+            if exportIntermed
+                ckpt_stepData = stepData;
+                ckpt_ALSolveStep = ALSolveStep;
+                save(fullfile(exportDir, sprintf('checkpoint_S6_frame%d.mat', ImgSeqNum)), ...
+                    'ckpt_stepData', 'ckpt_ALSolveStep', 'USubpb1', 'USubpb2', ...
+                    'FSubpb1', 'FSubpb2', 'udual', 'vdual', '-v7');
+                fprintf('[export] Saved checkpoint_S6_frame%d.mat\n', ImgSeqNum);
+            end
+
             progressFcn((ImgSeqNum-2)/(nFrames-1), sprintf('Frame %d: S6 done (ADMM %d steps)', ImgSeqNum, ALSolveStep));
         end
 
@@ -608,6 +667,15 @@ function results = run_aldic(DICpara, file_name, Img, ImgMask, varargin)
         end
     end
     progressFcn(0.9, 'S8 done (strain/disp)');
+
+    % Checkpoint S8
+    if exportIntermed
+        save(fullfile(exportDir, 'checkpoint_S8.mat'), ...
+            'ResultDisp', 'ResultDefGrad', 'ResultStrain', ...
+            'ResultFEMeshEachFrame', 'coordinatesFEM', 'elementsFEM', '-v7');
+        fprintf('[export] Saved checkpoint_S8.mat\n');
+    end
+
     fprintf('------------ Section 8 Done ------------ \n\n')
 
 

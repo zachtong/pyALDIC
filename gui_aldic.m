@@ -63,12 +63,16 @@ function gui_aldic()
 
     %% ====== LEFT: Images section ======
     imgPanel = uipanel(leftPanel, 'Title', 'Images');
-    imgGrid = uigridlayout(imgPanel, [2, 1]);
-    imgGrid.RowHeight = {25, '1x'};
+    imgGrid = uigridlayout(imgPanel, [3, 1]);
+    imgGrid.RowHeight = {25, 25, '1x'};
     imgGrid.Padding = [5 5 5 5];
 
     app.btnLoadImages = uibutton(imgGrid, 'Text', 'Browse Folder...', ...
         'ButtonPushedFcn', @onLoadImages);
+    app.cbNatSort = uicheckbox(imgGrid, 'Text', 'Natural Sort (1,2,...,10)', ...
+        'Value', false, ...
+        'Tooltip', 'Sort filenames by embedded numbers instead of lexicographic order', ...
+        'ValueChangedFcn', @onNatSortChanged);
     app.lstImages = uilistbox(imgGrid, 'Items', {}, ...
         'ValueChangedFcn', @onImageSelected);
 
@@ -101,9 +105,9 @@ function gui_aldic()
 
     %% ====== LEFT: Parameters section ======
     paramPanel = uipanel(leftPanel, 'Title', 'Parameters');
-    paramGrid = uigridlayout(paramPanel, [12, 2]);
+    paramGrid = uigridlayout(paramPanel, [13, 2]);
     paramGrid.ColumnWidth = {'1x', '1x'};
-    paramGrid.RowHeight = {22, 22, 22, 22, 22, 22, 22, 22, 25, 0, 0, 0};
+    paramGrid.RowHeight = {22, 22, 22, 22, 22, 22, 22, 22, 22, 25, 0, 0, 0};
     paramGrid.Padding = [5 2 5 2];
     paramGrid.RowSpacing = 2;
 
@@ -151,24 +155,32 @@ function gui_aldic()
     app.cbComputeStrain = uicheckbox(paramGrid, 'Text', '', 'Value', true, ...
         'Tooltip', 'Compute strain fields after displacement. Uncheck for displacement-only run.');
 
-    % Row 9: Advanced toggle button
+    % Row 9: Solver Mode
+    uilabel(paramGrid, 'Text', 'Solver Mode');
+    app.ddSolverMode = uidropdown(paramGrid, ...
+        'Items', {'ALDIC (global+local)', 'Local DIC only'}, ...
+        'Value', 'ALDIC (global+local)', ...
+        'Tooltip', 'ALDIC=full ADMM pipeline (Sections 4-6), Local DIC=IC-GN only (Section 4). (UseGlobalStep)', ...
+        'ValueChangedFcn', @onSolverModeChanged);
+
+    % Row 10: Advanced toggle button
     app.btnAdvanced = uibutton(paramGrid, 'Text', [char(9654), ' Advanced'], ...
         'ButtonPushedFcn', @onToggleAdvanced);
     app.btnAdvanced.Layout.Column = [1 2];
 
-    % Row 10: mu (advanced, hidden by default)
+    % Row 11: mu (advanced, hidden by default)
     app.lblAdvMu = uilabel(paramGrid, 'Text', 'Penalty mu', 'Visible', 'off');
     app.edtMu = uieditfield(paramGrid, 'numeric', 'Value', 1e-3, ...
         'ValueDisplayFormat', '%.1e', 'Visible', 'off', ...
         'Tooltip', 'ADMM augmented Lagrangian penalty weight. (mu)');
 
-    % Row 11: alpha (advanced, hidden by default)
+    % Row 12: alpha (advanced, hidden by default)
     app.lblAdvAlpha = uilabel(paramGrid, 'Text', 'Regularize alpha', 'Visible', 'off');
     app.edtAlpha = uieditfield(paramGrid, 'numeric', 'Value', 0, ...
         'Visible', 'off', ...
         'Tooltip', 'Regularization parameter in global subproblem. (alpha)');
 
-    % Row 12: ADMM_maxIter (advanced, hidden by default)
+    % Row 13: ADMM_maxIter (advanced, hidden by default)
     app.lblAdvADMM = uilabel(paramGrid, 'Text', 'ADMM Iters', 'Visible', 'off');
     app.edtADMM = uieditfield(paramGrid, 'numeric', 'Value', 3, ...
         'Visible', 'off', ...
@@ -222,7 +234,7 @@ function gui_aldic()
         'Value', 'Disp U', 'Enable', 'off', ...
         'ValueChangedFcn', @onFieldChanged);
 
-    %% ====== RIGHT: Color Range + Overlay controls (2 rows) ======
+    %% ====== RIGHT: Color Range + Overlay controls (3 rows) ======
     climGrid = uigridlayout(rightPanel, [3, 6]);
     climGrid.ColumnWidth = {80, 55, 60, 80, 60, '1x'};
     climGrid.RowHeight = {25, 25, 25};
@@ -253,7 +265,14 @@ function gui_aldic()
         'Tooltip', 'Overlay transparency 0-100%');
     uilabel(climGrid, 'Text', '%');
 
-    % Row 3: Export Image button
+    % Row 3: Plot on current frame + Export Image
+    app.cbPlotCurrentFrame = uicheckbox(climGrid, 'Text', 'Plot on Current Frame', ...
+        'Value', false, ...
+        'Tooltip', 'Shift mesh vertices by displacement to overlay on the deformed image', ...
+        'ValueChangedFcn', @(~,~) updateDisplay());
+    app.cbPlotCurrentFrame.Layout.Row = 3;
+    app.cbPlotCurrentFrame.Layout.Column = [1 4];
+
     app.btnExportImage = uibutton(climGrid, 'Text', 'Export Image', ...
         'Enable', 'off', ...
         'Tooltip', 'Export current display as PNG or PDF', ...
@@ -297,7 +316,10 @@ function gui_aldic()
         figure(app.fig);  % restore focus after system dialog
         app.lastImgDir = folder;
         app.imgFolder = folder;
+        reloadImages(folder);
+    end
 
+    function reloadImages(folder)
         % Find image files
         exts = {'*.jpg','*.jpeg','*.tif','*.tiff','*.bmp','*.png','*.jp2'};
         allFiles = [];
@@ -309,8 +331,12 @@ function gui_aldic()
             return;
         end
 
-        % Sort by name
-        [~, sortIdx] = sort({allFiles.name});
+        % Sort by name (natural or lexicographic)
+        if app.cbNatSort.Value
+            sortIdx = natsort_idx({allFiles.name});
+        else
+            [~, sortIdx] = sort({allFiles.name});
+        end
         allFiles = allFiles(sortIdx);
 
         % Build file_name cell array (same format as read_images)
@@ -342,6 +368,13 @@ function gui_aldic()
         showImage(1);
     end
 
+    function onNatSortChanged(~, ~)
+        if isempty(app.file_name), return; end
+        if isfield(app, 'imgFolder') && ~isempty(app.imgFolder)
+            reloadImages(app.imgFolder);
+        end
+    end
+
     function onImageSelected(~, ~)
         idx = find(strcmp(app.lstImages.Items, app.lstImages.Value));
         if ~isempty(idx)
@@ -355,8 +388,11 @@ function gui_aldic()
             imgDisp = app.Img{idx}';  % transpose code-space → display orientation
             [imgH, imgW] = size(imgDisp);
             imgRGB = repmat(mat2gray(imgDisp), [1, 1, 3]);
-            image(app.axMain, 'XData', [1, imgW], 'YData', [imgH, 1], 'CData', imgRGB);
-            set(app.axMain, 'YDir', 'normal');
+            % Use standard image convention (YDir=reverse) so that
+            % axis y = image row.  This keeps drawrectangle/drawpolygon
+            % coordinates consistent with applyOps row indexing.
+            image(app.axMain, 'XData', [1, imgW], 'YData', [1, imgH], 'CData', imgRGB);
+            set(app.axMain, 'YDir', 'reverse');
             axis(app.axMain, 'equal');
             xlim(app.axMain, [1, imgW]);
             ylim(app.axMain, [1, imgH]);
@@ -455,7 +491,11 @@ function gui_aldic()
             return;
         end
 
-        [~, sortIdx] = sort({allFiles.name});
+        if app.cbNatSort.Value
+            sortIdx = natsort_idx({allFiles.name});
+        else
+            [~, sortIdx] = sort({allFiles.name});
+        end
         allFiles = allFiles(sortIdx);
 
         nFiles = length(allFiles);
@@ -631,15 +671,27 @@ function gui_aldic()
         app.edtWinsizeMin.Value = val;
     end
 
+    function onSolverModeChanged(~, ~)
+        isLocal = strcmp(app.ddSolverMode.Value, 'Local DIC only');
+        if isLocal
+            enState = 'off';
+        else
+            enState = 'on';
+        end
+        app.edtMu.Enable = enState;
+        app.edtAlpha.Enable = enState;
+        app.edtADMM.Enable = enState;
+    end
+
     function onToggleAdvanced(~, ~)
         app.advancedVisible = ~app.advancedVisible;
         if app.advancedVisible
             vis = 'on';
-            paramGrid.RowHeight(10:12) = {22, 22, 22};
+            paramGrid.RowHeight(11:13) = {22, 22, 22};
             app.btnAdvanced.Text = [char(9660), ' Advanced'];
         else
             vis = 'off';
-            paramGrid.RowHeight(10:12) = {0, 0, 0};
+            paramGrid.RowHeight(11:13) = {0, 0, 0};
             app.btnAdvanced.Text = [char(9654), ' Advanced'];
         end
         app.lblAdvMu.Visible = vis;
@@ -674,6 +726,7 @@ function gui_aldic()
         DICpara.mu = app.edtMu.Value;
         DICpara.alpha = app.edtAlpha.Value;
         DICpara.ADMM_maxIter = app.edtADMM.Value;
+        DICpara.UseGlobalStep = strcmp(app.ddSolverMode.Value, 'ALDIC (global+local)');
         DICpara.referenceMode = app.ddRefMode.Value;
         DICpara.StrainPlaneFitRad = app.edtPlaneFitRad.Value;
         DICpara.gridxyROIRange.gridx = app.roiGridx;
@@ -833,9 +886,9 @@ function gui_aldic()
         defaultBase = sprintf('results_%s_ws%d_st%d', imgname, ws, st);
 
         [fname, fpath, ~] = uiputfile({ ...
-            '*.mat', 'MATLAB Data (.mat)'; ...
-            '*.csv', 'CSV Table (.csv)'; ...
-            '*.xlsx', 'Excel Workbook (.xlsx)'}, ...
+            '*.mat', 'MATLAB Data'; ...
+            '*.csv', 'CSV Table'; ...
+            '*.xlsx', 'Excel Workbook'}, ...
             'Save Results As', [defaultBase '.mat']);
         if fname == 0, figure(app.fig); return; end
         figure(app.fig);
@@ -930,21 +983,86 @@ function gui_aldic()
     end
 
     function onExportImage(~, ~)
-        frameIdx = round(app.sldFrame.Value);
-        fieldName = app.ddField.Value;
-        defaultName = sprintf('frame%d_%s.png', frameIdx, strrep(fieldName, ' ', '_'));
+        nFrames = length(app.results.ResultStrain);
+        hasStrain = isfield(app.results.ResultStrain{1}, 'strain_exx');
 
-        [fname, fpath] = uiputfile({ ...
-            '*.png', 'PNG Image (.png)'; ...
-            '*.pdf', 'PDF Document (.pdf)'; ...
-            '*.svg', 'SVG Vector (.svg)'}, ...
-            'Export Image As', defaultName);
-        if fname == 0, figure(app.fig); return; end
-        figure(app.fig);
+        % Ask: single frame or batch
+        if nFrames > 1
+            answer = uiconfirm(app.fig, ...
+                'Export current frame only, or all frames for every field?', ...
+                'Export Image', 'Options', {'Current Frame','All Frames','Cancel'}, ...
+                'DefaultOption', 1, 'CancelOption', 3);
+        else
+            answer = 'Current Frame';
+        end
 
-        outPath = fullfile(fpath, fname);
-        exportgraphics(app.axMain, outPath, 'Resolution', 300);
-        logMsg(sprintf('Image exported to %s', outPath));
+        if strcmp(answer, 'Cancel'), return; end
+
+        if strcmp(answer, 'Current Frame')
+            % --- Single frame export ---
+            frameIdx = round(app.sldFrame.Value);
+            fieldName = strrep(app.ddField.Value, ' ', '_');
+            defaultName = sprintf('frame%d_%s.png', frameIdx, fieldName);
+
+            [fname, fpath] = uiputfile({ ...
+                '*.png', 'PNG Image'; ...
+                '*.pdf', 'PDF Document'; ...
+                '*.svg', 'SVG Vector'}, ...
+                'Export Image As', defaultName);
+            if fname == 0, figure(app.fig); return; end
+            figure(app.fig);
+
+            outPath = fullfile(fpath, fname);
+            exportgraphics(app.axMain, outPath, 'Resolution', 300);
+            logMsg(sprintf('Image exported to %s', outPath));
+        else
+            % --- Batch export: all frames x all fields ---
+            outDir = uigetdir(pwd, 'Select folder for batch export');
+            if outDir == 0, figure(app.fig); return; end
+            figure(app.fig);
+
+            if hasStrain
+                fields = {'Disp U','Disp V','exx','exy','eyy', ...
+                    'vonMises','maxshear','principal max','principal min'};
+            else
+                fields = {'Disp U','Disp V'};
+            end
+
+            origField = app.ddField.Value;
+            origFrame = round(app.sldFrame.Value);
+            origAutoClim = app.cbAutoClim.Value;
+            app.cbAutoClim.Value = true;
+            app.efClimMin.Enable = 'off';
+            app.efClimMax.Enable = 'off';
+
+            nTotal = nFrames * length(fields);
+            count = 0;
+            for fi = 1:length(fields)
+                app.ddField.Value = fields{fi};
+                tag = strrep(fields{fi}, ' ', '_');
+                for k = 1:nFrames
+                    app.sldFrame.Value = k;
+                    updateDisplay();
+                    drawnow;
+                    fname = sprintf('frame%d_%s.png', k, tag);
+                    exportgraphics(app.axMain, fullfile(outDir, fname), 'Resolution', 300);
+                    count = count + 1;
+                    setProgress(count / nTotal);
+                end
+            end
+
+            % Restore original view
+            app.cbAutoClim.Value = origAutoClim;
+            if ~origAutoClim
+                app.efClimMin.Enable = 'on';
+                app.efClimMax.Enable = 'on';
+            end
+            app.ddField.Value = origField;
+            app.sldFrame.Value = origFrame;
+            updateDisplay();
+            setProgress(0);
+            logMsg(sprintf('Batch exported %d images to %s', count, outDir));
+        end
     end
 
     function onComputeStrain(~, ~)
@@ -1073,6 +1191,10 @@ function gui_aldic()
         end
 
         coordWorld = app.results.coordinatesFEMWorld;
+        if app.cbPlotCurrentFrame.Value
+            % Shift mesh vertices by displacement (world-space px)
+            coordWorld = coordWorld + [RS.dispu, RS.dispv];
+        end
         elemFEM = app.results.ResultFEMeshEachFrame{1}.elementsFEM;
         um2px = app.results.DICpara.um2px;
 
@@ -1080,7 +1202,11 @@ function gui_aldic()
 
         % --- Background image (grayscale, rendered as RGB truecolor) ---
         if app.cbShowImage.Value && ~isempty(app.Img)
-            imgIdx = min(frameIdx + 1, length(app.Img));  % ResultStrain{k} → Img{k+1}
+            if app.cbPlotCurrentFrame.Value
+                imgIdx = min(frameIdx + 1, length(app.Img));  % deformed frame
+            else
+                imgIdx = 1;  % reference frame
+            end
             imgCode = app.Img{imgIdx};              % code-space (transposed)
             imgDisp = imgCode';                     % display orientation [H x W]
             [imgH, imgW] = size(imgDisp);
@@ -1166,6 +1292,20 @@ function gui_aldic()
                 % Built-in MATLAB colormaps: jet, parula, hot, turbo, gray
                 try cmap = feval(name, 256); catch, cmap = jet(256); end
         end
+    end
+
+    function idx = natsort_idx(names)
+    %NATSORT_IDX  Return indices that sort a cell array of strings in natural order.
+    %   Numeric substrings are compared by value (e.g., 'img2' < 'img10').
+        n = numel(names);
+        keys = zeros(n, 1);
+        for k = 1:n
+            tokens = regexp(names{k}, '(\d+)', 'tokens');
+            if ~isempty(tokens)
+                keys(k) = str2double(tokens{end}{1});  % sort by last numeric token
+            end
+        end
+        [~, idx] = sortrows([keys, (1:n)'], [1, 2]);
     end
 
 end
