@@ -50,6 +50,7 @@ from .data_structures import (
 )
 from ..io.image_ops import compute_image_gradient, normalize_images
 from ..mesh.mesh_setup import mesh_setup
+from ..mesh.refinement import RefinementContext, RefinementPolicy, refine_mesh
 from ..solver.init_disp import init_disp
 from ..solver.integer_search import integer_search, integer_search_pyramid
 from ..solver.local_icgn import local_icgn
@@ -347,6 +348,7 @@ def run_aldic(
     compute_strain: bool = True,
     mesh: DICMesh | None = None,
     U0: NDArray[np.float64] | None = None,
+    refinement_policy: RefinementPolicy | None = None,
 ) -> PipelineResult:
     """Execute the full AL-DIC pipeline.
 
@@ -373,6 +375,10 @@ def run_aldic(
             automatically from the FFT search grid.
         U0: Initial displacement guess (2*n_nodes,).  If ``None``,
             computed via FFT cross-correlation (``integer_search``).
+        refinement_policy: Optional ``RefinementPolicy`` containing
+            pre-solve and/or post-solve refinement criteria.  When
+            provided, the mesh is adaptively refined before the solver
+            runs each frame.  ``None`` (default) uses a uniform mesh.
 
     Returns:
         PipelineResult containing per-frame displacements, deformation
@@ -567,6 +573,22 @@ def run_aldic(
                     current_U0 = prev.U.copy()
                 else:
                     current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
+
+        # --- Pre-solve refinement ---
+        if refinement_policy is not None and refinement_policy.has_pre_solve:
+            logger.info(
+                "Applying pre-solve refinement (%d criteria)...",
+                len(refinement_policy.pre_solve),
+            )
+            ref_ctx = RefinementContext(
+                mesh=dic_mesh, mask=f_mask, Df=Df,
+            )
+            dic_mesh, current_U0 = refine_mesh(
+                dic_mesh, refinement_policy.pre_solve, ref_ctx, current_U0,
+                mask=f_mask, img_size=(img_h, img_w),
+            )
+            n_nodes = dic_mesh.coordinates_fem.shape[0]
+            progress(frac, f"Frame {frame_idx + 1}: refined to {n_nodes} nodes")
 
         # Snapshot mesh for this frame
         result_fe_mesh[frame_idx - 1] = DICMesh(
