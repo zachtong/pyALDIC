@@ -44,6 +44,7 @@ from .data_structures import (
     DICMesh,
     DICPara,
     FrameResult,
+    FrameSchedule,
     PipelineResult,
     StrainResult,
 )
@@ -52,8 +53,8 @@ from ..mesh.mesh_setup import mesh_setup
 from ..solver.init_disp import init_disp
 from ..solver.integer_search import integer_search, integer_search_pyramid
 from ..solver.local_icgn import local_icgn
-from ..solver.subpb1_solver import subpb1_solver
-from ..solver.subpb2_solver import subpb2_solver
+from ..solver.subpb1_solver import precompute_subpb1, subpb1_solver
+from ..solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from ..strain.compute_strain import compute_strain as _compute_strain_fn
 from ..strain.nodal_strain_fem import global_nodal_strain_fem
 from ..strain.smooth_field import smooth_field_sparse
@@ -236,53 +237,92 @@ def _apply_post_solve_corrections(
     return U_subpb2, F_subpb2
 
 
-def _compute_cumulative_displacements(
+def _compute_cumulative_displacements_tree(
     result_disp: list[FrameResult | None],
     result_fe_mesh: list[DICMesh | None],
     n_frames: int,
-    reference_mode: str,
+    schedule: FrameSchedule,
 ) -> list[FrameResult | None]:
-    """Transform incremental displacements to cumulative (if incremental mode).
+    """Transform per-pair displacements to cumulative via tree-based composition.
 
-    For incremental mode: interpolates each frame's displacement onto
-    the running coordinate system to accumulate total displacement from
-    frame 1.
+    For each deformed frame, traces the reference chain back to frame 0
+    and composes displacements along the path.  Intermediate coordinates
+    are cached so that shared path segments are computed only once.
 
-    For accumulative mode: U is already relative to frame 1, so
-    U_accum = U directly.
+    Composition formula for chain A -> B -> C::
+
+        coords_B = coords_A + u_AB(coords_A)
+        coords_C = coords_B + u_BC(coords_B)
+        u_AC     = coords_C - coords_A
+
+    When a frame's reference is frame 0 directly (accumulative-style),
+    U_accum = U (no composition needed).
+
+    Args:
+        result_disp: Per-frame displacement results (length n_frames-1).
+        result_fe_mesh: Per-frame mesh snapshots (length n_frames-1).
+        n_frames: Total number of frames.
+        schedule: FrameSchedule defining the reference tree.
+
+    Returns:
+        Updated result_disp with U_accum set for each frame.
     """
-    if reference_mode == "accumulative":
-        for i in range(n_frames - 1):
-            if result_disp[i] is not None:
-                result_disp[i] = replace(
-                    result_disp[i], U_accum=result_disp[i].U.copy(),
-                )
-        return result_disp
-
-    # Incremental mode: cumulative interpolation
     if result_fe_mesh[0] is None or result_disp[0] is None:
         return result_disp
 
     ref_coords = result_fe_mesh[0].coordinates_fem
-    coord_curr = ref_coords.copy()
+
+    # Cache: cum_coords[frame_idx] = absolute coordinates after tracking
+    # from frame 0 to frame_idx.  frame 0 = ref_coords.
+    cum_coords_cache: dict[int, NDArray[np.float64]] = {0: ref_coords.copy()}
 
     for i in range(n_frames - 1):
+        frame = i + 1  # 1-based deformed frame index
         if result_disp[i] is None or result_fe_mesh[i] is None:
-            break
+            continue
 
-        frame_coords = result_fe_mesh[i].coordinates_fem
-        frame_U = result_disp[i].U
+        # Trace path from this frame to root and find deepest cached ancestor
+        path = schedule.path_to_root(frame)  # [frame, ..., 0]
 
-        u_inc = frame_U[0::2]
-        v_inc = frame_U[1::2]
+        # Find deepest ancestor already in cache (always at least frame 0)
+        cached_idx = 0
+        for j, ancestor in enumerate(path):
+            if ancestor in cum_coords_cache:
+                cached_idx = j
+                break
 
-        # Interpolate incremental displacement to current coordinates
-        disp_x = scattered_interpolant(frame_coords, u_inc, coord_curr)
-        disp_y = scattered_interpolant(frame_coords, v_inc, coord_curr)
+        # Compose from cached ancestor down to this frame
+        # path[cached_idx] is the deepest cached, path[0] is frame itself
+        # We need to walk path[cached_idx] -> path[cached_idx-1] -> ... -> path[0]
+        coord_curr = cum_coords_cache[path[cached_idx]].copy()
 
-        coord_curr = coord_curr + np.column_stack([disp_x, disp_y])
+        for step in range(cached_idx - 1, -1, -1):
+            child_frame = path[step]
+            # result_disp[child_frame - 1].U is the displacement for
+            # the pair (parent -> child_frame)
+            child_result = result_disp[child_frame - 1]
+            child_mesh = result_fe_mesh[child_frame - 1]
+            if child_result is None or child_mesh is None:
+                break
 
-        # Cumulative displacement = current - reference
+            child_U = child_result.U
+            u_inc = child_U[0::2]
+            v_inc = child_U[1::2]
+
+            # Interpolate incremental displacement at current coordinates
+            disp_x = scattered_interpolant(
+                child_mesh.coordinates_fem, u_inc, coord_curr,
+            )
+            disp_y = scattered_interpolant(
+                child_mesh.coordinates_fem, v_inc, coord_curr,
+            )
+            coord_curr = coord_curr + np.column_stack([disp_x, disp_y])
+
+            # Cache intermediate result for reuse by descendant frames
+            if child_frame not in cum_coords_cache:
+                cum_coords_cache[child_frame] = coord_curr.copy()
+
+        # Cumulative displacement = final coordinates - reference
         delta = coord_curr - ref_coords
         U_accum = np.empty(2 * len(ref_coords), dtype=np.float64)
         U_accum[0::2] = delta[:, 0]
@@ -391,7 +431,40 @@ def run_aldic(
     dic_mesh: DICMesh | None = mesh
     current_U0: NDArray[np.float64] | None = U0.copy() if U0 is not None else None
 
+    # --- Resolve frame schedule ---
+    schedule = para.frame_schedule
+    if schedule is not None:
+        if len(schedule) != n_frames - 1:
+            raise ValueError(
+                f"frame_schedule length ({len(schedule)}) != "
+                f"n_frames-1 ({n_frames - 1})"
+            )
+    else:
+        schedule = FrameSchedule.from_mode(para.reference_mode, n_frames)
+
+    logger.info(
+        "Frame schedule: %s (n_frames=%d)", schedule.ref_indices, n_frames,
+    )
     logger.info("--- Section 2b Done ---")
+
+    # =====================================================================
+    # Caches for reference image precomputation
+    # =====================================================================
+    # ref_cache[ref_idx] = (f_img, f_img_raw, f_mask, Df)
+    ref_cache: dict[int, tuple[
+        NDArray[np.float64], NDArray[np.float64], object,
+    ]] = {}
+
+    # subpb1_cache[ref_idx] = precomputed subpb1 data (depends on ref image)
+    subpb1_precompute_cache: dict[int, object] = {}
+
+    # Track which ref_idx was used for beta tuning
+    beta_tuned_for_ref: int | None = None
+    beta_val: float = 0.0
+
+    # subpb2 precompute cache (depends on mesh/beta/mu, not ref image)
+    subpb2_cache_obj: object = None
+    subpb2_cache_beta: float | None = None
 
     # =====================================================================
     # Main frame loop (Sections 3-6)
@@ -406,48 +479,53 @@ def run_aldic(
 
         frac = (frame_idx - 1) / max(1, n_frames - 2) * 0.6
         progress(frac, f"Processing frame {frame_idx + 1}/{n_frames}")
-        logger.info("=== Frame %d/%d ===", frame_idx + 1, n_frames)
 
-        # --- Load reference and deformed images ---
-        if para.reference_mode == "accumulative":
-            f_mask = masks[0].astype(np.float64)
-            f_img = img_normalized[0] * f_mask
-        else:  # incremental
-            f_mask = masks[frame_idx - 1].astype(np.float64)
-            f_img = img_normalized[frame_idx - 1] * f_mask
+        # --- Determine reference frame via schedule ---
+        ref_idx = schedule.parent(frame_idx)
+        logger.info(
+            "=== Frame %d/%d (ref=%d) ===", frame_idx + 1, n_frames, ref_idx,
+        )
 
+        # --- Load reference image (with cache) ---
+        if ref_idx in ref_cache:
+            f_img, f_img_raw, f_mask, Df = ref_cache[ref_idx]
+        else:
+            f_mask = masks[ref_idx].astype(np.float64)
+            f_img_raw = img_normalized[ref_idx].copy()
+            f_img = f_img_raw * f_mask  # masked version for integer_search
+            Df = compute_image_gradient(f_img, f_mask, img_raw=f_img_raw)
+            ref_cache[ref_idx] = (f_img, f_img_raw, f_mask, Df)
+
+        # --- Load deformed image ---
         g_mask = masks[frame_idx].astype(np.float64)
         g_img = img_normalized[frame_idx] * g_mask
         para = replace(para, img_ref_mask=f_mask)
-
-        Df = compute_image_gradient(f_img, f_mask)
 
         # =================================================================
         # Section 3: Initial guess / mesh
         # =================================================================
         logger.info("--- Section 3 Start ---")
 
-        if frame_idx == 1 or dic_mesh is None:
-            if dic_mesh is None or current_U0 is None:
-                # No pre-built mesh/U0: use FFT integer search
-                use_pyramid = para.init_fft_search_method >= 2
-                if use_pyramid:
-                    logger.info("Running pyramid NCC search for initial guess...")
-                    x0, y0, u_grid, v_grid, fft_info = integer_search_pyramid(
-                        f_img, g_img, para,
-                    )
-                else:
-                    logger.info("Running FFT integer search for initial guess...")
-                    x0, y0, u_grid, v_grid, fft_info = integer_search(
-                        f_img, g_img, para,
-                    )
-                current_U0 = init_disp(
-                    u_grid, v_grid, fft_info["cc_max"], x0, y0,
+        if dic_mesh is None or current_U0 is None:
+            # First frame or no pre-built mesh/U0: use FFT integer search
+            use_pyramid = para.init_fft_search_method >= 2
+            if use_pyramid:
+                logger.info("Running pyramid NCC search for initial guess...")
+                x0, y0, u_grid, v_grid, fft_info = integer_search_pyramid(
+                    f_img, g_img, para,
                 )
+            else:
+                logger.info("Running FFT integer search for initial guess...")
+                x0, y0, u_grid, v_grid, fft_info = integer_search(
+                    f_img, g_img, para,
+                )
+            current_U0 = init_disp(
+                u_grid, v_grid, fft_info["cc_max"], x0, y0,
+            )
 
-                # Build mesh from the FFT grid if not provided
-                if dic_mesh is None:
-                    dic_mesh = mesh_setup(x0, y0, para)
+            # Build mesh from the FFT grid if not provided
+            if dic_mesh is None:
+                dic_mesh = mesh_setup(x0, y0, para)
 
             # Apply mask: NaN for nodes in masked-out regions
             n_nodes = dic_mesh.coordinates_fem.shape[0]
@@ -463,13 +541,32 @@ def run_aldic(
                 current_U0[2 * nan_nodes] = np.nan
                 current_U0[2 * nan_nodes + 1] = np.nan
         else:
-            # Subsequent frames: use previous result as initial guess
-            prev = result_disp[frame_idx - 2]
+            # Subsequent frames: try sibling reuse, then fall back to FFT
             n_nodes = dic_mesh.coordinates_fem.shape[0]
-            if prev is not None:
-                current_U0 = prev.U.copy()
+
+            # Sibling reuse: find a completed frame with the same reference
+            sibling_U = None
+            for prev_i in range(frame_idx - 1, 0, -1):
+                if (
+                    result_disp[prev_i - 1] is not None
+                    and schedule.parent(prev_i) == ref_idx
+                ):
+                    sibling_U = result_disp[prev_i - 1].U
+                    logger.info(
+                        "Sibling reuse: frame %d -> frame %d (same ref=%d)",
+                        prev_i + 1, frame_idx + 1, ref_idx,
+                    )
+                    break
+
+            if sibling_U is not None:
+                current_U0 = sibling_U.copy()
             else:
-                current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
+                # Fall back to previous frame result (may have different ref)
+                prev = result_disp[frame_idx - 2]
+                if prev is not None:
+                    current_U0 = prev.U.copy()
+                else:
+                    current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
 
         # Snapshot mesh for this frame
         result_fe_mesh[frame_idx - 1] = DICMesh(
@@ -503,7 +600,7 @@ def run_aldic(
             U_subpb1, F_subpb1, local_time, conv_iter_s4,
             bad_pt_num_s4, mark_hole_strain,
         ) = local_icgn(
-            current_U0, dic_mesh.coordinates_fem, Df, f_img, g_img, para, tol,
+            current_U0, dic_mesh.coordinates_fem, Df, f_img_raw, g_img, para, tol,
         )
 
         assert not np.all(np.isnan(U_subpb1)), "Section 4: USubpb1 is entirely NaN"
@@ -540,16 +637,15 @@ def run_aldic(
             disp_dual = np.zeros(2 * n_nodes, dtype=np.float64)  # MATLAB: vdual
             alpha = para.alpha
 
-            # Beta auto-tuning (first frame only)
-            if frame_idx == 1:
+            # Beta auto-tuning: re-tune when reference frame changes
+            if beta_tuned_for_ref != ref_idx:
                 beta_val = _auto_tune_beta(
                     dic_mesh, para, mu_val, U_subpb1, F_subpb1,
                 )
-            else:
-                if para.beta is not None:
-                    beta_val = para.beta
-                else:
-                    beta_val = 1e-3 * para.winstepsize ** 2 * mu_val
+                beta_tuned_for_ref = ref_idx
+            elif para.beta is not None:
+                beta_val = para.beta
+            # else: keep beta_val from previous tuning for same ref
 
             # Solve subpb2
             U_subpb2 = subpb2_solver(
@@ -590,25 +686,40 @@ def run_aldic(
             U_subpb1_prev = U_subpb1.copy()
 
             admm_step = 1
+
+            # Per-node winsize (uniform) — set once before loop
+            winsize_list = np.full(
+                (n_nodes, 2), para.winsize, dtype=np.float64,
+            )
+            para = replace(para, winsize_list=winsize_list)
+
+            # Pre-compute reference subsets (cached per ref image)
+            if ref_idx not in subpb1_precompute_cache:
+                subpb1_precompute_cache[ref_idx] = precompute_subpb1(
+                    dic_mesh.coordinates_fem, Df, f_img_raw, para,
+                )
+            subpb1_pre = subpb1_precompute_cache[ref_idx]
+
+            # Pre-compute and factorize subpb2 stiffness matrix
+            # (depends on mesh/beta/mu, not ref image — cache when beta unchanged)
+            if subpb2_cache_beta != beta_val or subpb2_cache_obj is None:
+                subpb2_cache_obj = precompute_subpb2(
+                    dic_mesh, para.gauss_pt_order, beta_val, mu_val, alpha,
+                )
+                subpb2_cache_beta = beta_val
+
             for admm_iter in range(2, para.admm_max_iter + 1):
                 admm_step = admm_iter
                 logger.info("ADMM step %d/%d", admm_step, para.admm_max_iter)
 
-                # Per-node winsize (uniform)
-                winsize_list = np.full(
-                    (n_nodes, 2), para.winsize, dtype=np.float64,
-                )
-                para = replace(para, winsize_list=winsize_list)
-
                 # --- Subproblem 1 (2-DOF IC-GN) ---
-                # Python subpb1_solver expects: (U, F, disp_dual, grad_dual, ...)
-                # because its 3rd param "udual" is actually the displacement dual
                 U_subpb1, sub1_time, conv_iter_admm, bad_pt_admm = subpb1_solver(
                     U_subpb2, F_subpb2,
-                    disp_dual,   # subpb1's "udual" = displacement dual (2*n)
-                    grad_dual,   # subpb1's "vdual" = gradient dual (unused)
+                    disp_dual,
+                    grad_dual,
                     dic_mesh.coordinates_fem,
-                    Df, f_img, g_img, mu_val, beta_val, para, tol,
+                    Df, f_img_raw, g_img, mu_val, beta_val, para, tol,
+                    precomputed=subpb1_pre,
                 )
                 F_subpb1 = F_subpb2.copy()  # F carries over from subpb2
 
@@ -621,6 +732,7 @@ def run_aldic(
                     dic_mesh, para.gauss_pt_order, beta_val, mu_val,
                     U_subpb1, F_subpb1, grad_dual, disp_dual,
                     alpha, para.winstepsize,
+                    precomputed=subpb2_cache_obj,
                 )
                 F_subpb2 = global_nodal_strain_fem(dic_mesh, para, U_subpb2)
 
@@ -672,18 +784,22 @@ def run_aldic(
             U_final = U_subpb1
             F_final = F_subpb1
 
-        # Store frame results
-        result_disp[frame_idx - 1] = FrameResult(U=U_final)
-        result_def_grad[frame_idx - 1] = FrameResult(U=U_final, F=F_final)
+        # Store frame results (with ref_frame metadata)
+        result_disp[frame_idx - 1] = FrameResult(
+            U=U_final, ref_frame=ref_idx,
+        )
+        result_def_grad[frame_idx - 1] = FrameResult(
+            U=U_final, F=F_final, ref_frame=ref_idx,
+        )
 
     # =====================================================================
-    # Cumulative displacement transform
+    # Cumulative displacement transform (tree-based)
     # =====================================================================
     progress(0.6, "Computing cumulative displacements...")
     logger.info("--- Cumulative displacement transform ---")
 
-    result_disp = _compute_cumulative_displacements(
-        result_disp, result_fe_mesh, n_frames, para.reference_mode,
+    result_disp = _compute_cumulative_displacements_tree(
+        result_disp, result_fe_mesh, n_frames, schedule,
     )
 
     # Validate cumulative result
@@ -769,6 +885,7 @@ def run_aldic(
         result_def_grad=valid_grad,
         result_strain=valid_strain,
         result_fe_mesh_each_frame=valid_mesh,
+        frame_schedule=schedule,
     )
 
     progress(1.0, "Pipeline complete.")

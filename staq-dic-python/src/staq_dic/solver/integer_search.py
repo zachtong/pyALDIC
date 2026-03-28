@@ -18,11 +18,19 @@ Two search strategies:
 
 Sub-pixel refinement uses a 9-point quadratic polynomial fit
 (same as MATLAB ``findpeak.m``).
+
+Performance notes:
+    - Vectorized boundary check and template std via integral images.
+    - Batch sub-pixel fitting via pre-computed pseudo-inverse.
+    - Threaded matchTemplate for large node counts (OpenCV releases GIL).
+    - Vectorized quality factor computation.
 """
 
 from __future__ import annotations
 
 import logging
+import os
+from concurrent.futures import ThreadPoolExecutor
 
 import cv2
 import numpy as np
@@ -31,6 +39,18 @@ from numpy.typing import NDArray
 from ..core.data_structures import DICPara, GridxyROIRange
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Pre-computed constant for batch sub-pixel fitting (3x3 patch → 6 coeffs)
+# ---------------------------------------------------------------------------
+_XS = np.array([-1, 0, 1, -1, 0, 1, -1, 0, 1], dtype=np.float64)
+_YS = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 1], dtype=np.float64)
+_X_DESIGN = np.column_stack([np.ones(9), _XS, _YS, _XS * _YS, _XS ** 2, _YS ** 2])
+_X_PINV = np.linalg.pinv(_X_DESIGN)  # (6, 9) — computed once at import
+
+# Offsets for extracting 3x3 patch (row-major: top-left → bottom-right)
+_ROW_OFFSETS = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 1], dtype=np.intp)
+_COL_OFFSETS = np.array([-1, 0, 1, -1, 0, 1, -1, 0, 1], dtype=np.intp)
 
 
 # ---------------------------------------------------------------------------
@@ -49,7 +69,7 @@ def integer_search(
     NDArray[np.float64],  # v  (N, M)
     dict,                 # info
 ]:
-    """Compute initial displacement via FFT cross-correlation.
+    """Compute initial displacement via NCC cross-correlation.
 
     Performs normalized cross-correlation between reference and deformed
     images at each grid point to find the best-matching displacement.
@@ -109,80 +129,15 @@ def integer_search(
         )
 
     ny, nx = len(y0), len(x0)
-    u_grid = np.zeros((ny, nx), dtype=np.float64)
-    v_grid = np.zeros((ny, nx), dtype=np.float64)
-    cc_max = np.zeros((ny, nx), dtype=np.float64)
-    qfactors = np.zeros((ny, nx, 2), dtype=np.float64)
 
-    # Convert to float32 for OpenCV matchTemplate
-    f32 = f_img.astype(np.float32)
-    g32 = g_img.astype(np.float32)
+    # Vectorized NCC search
+    u_grid, v_grid, cc_max, qfactors = _batch_ncc_search(
+        f_img, g_img, x0, y0, half_w, search,
+    )
 
-    subset_size = 2 * half_w + 1  # winsize + 1 for centered subset
-
-    for iy in range(ny):
-        for ix in range(nx):
-            cx = int(round(x0[ix]))
-            cy = int(round(y0[iy]))
-
-            # Extract template from reference image
-            t_y0 = cy - half_w
-            t_y1 = cy + half_w + 1
-            t_x0 = cx - half_w
-            t_x1 = cx + half_w + 1
-
-            # Extract search region from deformed image
-            s_y0 = t_y0 - search
-            s_y1 = t_y1 + search
-            s_x0 = t_x0 - search
-            s_x1 = t_x1 + search
-
-            # Boundary check
-            if s_y0 < 0 or s_x0 < 0 or s_y1 > h or s_x1 > w:
-                u_grid[iy, ix] = np.nan
-                v_grid[iy, ix] = np.nan
-                cc_max[iy, ix] = 0.0
-                qfactors[iy, ix] = [np.inf, np.inf]
-                continue
-
-            template = f32[t_y0:t_y1, t_x0:t_x1]
-            search_img = g32[s_y0:s_y1, s_x0:s_x1]
-
-            # Check for constant template (zero variance)
-            if np.std(template) < 1e-6:
-                u_grid[iy, ix] = np.nan
-                v_grid[iy, ix] = np.nan
-                cc_max[iy, ix] = 0.0
-                qfactors[iy, ix] = [np.inf, np.inf]
-                continue
-
-            # NCC via OpenCV matchTemplate
-            # Result size: (2*search + 1, 2*search + 1)
-            ncc_map = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
-
-            # Sub-pixel peak finding
-            peak_x, peak_y, peak_val = _findpeak_subpixel(ncc_map)
-
-            # Displacement = peak - center (zero-displacement point)
-            center = search  # zero displacement is at index 'search'
-            u_grid[iy, ix] = peak_x - center
-            v_grid[iy, ix] = peak_y - center
-            cc_max[iy, ix] = peak_val
-
-            # Quality factors
-            qfactors[iy, ix] = _compute_qfactors(ncc_map, peak_val)
-
-    # Apply reference mask if available
+    # Vectorized mask application
     if para.img_ref_mask is not None:
-        mask = para.img_ref_mask
-        for iy in range(ny):
-            for ix in range(nx):
-                cx = int(round(x0[ix]))
-                cy = int(round(y0[iy]))
-                if 0 <= cy < h and 0 <= cx < w:
-                    if mask[cy, cx] < 0.5:
-                        u_grid[iy, ix] = np.nan
-                        v_grid[iy, ix] = np.nan
+        _apply_mask_vectorized(u_grid, v_grid, x0, y0, para.img_ref_mask, h, w)
 
     n_valid = np.sum(np.isfinite(u_grid))
     logger.info(
@@ -222,7 +177,7 @@ def integer_search_pyramid(
     Effective search range at full resolution:
         ``search_region * 2^(n_levels - 1) + refine_search * sum(2^k)``
 
-    For a 512×512 image with search=10 and 3 levels, this covers
+    For a 512x512 image with search=10 and 3 levels, this covers
     ~40 + 14 = 54 pixels vs the direct method's 10 pixels.
 
     Args:
@@ -325,26 +280,18 @@ def integer_search_pyramid(
     )
 
     # Snap grid to the standard winstepsize grid expected by mesh_setup
-    # The pyramid may produce non-standard coordinates; remap to standard grid
     x0_std, y0_std, u_std, v_std, cc_std = _remap_to_standard_grid(
         x0_full, y0_full, u_full, v_full, cc_full,
         para, h, w,
     )
 
     ny, nx = len(y0_std), len(x0_std)
-    qfactors = np.zeros((ny, nx, 2), dtype=np.float64)  # Not computed for pyramid
+    qfactors = np.zeros((ny, nx, 2), dtype=np.float64)
 
-    # Apply reference mask
+    # Apply reference mask (vectorized)
     if para.img_ref_mask is not None:
-        mask = para.img_ref_mask
-        for iy in range(ny):
-            for ix in range(nx):
-                cx = int(round(x0_std[ix]))
-                cy = int(round(y0_std[iy]))
-                if 0 <= cy < h and 0 <= cx < w:
-                    if mask[cy, cx] < 0.5:
-                        u_std[iy, ix] = np.nan
-                        v_std[iy, ix] = np.nan
+        _apply_mask_vectorized(u_std, v_std, x0_std, y0_std,
+                               para.img_ref_mask, h, w)
 
     n_valid = np.sum(np.isfinite(u_std))
     logger.info(
@@ -363,7 +310,358 @@ def integer_search_pyramid(
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# Vectorized batch NCC search (core of the optimization)
+# ---------------------------------------------------------------------------
+
+
+def _batch_ncc_search(
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    x0: NDArray[np.float64],
+    y0: NDArray[np.float64],
+    half_w: int,
+    search: int,
+) -> tuple[
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+]:
+    """Vectorized NCC search for all grid nodes.
+
+    Optimizations over the naive per-node loop:
+    1. Integral images for O(1) boundary check + template std.
+    2. Threaded cv2.matchTemplate (GIL-free) for N >= 500.
+    3. Batch sub-pixel fitting via pre-computed pseudo-inverse.
+    4. Vectorized quality factor computation.
+
+    Returns:
+        (u_grid, v_grid, cc_max, qfactors) all shape (ny, nx) or (ny,nx,2).
+    """
+    h, w = f_img.shape
+    ny, nx = len(y0), len(x0)
+    f32 = f_img.astype(np.float32)
+    g32 = g_img.astype(np.float32)
+
+    # --- Stage 1: Vectorized validity check ---
+    cx_all = np.round(x0).astype(np.intp)  # (nx,)
+    cy_all = np.round(y0).astype(np.intp)  # (ny,)
+    CX, CY = np.meshgrid(cx_all, cy_all)   # (ny, nx) each
+
+    # Boundary: search region must fit in image
+    boundary_ok = (
+        (CY - half_w - search >= 0) &
+        (CX - half_w - search >= 0) &
+        (CY + half_w + 1 + search <= h) &
+        (CX + half_w + 1 + search <= w)
+    )
+
+    # Template std via integral images (O(1) per node, O(H*W) total)
+    f32_sq = f32 ** 2
+    int_f = cv2.integral(f32)      # (H+1, W+1), float64
+    int_f2 = cv2.integral(f32_sq)  # (H+1, W+1), float64
+
+    T_y0 = CY - half_w
+    T_y1 = CY + half_w + 1
+    T_x0 = CX - half_w
+    T_x1 = CX + half_w + 1
+    n_pix = float((2 * half_w + 1) ** 2)
+
+    # Compute variance only for boundary-ok nodes
+    ok_mask = boundary_ok
+    ok_idx = np.where(ok_mask)
+    var_f = np.zeros((ny, nx), dtype=np.float64)
+
+    if len(ok_idx[0]) > 0:
+        ty0 = T_y0[ok_idx]
+        ty1 = T_y1[ok_idx]
+        tx0 = T_x0[ok_idx]
+        tx1 = T_x1[ok_idx]
+        s_f = (int_f[ty1, tx1] - int_f[ty0, tx1]
+               - int_f[ty1, tx0] + int_f[ty0, tx0])
+        s_f2 = (int_f2[ty1, tx1] - int_f2[ty0, tx1]
+                - int_f2[ty1, tx0] + int_f2[ty0, tx0])
+        var_f[ok_idx] = np.maximum(s_f2 / n_pix - (s_f / n_pix) ** 2, 0.0)
+
+    valid = ok_mask & (np.sqrt(var_f) > 1e-6)
+
+    # --- Stage 2: matchTemplate for valid nodes ---
+    valid_iy, valid_ix = np.where(valid)
+    n_valid = len(valid_iy)
+
+    ncc_h = 2 * search + 1
+    ncc_w = 2 * search + 1
+
+    # Pre-allocate output arrays (shared across threads)
+    ncc_maps = np.zeros((n_valid, ncc_h, ncc_w), dtype=np.float32)
+    ipeak_x = np.zeros(n_valid, dtype=np.intp)
+    ipeak_y = np.zeros(n_valid, dtype=np.intp)
+    ipeak_val = np.zeros(n_valid, dtype=np.float64)
+
+    if n_valid > 0:
+        if n_valid >= 500:
+            _threaded_match(
+                n_valid, valid_iy, valid_ix, cx_all, cy_all,
+                f32, g32, half_w, search,
+                ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+            )
+        else:
+            _sequential_match(
+                n_valid, valid_iy, valid_ix, cx_all, cy_all,
+                f32, g32, half_w, search,
+                ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+            )
+
+    # --- Stage 3: Batch sub-pixel peak finding ---
+    sub_x, sub_y, sub_val = _batch_subpixel(
+        ncc_maps, ipeak_x, ipeak_y, ipeak_val, ncc_h, ncc_w,
+    )
+
+    # --- Stage 4: Vectorized quality factors ---
+    pce, ppe = _batch_qfactors(ncc_maps, sub_val, n_valid)
+
+    # --- Assemble output grids ---
+    u_grid = np.full((ny, nx), np.nan, dtype=np.float64)
+    v_grid = np.full((ny, nx), np.nan, dtype=np.float64)
+    cc_max = np.zeros((ny, nx), dtype=np.float64)
+    qfactors = np.full((ny, nx, 2), np.inf, dtype=np.float64)
+
+    if n_valid > 0:
+        center = float(search)
+        u_grid[valid_iy, valid_ix] = sub_x - center
+        v_grid[valid_iy, valid_ix] = sub_y - center
+        cc_max[valid_iy, valid_ix] = sub_val
+        qfactors[valid_iy, valid_ix, 0] = pce
+        qfactors[valid_iy, valid_ix, 1] = ppe
+
+    return u_grid, v_grid, cc_max, qfactors
+
+
+# ---------------------------------------------------------------------------
+# matchTemplate backends
+# ---------------------------------------------------------------------------
+
+
+def _sequential_match(
+    n_valid, valid_iy, valid_ix, cx_all, cy_all,
+    f32, g32, half_w, search,
+    ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+):
+    """Sequential matchTemplate for small node counts."""
+    for k in range(n_valid):
+        _match_one(
+            k, valid_iy, valid_ix, cx_all, cy_all,
+            f32, g32, half_w, search,
+            ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+        )
+
+
+def _threaded_match(
+    n_valid, valid_iy, valid_ix, cx_all, cy_all,
+    f32, g32, half_w, search,
+    ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+):
+    """Threaded matchTemplate. OpenCV releases GIL → true parallelism."""
+    n_workers = min(os.cpu_count() or 4, max(1, n_valid // 100))
+    chunk = max(1, (n_valid + n_workers - 1) // n_workers)
+
+    def _worker(start, end):
+        for k in range(start, end):
+            _match_one(
+                k, valid_iy, valid_ix, cx_all, cy_all,
+                f32, g32, half_w, search,
+                ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+            )
+
+    with ThreadPoolExecutor(max_workers=n_workers) as pool:
+        futures = []
+        for i in range(0, n_valid, chunk):
+            futures.append(pool.submit(_worker, i, min(i + chunk, n_valid)))
+        for fut in futures:
+            fut.result()
+
+
+def _match_one(
+    k, valid_iy, valid_ix, cx_all, cy_all,
+    f32, g32, half_w, search,
+    ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+):
+    """Compute matchTemplate + integer peak for a single node."""
+    iy, ix = valid_iy[k], valid_ix[k]
+    cx = cx_all[ix]
+    cy = cy_all[iy]
+
+    template = f32[cy - half_w: cy + half_w + 1,
+                   cx - half_w: cx + half_w + 1]
+    search_img = g32[cy - half_w - search: cy + half_w + 1 + search,
+                     cx - half_w - search: cx + half_w + 1 + search]
+
+    ncc_map = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
+    ncc_maps[k] = ncc_map
+
+    _, max_val, _, max_loc = cv2.minMaxLoc(ncc_map)
+    ipeak_x[k] = max_loc[0]  # column
+    ipeak_y[k] = max_loc[1]  # row
+    ipeak_val[k] = max_val
+
+
+# ---------------------------------------------------------------------------
+# Batch sub-pixel peak finding
+# ---------------------------------------------------------------------------
+
+
+def _batch_subpixel(
+    ncc_maps: NDArray[np.float32],
+    ipeak_x: NDArray[np.intp],
+    ipeak_y: NDArray[np.intp],
+    ipeak_val: NDArray[np.float64],
+    ncc_h: int,
+    ncc_w: int,
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
+    """Vectorized sub-pixel peak finding for all nodes at once.
+
+    Uses pre-computed pseudo-inverse of the 9-point quadratic design matrix
+    instead of per-node ``np.linalg.lstsq``.
+    """
+    n = len(ipeak_x)
+    sub_x = ipeak_x.astype(np.float64).copy()
+    sub_y = ipeak_y.astype(np.float64).copy()
+    sub_val = ipeak_val.copy()
+
+    if n == 0:
+        return sub_x, sub_y, sub_val
+
+    # Nodes where peak is not on the edge (can refine)
+    can_refine = (
+        (ipeak_x > 0) & (ipeak_x < ncc_w - 1) &
+        (ipeak_y > 0) & (ipeak_y < ncc_h - 1)
+    )
+    ref_idx = np.where(can_refine)[0]
+    n_ref = len(ref_idx)
+
+    if n_ref == 0:
+        return sub_x, sub_y, sub_val
+
+    # Extract 3x3 patches around integer peaks (vectorized fancy indexing)
+    k_arr = ref_idx
+    px_arr = ipeak_x[ref_idx]
+    py_arr = ipeak_y[ref_idx]
+
+    rows = py_arr[:, None] + _ROW_OFFSETS[None, :]  # (n_ref, 9)
+    cols = px_arr[:, None] + _COL_OFFSETS[None, :]   # (n_ref, 9)
+    k_exp = k_arr[:, None].repeat(9, axis=1)          # (n_ref, 9)
+
+    patches = ncc_maps[k_exp, rows, cols].astype(np.float64)  # (n_ref, 9)
+
+    # Batch least-squares: A = patches @ X_pinv.T  →  (n_ref, 6)
+    A = patches @ _X_PINV.T
+
+    # Sub-pixel offset from quadratic extremum
+    denom = A[:, 3] ** 2 - 4.0 * A[:, 4] * A[:, 5]
+    safe = np.abs(denom) > 1e-12
+    denom_safe = np.where(safe, denom, 1.0)
+
+    x_off = np.where(
+        safe,
+        (-A[:, 2] * A[:, 3] + 2.0 * A[:, 5] * A[:, 1]) / denom_safe,
+        0.0,
+    )
+    y_off = np.where(
+        safe,
+        (-A[:, 3] * A[:, 1] + 2.0 * A[:, 4] * A[:, 2]) / denom_safe,
+        0.0,
+    )
+
+    # Clamp: if offset exceeds +-1, fall back to integer peak
+    ok = safe & (np.abs(x_off) <= 1.0) & (np.abs(y_off) <= 1.0)
+    x_off = np.where(ok, np.round(x_off * 1000.0) / 1000.0, 0.0)
+    y_off = np.where(ok, np.round(y_off * 1000.0) / 1000.0, 0.0)
+
+    # Evaluate polynomial at sub-pixel extremum
+    refined_val = (
+        A[:, 0]
+        + A[:, 1] * x_off
+        + A[:, 2] * y_off
+        + A[:, 3] * x_off * y_off
+        + A[:, 4] * x_off ** 2
+        + A[:, 5] * y_off ** 2
+    )
+
+    sub_x[ref_idx] = ipeak_x[ref_idx].astype(np.float64) + x_off
+    sub_y[ref_idx] = ipeak_y[ref_idx].astype(np.float64) + y_off
+    sub_val[ref_idx] = refined_val
+
+    return sub_x, sub_y, sub_val
+
+
+# ---------------------------------------------------------------------------
+# Batch quality factors
+# ---------------------------------------------------------------------------
+
+
+def _batch_qfactors(
+    ncc_maps: NDArray[np.float32],
+    peak_vals: NDArray[np.float64],
+    n_valid: int,
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    """Vectorized quality factor computation.
+
+    PCE (peak-to-correlation-energy) is fully vectorized.
+    PPE (peak-to-entropy) uses a fast variance-based proxy to avoid
+    per-node histogram computation.
+    """
+    if n_valid == 0:
+        return np.empty(0, dtype=np.float64), np.empty(0, dtype=np.float64)
+
+    # Reshape to (n_valid, ncc_h * ncc_w)
+    flat = ncc_maps.reshape(n_valid, -1).astype(np.float64)
+    ncc_min = flat.min(axis=1, keepdims=True)
+    shifted = flat - ncc_min
+
+    # PCE: peak^2 / mean(shifted^2)
+    energy = np.mean(shifted ** 2, axis=1)
+    pce = np.where(energy > 1e-20, peak_vals ** 2 / energy, np.inf)
+
+    # PPE proxy: 1 / normalized_variance (higher = sharper peak)
+    ncc_var = np.var(shifted, axis=1)
+    ncc_max = shifted.max(axis=1)
+    norm_var = np.where(ncc_max > 1e-20, ncc_var / (ncc_max ** 2), 0.0)
+    ppe = np.where(norm_var > 1e-20, 1.0 / norm_var, np.inf)
+
+    return pce, ppe
+
+
+# ---------------------------------------------------------------------------
+# Vectorized mask application
+# ---------------------------------------------------------------------------
+
+
+def _apply_mask_vectorized(
+    u_grid: NDArray[np.float64],
+    v_grid: NDArray[np.float64],
+    x0: NDArray[np.float64],
+    y0: NDArray[np.float64],
+    mask: NDArray,
+    h: int,
+    w: int,
+) -> None:
+    """Apply reference mask to displacement grids (in-place)."""
+    cx_int = np.round(x0).astype(np.intp)
+    cy_int = np.round(y0).astype(np.intp)
+    CX, CY = np.meshgrid(cx_int, cy_int)
+
+    in_bounds = (CY >= 0) & (CY < h) & (CX >= 0) & (CX < w)
+    # Use clipped indices for safe indexing (out-of-bounds already excluded)
+    cy_safe = np.clip(CY, 0, h - 1)
+    cx_safe = np.clip(CX, 0, w - 1)
+    masked = in_bounds & (mask[cy_safe, cx_safe] < 0.5)
+
+    u_grid[masked] = np.nan
+    v_grid[masked] = np.nan
+
+
+# ---------------------------------------------------------------------------
+# Legacy per-node helpers (used by pyramid refinement)
 # ---------------------------------------------------------------------------
 
 
@@ -380,7 +678,7 @@ def _refine_at_level(
     """Refine displacement at a single pyramid level via NCC.
 
     For each grid node, extracts a template from the reference at (x0, y0)
-    and searches in the deformed image at (x0 + u_init, y0 + v_init) ± search.
+    and searches in the deformed image at (x0 + u_init, y0 + v_init) +- search.
 
     Args:
         f_img: Reference at this level.
@@ -443,7 +741,6 @@ def _refine_at_level(
             search_img = g32[s_y0_c:s_y1_c, s_x0_c:s_x1_c]
             if (search_img.shape[0] < template.shape[0] or
                     search_img.shape[1] < template.shape[1]):
-                # Search region too small after clamping
                 continue
 
             ncc_map = cv2.matchTemplate(
@@ -456,9 +753,6 @@ def _refine_at_level(
             peak_x, peak_y, peak_val = _findpeak_subpixel(ncc_map)
 
             # Convert peak position to displacement
-            # Peak (0,0) in ncc_map means template top-left is at search_img[0,0]
-            # Template center is at (half_w, half_w) relative to template top-left
-            # Search image starts at (s_x0_c, s_y0_c) in global coords
             match_x = s_x0_c + peak_x + half_w
             match_y = s_y0_c + peak_y + half_w
             u_out[iy, ix] = match_x - cx
@@ -496,7 +790,6 @@ def _remap_to_standard_grid(
     winsize = para.winsize
     winstepsize = para.winstepsize
     half_w = winsize // 2
-    search = para.size_of_fft_search_region
 
     # Standard grid (same as direct integer_search would produce)
     min_x = max(roi.gridx[0], half_w + 1)
@@ -518,19 +811,16 @@ def _remap_to_standard_grid(
         return x0_std, y0_std, u_pyr, v_pyr, cc_pyr
 
     # Interpolate pyramid results onto standard grid
-    # Replace NaN with nearest valid value for interpolation
     u_filled = u_pyr.copy()
     v_filled = v_pyr.copy()
     nan_mask = np.isnan(u_filled) | np.isnan(v_filled)
     if np.all(nan_mask):
-        # All NaN — return NaN grid
         u_std = np.full((ny_std, nx_std), np.nan)
         v_std = np.full((ny_std, nx_std), np.nan)
         cc_std = np.zeros((ny_std, nx_std))
         return x0_std, y0_std, u_std, v_std, cc_std
 
     if np.any(nan_mask):
-        from scipy.ndimage import generic_filter
         for arr in [u_filled, v_filled]:
             mask = np.isnan(arr)
             if np.any(mask):
@@ -551,7 +841,6 @@ def _remap_to_standard_grid(
         u_std = interp_u(pts).reshape(ny_std, nx_std)
         v_std = interp_v(pts).reshape(ny_std, nx_std)
     except ValueError:
-        # Interpolation failed — fall back to nearest
         u_std = np.full((ny_std, nx_std), np.nanmean(u_filled))
         v_std = np.full((ny_std, nx_std), np.nanmean(v_filled))
 
@@ -583,17 +872,10 @@ def _findpeak_subpixel(
         return float(px), float(py), float(max_val)
 
     # 9-point quadratic polynomial fit
-    # u(x, y) = A0 + A1*x + A2*y + A3*x*y + A4*x^2 + A5*y^2
-    patch = ncc[py - 1 : py + 2, px - 1 : px + 2].astype(np.float64).ravel()
+    patch = ncc[py - 1: py + 2, px - 1: px + 2].astype(np.float64).ravel()
 
-    xs = np.array([-1, 0, 1, -1, 0, 1, -1, 0, 1], dtype=np.float64)
-    ys = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 1], dtype=np.float64)
-
-    # Design matrix: [1, x, y, x*y, x^2, y^2]
-    X = np.column_stack([np.ones(9), xs, ys, xs * ys, xs ** 2, ys ** 2])
-
-    # Least-squares solve
-    A, _, _, _ = np.linalg.lstsq(X, patch, rcond=None)
+    # Batch solve: A = patch @ X_pinv.T (uses pre-computed pseudo-inverse)
+    A = _X_PINV @ patch  # (6,)
 
     # Extremum: dU/dx = A1 + A3*y + 2*A4*x = 0
     #           dU/dy = A2 + A3*x + 2*A5*y = 0
@@ -604,7 +886,7 @@ def _findpeak_subpixel(
     x_offset = (-A[2] * A[3] + 2 * A[5] * A[1]) / denom
     y_offset = (-A[3] * A[1] + 2 * A[4] * A[2]) / denom
 
-    # If offset exceeds ±1, fall back to integer peak
+    # If offset exceeds +-1, fall back to integer peak
     if abs(x_offset) > 1.0 or abs(y_offset) > 1.0:
         return float(px), float(py), float(max_val)
 

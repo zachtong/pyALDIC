@@ -14,11 +14,12 @@ from staq_dic.core.data_structures import (
     GridxyROIRange,
     PipelineResult,
 )
+from staq_dic.core.data_structures import FrameSchedule
 from staq_dic.core.pipeline import (
     run_aldic,
     _auto_tune_beta,
     _restore_at_nodes,
-    _compute_cumulative_displacements,
+    _compute_cumulative_displacements_tree,
 )
 
 
@@ -395,8 +396,9 @@ class TestCumulativeDisplacements:
         result_disp = [FrameResult(U=U)]
         result_fe_mesh = [mesh]
 
-        result = _compute_cumulative_displacements(
-            result_disp, result_fe_mesh, 2, "accumulative",
+        schedule = FrameSchedule.from_mode("accumulative", 2)
+        result = _compute_cumulative_displacements_tree(
+            result_disp, result_fe_mesh, 2, schedule,
         )
 
         np.testing.assert_array_equal(result[0].U_accum, U)
@@ -413,8 +415,9 @@ class TestCumulativeDisplacements:
         result_disp = [FrameResult(U=U)]
         result_fe_mesh = [mesh]
 
-        result = _compute_cumulative_displacements(
-            result_disp, result_fe_mesh, 2, "incremental",
+        schedule = FrameSchedule.from_mode("incremental", 2)
+        result = _compute_cumulative_displacements_tree(
+            result_disp, result_fe_mesh, 2, schedule,
         )
 
         np.testing.assert_allclose(result[0].U_accum, 0.0, atol=1e-10)

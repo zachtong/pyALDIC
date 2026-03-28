@@ -86,3 +86,40 @@ class TestComputeImageGradient:
         # Outside mask region, gradient should be zero
         assert grad.df_dx[0, 0] == 0.0
         assert grad.df_dy[0, 0] == 0.0
+
+    def test_gradient_from_raw_image(self):
+        """Gradient from raw image should NOT have artificial edge at mask boundary."""
+        from scipy.ndimage import gaussian_filter
+
+        h, w = 64, 64
+        rng = np.random.default_rng(42)
+        # Smooth speckle-like image (sigma=3 makes features ~6px wide)
+        noise = rng.standard_normal((h, w))
+        img = gaussian_filter(noise, sigma=3.0, mode="nearest")
+        img = 20.0 + 215.0 * (img - img.min()) / (img.max() - img.min())
+
+        # Circular mask
+        yy, xx = np.mgrid[0:h, 0:w]
+        mask = ((xx - 32) ** 2 + (yy - 32) ** 2 < 20 ** 2).astype(np.float64)
+
+        # Old way: gradient from masked image
+        Df_old = compute_image_gradient(img * mask, mask)
+
+        # New way: gradient from raw image
+        Df_new = compute_image_gradient(img * mask, mask, img_raw=img)
+
+        # At boundary pixels: old gradient has large artificial edge, new doesn't
+        from scipy.ndimage import binary_erosion
+
+        boundary = mask.astype(bool) & ~binary_erosion(mask.astype(bool), iterations=1)
+        boundary_idx = np.where(boundary)
+
+        old_grad_mag = np.sqrt(
+            Df_old.df_dx[boundary_idx] ** 2 + Df_old.df_dy[boundary_idx] ** 2
+        )
+        new_grad_mag = np.sqrt(
+            Df_new.df_dx[boundary_idx] ** 2 + Df_new.df_dy[boundary_idx] ** 2
+        )
+
+        # New gradient at boundary should be MUCH smaller (no artificial edge)
+        assert np.median(new_grad_mag) < np.median(old_grad_mag) * 0.5

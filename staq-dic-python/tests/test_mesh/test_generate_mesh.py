@@ -83,13 +83,13 @@ class TestReorderElementNodesCCW:
 
 class TestInjectHangingNodes:
     def test_no_irregular(self):
-        """No irregular nodes → columns 4-7 should be 0."""
+        """No irregular nodes → columns 4-7 should be -1 (no midside)."""
         elems = np.array([[0, 1, 2, 3]], dtype=np.int64)
         irregular = np.empty((0, 3), dtype=np.int64)
 
         q8 = _inject_hanging_nodes(elems, irregular)
         assert q8.shape == (1, 8)
-        np.testing.assert_array_equal(q8[:, 4:], 0)
+        np.testing.assert_array_equal(q8[:, 4:], -1)
 
     def test_midside_on_edge_n0_n1(self):
         """Irregular node on edge (n0, n1) → column 7."""
