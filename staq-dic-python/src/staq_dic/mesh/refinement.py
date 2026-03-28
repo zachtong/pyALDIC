@@ -254,6 +254,25 @@ def refine_mesh(
 
     # Early return if no refinement happened at all
     if not any_refined:
+        if img_size is not None:
+            # Recompute world coordinates using the canonical h+1-y formula
+            # so callers that pass img_size get consistent output.
+            h = img_size[0]
+            coords_world = np.column_stack([
+                mesh.coordinates_fem[:, 0],
+                h + 1 - mesh.coordinates_fem[:, 1],
+            ])
+            mesh_out = DICMesh(
+                coordinates_fem=mesh.coordinates_fem,
+                elements_fem=mesh.elements_fem,
+                irregular=mesh.irregular,
+                mark_coord_hole_edge=mesh.mark_coord_hole_edge,
+                coordinates_fem_world=coords_world,
+                x0=mesh.x0,
+                y0=mesh.y0,
+                element_min_size=mesh.element_min_size,
+            )
+            return mesh_out, U0.copy()
         return mesh, U0.copy()
 
     # --- Post-refinement pipeline ---
@@ -288,9 +307,17 @@ def refine_mesh(
         U0_refined[: 2 * n_copy] = U0[: 2 * n_copy]
 
     # Step 6: Compute world coordinates
-    if mesh.coordinates_fem_world is not None and mesh.coordinates_fem.shape[0] > 0:
+    if img_size is not None:
+        # Use the same formula as the original generate_mesh:
+        # world_y = img_height + 1 - pixel_y
+        h = img_size[0]
+        coords_world = np.column_stack([
+            coords[:, 0],
+            h + 1 - coords[:, 1],
+        ])
+    elif mesh.coordinates_fem_world is not None and mesh.coordinates_fem.shape[0] > 0:
         # Infer image height from original world coords
-        # world_y = h + 1 - pixel_y → h + 1 = world_y + pixel_y
+        # world_y = h_plus_one - pixel_y → h_plus_one = world_y + pixel_y
         h_plus_one = (
             mesh.coordinates_fem_world[0, 1] + mesh.coordinates_fem[0, 1]
         )
