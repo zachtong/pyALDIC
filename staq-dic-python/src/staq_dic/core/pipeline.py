@@ -507,6 +507,13 @@ def run_aldic(
         g_img = img_normalized[frame_idx] * g_mask
         para = replace(para, img_ref_mask=f_mask)
 
+        # Per-frame mesh independence when refinement policy is active
+        if refinement_policy is not None and refinement_policy.has_pre_solve:
+            dic_mesh = None
+            current_U0 = None
+            # Invalidate subpb1 precompute cache since mesh will change
+            subpb1_precompute_cache.pop(ref_idx, None)
+
         # =================================================================
         # Section 3: Initial guess / mesh
         # =================================================================
