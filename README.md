@@ -9,7 +9,7 @@ A MATLAB toolkit for full-field displacement and strain measurement using DIC wi
 - Augmented Lagrangian DIC (AL-DIC) formulation for robust displacement tracking
 - Adaptive quadtree mesh with automatic refinement near boundaries and high-gradient regions
 - RBF (Radial Basis Function) smoothing for displacement and strain fields
-- Programmatic GUI (`gui_aldic`) with composable region tools (rectangle, polygon, circle, cut polygon, import masks), parameter editing, progress tracking, and full-image overlay visualization with configurable colormap and transparency
+- Programmatic GUI (`gui_aldic`) with composable region tools (rectangle, polygon, circle, cut polygon, import masks), parameter editing, solver mode selection (ALDIC / Local DIC only), natural sort, progress tracking, and full-image overlay visualization with configurable colormap and transparency
 - CLI entry point (`main_aldic`) for scripting and batch processing
 - Incremental and accumulative reference frame modes
 - Optional POD-GPR prediction for multi-frame sequences
@@ -65,7 +65,7 @@ results = run_aldic(DICpara, file_name, Img, ImgMask);
 test_aldic_synthetic
 ```
 
-Generates synthetic speckle images and validates DIC accuracy across 5 test cases (zero displacement, translation, affine, annular mask, shear).
+Generates synthetic speckle images and validates DIC accuracy across 10 test cases (zero displacement, translation, affine, annular mask, shear, large deformation, multi-frame incremental/accumulative, local-only DIC, pure rotation).
 
 ## Directory Structure
 
@@ -74,7 +74,7 @@ STAQ-DIC-GUI/
 ├── gui_aldic.m               GUI entry point (programmatic uifigure)
 ├── run_aldic.m               Core DIC pipeline (callable function)
 ├── main_aldic.m              CLI entry point (thin interactive wrapper)
-├── test_aldic_synthetic.m    Automated synthetic test suite (5 cases)
+├── test_aldic_synthetic.m    Automated synthetic test suite (10 cases)
 ├── test_case6_profile.m      Performance profiling on real experimental data
 ├── config/                   Parameter defaults (dicpara_default.m)
 ├── io/                       Image I/O and preprocessing
@@ -117,7 +117,11 @@ STAQ-DIC-GUI/
 │   ├── regularizeNd.m        N-dimensional regularization
 │   ├── findpeak.m            Peak finding for cross-correlation
 │   └── coolwarm.m            Coolwarm colormap
-└── licences/                 License information
+├── licences/                 License information
+└── staq-dic-python/          Python port (NumPy/SciPy/Numba)
+    ├── src/staq_dic/         Core algorithm: IC-GN, ADMM, FFT search, mesh
+    ├── tests/                218+ tests (unit, integration, cross-validation)
+    └── scripts/              Benchmarks, profiling, diagnostics
 ```
 
 ## Architecture
@@ -134,7 +138,7 @@ main_aldic.m ─┘         │
                          └── Section 8: global_nodal_strain_fem + apply_strain_type → ResultStrain
 ```
 
-Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` / `ComputeStrain` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer with full-image overlay).
+Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` / `ComputeStrain` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer with full-image overlay). `run_aldic` also supports `ExportIntermediates` / `ExportDir` for saving checkpoint `.mat` files at each pipeline section (used for Python port cross-validation).
 
 ## Key Parameters
 
