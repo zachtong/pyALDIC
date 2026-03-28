@@ -180,7 +180,10 @@ def _inject_hanging_nodes(
         (n_elements, 8) Q8 element connectivity array.
     """
     n_elem = elements_q4.shape[0]
-    elements_q8 = np.zeros((n_elem, 8), dtype=np.int64)
+    # Initialize midside columns to -1 (no midside node).
+    # The solver checks `elems[:, 4:8] >= 0` to detect Q8 midside nodes,
+    # so 0 would be misinterpreted as a valid midside node at node index 0.
+    elements_q8 = np.full((n_elem, 8), -1, dtype=np.int64)
     elements_q8[:, :4] = elements_q4
 
     if irregular.shape[0] == 0:
@@ -262,8 +265,8 @@ def _find_boundary_nodes(
 
     # Collect unique node indices from marked elements
     mark_nodes = np.unique(elements_q8[marked_elems].ravel())
-    # Remove 0-valued midside placeholders (they represent "no midside node")
-    mark_nodes = mark_nodes[mark_nodes > 0]
+    # Remove -1 midside placeholders (they represent "no midside node")
+    mark_nodes = mark_nodes[mark_nodes >= 0]
 
     # Expand by 2 neighbor rings
     for _ in range(2):

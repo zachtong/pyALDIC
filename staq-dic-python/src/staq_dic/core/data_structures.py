@@ -12,11 +12,135 @@ IMPORTANT — Index conventions:
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Literal
 
 import numpy as np
 from numpy.typing import NDArray
+
+
+# ---------------------------------------------------------------------------
+# Frame schedule — generalized reference-frame pairing for multi-frame DIC
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class FrameSchedule:
+    """Generalized frame-pairing schedule for multi-frame DIC tracking.
+
+    Each deformed frame ``i+1`` (1-indexed) is tracked against reference
+    frame ``ref_indices[i]`` (0-indexed).  The DAG constraint ensures
+    ``ref_indices[i] in [0, i]`` — no frame can reference a future frame.
+
+    Special cases:
+        - Accumulative: ``ref_indices = (0, 0, ..., 0)``
+        - Incremental:  ``ref_indices = (0, 1, 2, ..., n-2)``
+
+    Attributes:
+        ref_indices: Tuple of length ``n_frames - 1``.
+            ``ref_indices[i]`` is the 0-based reference frame index
+            for deformed frame ``i + 1``.
+    """
+
+    ref_indices: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        """Validate DAG constraint: ref_indices[i] must be in [0, i]."""
+        for i, ref in enumerate(self.ref_indices):
+            if not isinstance(ref, (int, np.integer)):
+                raise TypeError(
+                    f"ref_indices[{i}] must be int (got {type(ref).__name__})"
+                )
+            if ref < 0:
+                raise ValueError(
+                    f"ref_indices[{i}]={ref} is negative"
+                )
+            if ref > i:
+                raise ValueError(
+                    f"ref_indices[{i}]={ref} references future frame "
+                    f"(must be <= {i})"
+                )
+
+    @classmethod
+    def from_mode(cls, mode: str, n_frames: int) -> FrameSchedule:
+        """Create a FrameSchedule from a legacy reference mode string.
+
+        Args:
+            mode: 'accumulative' or 'incremental'.
+            n_frames: Total number of frames (including reference frame 0).
+
+        Returns:
+            FrameSchedule instance.
+
+        Raises:
+            ValueError: If mode is unknown or n_frames < 2.
+        """
+        if n_frames < 2:
+            raise ValueError(f"n_frames must be >= 2 (got {n_frames})")
+        n_pairs = n_frames - 1
+        if mode == "accumulative":
+            return cls(ref_indices=tuple(0 for _ in range(n_pairs)))
+        if mode == "incremental":
+            return cls(ref_indices=tuple(range(n_pairs)))
+        raise ValueError(
+            f"Unknown reference mode '{mode}'. "
+            f"Use 'accumulative' or 'incremental'."
+        )
+
+    def parent(self, frame: int) -> int:
+        """Return the reference frame index for a given deformed frame.
+
+        Args:
+            frame: Deformed frame index (1-based, so frame >= 1).
+
+        Returns:
+            0-based reference frame index.
+        """
+        if frame < 1 or frame > len(self.ref_indices):
+            raise IndexError(
+                f"frame={frame} out of range [1, {len(self.ref_indices)}]"
+            )
+        return self.ref_indices[frame - 1]
+
+    def path_to_root(self, frame: int) -> list[int]:
+        """Trace the reference chain from *frame* back to frame 0.
+
+        Returns a list of frame indices starting from *frame* and ending
+        at 0.  For accumulative mode this is always ``[frame, 0]``.
+        For incremental mode it is ``[frame, frame-1, ..., 1, 0]``.
+
+        Args:
+            frame: Starting deformed frame (>= 1).
+
+        Returns:
+            List of frame indices from *frame* to 0 (inclusive).
+        """
+        path = [frame]
+        current = frame
+        while current > 0:
+            current = self.parent(current)
+            path.append(current)
+        return path
+
+    def children(self, frame: int) -> list[int]:
+        """Return all deformed frames that directly reference *frame*.
+
+        Args:
+            frame: Reference frame index (0-based).
+
+        Returns:
+            Sorted list of deformed frame indices (1-based).
+        """
+        return sorted(
+            i + 1
+            for i, ref in enumerate(self.ref_indices)
+            if ref == frame
+        )
+
+    def __len__(self) -> int:
+        """Number of frame pairs (= n_frames - 1)."""
+        return len(self.ref_indices)
 
 
 @dataclass(frozen=True)
@@ -82,6 +206,7 @@ class DICPara:
     tol: float = 1e-2
     cluster_no: int = 0
     icgn_max_iter: int = 100
+    min_valid_ratio: float = 0.5  # min fraction of subset pixels in mask
 
     # --- 7. ADMM ---
     mu: float = 1e-3
@@ -125,6 +250,7 @@ class DICPara:
     orig_dic_img_transparency: float = 1.0
     output_file_path: str | None = None
     reference_mode: Literal["incremental", "accumulative"] = "incremental"
+    frame_schedule: FrameSchedule | None = None
 
 
 @dataclass
@@ -190,6 +316,7 @@ class FrameResult:
     U_accum: NDArray[np.float64] | None = None
     F: NDArray[np.float64] | None = None
     bad_pt_num: NDArray[np.int64] | None = None
+    ref_frame: int = 0
 
 
 @dataclass(frozen=True)
@@ -242,6 +369,7 @@ class PipelineResult:
     result_def_grad: list[FrameResult]
     result_strain: list[StrainResult]
     result_fe_mesh_each_frame: list[DICMesh]
+    frame_schedule: FrameSchedule | None = None
 
 
 # ---------------------------------------------------------------------------

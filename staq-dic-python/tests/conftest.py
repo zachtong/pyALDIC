@@ -68,9 +68,14 @@ def apply_displacement(
     u_field: NDArray[np.float64],
     v_field: NDArray[np.float64],
 ) -> NDArray[np.float64]:
-    """Apply inverse warp to generate a deformed image.
+    """Apply Eulerian inverse warp to generate a deformed image.
 
     warped(y, x) = ref(y - v(y,x), x - u(y,x))
+
+    .. deprecated::
+        Use :func:`apply_displacement_lagrangian` for spatially-varying fields.
+        This Eulerian version has O(du/dx * u) error for non-uniform fields.
+        Kept for backward compatibility with existing unit tests.
 
     Uses order=5 (quintic B-spline) intentionally: the IC-GN solver samples
     with order=3 (cubic). Using a higher order here avoids the "double
@@ -93,6 +98,52 @@ def apply_displacement(
     src_x = xx - u_field
     coords = np.array([src_y.ravel(), src_x.ravel()])
     warped = map_coordinates(ref_image, coords, order=5, mode="constant", cval=0.0)
+    return warped.reshape(h, w)
+
+
+def apply_displacement_lagrangian(
+    ref_image: NDArray[np.float64],
+    u_func,
+    v_func,
+    n_iter: int = 20,
+) -> NDArray[np.float64]:
+    """Generate deformed image using Lagrangian displacement convention.
+
+    DIC solves for u(X) where X is the reference coordinate:
+        x = X + u(X)
+
+    To build g(x) = f(X), we need to invert x = X + u(X) for each
+    deformed pixel x.  Fixed-point iteration:
+        X_{k+1} = x - u(X_k)
+
+    converges for |du/dX| < 1 (satisfied for typical DIC deformations).
+
+    Uses order=5 (quintic B-spline) to avoid double-interpolation artifacts
+    with the IC-GN solver's order=3 cubic sampling.
+
+    Args:
+        ref_image: (H, W) reference image.
+        u_func: Callable(x, y) -> x-displacement at reference coords.
+        v_func: Callable(x, y) -> y-displacement at reference coords.
+        n_iter: Number of fixed-point iterations (20 is sufficient for
+                |du/dX| < 0.2, converging to < 1e-14 px).
+
+    Returns:
+        (H, W) deformed image with exact Lagrangian ground truth.
+    """
+    from scipy.ndimage import map_coordinates
+
+    h, w = ref_image.shape
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
+
+    # Fixed-point iteration: find reference coords X for each deformed pixel x
+    X, Y = xx.copy(), yy.copy()
+    for _ in range(n_iter):
+        X = xx - u_func(X, Y)
+        Y = yy - v_func(X, Y)
+
+    coords = np.array([Y.ravel(), X.ravel()])
+    warped = map_coordinates(ref_image, coords, order=5, mode="nearest")
     return warped.reshape(h, w)
 
 
@@ -267,6 +318,50 @@ def compute_disp_rmse(
     in_mask = mask[cy, cx] > 0.5
 
     valid = in_mask & np.isfinite(u_comp) & np.isfinite(v_comp)
+
+    if not np.any(valid):
+        return np.inf, np.inf
+
+    err_u = u_comp[valid] - gt_u[valid]
+    err_v = v_comp[valid] - gt_v[valid]
+
+    return float(np.sqrt(np.mean(err_u ** 2))), float(np.sqrt(np.mean(err_v ** 2)))
+
+
+def compute_disp_rmse_interior(
+    U: NDArray[np.float64],
+    coords: NDArray[np.float64],
+    gt_u: NDArray[np.float64],
+    gt_v: NDArray[np.float64],
+    img_size: tuple[int, int],
+    edge_margin: int = 32,
+) -> tuple[float, float]:
+    """Compute displacement RMSE on interior nodes (edge-margin exclusion).
+
+    Excludes nodes near image boundaries where interpolation artifacts
+    degrade accuracy.  Preferred over mask-based filtering for solid
+    (non-annular) specimens to avoid circular-mask contamination.
+
+    Args:
+        U: Interleaved displacement (2*n_nodes,).
+        coords: Node coordinates (n_nodes, 2), col0=x, col1=y.
+        gt_u, gt_v: Ground truth at each node (n_nodes,).
+        img_size: (height, width) of the image.
+        edge_margin: Pixels to exclude from each edge.
+
+    Returns:
+        (rmse_u, rmse_v).
+    """
+    u_comp = U[0::2]
+    v_comp = U[1::2]
+
+    h, w = img_size
+    x, y = coords[:, 0], coords[:, 1]
+    interior = (
+        (x >= edge_margin) & (x <= w - 1 - edge_margin)
+        & (y >= edge_margin) & (y <= h - 1 - edge_margin)
+    )
+    valid = interior & np.isfinite(u_comp) & np.isfinite(v_comp)
 
     if not np.any(valid):
         return np.inf, np.inf

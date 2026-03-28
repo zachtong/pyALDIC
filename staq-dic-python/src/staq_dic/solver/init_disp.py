@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy.ndimage import generic_filter
+from scipy.ndimage import binary_dilation
 
 
 def init_disp(
@@ -155,76 +155,80 @@ def _outlier_pass(
     use_8_neighbors: bool,
     n_sigma: float,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
-    """One pass of outlier detection and removal.
+    """One pass of outlier detection and removal (vectorized).
 
     For each interior pixel, computes a weighted neighbor average and
     standard deviation.  If ``|value - avg| > n_sigma * std``, the
-    pixel and its neighbors are set to NaN.
+    pixel and its 3x3 neighborhood are set to NaN.
 
     Matches MATLAB init_disp.m logic.
     """
+    ny, nx = u.shape
+    if ny < 3 or nx < 3:
+        return u.copy(), v.copy()
+
+    # Interior slices — all neighbor arrays share the (ny-2, nx-2) interior grid
+    ui = u[1:-1, 1:-1]
+    vi = v[1:-1, 1:-1]
+
+    # Cardinal neighbors (N, S, W, E)
+    u_N = u[0:-2, 1:-1]
+    u_S = u[2:,   1:-1]
+    u_W = u[1:-1, 0:-2]
+    u_E = u[1:-1, 2:]
+    v_N = v[0:-2, 1:-1]
+    v_S = v[2:,   1:-1]
+    v_W = v[1:-1, 0:-2]
+    v_E = v[1:-1, 2:]
+
+    if use_8_neighbors:
+        # Diagonal neighbors (NW, NE, SW, SE)
+        u_NW = u[0:-2, 0:-2]
+        u_NE = u[0:-2, 2:]
+        u_SW = u[2:,   0:-2]
+        u_SE = u[2:,   2:]
+        v_NW = v[0:-2, 0:-2]
+        v_NE = v[0:-2, 2:]
+        v_SW = v[2:,   0:-2]
+        v_SE = v[2:,   2:]
+
+        # Weighted average: (cardinal_sum/8 + diagonal_sum/16) / 0.75
+        u_card_sum = u_N + u_S + u_W + u_E
+        u_diag_sum = u_NW + u_NE + u_SW + u_SE
+        u_avg = (u_card_sum / 8.0 + u_diag_sum / 16.0) / 0.75
+
+        v_card_sum = v_N + v_S + v_W + v_E
+        v_diag_sum = v_NW + v_NE + v_SW + v_SE
+        v_avg = (v_card_sum / 8.0 + v_diag_sum / 16.0) / 0.75
+
+        # Std of all 8 neighbors (population std, ddof=0)
+        u_all = np.stack([u_N, u_S, u_W, u_E, u_NW, u_NE, u_SW, u_SE], axis=0)
+        v_all = np.stack([v_N, v_S, v_W, v_E, v_NW, v_NE, v_SW, v_SE], axis=0)
+        u_std = np.std(u_all, axis=0)
+        v_std = np.std(v_all, axis=0)
+    else:
+        # 4-neighbor mean and std
+        u_nb = np.stack([u_N, u_S, u_W, u_E], axis=0)
+        v_nb = np.stack([v_N, v_S, v_W, v_E], axis=0)
+        u_avg = np.mean(u_nb, axis=0)
+        v_avg = np.mean(v_nb, axis=0)
+        u_std = np.std(u_nb, axis=0)
+        v_std = np.std(v_nb, axis=0)
+
+    # Outlier detection on interior pixels
+    u_err = np.abs(ui - u_avg) - n_sigma * u_std
+    v_err = np.abs(vi - v_avg) - n_sigma * v_std
+    outlier_interior = (u_err > 0) | (v_err > 0)
+
+    # Map interior outlier mask to full grid, then dilate by 3x3
+    outlier_full = np.zeros((ny, nx), dtype=bool)
+    outlier_full[1:-1, 1:-1] = outlier_interior
+    dilated = binary_dilation(outlier_full, structure=np.ones((3, 3), dtype=bool))
+
     u_out = u.copy()
     v_out = v.copy()
-    ny, nx = u.shape
-
-    if ny < 3 or nx < 3:
-        return u_out, v_out
-
-    for iy in range(1, ny - 1):
-        for ix in range(1, nx - 1):
-            if use_8_neighbors:
-                # 8-neighbor weighted average: cardinal=1/8, diagonal=1/16
-                u_card = np.array([
-                    u[iy - 1, ix], u[iy + 1, ix],
-                    u[iy, ix - 1], u[iy, ix + 1],
-                ])
-                u_diag = np.array([
-                    u[iy - 1, ix - 1], u[iy + 1, ix - 1],
-                    u[iy + 1, ix + 1], u[iy - 1, ix + 1],
-                ])
-                u_all = np.concatenate([u_card, u_diag])
-                v_card = np.array([
-                    v[iy - 1, ix], v[iy + 1, ix],
-                    v[iy, ix - 1], v[iy, ix + 1],
-                ])
-                v_diag = np.array([
-                    v[iy - 1, ix - 1], v[iy + 1, ix - 1],
-                    v[iy + 1, ix + 1], v[iy - 1, ix + 1],
-                ])
-                v_all = np.concatenate([v_card, v_diag])
-
-                # Weighted average: (1/8 * sum(cardinal) + 1/16 * sum(diag)) / (3/4)
-                u_avg = (np.nansum(u_card) / 8 + np.nansum(u_diag) / 16) / 0.75
-                v_avg = (np.nansum(v_card) / 8 + np.nansum(v_diag) / 16) / 0.75
-                u_std = np.nanstd(u_all)
-                v_std = np.nanstd(v_all)
-            else:
-                # 4-neighbor mean
-                u_nb = np.array([
-                    u[iy - 1, ix], u[iy + 1, ix],
-                    u[iy, ix - 1], u[iy, ix + 1],
-                ])
-                v_nb = np.array([
-                    v[iy - 1, ix], v[iy + 1, ix],
-                    v[iy, ix - 1], v[iy, ix + 1],
-                ])
-                u_avg = np.nanmean(u_nb)
-                v_avg = np.nanmean(v_nb)
-                u_std = np.nanstd(u_nb)
-                v_std = np.nanstd(v_nb)
-
-            u_err = abs(u[iy, ix] - u_avg) - n_sigma * u_std
-            v_err = abs(v[iy, ix] - v_avg) - n_sigma * v_std
-
-            if u_err > 0 or v_err > 0:
-                # NaN the center pixel and all its neighbors
-                for dy in range(-1, 2):
-                    for dx in range(-1, 2):
-                        ny2 = iy + dy
-                        nx2 = ix + dx
-                        if 0 <= ny2 < ny and 0 <= nx2 < nx:
-                            u_out[ny2, nx2] = np.nan
-                            v_out[ny2, nx2] = np.nan
+    u_out[dilated] = np.nan
+    v_out[dilated] = np.nan
 
     # NaN the border (MATLAB does this)
     u_out[0, :] = np.nan

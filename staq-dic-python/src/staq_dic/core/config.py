@@ -5,9 +5,10 @@ Port of MATLAB config/dicpara_default.m.
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import replace
 
-from .data_structures import DICPara, GridxyROIRange
+from .data_structures import DICPara, FrameSchedule, GridxyROIRange
 
 
 def dicpara_default(**overrides) -> DICPara:
@@ -127,3 +128,21 @@ def validate_dicpara(p: DICPara) -> None:
     # alpha: non-negative
     if p.alpha < 0:
         raise ValueError(f"alpha must be non-negative (got {p.alpha}).")
+
+    # frame_schedule: warn if both schedule and reference_mode are set
+    if p.frame_schedule is not None:
+        if not isinstance(p.frame_schedule, FrameSchedule):
+            raise TypeError(
+                f"frame_schedule must be a FrameSchedule instance "
+                f"(got {type(p.frame_schedule).__name__})"
+            )
+        # DAG validation is already enforced in FrameSchedule.__post_init__
+        # Length validation is deferred to run_aldic (depends on image count)
+        if p.reference_mode != "incremental":
+            # User explicitly set both — warn that schedule takes precedence
+            warnings.warn(
+                f"Both frame_schedule and reference_mode='{p.reference_mode}' "
+                f"are set. frame_schedule takes precedence.",
+                UserWarning,
+                stacklevel=3,
+            )

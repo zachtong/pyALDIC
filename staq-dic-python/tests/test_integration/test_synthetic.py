@@ -19,13 +19,22 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
+from dataclasses import replace as dc_replace
+
 from staq_dic.core.config import dicpara_default
-from staq_dic.core.data_structures import DICPara, GridxyROIRange, merge_uv
+from staq_dic.core.data_structures import (
+    DICPara,
+    FrameSchedule,
+    GridxyROIRange,
+    merge_uv,
+)
 from staq_dic.core.pipeline import run_aldic
 
 from tests.conftest import (
     apply_displacement,
+    apply_displacement_lagrangian,
     compute_disp_rmse,
+    compute_disp_rmse_interior,
     compute_strain_rmse,
     generate_speckle,
     make_annular_mask,
@@ -56,7 +65,7 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.01,    # Measured RMSE = 0.000 (exact)
+        disp_tol=0.01,
         strain_tol=0.01,
     ),
     "case2_translation": dict(
@@ -67,7 +76,7 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.3,     # Measured RMSE ~0.11
+        disp_tol=0.03,    # Lagrangian measured: RMSE ~0.005px
         strain_tol=0.01,
     ),
     "case3_affine": dict(
@@ -78,8 +87,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.5,     # Measured RMSE ~0.26
-        strain_tol=0.02,   # Measured max ~0.011
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.010px
+        strain_tol=0.02,
     ),
     "case4_annular": dict(
         u2=lambda x, y: 0.02 * (x - CX),
@@ -89,8 +98,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="annular",
         overrides=dict(winsize_min=4),
-        disp_tol=0.5,     # Measured RMSE ~0.29
-        strain_tol=0.02,   # Measured max ~0.013
+        disp_tol=0.5,     # Annular mask → boundary effects at hole edges
+        strain_tol=0.02,
     ),
     "case5_shear": dict(
         u2=lambda x, y: 0.015 * (y - CY),
@@ -100,8 +109,8 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.015, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.3,     # Measured RMSE ~0.09
-        strain_tol=0.04,   # Measured F12 RMSE ~0.027
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.007px
+        strain_tol=0.04,
     ),
     "case6_large_deform": dict(
         u2=lambda x, y: 0.10 * (x - CX) + 0.05 * (y - CY),
@@ -111,7 +120,7 @@ CASES: dict[str, dict] = {
         F11=0.10, F22=0.10, F12=0.05, F21=0.05,
         mask="solid",
         overrides=dict(winsize=48),
-        disp_tol=1.0,
+        disp_tol=1.0,     # 10% strain → large residual expected
         strain_tol=0.05,
     ),
     "case7_multiframe_incr": dict(
@@ -122,7 +131,7 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides=dict(reference_mode="incremental"),
-        disp_tol=0.5,
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.005px
         strain_tol=0.03,
     ),
     "case8_multiframe_accum": dict(
@@ -133,7 +142,7 @@ CASES: dict[str, dict] = {
         F11=0.0, F22=0.0, F12=0.0, F21=0.0,
         mask="solid",
         overrides={},
-        disp_tol=0.5,
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.005px
         strain_tol=0.03,
     ),
     "case9_local_only": dict(
@@ -144,8 +153,8 @@ CASES: dict[str, dict] = {
         F11=0.02, F22=0.02, F12=0.0, F21=0.0,
         mask="solid",
         overrides=dict(use_global_step=False),
-        disp_tol=0.5,     # Measured RMSE ~0.24; no ADMM smoothing → noisier
-        strain_tol=0.02,   # Measured max ~0.011
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.003px (no ADMM)
+        strain_tol=0.02,
     ),
     "case10_rotation": dict(
         u2=lambda x, y: (
@@ -170,8 +179,8 @@ CASES: dict[str, dict] = {
         F21=np.sin(np.pi / 90),
         mask="solid",
         overrides={},
-        disp_tol=0.3,     # Measured RMSE ~0.12
-        strain_tol=0.08,   # Measured off-diag strain RMSE ~0.066
+        disp_tol=0.05,    # Lagrangian measured: RMSE ~0.004px
+        strain_tol=0.08,
     ),
 }
 
@@ -182,14 +191,26 @@ CASES: dict[str, dict] = {
 
 
 def _case_para(**overrides) -> DICPara:
-    """Build DICPara for 256x256 synthetic tests with optional overrides."""
+    """Build DICPara for 256x256 synthetic tests with optional overrides.
+
+    When frame_schedule is provided, reference_mode defaults to 'incremental'
+    to avoid the "both set" warning (schedule takes precedence anyway).
+    """
+    # If frame_schedule is explicitly provided, default to incremental
+    # to avoid the spurious "both set" warning from validate_dicpara.
+    ref_mode = "accumulative"
+    if "frame_schedule" in overrides and overrides["frame_schedule"] is not None:
+        ref_mode = "incremental"
+    if "reference_mode" in overrides:
+        ref_mode = overrides.pop("reference_mode")
+
     defaults = dict(
         winsize=32,
         winstepsize=16,
         winsize_min=8,
         img_size=(IMG_H, IMG_W),
         gridxy_roi_range=GridxyROIRange(gridx=(0, 255), gridy=(0, 255)),
-        reference_mode="accumulative",
+        reference_mode=ref_mode,
         admm_max_iter=3,
         admm_tol=1e-2,
         method_to_compute_strain=3,
@@ -213,44 +234,45 @@ def _build_test_data(
 ) -> dict:
     """Build all data needed to run the pipeline for a single test case.
 
+    Uses Lagrangian image generation for exact DIC ground truth.
+    Uses full-image mask for the pipeline to avoid circular-mask
+    contamination (zeros in IC-GN windows).  RMSE is computed with
+    edge-margin exclusion for solid cases or mask-based for annular.
+
     Args:
         case_name: Key into the CASES dict.
         ref: Reference speckle image (H, W) float64.
 
     Returns:
         Dictionary with keys:
-            para, images, masks, mesh, U0, case_def, mask_img
+            para, images, masks, mesh, U0, case_def, mask_img,
+            gt_u2, gt_v2, gt_u3, gt_v3
     """
     case_def = CASES[case_name]
 
     # Build DICPara with case-specific overrides
     para = _case_para(**case_def["overrides"])
 
-    # Build mask — MATLAB uses circular mask (radius=90) even for "solid" cases.
-    # This excludes edge nodes where image warp boundary artifacts degrade accuracy.
+    # Pipeline mask: full image for all cases.
+    # Annular mask is only used for RMSE filtering (not pipeline input).
+    # This avoids IC-GN window contamination from zero-valued pixels.
     if case_def["mask"] == "annular":
-        mask_img = make_annular_mask(
+        rmse_mask = make_annular_mask(
             IMG_H, IMG_W, cx=CX, cy=CY, r_outer=90.0, r_inner=40.0,
         )
+        pipeline_mask = rmse_mask  # annular: pipeline needs hole info
     else:
-        mask_img = make_circular_mask(
-            IMG_H, IMG_W, cx=CX, cy=CY, radius=90.0,
-        )
+        rmse_mask = None  # solid: use edge-margin exclusion instead
+        pipeline_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
 
-    # Generate displacement fields on full image grid
-    yy, xx = np.mgrid[0:IMG_H, 0:IMG_W].astype(np.float64)
-
-    u2_field = case_def["u2"](xx, yy)
-    v2_field = case_def["v2"](xx, yy)
-    u3_field = case_def["u3"](xx, yy)
-    v3_field = case_def["v3"](xx, yy)
-
-    # Apply inverse warp to generate deformed images
-    deformed2 = apply_displacement(ref, u2_field, v2_field)
-    deformed3 = apply_displacement(ref, u3_field, v3_field)
+    # Generate deformed images using Lagrangian displacement convention.
+    # The lambda functions in CASES define u(X,Y) at reference coordinates,
+    # which is exactly what DIC solves for — no Eulerian approximation error.
+    deformed2 = apply_displacement_lagrangian(ref, case_def["u2"], case_def["v2"])
+    deformed3 = apply_displacement_lagrangian(ref, case_def["u3"], case_def["v3"])
 
     images = [ref, deformed2, deformed3]
-    masks = [mask_img, mask_img, mask_img]
+    masks = [pipeline_mask, pipeline_mask, pipeline_mask]
 
     # Build mesh
     mesh = make_mesh_for_image(IMG_H, IMG_W, step=STEP, margin=MARGIN)
@@ -274,12 +296,33 @@ def _build_test_data(
         mesh=mesh,
         U0=U0,
         case_def=case_def,
-        mask_img=mask_img,
+        rmse_mask=rmse_mask,  # None for solid (use edge-margin), mask for annular
         gt_u2=gt_u2,
         gt_v2=gt_v2,
         gt_u3=gt_u3,
         gt_v3=gt_v3,
     )
+
+
+def _compute_case_rmse(
+    U: np.ndarray,
+    coords: np.ndarray,
+    gt_u: np.ndarray,
+    gt_v: np.ndarray,
+    data: dict,
+) -> tuple[float, float]:
+    """Compute displacement RMSE using the appropriate method for the case.
+
+    Solid cases use edge-margin exclusion (no mask contamination).
+    Annular cases use mask-based filtering (real geometry constraint).
+    """
+    rmse_mask = data["rmse_mask"]
+    if rmse_mask is not None:
+        return compute_disp_rmse(U, coords, gt_u, gt_v, rmse_mask)
+    else:
+        return compute_disp_rmse_interior(
+            U, coords, gt_u, gt_v, img_size=(IMG_H, IMG_W), edge_margin=32,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -331,10 +374,8 @@ class TestSyntheticDisplacement:
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
         coords = result.dic_mesh.coordinates_fem
-        rmse_u, rmse_v = compute_disp_rmse(
-            U, coords,
-            data["gt_u2"], data["gt_v2"],
-            data["mask_img"],
+        rmse_u, rmse_v = _compute_case_rmse(
+            U, coords, data["gt_u2"], data["gt_v2"], data,
         )
 
         disp_tol = data["case_def"]["disp_tol"]
@@ -366,10 +407,8 @@ class TestSyntheticDisplacement:
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
         coords = result.dic_mesh.coordinates_fem
-        rmse_u, rmse_v = compute_disp_rmse(
-            U, coords,
-            data["gt_u3"], data["gt_v3"],
-            data["mask_img"],
+        rmse_u, rmse_v = _compute_case_rmse(
+            U, coords, data["gt_u3"], data["gt_v3"], data,
         )
 
         disp_tol = data["case_def"]["disp_tol"]
@@ -415,11 +454,15 @@ class TestSyntheticStrain:
         assert sr.dudx is not None, "dudx is None"
 
         coords = result.dic_mesh.coordinates_fem
+        # For strain RMSE, use mask if annular, else build a full mask
+        strain_mask = data["rmse_mask"]
+        if strain_mask is None:
+            strain_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
         rmses = compute_strain_rmse(
             sr,
             case_def["F11"], case_def["F21"],
             case_def["F12"], case_def["F22"],
-            coords, data["mask_img"],
+            coords, strain_mask,
         )
 
         tol = case_def["strain_tol"]
@@ -453,12 +496,13 @@ class TestSyntheticLargeDeform:
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
         coords = result.dic_mesh.coordinates_fem
-        rmse_u, rmse_v = compute_disp_rmse(
-            U, coords, data["gt_u2"], data["gt_v2"], data["mask_img"],
+        rmse_u, rmse_v = _compute_case_rmse(
+            U, coords, data["gt_u2"], data["gt_v2"], data,
         )
 
-        assert rmse_u < 1.0, f"case6 RMSE_u={rmse_u:.4f} >= 1.0"
-        assert rmse_v < 1.0, f"case6 RMSE_v={rmse_v:.4f} >= 1.0"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case6 RMSE_u={rmse_u:.4f} >= {tol}"
+        assert rmse_v < tol, f"case6 RMSE_v={rmse_v:.4f} >= {tol}"
 
 
 # ---------------------------------------------------------------------------
@@ -483,12 +527,13 @@ class TestSyntheticMultiFrame:
         U_accum = result.result_disp[0].U_accum
         assert U_accum is not None, "Incremental mode should set U_accum"
 
-        rmse_u, rmse_v = compute_disp_rmse(
+        rmse_u, rmse_v = _compute_case_rmse(
             U_accum, result.dic_mesh.coordinates_fem,
-            data["gt_u2"], data["gt_v2"], data["mask_img"],
+            data["gt_u2"], data["gt_v2"], data,
         )
-        assert rmse_u < 0.5, f"case7 frame2 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 0.5, f"case7 frame2 RMSE_v={rmse_v:.4f}"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case7 frame2 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < tol, f"case7 frame2 RMSE_v={rmse_v:.4f}"
 
     def test_case7_incremental_frame3(self, ref_speckle):
         """Incremental mode frame 3: cumulative u=2.0."""
@@ -504,12 +549,13 @@ class TestSyntheticMultiFrame:
         U_accum = result.result_disp[1].U_accum
         assert U_accum is not None
 
-        rmse_u, rmse_v = compute_disp_rmse(
+        rmse_u, rmse_v = _compute_case_rmse(
             U_accum, result.dic_mesh.coordinates_fem,
-            data["gt_u3"], data["gt_v3"], data["mask_img"],
+            data["gt_u3"], data["gt_v3"], data,
         )
-        assert rmse_u < 0.5, f"case7 frame3 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 0.5, f"case7 frame3 RMSE_v={rmse_v:.4f}"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case7 frame3 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < tol, f"case7 frame3 RMSE_v={rmse_v:.4f}"
 
     def test_case8_accumulative_frame2(self, ref_speckle):
         """Accumulative mode frame 2: u=1.0 vs reference."""
@@ -524,12 +570,13 @@ class TestSyntheticMultiFrame:
         frame_result = result.result_disp[0]
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
-        rmse_u, rmse_v = compute_disp_rmse(
+        rmse_u, rmse_v = _compute_case_rmse(
             U, result.dic_mesh.coordinates_fem,
-            data["gt_u2"], data["gt_v2"], data["mask_img"],
+            data["gt_u2"], data["gt_v2"], data,
         )
-        assert rmse_u < 0.5, f"case8 frame2 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 0.5, f"case8 frame2 RMSE_v={rmse_v:.4f}"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case8 frame2 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < tol, f"case8 frame2 RMSE_v={rmse_v:.4f}"
 
     def test_case8_accumulative_frame3(self, ref_speckle):
         """Accumulative mode frame 3: u=2.0 vs reference."""
@@ -545,12 +592,13 @@ class TestSyntheticMultiFrame:
         frame_result = result.result_disp[1]
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
-        rmse_u, rmse_v = compute_disp_rmse(
+        rmse_u, rmse_v = _compute_case_rmse(
             U, result.dic_mesh.coordinates_fem,
-            data["gt_u3"], data["gt_v3"], data["mask_img"],
+            data["gt_u3"], data["gt_v3"], data,
         )
-        assert rmse_u < 0.5, f"case8 frame3 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 0.5, f"case8 frame3 RMSE_v={rmse_v:.4f}"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case8 frame3 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < tol, f"case8 frame3 RMSE_v={rmse_v:.4f}"
 
 
 # ---------------------------------------------------------------------------
@@ -562,7 +610,7 @@ class TestSyntheticRotation:
     """Pure rotation (2 degrees) — tests non-trivial deformation gradient."""
 
     def test_case10_frame2_displacement(self, ref_speckle):
-        """Rotation displacement RMSE < 0.5."""
+        """Rotation displacement RMSE should be within tolerance."""
         data = _build_test_data("case10_rotation", ref_speckle)
 
         result = run_aldic(
@@ -575,11 +623,12 @@ class TestSyntheticRotation:
         U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
 
         coords = result.dic_mesh.coordinates_fem
-        rmse_u, rmse_v = compute_disp_rmse(
-            U, coords, data["gt_u2"], data["gt_v2"], data["mask_img"],
+        rmse_u, rmse_v = _compute_case_rmse(
+            U, coords, data["gt_u2"], data["gt_v2"], data,
         )
-        assert rmse_u < 0.3, f"case10 RMSE_u={rmse_u:.4f}"
-        assert rmse_v < 0.3, f"case10 RMSE_v={rmse_v:.4f}"
+        tol = data["case_def"]["disp_tol"]
+        assert rmse_u < tol, f"case10 RMSE_u={rmse_u:.4f}"
+        assert rmse_v < tol, f"case10 RMSE_v={rmse_v:.4f}"
 
     def test_case10_strain(self, ref_speckle):
         """Rotation strain should match analytical gradients."""
@@ -595,12 +644,435 @@ class TestSyntheticRotation:
         assert len(result.result_strain) >= 1
         sr = result.result_strain[0]
 
+        strain_mask = data["rmse_mask"]
+        if strain_mask is None:
+            strain_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
         rmses = compute_strain_rmse(
             sr,
             case_def["F11"], case_def["F21"],
             case_def["F12"], case_def["F22"],
-            result.dic_mesh.coordinates_fem, data["mask_img"],
+            result.dic_mesh.coordinates_fem, strain_mask,
         )
 
+        tol = case_def["strain_tol"]
         for key, val in rmses.items():
-            assert val < 0.08, f"case10 {key}={val:.5f} >= 0.08"
+            assert val < tol, f"case10 {key}={val:.5f} >= {tol}"
+
+
+# ---------------------------------------------------------------------------
+# Frame schedule tests (Task 8): skip-frame, mixed, backward compat
+# ---------------------------------------------------------------------------
+
+
+class TestFrameSchedule:
+    """Integration tests for generalized FrameSchedule."""
+
+    def test_case11_skip2_keyframe(self, ref_speckle):
+        """Skip-2 key-frame: frames 1,2 ref 0; frames 3,4 ref 2.
+
+        5 images total (0-4), 4 deformed frames.
+        Schedule: (0, 0, 2, 2)
+        Translation: +1.0 px/frame in x.
+        """
+        n_total = 5
+        tx_per_frame = 1.0
+
+        # Build progressive deformation images (Lagrangian)
+        imgs = [ref_speckle]
+        for k in range(1, n_total):
+            tx = tx_per_frame * k
+            imgs.append(apply_displacement_lagrangian(
+                ref_speckle,
+                lambda x, y, _tx=tx: np.full_like(x, _tx),
+                lambda x, y: np.zeros_like(x),
+            ))
+
+        full_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
+        masks_list = [full_mask] * n_total
+
+        # Schedule: frames 1,2 -> ref 0; frames 3,4 -> ref 2
+        schedule = FrameSchedule(ref_indices=(0, 0, 2, 2))
+
+        mesh = make_mesh_for_image(IMG_H, IMG_W, step=STEP, margin=MARGIN)
+        node_x = mesh.coordinates_fem[:, 0]
+
+        # Initial guess for first pair (frame 0 -> frame 1)
+        gt_u1 = np.full(len(node_x), tx_per_frame)
+        gt_v1 = np.zeros(len(node_x))
+        U0 = merge_uv(gt_u1, gt_v1)
+
+        para = _case_para(frame_schedule=schedule)
+
+        result = run_aldic(
+            para, imgs, masks_list,
+            mesh=mesh, U0=U0, compute_strain=False,
+        )
+
+        assert len(result.result_disp) == 4
+
+        # Verify cumulative displacements for each frame
+        for i in range(4):
+            frame_result = result.result_disp[i]
+            U_accum = frame_result.U_accum
+            assert U_accum is not None, f"Frame {i+2}: U_accum is None"
+
+            expected_u = tx_per_frame * (i + 1)
+            rmse_u, rmse_v = compute_disp_rmse_interior(
+                U_accum, result.dic_mesh.coordinates_fem,
+                np.full(len(node_x), expected_u),
+                np.zeros(len(node_x)),
+                img_size=(IMG_H, IMG_W), edge_margin=32,
+            )
+            assert rmse_u < 0.1, (
+                f"case11 frame{i+2}: RMSE_u={rmse_u:.4f} >= 0.1 "
+                f"(expected cumulative u={expected_u})"
+            )
+            assert rmse_v < 0.1, (
+                f"case11 frame{i+2}: RMSE_v={rmse_v:.4f} >= 0.1"
+            )
+
+    def test_case12_mixed(self, ref_speckle):
+        """Mixed schedule: (0, 1, 0) — some direct, some chained.
+
+        4 images (0-3), 3 deformed frames.
+        Frame 1: refs 0 (direct)
+        Frame 2: refs 1 (chained through frame 1)
+        Frame 3: refs 0 (direct)
+        Translation: +1.5 px/frame.
+        """
+        n_total = 4
+        tx_per_frame = 1.5
+
+        imgs = [ref_speckle]
+        for k in range(1, n_total):
+            tx = tx_per_frame * k
+            imgs.append(apply_displacement_lagrangian(
+                ref_speckle,
+                lambda x, y, _tx=tx: np.full_like(x, _tx),
+                lambda x, y: np.zeros_like(x),
+            ))
+
+        full_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
+        masks_list = [full_mask] * n_total
+
+        schedule = FrameSchedule(ref_indices=(0, 1, 0))
+
+        mesh = make_mesh_for_image(IMG_H, IMG_W, step=STEP, margin=MARGIN)
+        node_x = mesh.coordinates_fem[:, 0]
+
+        gt_u1 = np.full(len(node_x), tx_per_frame)
+        U0 = merge_uv(gt_u1, np.zeros(len(node_x)))
+
+        para = _case_para(frame_schedule=schedule)
+
+        result = run_aldic(
+            para, imgs, masks_list,
+            mesh=mesh, U0=U0, compute_strain=False,
+        )
+
+        assert len(result.result_disp) == 3
+
+        for i in range(3):
+            expected_u = tx_per_frame * (i + 1)
+            U_accum = result.result_disp[i].U_accum
+            assert U_accum is not None
+
+            rmse_u, rmse_v = compute_disp_rmse_interior(
+                U_accum, result.dic_mesh.coordinates_fem,
+                np.full(len(node_x), expected_u),
+                np.zeros(len(node_x)),
+                img_size=(IMG_H, IMG_W), edge_margin=32,
+            )
+            assert rmse_u < 0.1, (
+                f"case12 frame{i+2}: RMSE_u={rmse_u:.4f} "
+                f"(expected cumulative u={expected_u})"
+            )
+
+    def test_case13_backward_compat(self, ref_speckle):
+        """Legacy mode (no schedule) should match explicit schedule.
+
+        Run the same 3-frame translation test with:
+        1. reference_mode='accumulative' (legacy)
+        2. frame_schedule=FrameSchedule((0, 0)) (explicit)
+        Results should be identical.
+        """
+        imgs = [ref_speckle]
+        for k in range(1, 3):
+            tx = 1.0 * k
+            imgs.append(apply_displacement_lagrangian(
+                ref_speckle,
+                lambda x, y, _tx=tx: np.full_like(x, _tx),
+                lambda x, y: np.zeros_like(x),
+            ))
+
+        full_mask = np.ones((IMG_H, IMG_W), dtype=np.float64)
+        masks_list = [full_mask] * 3
+
+        mesh = make_mesh_for_image(IMG_H, IMG_W, step=STEP, margin=MARGIN)
+        node_x = mesh.coordinates_fem[:, 0]
+        U0 = merge_uv(np.full(len(node_x), 1.0), np.zeros(len(node_x)))
+
+        # Run 1: legacy mode (no schedule)
+        para_legacy = _case_para(reference_mode="accumulative")
+        result_legacy = run_aldic(
+            para_legacy, imgs, masks_list,
+            mesh=mesh, U0=U0, compute_strain=False,
+        )
+
+        # Run 2: explicit schedule equivalent to accumulative
+        schedule = FrameSchedule(ref_indices=(0, 0))
+        para_schedule = _case_para(frame_schedule=schedule)
+        result_schedule = run_aldic(
+            para_schedule, imgs, masks_list,
+            mesh=mesh, U0=U0, compute_strain=False,
+        )
+
+        # Both should have identical cumulative results
+        for i in range(2):
+            U_legacy = result_legacy.result_disp[i].U_accum
+            U_sched = result_schedule.result_disp[i].U_accum
+            assert U_legacy is not None
+            assert U_sched is not None
+            np.testing.assert_allclose(
+                U_sched, U_legacy, atol=1e-10,
+                err_msg=f"Frame {i+2}: schedule vs legacy mismatch",
+            )
+
+
+# ---------------------------------------------------------------------------
+# Quadtree mesh integration tests (Task 9): adaptive refinement + pipeline
+# ---------------------------------------------------------------------------
+
+
+class TestQuadtreeMesh:
+    """Integration tests for adaptive quadtree mesh with AL-DIC pipeline.
+
+    Tests that generate_mesh() produces a valid quadtree mesh from an
+    annular mask, and that the pipeline can track displacement correctly
+    on the refined mesh with hanging (irregular) nodes.
+    """
+
+    def test_quadtree_mesh_structure(self, ref_speckle):
+        """generate_mesh should refine elements near annular hole boundary.
+
+        Verifies:
+        - Quadtree mesh has more nodes than uniform mesh (refinement occurred)
+        - Some elements have midside hanging nodes (Q8 cols 4-7 != 0)
+        - mark_coord_hole_edge is non-empty
+        """
+        from dataclasses import replace as dc_replace
+        from staq_dic.io.image_ops import compute_image_gradient
+        from staq_dic.mesh.generate_mesh import generate_mesh
+        from staq_dic.mesh.mesh_setup import mesh_setup
+
+        # Annular mask with hole in center
+        annular_mask = make_annular_mask(
+            IMG_H, IMG_W, cx=CX, cy=CY, r_outer=90.0, r_inner=40.0,
+        )
+
+        # Build DICPara with mask
+        para = _case_para()
+        para = dc_replace(para, img_ref_mask=annular_mask)
+
+        # Build initial uniform mesh
+        xs = np.arange(MARGIN, IMG_W - MARGIN + 1, STEP, dtype=np.float64)
+        ys = np.arange(MARGIN, IMG_H - MARGIN + 1, STEP, dtype=np.float64)
+        uniform_mesh = mesh_setup(xs, ys, para)
+
+        # Compute image gradient (needed by generate_mesh for mask info)
+        f_img = ref_speckle / ref_speckle.max()
+        Df = compute_image_gradient(f_img, annular_mask)
+
+        # Initial displacement (zero for structure test)
+        n_nodes_uniform = uniform_mesh.coordinates_fem.shape[0]
+        U0 = np.zeros(2 * n_nodes_uniform, dtype=np.float64)
+
+        # Generate quadtree mesh
+        mesh_qt, U0_qt = generate_mesh(uniform_mesh, para, Df, U0)
+
+        # Verify refinement occurred
+        n_nodes_qt = mesh_qt.coordinates_fem.shape[0]
+        n_elems_qt = mesh_qt.elements_fem.shape[0]
+        n_elems_uniform = uniform_mesh.elements_fem.shape[0]
+
+        assert n_nodes_qt > n_nodes_uniform, (
+            f"Quadtree should have more nodes: {n_nodes_qt} <= {n_nodes_uniform}"
+        )
+        # Note: element count may decrease because mark_inside removes
+        # elements inside the hole.  Refinement adds children near the
+        # boundary, but hole elements are deleted.  Check nodes instead.
+
+        # Verify hanging nodes exist (Q8 midside columns 4-7, -1 = no midside)
+        midside_cols = mesh_qt.elements_fem[:, 4:8]
+        has_hanging = np.any(midside_cols >= 0)
+        assert has_hanging, "Quadtree mesh should have hanging (midside) nodes"
+
+        # Verify boundary nodes identified
+        assert len(mesh_qt.mark_coord_hole_edge) > 0, (
+            "mark_coord_hole_edge should be non-empty for annular mask"
+        )
+
+        # Verify U0 interpolation shape
+        assert len(U0_qt) == 2 * n_nodes_qt
+
+    def test_quadtree_pipeline_affine(self, ref_speckle):
+        """Full pipeline with quadtree mesh should track affine deformation.
+
+        Flow: uniform mesh → generate_mesh (quadtree) → run_aldic.
+        Affine expansion: u = 0.02*(x-CX), v = 0.02*(y-CY).
+        """
+        from dataclasses import replace as dc_replace
+        from staq_dic.io.image_ops import compute_image_gradient
+        from staq_dic.mesh.generate_mesh import generate_mesh
+        from staq_dic.mesh.mesh_setup import mesh_setup
+
+        # Annular mask
+        annular_mask = make_annular_mask(
+            IMG_H, IMG_W, cx=CX, cy=CY, r_outer=90.0, r_inner=40.0,
+        )
+
+        # Affine displacement functions
+        u_func = lambda x, y: 0.02 * (x - CX)
+        v_func = lambda x, y: 0.02 * (y - CY)
+
+        # Generate deformed image (Lagrangian)
+        deformed = apply_displacement_lagrangian(ref_speckle, u_func, v_func)
+
+        # Build DICPara with mask
+        para = _case_para()
+        para = dc_replace(para, img_ref_mask=annular_mask)
+
+        # Build initial uniform mesh
+        xs = np.arange(MARGIN, IMG_W - MARGIN + 1, STEP, dtype=np.float64)
+        ys = np.arange(MARGIN, IMG_H - MARGIN + 1, STEP, dtype=np.float64)
+        uniform_mesh = mesh_setup(xs, ys, para)
+
+        # Compute image gradient
+        f_img = ref_speckle / ref_speckle.max()
+        Df = compute_image_gradient(f_img, annular_mask)
+
+        # Ground truth at uniform mesh nodes → initial guess
+        node_x = uniform_mesh.coordinates_fem[:, 0]
+        node_y = uniform_mesh.coordinates_fem[:, 1]
+        gt_u = u_func(node_x, node_y)
+        gt_v = v_func(node_x, node_y)
+        U0_uniform = merge_uv(gt_u, gt_v)
+
+        # Generate quadtree mesh + interpolated U0
+        mesh_qt, U0_qt = generate_mesh(uniform_mesh, para, Df, U0_uniform)
+
+        # Run pipeline with quadtree mesh
+        result = run_aldic(
+            para,
+            [ref_speckle, deformed],
+            [annular_mask, annular_mask],
+            mesh=mesh_qt,
+            U0=U0_qt,
+            compute_strain=False,
+        )
+
+        assert len(result.result_disp) >= 1, "No displacement results"
+
+        # Evaluate displacement accuracy
+        frame_result = result.result_disp[0]
+        U = frame_result.U_accum if frame_result.U_accum is not None else frame_result.U
+
+        coords = result.dic_mesh.coordinates_fem
+        gt_u_qt = u_func(coords[:, 0], coords[:, 1])
+        gt_v_qt = v_func(coords[:, 0], coords[:, 1])
+
+        # Use annular mask for RMSE (quadtree mesh nodes may be outside annulus)
+        rmse_u, rmse_v = compute_disp_rmse(
+            U, coords, gt_u_qt, gt_v_qt, annular_mask,
+        )
+
+        # Quadtree should achieve similar accuracy to uniform mesh
+        assert rmse_u < 0.5, f"Quadtree affine RMSE_u={rmse_u:.4f} >= 0.5"
+        assert rmse_v < 0.5, f"Quadtree affine RMSE_v={rmse_v:.4f} >= 0.5"
+
+    def test_quadtree_vs_uniform_translation(self, ref_speckle):
+        """Quadtree and uniform meshes should agree for uniform translation.
+
+        Translation is spatially constant, so mesh topology shouldn't
+        affect the result significantly.  This tests that the quadtree
+        pipeline path (hanging nodes, boundary marking) doesn't introduce
+        artifacts compared to the uniform path.
+        """
+        from dataclasses import replace as dc_replace
+        from staq_dic.io.image_ops import compute_image_gradient
+        from staq_dic.mesh.generate_mesh import generate_mesh
+        from staq_dic.mesh.mesh_setup import mesh_setup
+
+        tx, ty = 2.0, -1.0
+        u_func = lambda x, y: np.full_like(x, tx)
+        v_func = lambda x, y: np.full_like(x, ty)
+
+        annular_mask = make_annular_mask(
+            IMG_H, IMG_W, cx=CX, cy=CY, r_outer=90.0, r_inner=40.0,
+        )
+        deformed = apply_displacement_lagrangian(ref_speckle, u_func, v_func)
+
+        para = _case_para()
+        para = dc_replace(para, img_ref_mask=annular_mask)
+
+        # --- Uniform mesh path ---
+        uniform_mesh = make_mesh_for_image(IMG_H, IMG_W, step=STEP, margin=MARGIN)
+        n_uniform = uniform_mesh.coordinates_fem.shape[0]
+        U0_uniform = merge_uv(
+            np.full(n_uniform, tx), np.full(n_uniform, ty),
+        )
+
+        result_uniform = run_aldic(
+            para,
+            [ref_speckle, deformed],
+            [annular_mask, annular_mask],
+            mesh=uniform_mesh,
+            U0=U0_uniform,
+            compute_strain=False,
+        )
+
+        # --- Quadtree mesh path ---
+        xs = np.arange(MARGIN, IMG_W - MARGIN + 1, STEP, dtype=np.float64)
+        ys = np.arange(MARGIN, IMG_H - MARGIN + 1, STEP, dtype=np.float64)
+        init_mesh = mesh_setup(xs, ys, para)
+        f_img = ref_speckle / ref_speckle.max()
+        Df = compute_image_gradient(f_img, annular_mask)
+
+        n_init = init_mesh.coordinates_fem.shape[0]
+        U0_init = merge_uv(np.full(n_init, tx), np.full(n_init, ty))
+        mesh_qt, U0_qt = generate_mesh(init_mesh, para, Df, U0_init)
+
+        result_qt = run_aldic(
+            para,
+            [ref_speckle, deformed],
+            [annular_mask, annular_mask],
+            mesh=mesh_qt,
+            U0=U0_qt,
+            compute_strain=False,
+        )
+
+        # Both should achieve good accuracy on their own nodes
+        fr_uniform = result_uniform.result_disp[0]
+        U_uni = fr_uniform.U_accum if fr_uniform.U_accum is not None else fr_uniform.U
+        coords_uni = result_uniform.dic_mesh.coordinates_fem
+        rmse_u_uni, rmse_v_uni = compute_disp_rmse(
+            U_uni, coords_uni,
+            np.full(coords_uni.shape[0], tx),
+            np.full(coords_uni.shape[0], ty),
+            annular_mask,
+        )
+
+        fr_qt = result_qt.result_disp[0]
+        U_qt = fr_qt.U_accum if fr_qt.U_accum is not None else fr_qt.U
+        coords_qt = result_qt.dic_mesh.coordinates_fem
+        rmse_u_qt, rmse_v_qt = compute_disp_rmse(
+            U_qt, coords_qt,
+            np.full(coords_qt.shape[0], tx),
+            np.full(coords_qt.shape[0], ty),
+            annular_mask,
+        )
+
+        # Quadtree should not be significantly worse than uniform
+        assert rmse_u_qt < 0.5, f"Quadtree RMSE_u={rmse_u_qt:.4f} >= 0.5"
+        assert rmse_v_qt < 0.5, f"Quadtree RMSE_v={rmse_v_qt:.4f} >= 0.5"
+        assert rmse_u_uni < 0.5, f"Uniform RMSE_u={rmse_u_uni:.4f} >= 0.5"

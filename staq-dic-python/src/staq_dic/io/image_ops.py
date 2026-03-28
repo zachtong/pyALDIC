@@ -67,6 +67,7 @@ def normalize_images(
 def compute_image_gradient(
     img_ref: NDArray[np.float64],
     img_ref_mask: NDArray[np.float64] | None = None,
+    img_raw: NDArray[np.float64] | None = None,
 ) -> ImageGradients:
     """Compute image gradients using 7-point central finite difference.
 
@@ -77,8 +78,11 @@ def compute_image_gradient(
     by the mask.
 
     Args:
-        img_ref: Reference image (H, W) float64.
+        img_ref: Reference image (H, W) float64 (possibly masked).
         img_ref_mask: Binary mask (H, W) float64. If None, all ones.
+        img_raw: Unmasked raw image (H, W) float64. If provided, gradients
+                 are computed from this instead of img_ref. This avoids
+                 artificial gradient edges at mask boundaries.
 
     Returns:
         ImageGradients with df_dx, df_dy (cropped), and axis info.
@@ -87,6 +91,9 @@ def compute_image_gradient(
 
     if img_ref_mask is None:
         img_ref_mask = np.ones((h, w), dtype=np.float64)
+
+    # Compute gradients from raw image if available (avoids artificial edges)
+    source = img_raw if img_raw is not None else img_ref
 
     # 7-point finite difference kernel
     kernel = np.array([-1 / 60, 3 / 20, -3 / 4, 0, 3 / 4, -3 / 20, 1 / 60])
@@ -99,10 +106,10 @@ def compute_image_gradient(
     # gradient at pixel (y, x) without any offset arithmetic.
     crop = 3  # half-width of the 7-point stencil
 
-    # Apply 1D correlation along each axis on the full image
+    # Apply 1D correlation along each axis on the source image
     # axis=0 -> y-derivative (df/dy), axis=1 -> x-derivative (df/dx)
-    df_dx_full = correlate1d(img_ref, kernel, axis=1, mode="nearest")
-    df_dy_full = correlate1d(img_ref, kernel, axis=0, mode="nearest")
+    df_dx_full = correlate1d(source, kernel, axis=1, mode="nearest")
+    df_dy_full = correlate1d(source, kernel, axis=0, mode="nearest")
 
     # Zero out the 3-pixel border where the stencil is unreliable
     df_dx = np.zeros((h, w), dtype=np.float64)
