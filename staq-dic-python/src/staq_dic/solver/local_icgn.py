@@ -20,7 +20,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..core.data_structures import DICPara, ImageGradients
-from .outlier_detection import detect_bad_points, fill_nan_rbf
+from ..utils.outlier_detection import detect_bad_points, fill_nan_idw
 
 
 def local_icgn(
@@ -113,8 +113,8 @@ def local_icgn(
     F[4 * bad_pts + 2] = np.nan
     F[4 * bad_pts + 3] = np.nan
 
-    U = fill_nan_rbf(U, coordinates_fem, n_components=2)
-    F = fill_nan_rbf(F, coordinates_fem, n_components=4)
+    U = fill_nan_idw(U, coordinates_fem, n_components=2)
+    F = fill_nan_idw(F, coordinates_fem, n_components=4)
 
     return U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain
 
@@ -182,8 +182,6 @@ def _sequential_6dof(coords, U0_2d, img_def, pre, tol, max_iter):
         y0 = float(round(coords[j, 1]))
 
         try:
-            # Use pre-computed data directly
-            from ..io.image_ops import compute_image_gradient  # noqa: F811
             U_j, F_j, step = icgn_solver(
                 U0_2d[j],
                 x0, y0,

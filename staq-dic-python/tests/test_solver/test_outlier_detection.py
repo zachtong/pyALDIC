@@ -1,9 +1,9 @@
-"""Tests for outlier_detection (detect_bad_points + fill_nan_rbf)."""
+"""Tests for outlier_detection (detect_bad_points + fill_nan_idw)."""
 
 import numpy as np
 import pytest
 
-from staq_dic.solver.outlier_detection import detect_bad_points, fill_nan_rbf
+from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 
 
 class TestDetectBadPoints:
@@ -60,7 +60,7 @@ class TestFillNanRbf:
         """No NaN values → return unchanged."""
         coords = np.array([[0, 0], [10, 0], [20, 0]], dtype=np.float64)
         V = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0])  # 3 nodes, 2 components
-        result = fill_nan_rbf(V, coords, n_components=2)
+        result = fill_nan_idw(V, coords, n_components=2)
         np.testing.assert_array_equal(result, V)
 
     def test_fills_nan(self):
@@ -73,7 +73,7 @@ class TestFillNanRbf:
         # 6 nodes, 2 components. Node 2 is NaN.
         V = np.array([1.0, 0.0, 2.0, 0.0, np.nan, np.nan,
                        1.5, 0.0, 2.5, 0.0, 3.0, 0.0])
-        result = fill_nan_rbf(V, coords, n_components=2)
+        result = fill_nan_idw(V, coords, n_components=2)
         assert not np.any(np.isnan(result))
         # Interpolated u at node 2 should be reasonable (between neighbor values)
         assert 0.5 < result[4] < 4.0
@@ -84,7 +84,7 @@ class TestFillNanRbf:
             [0, 0], [10, 0], [20, 0], [30, 0]
         ], dtype=np.float64)
         V = np.array([1.0, 0.0, np.nan, np.nan, 3.0, 0.0, 4.0, 0.0])
-        result = fill_nan_rbf(V, coords, n_components=2)
+        result = fill_nan_idw(V, coords, n_components=2)
         assert not np.any(np.isnan(result))
 
     def test_four_components(self):
@@ -101,7 +101,7 @@ class TestFillNanRbf:
         V[16:20] = [2.5, 3.5, 4.5, 5.5]
         V[20:24] = [3.0, 4.0, 5.0, 6.0]
 
-        result = fill_nan_rbf(V, coords, n_components=4)
+        result = fill_nan_idw(V, coords, n_components=4)
         assert not np.any(np.isnan(result))
         # Node 2 F11 should be interpolated reasonably
         assert abs(result[8] - 3.0) < 1.5
@@ -111,5 +111,5 @@ class TestFillNanRbf:
         coords = np.array([[0, 0], [10, 0]], dtype=np.float64)
         V = np.array([np.nan, np.nan, np.nan, np.nan])
         with pytest.warns(UserWarning, match="All nodes are NaN"):
-            result = fill_nan_rbf(V, coords, n_components=2)
+            result = fill_nan_idw(V, coords, n_components=2)
         np.testing.assert_array_equal(result, 0.0)

@@ -149,7 +149,10 @@ def compute_all_elements_gp(
     Jdet_all = J11 * J22 - J12 * J21
 
     # --- Physical derivatives: J^{-1} * [dN/dksi; dN/deta] ---
-    inv_det = 1.0 / Jdet_all  # (n_ele,)
+    # Degenerate elements (all-dummy nodes) have Jdet=0; use safe division
+    # so they contribute zero to the global assembly.
+    with np.errstate(divide="ignore", invalid="ignore"):
+        inv_det = np.where(np.abs(Jdet_all) > 1e-30, 1.0 / Jdet_all, 0.0)
     # dN/dx = (J22 * dN/dksi - J12 * dN/deta) / det
     # dN/dy = (-J21 * dN/dksi + J11 * dN/deta) / det
     dNdx = inv_det[:, None] * (J22[:, None] * dNdk - J12[:, None] * dNde)  # (n_ele, 8)

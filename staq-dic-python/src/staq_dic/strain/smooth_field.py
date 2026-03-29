@@ -13,7 +13,8 @@ MATLAB/Python differences:
       ``NodeRegionMap`` from ``utils.region_analysis``.
     - MATLAB handles smoothness=0 as a no-op; Python does the same.
     - The sigma formula is: ``sigma = h * max(0.3, 500 * smoothness)``
-      where ``h = winstepsize``.
+      where ``h = winstepsize`` (uniform) or per-node local spacing
+      (non-uniform mesh).
 """
 
 from __future__ import annotations
@@ -26,10 +27,54 @@ from scipy.spatial import KDTree
 from ..utils.region_analysis import NodeRegionMap
 
 
+def compute_node_local_spacing(
+    coordinates: NDArray[np.float64],
+    elements: NDArray[np.int64],
+) -> NDArray[np.float64]:
+    """Compute per-node local mesh spacing from element connectivity.
+
+    For each node, averages the edge length of all connected elements.
+    Midside (hanging) nodes receive half the parent element edge length,
+    reflecting their denser local spacing.
+
+    Args:
+        coordinates: (n_nodes, 2) node coordinates.
+        elements: (n_elements, 4+) element connectivity (Q4 or Q8).
+
+    Returns:
+        (n_nodes,) per-node effective spacing in pixels.
+    """
+    n_nodes = coordinates.shape[0]
+    corners = elements[:, :4]
+
+    # Element edge length ~ diagonal / sqrt(2)
+    dx = coordinates[corners[:, 0], 0] - coordinates[corners[:, 2], 0]
+    dy = coordinates[corners[:, 0], 1] - coordinates[corners[:, 2], 1]
+    elem_h = np.sqrt(dx**2 + dy**2) / np.sqrt(2.0)
+
+    node_h_sum = np.zeros(n_nodes, dtype=np.float64)
+    node_count = np.zeros(n_nodes, dtype=np.float64)
+    for c in range(4):
+        np.add.at(node_h_sum, corners[:, c], elem_h)
+        np.add.at(node_count, corners[:, c], 1.0)
+
+    # Midside (hanging) nodes — columns 4-7 when present
+    if elements.shape[1] > 4:
+        midsides = elements[:, 4:8]
+        for c in range(4):
+            valid = midsides[:, c] >= 0
+            if valid.any():
+                np.add.at(node_h_sum, midsides[valid, c], elem_h[valid] * 0.5)
+                np.add.at(node_count, midsides[valid, c], 1.0)
+
+    node_count[node_count == 0] = 1.0
+    return node_h_sum / node_count
+
+
 def smooth_field_sparse(
     values: NDArray[np.float64],
     coordinates: NDArray[np.float64],
-    sigma: float,
+    sigma: float | NDArray[np.float64],
     region_map: NodeRegionMap,
     n_components: int = 2,
 ) -> NDArray[np.float64]:
@@ -43,20 +88,28 @@ def smooth_field_sparse(
     Args:
         values: Interleaved nodal values (n_components * n_nodes,).
         coordinates: Node coordinates (n_nodes, 2), columns [x, y].
-        sigma: Gaussian kernel standard deviation in pixels.
+        sigma: Gaussian kernel standard deviation in pixels.  Either a
+            scalar (uniform sigma for all nodes) or a (n_nodes,) array
+            for per-node adaptive smoothing on non-uniform meshes.
         region_map: Pre-computed node-to-region mapping.
         n_components: Number of interleaved components (2 or 4).
 
     Returns:
         Smoothed values, same shape and layout as input ``values``.
     """
-    if sigma < 1e-8:
-        return values.copy()
+    n_nodes = coordinates.shape[0]
+
+    # Normalize sigma to per-node array
+    if np.isscalar(sigma):
+        if sigma < 1e-8:
+            return values.copy()
+        sigma_arr = np.full(n_nodes, float(sigma), dtype=np.float64)
+    else:
+        sigma_arr = np.asarray(sigma, dtype=np.float64)
+        if sigma_arr.max() < 1e-8:
+            return values.copy()
 
     result = values.copy()
-    n_nodes = coordinates.shape[0]
-    radius = 3.0 * sigma
-    two_sigma_sq = 2.0 * sigma * sigma
 
     for region_nodes in region_map.region_node_lists:
         if len(region_nodes) < 2:
@@ -64,10 +117,12 @@ def smooth_field_sparse(
 
         # Build KDTree for this region's nodes
         region_coords = coordinates[region_nodes]
+        region_sigma = sigma_arr[region_nodes]
         tree = KDTree(region_coords)
 
-        # Find neighbors within radius for all region nodes
-        neighbor_lists = tree.query_ball_point(region_coords, radius)
+        # Per-node search radius = 3 * sigma_i
+        radii = 3.0 * region_sigma
+        neighbor_lists = tree.query_ball_point(region_coords, radii)
 
         # Build sparse weight matrix (local indices within region)
         rows = []
@@ -81,7 +136,10 @@ def smooth_field_sparse(
                 (region_coords[neighbors] - region_coords[i]) ** 2,
                 axis=1,
             )
-            w = np.exp(-dists_sq / two_sigma_sq)
+            two_sigma_sq_i = 2.0 * region_sigma[i] * region_sigma[i]
+            if two_sigma_sq_i < 1e-15:
+                continue
+            w = np.exp(-dists_sq / two_sigma_sq_i)
             rows.extend([i] * len(neighbors))
             cols.extend(neighbors.tolist())
             wts.extend(w.tolist())

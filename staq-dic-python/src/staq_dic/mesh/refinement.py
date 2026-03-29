@@ -1,15 +1,15 @@
 """Adaptive refinement framework for quadtree DIC meshes.
 
 Provides a Protocol-based criterion system for marking elements,
-a Policy container for pre/post-solve refinement, and a ``refine_mesh``
+a Policy container for pre-solve refinement, and a ``refine_mesh``
 driver that iteratively refines marked elements via ``qrefine_r``.
 
 Design:
     - ``RefinementCriterion`` is a ``typing.Protocol`` — any class with
       ``min_element_size: int`` and ``mark(ctx) -> NDArray[bool_]`` qualifies.
-    - ``RefinementContext`` bundles the mesh + optional solver state so
+    - ``RefinementContext`` bundles the mesh + optional geometry state so
       criteria can inspect whatever they need.
-    - ``RefinementPolicy`` groups pre-solve and post-solve criteria lists.
+    - ``RefinementPolicy`` groups pre-solve criteria.
     - ``refine_mesh()`` is the main entry point: iteratively refine until
       no elements are marked (or all are below ``min_element_size``).
 """
@@ -23,7 +23,7 @@ from typing import Protocol, runtime_checkable
 import numpy as np
 from numpy.typing import NDArray
 
-from ..core.data_structures import DICMesh, ImageGradients
+from ..core.data_structures import DICMesh
 from .generate_mesh import (
     _find_boundary_nodes,
     _inject_hanging_nodes,
@@ -45,25 +45,17 @@ logger = logging.getLogger(__name__)
 class RefinementContext:
     """Immutable context passed to every ``RefinementCriterion.mark()`` call.
 
-    Only ``mesh`` is required.  Optional fields carry solver state so
-    post-solve criteria can inspect displacements, gradients, etc.
+    Only ``mesh`` is required.  Optional fields carry geometry state so
+    criteria can inspect whatever they need.
 
     Attributes:
         mesh: Current DICMesh (may be updated between refinement rounds).
         mask: Binary mask (H, W). 1.0 = valid, 0.0 = hole.
-        Df: Reference image gradients.
-        U: Displacement vector (2*n_nodes,) interleaved [u0,v0,...].
-        F: Deformation gradient vector (4*n_nodes,).
-        conv_iterations: Per-node IC-GN iteration count at convergence.
         user_marks: User-supplied element indices (int64) to refine.
     """
 
     mesh: DICMesh
     mask: NDArray[np.float64] | None = None
-    Df: ImageGradients | None = None
-    U: NDArray[np.float64] | None = None
-    F: NDArray[np.float64] | None = None
-    conv_iterations: NDArray[np.int64] | None = None
     user_marks: NDArray[np.int64] | None = None
 
 
@@ -91,28 +83,19 @@ class RefinementCriterion(Protocol):
 
 @dataclass(frozen=True)
 class RefinementPolicy:
-    """Groups refinement criteria into pre-solve and post-solve phases.
+    """Groups pre-solve refinement criteria.
 
     Attributes:
-        pre_solve: Criteria applied before the DIC solve (e.g. mask boundary).
-        post_solve: Criteria applied after the solve (e.g. posterior error).
-        max_post_solve_cycles: Maximum number of post-solve refine-then-re-solve
-            iterations.  0 disables post-solve refinement even if criteria exist.
+        pre_solve: Criteria applied before the DIC solve (e.g. mask boundary,
+            manual selection).
     """
 
     pre_solve: list[RefinementCriterion] = field(default_factory=list)
-    post_solve: list[RefinementCriterion] = field(default_factory=list)
-    max_post_solve_cycles: int = 0
 
     @property
     def has_pre_solve(self) -> bool:
         """True if there are pre-solve criteria."""
         return len(self.pre_solve) > 0
-
-    @property
-    def has_post_solve(self) -> bool:
-        """True if there are post-solve criteria AND cycles > 0."""
-        return len(self.post_solve) > 0 and self.max_post_solve_cycles > 0
 
 
 # ---------------------------------------------------------------------------
@@ -234,10 +217,6 @@ def refine_mesh(
         temp_ctx = RefinementContext(
             mesh=temp_mesh,
             mask=ctx.mask,
-            Df=ctx.Df,
-            U=ctx.U,
-            F=ctx.F,
-            conv_iterations=ctx.conv_iterations,
             user_marks=ctx.user_marks,
         )
 
@@ -288,9 +267,10 @@ def refine_mesh(
         _, outside_idx = mark_inside(coords, elems_q8, mask)
         elems_q8 = elems_q8[outside_idx]
 
-    # Step 4: Find boundary nodes
+    # Step 4: Find boundary nodes (pass mask for hole-proximity detection)
     mark_coord_hole_edge = _find_boundary_nodes(
-        coords, elems_q8, mesh.coordinates_fem, mesh.element_min_size * 2
+        coords, elems_q8, mesh.coordinates_fem, mesh.element_min_size * 2,
+        mask=mask,
     )
 
     # Step 5: Interpolate U0 (if mask + img_size provided)

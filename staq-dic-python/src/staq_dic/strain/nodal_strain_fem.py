@@ -13,7 +13,7 @@ MATLAB/Python differences:
     - Python reuses the same ``fem_assembly.compute_all_elements_gp``.
     - MATLAB ``rmoutliers('movmedian', ...)`` -> ``scipy.ndimage.median_filter``
       + MAD-based outlier detection.
-    - MATLAB ``scatteredInterpolant`` -> ``fill_nan_rbf`` from outlier_detection.
+    - MATLAB ``scatteredInterpolant`` -> ``fill_nan_idw`` from outlier_detection.
     - MATLAB 1-based indices -> Python 0-based.
 """
 
@@ -25,7 +25,7 @@ from scipy.ndimage import median_filter
 
 from ..core.data_structures import DICMesh, DICPara
 from ..solver.fem_assembly import compute_all_elements_gp
-from ..solver.outlier_detection import fill_nan_rbf
+from ..utils.outlier_detection import fill_nan_idw
 
 
 def _detect_outliers_movmedian(
@@ -182,6 +182,6 @@ def global_nodal_strain_fem(
         F_out[4 * outlier_idx + c] = np.nan
 
     # --- Fill NaN via scattered interpolation ---
-    F_out = fill_nan_rbf(F_out, coords, n_components=4)
+    F_out = fill_nan_idw(F_out, coords, n_components=4)
 
     return F_out

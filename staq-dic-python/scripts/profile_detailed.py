@@ -21,7 +21,7 @@ from staq_dic.core.data_structures import DICMesh, GridxyROIRange
 from staq_dic.io.image_ops import compute_image_gradient, normalize_images
 from staq_dic.mesh.mesh_setup import mesh_setup
 from staq_dic.solver.icgn_batch import precompute_subsets_6dof, precompute_subsets_2dof
-from staq_dic.solver.outlier_detection import detect_bad_points, fill_nan_rbf
+from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 from staq_dic.solver.fem_assembly import compute_all_elements_gp
 from staq_dic.solver.subpb2_solver import (
     _precompute_geometry, precompute_subpb2, _solve_cached,
@@ -201,7 +201,7 @@ def run_detect_bad():
 (bad_pts, bad_pt_num), t = timer(run_detect_bad, "A.4 detect_bad_points")
 timings["A4_detect_bad"] = t
 
-# A.5 Set NaN + fill_nan_rbf (U)
+# A.5 Set NaN + fill_nan_idw (U)
 U_with_nan = U_local.copy()
 U_with_nan[2 * bad_pts] = np.nan
 U_with_nan[2 * bad_pts + 1] = np.nan
@@ -211,15 +211,15 @@ F_with_nan[4 * bad_pts + 1] = np.nan
 F_with_nan[4 * bad_pts + 2] = np.nan
 F_with_nan[4 * bad_pts + 3] = np.nan
 
-_, t = timer(lambda: fill_nan_rbf(U_with_nan, coords, n_components=2),
-             "A.5 fill_nan_rbf (U, n_comp=2)")
+_, t = timer(lambda: fill_nan_idw(U_with_nan, coords, n_components=2),
+             "A.5 fill_nan_idw (U, n_comp=2)")
 timings["A5_fill_nan_U"] = t
-U_filled = fill_nan_rbf(U_with_nan, coords, n_components=2)
+U_filled = fill_nan_idw(U_with_nan, coords, n_components=2)
 
-_, t = timer(lambda: fill_nan_rbf(F_with_nan, coords, n_components=4),
-             "A.6 fill_nan_rbf (F, n_comp=4)")
+_, t = timer(lambda: fill_nan_idw(F_with_nan, coords, n_components=4),
+             "A.6 fill_nan_idw (F, n_comp=4)")
 timings["A6_fill_nan_F"] = t
-F_filled = fill_nan_rbf(F_with_nan, coords, n_components=4)
+F_filled = fill_nan_idw(F_with_nan, coords, n_components=4)
 
 n_nan_u = np.sum(np.isnan(U_with_nan[0::2]))
 print(f"  (bad points: {bad_pt_num}, NaN nodes for fill: {n_nan_u})")
@@ -346,7 +346,7 @@ def detect_outliers():
 outlier_any, t = timer(detect_outliers, "B.8 Outlier detection (movmedian x4)")
 timings["B8_outlier"] = t
 
-# B.9 Set NaN + fill_nan_rbf (F, n_comp=4)
+# B.9 Set NaN + fill_nan_idw (F, n_comp=4)
 outlier_idx = np.where(outlier_any)[0]
 F_out_nan = F_out.copy()
 for c in range(4):
@@ -354,8 +354,8 @@ for c in range(4):
 
 n_nan_strain = len(outlier_idx)
 
-_, t = timer(lambda: fill_nan_rbf(F_out_nan, coords, n_components=4),
-             "B.9 fill_nan_rbf (F strain, n_comp=4)")
+_, t = timer(lambda: fill_nan_idw(F_out_nan, coords, n_components=4),
+             "B.9 fill_nan_idw (F strain, n_comp=4)")
 timings["B9_fill_nan_strain"] = t
 print(f"  (outlier nodes: {n_nan_strain})")
 
@@ -565,11 +565,11 @@ def e1b_assemble_detect():
 (U_subpb1_new, bp1, bpn1), t = timer(e1b_assemble_detect, "E.1b Assemble + detect_bad_points")
 timings["E1b_detect"] = t
 
-# E.1c fill_nan_rbf (U only for subpb1)
-_, t = timer(lambda: fill_nan_rbf(U_subpb1_new, coords, n_components=2),
-             f"E.1c fill_nan_rbf (U, {np.sum(np.isnan(U_subpb1_new[0::2]))} NaN nodes)")
+# E.1c fill_nan_idw (U only for subpb1)
+_, t = timer(lambda: fill_nan_idw(U_subpb1_new, coords, n_components=2),
+             f"E.1c fill_nan_idw (U, {np.sum(np.isnan(U_subpb1_new[0::2]))} NaN nodes)")
 timings["E1c_fill_nan"] = t
-U_subpb1_new = fill_nan_rbf(U_subpb1_new, coords, n_components=2)
+U_subpb1_new = fill_nan_idw(U_subpb1_new, coords, n_components=2)
 
 E1_total = timings["E1a_icgn2dof"] + timings["E1b_detect"] + timings["E1c_fill_nan"]
 print(f"  {'E.1 TOTAL SUBPB1':55s} {E1_total:8.3f}s")
@@ -725,15 +725,15 @@ summary = {
     "   A.2 IC-GN iterations": timings["A2_icgn6dof"],
     "   A.3 Assemble U,F": timings["A3_assemble"],
     "   A.4 Detect bad points": timings["A4_detect_bad"],
-    "   A.5 fill_nan_rbf (U)": timings["A5_fill_nan_U"],
-    "   A.6 fill_nan_rbf (F)": timings["A6_fill_nan_F"],
+    "   A.5 fill_nan_idw (U)": timings["A5_fill_nan_U"],
+    "   A.6 fill_nan_idw (F)": timings["A6_fill_nan_F"],
     "B. FEM Strain (1 call)": B_total,
     "   B.1-3 Gather coords/DOF/disp": timings["B1_gather_coords"] + timings["B2_dof_indices"] + timings["B3_gather_disp"],
     "   B.4 Shape functions": timings["B4_shape_funcs"],
     "   B.5 Gradients": timings["B5_gradients"],
     "   B.6 Area-weighted avg": timings["B6_add_at"],
     "   B.7-8 Interleave + outlier": timings["B7_interleave"] + timings["B8_outlier"],
-    "   B.9 fill_nan_rbf (F)": timings["B9_fill_nan_strain"],
+    "   B.9 fill_nan_idw (F)": timings["B9_fill_nan_strain"],
     "C. Precompute subpb1": C_total,
     "D. Precompute subpb2": D_total,
     "   D.1-2 Coords + DOF + COO": timings["D1_elem_coords"] + timings["D2_dof_coo"],
@@ -745,7 +745,7 @@ summary = {
     "   E.1 Subpb1 (2-DOF IC-GN)": E1_total,
     "      E.1a IC-GN dispatch": timings["E1a_icgn2dof"],
     "      E.1b Detect bad pts": timings["E1b_detect"],
-    "      E.1c fill_nan_rbf": timings["E1c_fill_nan"],
+    "      E.1c fill_nan_idw": timings["E1c_fill_nan"],
     "   E.2 FEM strain": timings["E2_fem_strain"],
     "   E.3 Subpb2 solve": E3_total,
     "      E.3a Gather": timings["E3a_gather"],

@@ -112,7 +112,7 @@ class TestLocalICGN:
         assert 0 in mark_hole
 
     def test_no_nan_in_output(self):
-        """Output should not contain NaN after fill_nan_rbf."""
+        """Output should not contain NaN after fill_nan_idw."""
         img_ref, _, Df = _make_speckle_pair()
         img_def = img_ref.copy()
 

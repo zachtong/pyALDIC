@@ -2,8 +2,8 @@
 
 Tests on 20px quadratic field:
 1. FFT accuracy
-2. Raw Numba IC-GN results (before detect_bad_points/fill_nan_rbf)
-3. After detect_bad_points/fill_nan_rbf
+2. Raw Numba IC-GN results (before detect_bad_points/fill_nan_idw)
+3. After detect_bad_points/fill_nan_idw
 """
 
 import sys
@@ -24,7 +24,7 @@ from staq_dic.io.image_ops import compute_image_gradient, normalize_images
 from staq_dic.mesh.mesh_setup import mesh_setup
 from staq_dic.solver.integer_search import integer_search
 from staq_dic.solver.init_disp import init_disp
-from staq_dic.solver.outlier_detection import detect_bad_points, fill_nan_rbf
+from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 
 H, W = 1024, 1024
 STEP = 4
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     print(f"  RMSE = {np.sqrt(np.mean(all_valid_err**2)):.6f}px")
     print(f"  Max  = {all_valid_err.max():.6f}px")
 
-    # After detect_bad_points + fill_nan_rbf (same as local_icgn)
+    # After detect_bad_points + fill_nan_idw (same as local_icgn)
     U_raw = np.empty(2 * n_nodes)
     U_raw[0::2] = u_raw
     U_raw[1::2] = v_raw
@@ -187,13 +187,13 @@ if __name__ == "__main__":
     U_fill = U_raw.copy()
     U_fill[2 * bad_pts] = np.nan
     U_fill[2 * bad_pts + 1] = np.nan
-    U_fill = fill_nan_rbf(U_fill, coords, n_components=2)
+    U_fill = fill_nan_idw(U_fill, coords, n_components=2)
 
     u_fill = U_fill[0::2]
     v_fill = U_fill[1::2]
     fill_err = np.sqrt((u_fill - u_gt)**2 + (v_fill - v_gt)**2)
 
-    print(f"\nAfter detect_bad_points + fill_nan_rbf:")
+    print(f"\nAfter detect_bad_points + fill_nan_idw:")
     print(f"  RMSE = {np.sqrt(np.mean(fill_err**2)):.6f}px")
     print(f"  Max  = {fill_err.max():.6f}px")
 

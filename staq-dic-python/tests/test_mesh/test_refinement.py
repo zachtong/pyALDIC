@@ -7,7 +7,7 @@ import pytest
 from numpy.typing import NDArray
 
 from staq_dic.core.config import dicpara_default
-from staq_dic.core.data_structures import DICMesh, ImageGradients
+from staq_dic.core.data_structures import DICMesh
 from staq_dic.mesh.mesh_setup import mesh_setup
 from staq_dic.mesh.refinement import (
     RefinementContext,
@@ -89,42 +89,21 @@ class TestRefinementContext:
         ctx = RefinementContext(mesh=m)
         assert ctx.mesh is m
         assert ctx.mask is None
-        assert ctx.Df is None
-        assert ctx.U is None
-        assert ctx.F is None
-        assert ctx.conv_iterations is None
         assert ctx.user_marks is None
 
     def test_all_fields(self):
         """RefinementContext with all optional fields set."""
         m, U0 = _make_mesh()
-        n_nodes = m.coordinates_fem.shape[0]
         n_elem = m.elements_fem.shape[0]
         mask = np.ones((64, 64), dtype=np.float64)
-        Df = ImageGradients(
-            df_dx=np.zeros((64, 64)),
-            df_dy=np.zeros((64, 64)),
-            img_ref_mask=mask,
-            img_size=(64, 64),
-        )
-        F = np.zeros(4 * n_nodes, dtype=np.float64)
-        conv = np.ones(n_nodes, dtype=np.int32) * 5
         user = np.zeros(n_elem, dtype=np.int64)
 
         ctx = RefinementContext(
             mesh=m,
             mask=mask,
-            Df=Df,
-            U=U0,
-            F=F,
-            conv_iterations=conv,
             user_marks=user,
         )
         assert ctx.mask is mask
-        assert ctx.Df is Df
-        assert ctx.U is U0
-        assert ctx.F is F
-        assert ctx.conv_iterations is conv
         assert ctx.user_marks is user
 
 
@@ -135,33 +114,15 @@ class TestRefinementContext:
 
 class TestRefinementPolicy:
     def test_empty_policy(self):
-        """Empty policy has no pre or post solve."""
-        pol = RefinementPolicy(pre_solve=[], post_solve=[])
+        """Empty policy has no pre-solve criteria."""
+        pol = RefinementPolicy(pre_solve=[])
         assert not pol.has_pre_solve
-        assert not pol.has_post_solve
 
     def test_pre_solve_only(self):
-        """Policy with only pre_solve criteria."""
+        """Policy with pre_solve criteria."""
         crit = _AlwaysRefineCriterion()
-        pol = RefinementPolicy(pre_solve=[crit], post_solve=[])
+        pol = RefinementPolicy(pre_solve=[crit])
         assert pol.has_pre_solve
-        assert not pol.has_post_solve
-
-    def test_has_post_solve_requires_cycles(self):
-        """post_solve requires max_post_solve_cycles > 0."""
-        crit = _AlwaysRefineCriterion()
-        pol = RefinementPolicy(
-            pre_solve=[], post_solve=[crit], max_post_solve_cycles=2
-        )
-        assert pol.has_post_solve
-
-    def test_zero_cycles_disables_post_solve(self):
-        """post_solve with 0 cycles is disabled."""
-        crit = _AlwaysRefineCriterion()
-        pol = RefinementPolicy(
-            pre_solve=[], post_solve=[crit], max_post_solve_cycles=0
-        )
-        assert not pol.has_post_solve
 
 
 # ---------------------------------------------------------------------------

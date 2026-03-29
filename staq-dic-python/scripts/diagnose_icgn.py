@@ -33,7 +33,7 @@ from staq_dic.solver.init_disp import init_disp
 from staq_dic.solver.local_icgn import local_icgn
 from staq_dic.solver.subpb1_solver import precompute_subpb1, subpb1_solver
 from staq_dic.solver.subpb2_solver import precompute_subpb2, subpb2_solver
-from staq_dic.solver.outlier_detection import detect_bad_points, fill_nan_rbf
+from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 from staq_dic.strain.nodal_strain_fem import global_nodal_strain_fem
 
 OUT_DIR = Path("outputs/diagnose_icgn")
@@ -231,8 +231,8 @@ def diagnose_case(name, case, ref, para, _coords_unused, _mesh_unused):
     # Fill NaN
     nan_mask = np.isnan(U_icgn[0::2])
     if nan_mask.any():
-        U_icgn = fill_nan_rbf(U_icgn, coords, n_components=2)
-        F_icgn = fill_nan_rbf(F_icgn, coords, n_components=4)
+        U_icgn = fill_nan_idw(U_icgn, coords, n_components=2)
+        F_icgn = fill_nan_idw(F_icgn, coords, n_components=4)
     u_icgn = U_icgn[0::2]
     v_icgn = U_icgn[1::2]
     n_bad = nan_mask.sum()

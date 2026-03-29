@@ -110,7 +110,7 @@ class TestSubpb1Solver:
         assert not np.any(np.isnan(U))
 
     def test_no_nan_in_output(self):
-        """Output should not contain NaN after fill_nan_rbf."""
+        """Output should not contain NaN after fill_nan_idw."""
         img_ref, _, Df = _make_speckle_pair()
         img_def = img_ref.copy()
 
