@@ -102,8 +102,8 @@ def compute_strain(
             mask=para.img_ref_mask,
         )
         # Fill any NaN from plane fitting
-        from ..solver.outlier_detection import fill_nan_rbf
-        F_raw = fill_nan_rbf(F_raw, mesh.coordinates_fem, n_components=4)
+        from ..utils.outlier_detection import fill_nan_idw
+        F_raw = fill_nan_idw(F_raw, mesh.coordinates_fem, n_components=4)
     elif method == 3:
         F_raw = global_nodal_strain_fem(mesh, para, U)
     else:
@@ -112,8 +112,12 @@ def compute_strain(
     # --- Step 2: Smooth the strain field ---
     smoothness = para.strain_smoothness
     if smoothness > 0:
-        h = para.winstepsize
-        sigma = h * max(0.3, 500.0 * smoothness)
+        factor = 500.0 * smoothness
+        # Adaptive sigma: per-node based on local element spacing
+        from .smooth_field import compute_node_local_spacing
+        sigma = compute_node_local_spacing(
+            mesh.coordinates_fem, mesh.elements_fem,
+        ) * factor
         F_smooth = smooth_field_sparse(
             F_raw, mesh.coordinates_fem, sigma, node_region_map,
             n_components=4,

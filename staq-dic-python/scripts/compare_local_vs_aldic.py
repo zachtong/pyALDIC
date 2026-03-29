@@ -40,7 +40,7 @@ from staq_dic.solver.init_disp import init_disp
 from staq_dic.solver.local_icgn import local_icgn
 from staq_dic.solver.subpb1_solver import precompute_subpb1, subpb1_solver
 from staq_dic.solver.subpb2_solver import precompute_subpb2, subpb2_solver
-from staq_dic.solver.outlier_detection import detect_bad_points, fill_nan_rbf
+from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 from staq_dic.strain.nodal_strain_fem import global_nodal_strain_fem
 
 OUT_DIR = Path("outputs/local_vs_aldic")
@@ -324,8 +324,8 @@ if __name__ == "__main__":
     nan_mask = np.isnan(U_local[0::2])
     n_nan = nan_mask.sum()
     if n_nan > 0:
-        U_local = fill_nan_rbf(U_local, coords, n_components=2)
-        F_local = fill_nan_rbf(F_local, coords, n_components=4)
+        U_local = fill_nan_idw(U_local, coords, n_components=2)
+        F_local = fill_nan_idw(F_local, coords, n_components=4)
 
     u_local, v_local = U_local[0::2], U_local[1::2]
     local_met = compute_metrics(u_local, v_local, u_gt, v_gt)

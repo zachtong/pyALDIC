@@ -140,6 +140,36 @@ def integer_search(
         _apply_mask_vectorized(u_grid, v_grid, x0, y0, para.img_ref_mask, h, w)
 
     n_valid = np.sum(np.isfinite(u_grid))
+
+    # Detect peaks clipped by search region boundary.
+    # If |u| or |v| >= search - 0.5, the true NCC peak may lie outside
+    # the search window, indicating an insufficient search region.
+    finite_mask = np.isfinite(u_grid) & np.isfinite(v_grid)
+    clip_threshold = search - 0.5
+    if np.any(finite_mask):
+        clipped_nodes = finite_mask & (
+            (np.abs(u_grid) >= clip_threshold)
+            | (np.abs(v_grid) >= clip_threshold)
+        )
+        n_clipped = int(np.sum(clipped_nodes))
+        max_abs_disp = float(max(
+            np.nanmax(np.abs(u_grid)) if np.any(finite_mask) else 0.0,
+            np.nanmax(np.abs(v_grid)) if np.any(finite_mask) else 0.0,
+        ))
+        peak_clipped = n_clipped > 0
+    else:
+        peak_clipped = False
+        n_clipped = 0
+        max_abs_disp = 0.0
+
+    if peak_clipped:
+        logger.warning(
+            "FFT search: %d/%d nodes have peaks at search boundary "
+            "(max |disp|=%.1f, search=%d). Consider increasing "
+            "size_of_fft_search_region.",
+            n_clipped, n_valid, max_abs_disp, search,
+        )
+
     logger.info(
         "Integer search complete: %d/%d valid (%dx%d grid), "
         "mean cc=%.3f",
@@ -151,6 +181,9 @@ def integer_search(
         cc_max=cc_max,
         qfactors=qfactors,
         search_region_warning=search_region_warning,
+        peak_clipped=peak_clipped,
+        n_clipped=n_clipped,
+        max_abs_disp=max_abs_disp,
     )
     return x0, y0, u_grid, v_grid, info
 
@@ -536,16 +569,16 @@ def _batch_subpixel(
         (ipeak_x > 0) & (ipeak_x < ncc_w - 1) &
         (ipeak_y > 0) & (ipeak_y < ncc_h - 1)
     )
-    ref_idx = np.where(can_refine)[0]
-    n_ref = len(ref_idx)
+    refine_idx = np.where(can_refine)[0]
+    n_ref = len(refine_idx)
 
     if n_ref == 0:
         return sub_x, sub_y, sub_val
 
     # Extract 3x3 patches around integer peaks (vectorized fancy indexing)
-    k_arr = ref_idx
-    px_arr = ipeak_x[ref_idx]
-    py_arr = ipeak_y[ref_idx]
+    k_arr = refine_idx
+    px_arr = ipeak_x[refine_idx]
+    py_arr = ipeak_y[refine_idx]
 
     rows = py_arr[:, None] + _ROW_OFFSETS[None, :]  # (n_ref, 9)
     cols = px_arr[:, None] + _COL_OFFSETS[None, :]   # (n_ref, 9)
@@ -587,9 +620,9 @@ def _batch_subpixel(
         + A[:, 5] * y_off ** 2
     )
 
-    sub_x[ref_idx] = ipeak_x[ref_idx].astype(np.float64) + x_off
-    sub_y[ref_idx] = ipeak_y[ref_idx].astype(np.float64) + y_off
-    sub_val[ref_idx] = refined_val
+    sub_x[refine_idx] = ipeak_x[refine_idx].astype(np.float64) + x_off
+    sub_y[refine_idx] = ipeak_y[refine_idx].astype(np.float64) + y_off
+    sub_val[refine_idx] = refined_val
 
     return sub_x, sub_y, sub_val
 
@@ -680,6 +713,10 @@ def _refine_at_level(
     For each grid node, extracts a template from the reference at (x0, y0)
     and searches in the deformed image at (x0 + u_init, y0 + v_init) +- search.
 
+    Optimised with the same batch pattern as ``_batch_ncc_search``:
+    integral-image template std, threaded ``matchTemplate``, and batch
+    sub-pixel fitting — replacing the previous serial nested loop.
+
     Args:
         f_img: Reference at this level.
         g_img: Deformed at this level.
@@ -702,64 +739,169 @@ def _refine_at_level(
     f32 = f_img.astype(np.float32)
     g32 = g_img.astype(np.float32)
 
-    for iy in range(ny):
-        for ix in range(nx):
-            cx = int(round(x0[ix]))
-            cy = int(round(y0[iy]))
+    # --- Vectorized validity check ---
+    cx_all = np.round(x0).astype(np.intp)  # (nx,)
+    cy_all = np.round(y0).astype(np.intp)  # (ny,)
+    CX, CY = np.meshgrid(cx_all, cy_all)   # (ny, nx)
 
-            # Template from reference
-            t_y0 = cy - half_w
-            t_y1 = cy + half_w + 1
-            t_x0 = cx - half_w
-            t_x1 = cx + half_w + 1
+    # Template must fit in reference image
+    template_ok = (
+        (CY - half_w >= 0) & (CX - half_w >= 0)
+        & (CY + half_w + 1 <= h) & (CX + half_w + 1 <= w)
+    )
 
-            if t_y0 < 0 or t_x0 < 0 or t_y1 > h or t_x1 > w:
-                u_out[iy, ix] = np.nan
-                v_out[iy, ix] = np.nan
-                continue
+    # Exclude nodes with NaN initial displacement
+    nan_init = np.isnan(u_init) | np.isnan(v_init)
 
-            template = f32[t_y0:t_y1, t_x0:t_x1]
-            if np.std(template) < 1e-6:
-                u_out[iy, ix] = np.nan
-                v_out[iy, ix] = np.nan
-                continue
+    # Predicted search centre per node
+    pred_CX = np.round(CX + np.where(nan_init, 0, u_init)).astype(np.intp)
+    pred_CY = np.round(CY + np.where(nan_init, 0, v_init)).astype(np.intp)
 
-            # Search in deformed image centered at predicted position
-            pred_cx = int(round(cx + u_init[iy, ix]))
-            pred_cy = int(round(cy + v_init[iy, ix]))
-            s_y0 = pred_cy - half_w - search
-            s_y1 = pred_cy + half_w + 1 + search
-            s_x0 = pred_cx - half_w - search
-            s_x1 = pred_cx + half_w + 1 + search
+    # Full search region must fit in deformed image
+    search_ok = (
+        (pred_CY - half_w - search >= 0)
+        & (pred_CX - half_w - search >= 0)
+        & (pred_CY + half_w + 1 + search <= h)
+        & (pred_CX + half_w + 1 + search <= w)
+    )
 
-            # Clamp to image bounds
-            s_y0_c = max(0, s_y0)
-            s_y1_c = min(h, s_y1)
-            s_x0_c = max(0, s_x0)
-            s_x1_c = min(w, s_x1)
+    # Template std via integral images — O(H*W) build, O(1) per node
+    f32_sq = f32 ** 2
+    int_f = cv2.integral(f32)      # (H+1, W+1)
+    int_f2 = cv2.integral(f32_sq)
 
-            search_img = g32[s_y0_c:s_y1_c, s_x0_c:s_x1_c]
-            if (search_img.shape[0] < template.shape[0] or
-                    search_img.shape[1] < template.shape[1]):
-                continue
+    T_y0 = CY - half_w
+    T_y1 = CY + half_w + 1
+    T_x0 = CX - half_w
+    T_x1 = CX + half_w + 1
+    n_pix = float((2 * half_w + 1) ** 2)
 
-            ncc_map = cv2.matchTemplate(
-                search_img, template, cv2.TM_CCOEFF_NORMED,
+    pre_ok = template_ok & search_ok & ~nan_init
+    ok_idx = np.where(pre_ok)
+    var_f = np.zeros((ny, nx), dtype=np.float64)
+
+    if len(ok_idx[0]) > 0:
+        ty0 = T_y0[ok_idx]
+        ty1 = T_y1[ok_idx]
+        tx0 = T_x0[ok_idx]
+        tx1 = T_x1[ok_idx]
+        s_f = (int_f[ty1, tx1] - int_f[ty0, tx1]
+               - int_f[ty1, tx0] + int_f[ty0, tx0])
+        s_f2 = (int_f2[ty1, tx1] - int_f2[ty0, tx1]
+                - int_f2[ty1, tx0] + int_f2[ty0, tx0])
+        var_f[ok_idx] = np.maximum(s_f2 / n_pix - (s_f / n_pix) ** 2, 0.0)
+
+    valid = pre_ok & (np.sqrt(var_f) > 1e-6)
+
+    # Mark all invalid nodes as NaN
+    invalid = ~valid
+    u_out[invalid] = np.nan
+    v_out[invalid] = np.nan
+
+    # --- Threaded matchTemplate for valid nodes ---
+    valid_iy, valid_ix = np.where(valid)
+    n_valid = len(valid_iy)
+
+    if n_valid == 0:
+        return u_out, v_out, cc_out
+
+    ncc_h = 2 * search + 1
+    ncc_w = 2 * search + 1
+
+    ncc_maps = np.zeros((n_valid, ncc_h, ncc_w), dtype=np.float32)
+    ipeak_x = np.zeros(n_valid, dtype=np.intp)
+    ipeak_y = np.zeros(n_valid, dtype=np.intp)
+    ipeak_val = np.zeros(n_valid, dtype=np.float64)
+
+    pred_cx_valid = pred_CX[valid_iy, valid_ix]
+    pred_cy_valid = pred_CY[valid_iy, valid_ix]
+
+    if n_valid >= 500:
+        _threaded_match_refine(
+            n_valid, valid_iy, valid_ix, cx_all, cy_all,
+            pred_cx_valid, pred_cy_valid,
+            f32, g32, half_w, search,
+            ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+        )
+    else:
+        for k in range(n_valid):
+            _match_one_refine(
+                k, valid_iy, valid_ix, cx_all, cy_all,
+                pred_cx_valid, pred_cy_valid,
+                f32, g32, half_w, search,
+                ncc_maps, ipeak_x, ipeak_y, ipeak_val,
             )
 
-            if ncc_map.size == 0:
-                continue
+    # --- Batch sub-pixel peak finding (reuse existing vectorised path) ---
+    sub_x, sub_y, sub_val = _batch_subpixel(
+        ncc_maps, ipeak_x, ipeak_y, ipeak_val, ncc_h, ncc_w,
+    )
 
-            peak_x, peak_y, peak_val = _findpeak_subpixel(ncc_map)
+    # --- Vectorized displacement conversion ---
+    cx_valid = cx_all[valid_ix].astype(np.float64)
+    cy_valid = cy_all[valid_iy].astype(np.float64)
+    s_x0_valid = pred_cx_valid.astype(np.float64) - half_w - search
+    s_y0_valid = pred_cy_valid.astype(np.float64) - half_w - search
 
-            # Convert peak position to displacement
-            match_x = s_x0_c + peak_x + half_w
-            match_y = s_y0_c + peak_y + half_w
-            u_out[iy, ix] = match_x - cx
-            v_out[iy, ix] = match_y - cy
-            cc_out[iy, ix] = peak_val
+    u_out[valid_iy, valid_ix] = s_x0_valid + sub_x + half_w - cx_valid
+    v_out[valid_iy, valid_ix] = s_y0_valid + sub_y + half_w - cy_valid
+    cc_out[valid_iy, valid_ix] = sub_val
 
     return u_out, v_out, cc_out
+
+
+def _match_one_refine(
+    k, valid_iy, valid_ix, cx_all, cy_all,
+    pred_cx, pred_cy,
+    f32, g32, half_w, search,
+    ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+):
+    """matchTemplate for a single node with offset search centre."""
+    iy, ix = valid_iy[k], valid_ix[k]
+    cx = cx_all[ix]
+    cy = cy_all[iy]
+    pcx = pred_cx[k]
+    pcy = pred_cy[k]
+
+    template = f32[cy - half_w: cy + half_w + 1,
+                   cx - half_w: cx + half_w + 1]
+    search_img = g32[pcy - half_w - search: pcy + half_w + 1 + search,
+                     pcx - half_w - search: pcx + half_w + 1 + search]
+
+    ncc_map = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
+    ncc_maps[k] = ncc_map
+
+    _, max_val, _, max_loc = cv2.minMaxLoc(ncc_map)
+    ipeak_x[k] = max_loc[0]
+    ipeak_y[k] = max_loc[1]
+    ipeak_val[k] = max_val
+
+
+def _threaded_match_refine(
+    n_valid, valid_iy, valid_ix, cx_all, cy_all,
+    pred_cx, pred_cy,
+    f32, g32, half_w, search,
+    ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+):
+    """Threaded matchTemplate for pyramid refinement nodes."""
+    n_workers = min(os.cpu_count() or 4, max(1, n_valid // 100))
+    chunk = max(1, (n_valid + n_workers - 1) // n_workers)
+
+    def _worker(start, end):
+        for k in range(start, end):
+            _match_one_refine(
+                k, valid_iy, valid_ix, cx_all, cy_all,
+                pred_cx, pred_cy,
+                f32, g32, half_w, search,
+                ncc_maps, ipeak_x, ipeak_y, ipeak_val,
+            )
+
+    with ThreadPoolExecutor(max_workers=n_workers) as pool:
+        futures = []
+        for i in range(0, n_valid, chunk):
+            futures.append(pool.submit(_worker, i, min(i + chunk, n_valid)))
+        for fut in futures:
+            fut.result()
 
 
 def _remap_to_standard_grid(

@@ -41,7 +41,7 @@ from staq_dic.solver.init_disp import init_disp
 from staq_dic.solver.local_icgn import local_icgn
 from staq_dic.solver.subpb1_solver import precompute_subpb1, subpb1_solver
 from staq_dic.solver.subpb2_solver import precompute_subpb2, subpb2_solver
-from staq_dic.solver.outlier_detection import fill_nan_rbf
+from staq_dic.utils.outlier_detection import fill_nan_idw
 from staq_dic.strain.nodal_strain_fem import global_nodal_strain_fem
 
 OUT_DIR = Path("outputs/comprehensive")
@@ -184,8 +184,8 @@ def run_dic_pipeline(ref, g_img, case_label):
     t_local = time.perf_counter() - t0
 
     if np.isnan(U_local).any():
-        U_local = fill_nan_rbf(U_local, coords, n_components=2)
-        F_local = fill_nan_rbf(F_local, coords, n_components=4)
+        U_local = fill_nan_idw(U_local, coords, n_components=2)
+        F_local = fill_nan_idw(F_local, coords, n_components=4)
 
     # AL-DIC: S5 + ADMM x3
     mu_val = para.mu

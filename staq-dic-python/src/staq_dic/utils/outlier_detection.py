@@ -1,7 +1,8 @@
-"""Outlier detection and NaN filling for IC-GN results.
+"""Outlier detection and NaN filling for displacement fields.
 
 Port of MATLAB solver/detect_bad_points.m + solver/fill_nan_rbf.m
-(Jin Yang, Caltech).
+(Jin Yang, Caltech).  These are general-purpose statistical/interpolation
+utilities with no solver dependencies.
 
 After IC-GN solving, some nodes may have failed to converge or converged
 anomalously slowly.  This module identifies those "bad" nodes and fills
@@ -84,7 +85,7 @@ def detect_bad_points(
     return bad_pts, max(bad_pt_num, 0)
 
 
-def fill_nan_rbf(
+def fill_nan_idw(
     V: NDArray[np.float64],
     coordinates_fem: NDArray[np.float64],
     n_components: int = 2,

@@ -33,6 +33,7 @@ import warnings
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy import sparse
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
 from scipy.ndimage import gaussian_filter, label
 
@@ -75,7 +76,7 @@ def generate_mesh(
         raise ValueError("DICPara.img_ref_mask must be set for quadtree mesh generation")
 
     criterion = MaskBoundaryCriterion(min_element_size=mesh.element_min_size)
-    ctx = RefinementContext(mesh=mesh, mask=mask, Df=Df)
+    ctx = RefinementContext(mesh=mesh, mask=mask)
 
     return refine_mesh(
         mesh, [criterion], ctx, U0,
@@ -170,66 +171,102 @@ def _find_boundary_nodes(
     elements_q8: NDArray[np.int64],
     coords_uniform: NDArray[np.float64],
     winstepsize: int,
+    mask: NDArray[np.float64] | None = None,
 ) -> NDArray[np.int64]:
-    """Find node indices near hole edges and mesh boundaries.
+    """Find node indices near mask-hole edges and mesh boundaries.
 
     Combines two criteria:
-    1. Nodes in refined (smaller) elements
-    2. Nodes near the mesh boundary (within 1.01 * winstepsize)
+    1. Nodes near mask boundaries (holes), detected by eroding the mask
+       and finding nodes in the eroded-away border strip.
+    2. Nodes near the mesh outer boundary (within 1.01 * winstepsize).
 
-    Then expands the set by 2 neighbor-ring iterations.
+    Then expands the set by 1 neighbor-ring iteration.
+
+    Note: Unlike the earlier implementation, refined (smaller) elements
+    in the mesh interior are *not* marked as boundary.  The old heuristic
+    assumed refinement only happened at mask boundaries, which no longer
+    holds with manual or error-driven interior refinement.
 
     Returns:
         Sorted array of unique 0-based node indices.
     """
+    n_nodes = coords_qt.shape[0]
     n_elem = elements_q8.shape[0]
     if n_elem == 0:
         return np.empty(0, dtype=np.int64)
 
     corners = elements_q8[:, :4]
+    tol = 1.01 * winstepsize
 
-    # Element diagonal size = distance from node0 to node2
-    dx = coords_qt[corners[:, 0], 0] - coords_qt[corners[:, 2], 0]
-    dy = coords_qt[corners[:, 0], 1] - coords_qt[corners[:, 2], 1]
-    elem_size = np.sqrt(dx ** 2 + dy ** 2)
+    # --- Criterion 1: nodes near mask boundary (holes) ---
+    near_hole = np.zeros(n_nodes, dtype=np.bool_)
+    if mask is not None:
+        mask_bool = mask > 0.5
+        if not mask_bool.all():
+            from scipy.ndimage import binary_erosion
+            iters = max(1, int(np.ceil(tol)))
+            eroded = binary_erosion(
+                mask_bool,
+                iterations=iters,
+                border_value=False,
+            )
+            h, w = mask.shape
+            node_x = np.clip(
+                np.round(coords_qt[:, 0]).astype(np.int64), 0, w - 1,
+            )
+            node_y = np.clip(
+                np.round(coords_qt[:, 1]).astype(np.int64), 0, h - 1,
+            )
+            # Nodes in original mask but NOT in eroded mask → near hole
+            near_hole = mask_bool[node_y, node_x] & ~eroded[node_y, node_x]
 
-    # Threshold: elements smaller than ~sqrt(2) * winstepsize are "refined"
-    threshold = 0.99 * np.sqrt(2.0) * winstepsize
-    refined_idx = np.where(elem_size < threshold)[0]
+    # Elements with at least one near-hole corner node
+    hole_elem_mask = (
+        near_hole[corners[:, 0]]
+        | near_hole[corners[:, 1]]
+        | near_hole[corners[:, 2]]
+        | near_hole[corners[:, 3]]
+    )
 
-    # Boundary elements: nodes within 1.01 * winstepsize of mesh edge
+    # --- Criterion 2: mesh outer boundary elements ---
     x_min_mesh = coords_uniform[:, 0].min()
     x_max_mesh = coords_uniform[:, 0].max()
     y_min_mesh = coords_uniform[:, 1].min()
     y_max_mesh = coords_uniform[:, 1].max()
-    tol = 1.01 * winstepsize
 
-    left = np.where(coords_qt[corners[:, 0], 0] < x_min_mesh + tol)[0]
-    right = np.where(coords_qt[corners[:, 2], 0] > x_max_mesh - tol)[0]
-    top = np.where(coords_qt[corners[:, 0], 1] < y_min_mesh + tol)[0]
-    bottom = np.where(coords_qt[corners[:, 2], 1] > y_max_mesh - tol)[0]
+    left = coords_qt[corners[:, 0], 0] < x_min_mesh + tol
+    right = coords_qt[corners[:, 2], 0] > x_max_mesh - tol
+    top = coords_qt[corners[:, 0], 1] < y_min_mesh + tol
+    bottom = coords_qt[corners[:, 2], 1] > y_max_mesh - tol
 
     # Union all marked element indices
-    marked_elems = np.unique(np.concatenate([
-        refined_idx, left, right, top, bottom
-    ]))
+    marked_elem_mask = hole_elem_mask | left | right | top | bottom
+    marked_elems = np.where(marked_elem_mask)[0]
+
+    if len(marked_elems) == 0:
+        return np.empty(0, dtype=np.int64)
 
     # Collect unique node indices from marked elements
     mark_nodes = np.unique(elements_q8[marked_elems].ravel())
-    # Remove -1 midside placeholders (they represent "no midside node")
+    # Remove -1 midside placeholders
     mark_nodes = mark_nodes[mark_nodes >= 0]
 
-    # Expand by 2 neighbor rings
-    for _ in range(2):
-        # Find elements sharing any node with current marked nodes
-        has_marked = np.zeros(n_elem, dtype=np.bool_)
-        for ei in range(n_elem):
-            if np.any(np.isin(elements_q8[ei], mark_nodes)):
-                has_marked[ei] = True
+    # Expand by 1 neighbor ring (vectorized via sparse incidence)
+    all_flat = elements_q8.ravel()
+    valid_flat = all_flat >= 0
+    elem_idx_flat = np.repeat(np.arange(n_elem), 8)
+    incidence = sparse.csr_matrix(
+        (np.ones(int(valid_flat.sum()), dtype=np.float64),
+         (all_flat[valid_flat], elem_idx_flat[valid_flat])),
+        shape=(n_nodes, n_elem),
+    )
 
-        neighbor_elems = np.where(has_marked)[0]
-        mark_nodes = np.unique(elements_q8[neighbor_elems].ravel())
-        mark_nodes = mark_nodes[mark_nodes > 0]
+    node_flag = np.zeros(n_nodes, dtype=np.float64)
+    node_flag[mark_nodes] = 1.0
+    # node → element → node
+    elem_flag = (incidence.T @ node_flag) > 0
+    expanded = (incidence @ elem_flag.astype(np.float64)) > 0
+    mark_nodes = np.where(expanded)[0].astype(np.int64)
 
     return np.sort(mark_nodes)
 

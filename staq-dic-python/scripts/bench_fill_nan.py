@@ -17,7 +17,7 @@ from staq_dic.mesh.mesh_setup import mesh_setup
 from staq_dic.solver.local_icgn import local_icgn
 from staq_dic.solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from staq_dic.strain.nodal_strain_fem import _detect_outliers_movmedian
-from staq_dic.solver.outlier_detection import fill_nan_rbf
+from staq_dic.utils.outlier_detection import fill_nan_idw
 from staq_dic.solver.fem_assembly import compute_all_elements_gp
 from dataclasses import replace
 from scipy.spatial import Delaunay, cKDTree
@@ -292,7 +292,7 @@ print("=" * 65)
 # Reconstruct proper totals for n_comp=4
 # Current: Delaunay + 4x LinearNDInterpolator per call, x6 calls
 t0 = time.perf_counter()
-F_filled_current = fill_nan_rbf(F_out.copy(), coords, n_components=4)
+F_filled_current = fill_nan_idw(F_out.copy(), coords, n_components=4)
 t_current_1call = time.perf_counter() - t0
 
 print(f"  Current (Delaunay, per call):     {t_current_1call:.3f}s  x6 = {6*t_current_1call:.1f}s")

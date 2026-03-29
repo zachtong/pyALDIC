@@ -25,7 +25,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..core.data_structures import DICPara, ImageGradients
-from .outlier_detection import detect_bad_points, fill_nan_rbf
+from ..utils.outlier_detection import detect_bad_points, fill_nan_idw
 
 
 def precompute_subpb1(
@@ -157,7 +157,7 @@ def subpb1_solver(
     U[2 * bad_pts] = np.nan
     U[2 * bad_pts + 1] = np.nan
 
-    U = fill_nan_rbf(U, coordinates_fem, n_components=2)
+    U = fill_nan_idw(U, coordinates_fem, n_components=2)
 
     return U, solve_time, conv_iter, bad_pt_num
 

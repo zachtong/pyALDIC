@@ -58,7 +58,7 @@ from ..solver.subpb1_solver import precompute_subpb1, subpb1_solver
 from ..solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from ..strain.compute_strain import compute_strain as _compute_strain_fn
 from ..strain.nodal_strain_fem import global_nodal_strain_fem
-from ..strain.smooth_field import smooth_field_sparse
+from ..strain.smooth_field import compute_node_local_spacing, smooth_field_sparse
 from ..utils.interpolation import scattered_interpolant
 from ..utils.region_analysis import NodeRegionMap, precompute_node_regions
 
@@ -85,9 +85,20 @@ def _smooth_disp(
     coords: NDArray[np.float64],
     para: DICPara,
     region_map: NodeRegionMap,
+    mesh: DICMesh | None = None,
 ) -> NDArray[np.float64]:
-    """Smooth displacement field via sparse Gaussian kernel."""
-    sigma = para.winstepsize * max(0.3, 500.0 * para.disp_smoothness)
+    """Smooth displacement field via sparse Gaussian kernel.
+
+    When *mesh* is provided the sigma is adaptive: proportional to
+    each node's local element spacing (prevents over-smoothing on
+    refined meshes).  Otherwise falls back to a uniform sigma based
+    on ``para.winstepsize``.
+    """
+    factor = 500.0 * para.disp_smoothness
+    if mesh is not None:
+        sigma = compute_node_local_spacing(mesh.coordinates_fem, mesh.elements_fem) * factor
+    else:
+        sigma = para.winstepsize * factor
     return smooth_field_sparse(U, coords, sigma, region_map, n_components=2)
 
 
@@ -96,9 +107,17 @@ def _smooth_strain_field(
     coords: NDArray[np.float64],
     para: DICPara,
     region_map: NodeRegionMap,
+    mesh: DICMesh | None = None,
 ) -> NDArray[np.float64]:
-    """Smooth deformation gradient field via sparse Gaussian kernel."""
-    sigma = para.winstepsize * max(0.3, 500.0 * para.strain_smoothness)
+    """Smooth deformation gradient field via sparse Gaussian kernel.
+
+    When *mesh* is provided the sigma is adaptive (see ``_smooth_disp``).
+    """
+    factor = 500.0 * para.strain_smoothness
+    if mesh is not None:
+        sigma = compute_node_local_spacing(mesh.coordinates_fem, mesh.elements_fem) * factor
+    else:
+        sigma = para.winstepsize * factor
     return smooth_field_sparse(F, coords, sigma, region_map, n_components=4)
 
 
@@ -129,11 +148,17 @@ def _auto_tune_beta(
     mu: float,
     U_subpb1: NDArray[np.float64],
     F_subpb1: NDArray[np.float64],
+    mark_hole_strain: NDArray[np.int64] | None = None,
 ) -> float:
     """Auto-tune ADMM penalty beta via grid search + quadratic refinement.
 
     Sweeps ``para.beta_range * winstepsize^2 * mu``, solves subpb2 for each
     candidate, and finds the beta minimizing the normalized error sum.
+
+    Boundary nodes (``mark_hole_strain``) are excluded from the error metric
+    because their IC-GN subsets may overlap mask edges, producing noisier
+    displacement/gradient estimates that would bias beta selection toward
+    over-regularization.
 
     Args:
         mesh: DIC FE mesh.
@@ -141,6 +166,8 @@ def _auto_tune_beta(
         mu: ADMM image-matching weight.
         U_subpb1: Displacement from subproblem 1 (2*n_nodes,).
         F_subpb1: Deformation gradient from subproblem 1 (4*n_nodes,).
+        mark_hole_strain: Node indices near mask boundary to exclude from
+            error metric.  ``None`` or empty means use all nodes.
 
     Returns:
         Optimal beta value.
@@ -148,6 +175,22 @@ def _auto_tune_beta(
     beta_list = np.array(para.beta_range) * para.winstepsize ** 2 * mu
     n_beta = len(beta_list)
     n_nodes = mesh.coordinates_fem.shape[0]
+
+    # Build interior-node mask (exclude boundary nodes from error metric)
+    interior_u = np.ones(2 * n_nodes, dtype=bool)
+    interior_f = np.ones(4 * n_nodes, dtype=bool)
+    if mark_hole_strain is not None and len(mark_hole_strain) > 0:
+        for idx in mark_hole_strain:
+            interior_u[2 * idx] = False
+            interior_u[2 * idx + 1] = False
+            interior_f[4 * idx] = False
+            interior_f[4 * idx + 1] = False
+            interior_f[4 * idx + 2] = False
+            interior_f[4 * idx + 3] = False
+        logger.info(
+            "Beta tuning: excluding %d boundary nodes (%d interior)",
+            len(mark_hole_strain), int(np.sum(interior_u[::2])),
+        )
 
     # Zero dual variables for tuning (alpha=0)
     udual_zero = np.zeros(4 * n_nodes, dtype=np.float64)
@@ -165,8 +208,8 @@ def _auto_tune_beta(
             para.winstepsize,
         )
         F_trial = global_nodal_strain_fem(mesh, para, U_trial)
-        err1[k] = np.linalg.norm(U_subpb1 - U_trial)
-        err2[k] = np.linalg.norm(F_subpb1 - F_trial)
+        err1[k] = np.linalg.norm((U_subpb1 - U_trial)[interior_u])
+        err2[k] = np.linalg.norm((F_subpb1 - F_trial)[interior_f])
 
     # Normalize errors and find minimum of combined score
     std1, std2 = np.std(err1), np.std(err2)
@@ -217,9 +260,9 @@ def _apply_post_solve_corrections(
     """
     coords = mesh.coordinates_fem
 
-    # Smooth displacement
+    # Smooth displacement (adaptive sigma when mesh is non-uniform)
     if para.disp_smoothness > 1e-6:
-        U_subpb2 = _smooth_disp(U_subpb2, coords, para, region_map)
+        U_subpb2 = _smooth_disp(U_subpb2, coords, para, region_map, mesh=mesh)
 
     # Restore F at hole/edge nodes
     F_subpb2 = _restore_at_nodes(
@@ -229,7 +272,7 @@ def _apply_post_solve_corrections(
     # Blend + smooth strain
     if para.strain_smoothness > 1e-6:
         F_blend = 0.1 * F_subpb2 + 0.9 * F_subpb1
-        F_subpb2 = _smooth_strain_field(F_blend, coords, para, region_map)
+        F_subpb2 = _smooth_strain_field(F_blend, coords, para, region_map, mesh=mesh)
 
     # Restore at strain-hole nodes
     U_subpb2 = _restore_at_nodes(U_subpb2, U_subpb1, mark_hole_strain, 2)
@@ -471,6 +514,7 @@ def run_aldic(
     # subpb2 precompute cache (depends on mesh/beta/mu, not ref image)
     subpb2_cache_obj: object = None
     subpb2_cache_beta: float | None = None
+    subpb2_cache_trimmed_mesh: DICMesh | None = None
 
     # =====================================================================
     # Main frame loop (Sections 3-6)
@@ -504,7 +548,11 @@ def run_aldic(
 
         # --- Load deformed image ---
         g_mask = masks[frame_idx].astype(np.float64)
-        g_img = img_normalized[frame_idx] * g_mask
+        g_img = img_normalized[frame_idx] * g_mask  # masked for FFT search
+        # Unmasked deformed image for IC-GN: boundary nodes may have
+        # displaced positions outside the mask region, and sampling
+        # zeros there corrupts the IC-GN correlation.
+        g_img_icgn = img_normalized[frame_idx].copy()
         para = replace(para, img_ref_mask=f_mask)
 
         # Per-frame mesh independence when refinement policy is active
@@ -532,6 +580,28 @@ def run_aldic(
                 x0, y0, u_grid, v_grid, fft_info = integer_search(
                     f_img, g_img, para,
                 )
+
+            # Auto-retry with enlarged search region if peaks are clipped.
+            # When the true displacement exceeds the search radius, the NCC
+            # peak sits at the search boundary and the displacement estimate
+            # is truncated — producing catastrophic IC-GN errors at those
+            # nodes that propagate into the interior via SubPb2 FEM.
+            if fft_info.get("peak_clipped", False) and not use_pyramid:
+                max_disp = fft_info["max_abs_disp"]
+                needed = int(np.ceil(max_disp * 1.5)) + 2
+                new_search = max(para.size_of_fft_search_region, needed)
+                logger.warning(
+                    "FFT peaks clipped at search boundary (%d nodes, "
+                    "max_disp=%.1f). Retrying with search_region=%d.",
+                    fft_info["n_clipped"], max_disp, new_search,
+                )
+                para_retry = replace(
+                    para, size_of_fft_search_region=new_search,
+                )
+                x0, y0, u_grid, v_grid, fft_info = integer_search(
+                    f_img, g_img, para_retry,
+                )
+
             current_U0 = init_disp(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
             )
@@ -573,13 +643,14 @@ def run_aldic(
 
             if sibling_U is not None:
                 current_U0 = sibling_U.copy()
-            else:
+            elif frame_idx >= 2:
                 # Fall back to previous frame result (may have different ref)
                 prev = result_disp[frame_idx - 2]
                 if prev is not None:
                     current_U0 = prev.U.copy()
                 else:
                     current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
+            # else: frame_idx == 1 with externally provided mesh+U0 — keep it
 
         # --- Pre-solve refinement ---
         if refinement_policy is not None and refinement_policy.has_pre_solve:
@@ -588,7 +659,7 @@ def run_aldic(
                 len(refinement_policy.pre_solve),
             )
             ref_ctx = RefinementContext(
-                mesh=dic_mesh, mask=f_mask, Df=Df,
+                mesh=dic_mesh, mask=f_mask,
             )
             dic_mesh, current_U0 = refine_mesh(
                 dic_mesh, refinement_policy.pre_solve, ref_ctx, current_U0,
@@ -622,7 +693,7 @@ def run_aldic(
             U_subpb1, F_subpb1, local_time, conv_iter_s4,
             bad_pt_num_s4, mark_hole_strain,
         ) = local_icgn(
-            current_U0, dic_mesh.coordinates_fem, Df, f_img_raw, g_img, para, tol,
+            current_U0, dic_mesh.coordinates_fem, Df, f_img_raw, g_img_icgn, para, tol,
         )
 
         assert not np.all(np.isnan(U_subpb1)), "Section 4: USubpb1 is entirely NaN"
@@ -643,14 +714,16 @@ def run_aldic(
             logger.info("--- Section 5 Start ---")
             t5_start = time.perf_counter()
 
-            # Optional smoothing of initial ICGN results
+            # Optional smoothing of initial ICGN results (adaptive sigma)
             if para.disp_smoothness > 1e-6:
                 U_subpb1 = _smooth_disp(
                     U_subpb1, dic_mesh.coordinates_fem, para, node_region_map,
+                    mesh=dic_mesh,
                 )
             if para.strain_smoothness > 1e-6:
                 F_subpb1 = _smooth_strain_field(
                     F_subpb1, dic_mesh.coordinates_fem, para, node_region_map,
+                    mesh=dic_mesh,
                 )
 
             # Initialize ADMM dual variables (all zero at start)
@@ -659,23 +732,62 @@ def run_aldic(
             disp_dual = np.zeros(2 * n_nodes, dtype=np.float64)  # MATLAB: vdual
             alpha = para.alpha
 
-            # Beta auto-tuning: re-tune when reference frame changes
-            if beta_tuned_for_ref != ref_idx:
+            # Beta: use manual value if provided, else auto-tune per ref frame
+            if para.beta is not None:
+                beta_val = para.beta
+            elif beta_tuned_for_ref != ref_idx:
                 beta_val = _auto_tune_beta(
                     dic_mesh, para, mu_val, U_subpb1, F_subpb1,
+                    mark_hole_strain=mark_hole_strain,
                 )
                 beta_tuned_for_ref = ref_idx
-            elif para.beta is not None:
-                beta_val = para.beta
             # else: keep beta_val from previous tuning for same ref
+
+            # Pre-compute subpb2 stiffness matrix (reused by S5 and S6 ADMM)
+            # Trim elements touching mark_hole_strain nodes from the FEM
+            # assembly.  These boundary nodes have unreliable IC-GN results
+            # (subset overlaps mask edge) and their error propagates to
+            # interior nodes through element connectivity during SubPb2.
+            if subpb2_cache_beta != beta_val or subpb2_cache_obj is None:
+                mesh_for_subpb2 = dic_mesh
+                if len(mark_hole_strain) > 0:
+                    mhs_set = set(mark_hole_strain.tolist())
+                    trimmed_elems = dic_mesh.elements_fem.copy()
+                    for e in range(trimmed_elems.shape[0]):
+                        for j in range(trimmed_elems.shape[1]):
+                            if trimmed_elems[e, j] >= 0 and trimmed_elems[e, j] in mhs_set:
+                                trimmed_elems[e, :] = -1
+                                break
+                    mesh_for_subpb2 = DICMesh(
+                        coordinates_fem=dic_mesh.coordinates_fem,
+                        elements_fem=trimmed_elems,
+                        mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge,
+                    )
+                    logger.info(
+                        "SubPb2: trimmed %d boundary elements (%d remain)",
+                        int(np.sum(np.all(trimmed_elems == -1, axis=1)))
+                        - int(np.sum(np.all(dic_mesh.elements_fem == -1, axis=1))),
+                        int(np.sum(np.any(trimmed_elems >= 0, axis=1))),
+                    )
+                subpb2_cache_obj = precompute_subpb2(
+                    mesh_for_subpb2, para.gauss_pt_order, beta_val, mu_val, alpha,
+                )
+                subpb2_cache_beta = beta_val
+                subpb2_cache_trimmed_mesh = mesh_for_subpb2
 
             # Solve subpb2
             U_subpb2 = subpb2_solver(
                 dic_mesh, para.gauss_pt_order, beta_val, mu_val,
                 U_subpb1, F_subpb1, grad_dual, disp_dual,
                 alpha, para.winstepsize,
+                precomputed=subpb2_cache_obj,
             )
-            F_subpb2 = global_nodal_strain_fem(dic_mesh, para, U_subpb2)
+            # Use trimmed mesh for F computation to avoid contamination
+            # from garbage U at mark_hole_strain nodes (their elements
+            # were removed from SubPb2, so their U is unconstrained).
+            F_subpb2 = global_nodal_strain_fem(
+                subpb2_cache_trimmed_mesh, para, U_subpb2,
+            )
 
             # Post-solve corrections: smoothing + edge/hole restoration
             U_subpb2, F_subpb2 = _apply_post_solve_corrections(
@@ -722,14 +834,7 @@ def run_aldic(
                 )
             subpb1_pre = subpb1_precompute_cache[ref_idx]
 
-            # Pre-compute and factorize subpb2 stiffness matrix
-            # (depends on mesh/beta/mu, not ref image — cache when beta unchanged)
-            if subpb2_cache_beta != beta_val or subpb2_cache_obj is None:
-                subpb2_cache_obj = precompute_subpb2(
-                    dic_mesh, para.gauss_pt_order, beta_val, mu_val, alpha,
-                )
-                subpb2_cache_beta = beta_val
-
+            # subpb2 cache already created before S5 solve above
             for admm_iter in range(2, para.admm_max_iter + 1):
                 admm_step = admm_iter
                 logger.info("ADMM step %d/%d", admm_step, para.admm_max_iter)
@@ -740,7 +845,7 @@ def run_aldic(
                     disp_dual,
                     grad_dual,
                     dic_mesh.coordinates_fem,
-                    Df, f_img_raw, g_img, mu_val, beta_val, para, tol,
+                    Df, f_img_raw, g_img_icgn, mu_val, beta_val, para, tol,
                     precomputed=subpb1_pre,
                 )
                 F_subpb1 = F_subpb2.copy()  # F carries over from subpb2
@@ -756,7 +861,9 @@ def run_aldic(
                     alpha, para.winstepsize,
                     precomputed=subpb2_cache_obj,
                 )
-                F_subpb2 = global_nodal_strain_fem(dic_mesh, para, U_subpb2)
+                F_subpb2 = global_nodal_strain_fem(
+                    subpb2_cache_trimmed_mesh, para, U_subpb2,
+                )
 
                 # Post-solve corrections
                 U_subpb2, F_subpb2 = _apply_post_solve_corrections(
@@ -806,92 +913,7 @@ def run_aldic(
             U_final = U_subpb1
             F_final = F_subpb1
 
-        # =============================================================
-        # Post-solve refinement loop
-        # =============================================================
-        if (
-            refinement_policy is not None
-            and refinement_policy.has_post_solve
-        ):
-            for cycle in range(refinement_policy.max_post_solve_cycles):
-                logger.info(
-                    "Post-solve refinement cycle %d/%d",
-                    cycle + 1, refinement_policy.max_post_solve_cycles,
-                )
-                post_ctx = RefinementContext(
-                    mesh=dic_mesh,
-                    mask=f_mask,
-                    Df=Df,
-                    U=U_final,
-                    F=F_final,
-                    conv_iterations=conv_iter_s4,
-                )
-                new_mesh, new_U0 = refine_mesh(
-                    dic_mesh, refinement_policy.post_solve, post_ctx,
-                    U_final, mask=f_mask, img_size=(img_h, img_w),
-                )
-                if new_mesh.coordinates_fem.shape[0] == dic_mesh.coordinates_fem.shape[0]:
-                    logger.info("No elements marked — stopping post-solve refinement")
-                    break
-
-                # Update mesh and re-solve
-                dic_mesh = new_mesh
-                current_U0 = new_U0
-                n_nodes = dic_mesh.coordinates_fem.shape[0]
-
-                # Recompute node region map
-                node_region_map = precompute_node_regions(
-                    dic_mesh.coordinates_fem, f_mask, (img_h, img_w),
-                )
-
-                # Re-run Section 4 (local IC-GN)
-                (
-                    U_subpb1, F_subpb1, local_time, conv_iter_s4,
-                    bad_pt_num_s4, mark_hole_strain,
-                ) = local_icgn(
-                    current_U0, dic_mesh.coordinates_fem, Df,
-                    f_img_raw, g_img, para, tol,
-                )
-
-                if para.use_global_step:
-                    # Invalidate subpb2 cache (mesh changed)
-                    subpb2_cache_obj = None
-                    subpb2_cache_beta = None
-
-                    # Re-tune beta for new mesh
-                    beta_val = _auto_tune_beta(
-                        dic_mesh, para, para.mu, U_subpb1, F_subpb1,
-                    )
-
-                    # Fresh ADMM dual variables
-                    grad_dual = np.zeros(4 * n_nodes, dtype=np.float64)
-                    disp_dual = np.zeros(2 * n_nodes, dtype=np.float64)
-
-                    # Re-run Subpb2
-                    U_subpb2 = subpb2_solver(
-                        dic_mesh, para.gauss_pt_order, beta_val, para.mu,
-                        U_subpb1, F_subpb1, grad_dual, disp_dual,
-                        para.alpha, para.winstepsize,
-                    )
-                    F_subpb2 = global_nodal_strain_fem(dic_mesh, para, U_subpb2)
-
-                    U_subpb2, F_subpb2 = _apply_post_solve_corrections(
-                        U_subpb2, F_subpb2, U_subpb1, F_subpb1,
-                        dic_mesh, para, node_region_map, mark_hole_strain,
-                    )
-
-                    U_final = U_subpb2
-                    F_final = F_subpb2
-                else:
-                    U_final = U_subpb1
-                    F_final = F_subpb1
-
-                logger.info(
-                    "Post-solve cycle %d: %d nodes",
-                    cycle + 1, n_nodes,
-                )
-
-        # Update mesh snapshot for this frame (may have been refined)
+        # Update mesh snapshot for this frame
         result_fe_mesh[frame_idx - 1] = DICMesh(
             coordinates_fem=dic_mesh.coordinates_fem.copy(),
             elements_fem=dic_mesh.elements_fem.copy(),
@@ -965,6 +987,7 @@ def run_aldic(
                     U_local = _smooth_disp(
                         U_local, strain_mesh.coordinates_fem,
                         para, strain_region_map,
+                        mesh=strain_mesh,
                     )
 
             # Compute strain via the strain module
