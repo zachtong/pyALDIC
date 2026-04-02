@@ -204,6 +204,11 @@ def refine_mesh(
 
     # --- Iterative refinement loop ---
     any_refined = False
+    # Index-based state (user_marks, element_indices) becomes stale after
+    # qrefine_r reorders elements.  Track them separately and clear after
+    # the first iteration so only geometry-based criteria keep running.
+    user_marks = ctx.user_marks
+    active_criteria = list(criteria)
     while True:
         # Build a temporary mesh for context
         temp_mesh = DICMesh(
@@ -217,10 +222,10 @@ def refine_mesh(
         temp_ctx = RefinementContext(
             mesh=temp_mesh,
             mask=ctx.mask,
-            user_marks=ctx.user_marks,
+            user_marks=user_marks,
         )
 
-        marks = _union_marks(criteria, temp_ctx)
+        marks = _union_marks(active_criteria, temp_ctx)
         marked_idx = np.where(marks)[0]
 
         if len(marked_idx) == 0:
@@ -230,6 +235,14 @@ def refine_mesh(
         coords, elems_q4, irregular = qrefine_r(
             coords, elems_q4, irregular, marked_idx
         )
+        # After first round, element indices are stale:
+        # - Clear user_marks (ctx-based indices)
+        # - Remove criteria that carry element_indices (construction-time indices)
+        user_marks = None
+        active_criteria = [
+            c for c in active_criteria
+            if not hasattr(c, "element_indices")
+        ]
 
     # Early return if no refinement happened at all
     if not any_refined:
@@ -346,3 +359,71 @@ def _to_q8_placeholder(elems_q4: NDArray[np.int64]) -> NDArray[np.int64]:
     elems_q8 = np.full((n_elem, 8), -1, dtype=np.int64)
     elems_q8[:, :4] = elems_q4
     return elems_q8
+
+
+# ---------------------------------------------------------------------------
+# Factory
+# ---------------------------------------------------------------------------
+
+
+def build_refinement_policy(
+    *,
+    refine_inner_boundary: bool = False,
+    refine_outer_boundary: bool = False,
+    refinement_mask: NDArray[np.float64] | None = None,
+    min_element_size: int = 8,
+    half_win: int = 16,
+) -> RefinementPolicy | None:
+    """Build a RefinementPolicy from user configuration.
+
+    Convenience factory that translates simple user inputs into the
+    appropriate combination of refinement criteria.
+
+    Args:
+        refine_inner_boundary: If True, adds a ``MaskBoundaryCriterion``
+            that refines elements straddling internal mask boundaries
+            (holes).
+        refine_outer_boundary: If True, adds a ``ROIEdgeCriterion``
+            that refines elements whose IC-GN window extends beyond the
+            ROI outer edge.
+        refinement_mask: Optional (H, W) binary image where 1.0 marks
+            regions the user wants refined (e.g. from a brush tool).
+            Adds a ``BrushRegionCriterion`` when provided.
+        min_element_size: Minimum element size passed to all criteria.
+        half_win: Half the IC-GN window size (pixels).  Used by
+            ``ROIEdgeCriterion`` to determine how far to expand each
+            element's bounding box when detecting proximity to the ROI
+            outer edge.
+
+    Returns:
+        A ``RefinementPolicy``, or ``None`` if no refinement is requested.
+    """
+    from .criteria.mask_boundary import MaskBoundaryCriterion
+    from .criteria.brush_region import BrushRegionCriterion
+    from .criteria.roi_edge import ROIEdgeCriterion
+
+    criteria: list[RefinementCriterion] = []
+
+    if refine_inner_boundary:
+        criteria.append(MaskBoundaryCriterion(min_element_size=min_element_size))
+
+    if refine_outer_boundary:
+        criteria.append(
+            ROIEdgeCriterion(
+                half_win=half_win,
+                min_element_size=min_element_size,
+            )
+        )
+
+    if refinement_mask is not None:
+        criteria.append(
+            BrushRegionCriterion(
+                refinement_mask=refinement_mask,
+                min_element_size=min_element_size,
+            )
+        )
+
+    if not criteria:
+        return None
+
+    return RefinementPolicy(pre_solve=criteria)

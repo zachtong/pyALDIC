@@ -192,6 +192,22 @@ def _auto_tune_beta(
             len(mark_hole_strain), int(np.sum(interior_u[::2])),
         )
 
+    # Build trimmed mesh for F computation (matches main pipeline path)
+    trimmed_mesh = mesh
+    if mark_hole_strain is not None and len(mark_hole_strain) > 0:
+        mhs_set = set(int(i) for i in mark_hole_strain)
+        trimmed_elems = mesh.elements_fem.copy()
+        for e in range(trimmed_elems.shape[0]):
+            for j in range(trimmed_elems.shape[1]):
+                if trimmed_elems[e, j] >= 0 and trimmed_elems[e, j] in mhs_set:
+                    trimmed_elems[e, :] = -1
+                    break
+        trimmed_mesh = DICMesh(
+            coordinates_fem=mesh.coordinates_fem,
+            elements_fem=trimmed_elems,
+            mark_coord_hole_edge=mesh.mark_coord_hole_edge,
+        )
+
     # Zero dual variables for tuning (alpha=0)
     udual_zero = np.zeros(4 * n_nodes, dtype=np.float64)
     vdual_zero = np.zeros(2 * n_nodes, dtype=np.float64)
@@ -207,7 +223,8 @@ def _auto_tune_beta(
             0.0,  # alpha=0 for tuning
             para.winstepsize,
         )
-        F_trial = global_nodal_strain_fem(mesh, para, U_trial)
+        # Use trimmed mesh for F (consistent with main ADMM loop)
+        F_trial = global_nodal_strain_fem(trimmed_mesh, para, U_trial)
         err1[k] = np.linalg.norm((U_subpb1 - U_trial)[interior_u])
         err2[k] = np.linalg.norm((F_subpb1 - F_trial)[interior_f])
 
@@ -515,6 +532,7 @@ def run_aldic(
     subpb2_cache_obj: object = None
     subpb2_cache_beta: float | None = None
     subpb2_cache_trimmed_mesh: DICMesh | None = None
+    subpb2_cache_mhs_key: frozenset | None = None
 
     # =====================================================================
     # Main frame loop (Sections 3-6)
@@ -748,7 +766,10 @@ def run_aldic(
             # assembly.  These boundary nodes have unreliable IC-GN results
             # (subset overlaps mask edge) and their error propagates to
             # interior nodes through element connectivity during SubPb2.
-            if subpb2_cache_beta != beta_val or subpb2_cache_obj is None:
+            mhs_key = frozenset(mark_hole_strain.tolist())
+            if (subpb2_cache_beta != beta_val
+                    or subpb2_cache_mhs_key != mhs_key
+                    or subpb2_cache_obj is None):
                 mesh_for_subpb2 = dic_mesh
                 if len(mark_hole_strain) > 0:
                     mhs_set = set(mark_hole_strain.tolist())
@@ -773,6 +794,7 @@ def run_aldic(
                     mesh_for_subpb2, para.gauss_pt_order, beta_val, mu_val, alpha,
                 )
                 subpb2_cache_beta = beta_val
+                subpb2_cache_mhs_key = mhs_key
                 subpb2_cache_trimmed_mesh = mesh_for_subpb2
 
             # Solve subpb2
