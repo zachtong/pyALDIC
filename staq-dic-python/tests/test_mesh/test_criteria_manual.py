@@ -3,7 +3,11 @@ import numpy as np
 import pytest
 
 from staq_dic.mesh.criteria.manual_selection import ManualSelectionCriterion
-from staq_dic.mesh.refinement import RefinementContext, RefinementCriterion
+from staq_dic.mesh.refinement import (
+    RefinementContext,
+    RefinementCriterion,
+    refine_mesh,
+)
 from staq_dic.mesh.mesh_setup import mesh_setup
 from staq_dic.core.data_structures import DICPara
 
@@ -57,3 +61,31 @@ class TestManualSelectionCriterion:
         marks = criterion.mark(ctx)
         assert marks[0]
         assert marks.sum() == 1
+
+    def test_user_marks_not_reapplied_after_refinement(self, mesh_4x4):
+        """user_marks should only fire once, not recursively over-refine.
+
+        Before fix: user_marks=[0] would refine element 0 in round 1,
+        then re-mark whatever element sits at index 0 in round 2, etc.,
+        creating asymmetric over-refinement until min_element_size stops it.
+
+        After fix: user_marks is cleared after the first round, so only
+        one level of subdivision occurs for the selected element.
+        """
+        n_elem_before = mesh_4x4.elements_fem.shape[0]
+        U0 = np.zeros(2 * mesh_4x4.coordinates_fem.shape[0], dtype=np.float64)
+
+        criterion = ManualSelectionCriterion(
+            element_indices=np.array([0], dtype=np.int64),
+            min_element_size=1,
+        )
+        ctx = RefinementContext(mesh=mesh_4x4)
+        refined, _ = refine_mesh(mesh_4x4, [criterion], ctx, U0)
+
+        # One element subdivided into 4: net gain of 3 elements
+        n_elem_after = refined.elements_fem.shape[0]
+        assert n_elem_after == n_elem_before + 3, (
+            f"Expected exactly 1 subdivision (+3 elements), "
+            f"got {n_elem_after - n_elem_before:+d}. "
+            f"user_marks may be leaking into subsequent iterations."
+        )

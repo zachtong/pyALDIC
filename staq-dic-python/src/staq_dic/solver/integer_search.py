@@ -54,6 +54,33 @@ _COL_OFFSETS = np.array([-1, 0, 1, -1, 0, 1, -1, 0, 1], dtype=np.intp)
 
 
 # ---------------------------------------------------------------------------
+# Grid centering helper
+# ---------------------------------------------------------------------------
+
+
+def _centered_arange(lo: int, hi: int, step: int) -> NDArray[np.float64]:
+    """Generate evenly-spaced grid points centered within [lo, hi].
+
+    ``np.arange(lo, hi+1, step)`` starts at *lo* and leaves the
+    remainder on the right, producing asymmetric ROI coverage.
+    This function distributes the remainder evenly so that the gap
+    between the grid and each boundary is approximately equal.
+
+    Args:
+        lo: Minimum valid coordinate (inclusive).
+        hi: Maximum valid coordinate (inclusive).
+        step: Grid spacing.
+
+    Returns:
+        1-D float64 array of grid coordinates.
+    """
+    span = hi - lo
+    n_steps = span // step
+    offset = (span - n_steps * step) // 2
+    return np.arange(lo + offset, hi + 1, step, dtype=np.float64)
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -119,8 +146,8 @@ def integer_search(
         min_y = max(roi.gridy[0], half_w + search)
         max_y = min(roi.gridy[1], h - 1 - half_w - search)
 
-    x0 = np.arange(min_x, max_x + 1, winstepsize, dtype=np.float64)
-    y0 = np.arange(min_y, max_y + 1, winstepsize, dtype=np.float64)
+    x0 = _centered_arange(min_x, max_x, winstepsize)
+    y0 = _centered_arange(min_y, max_y, winstepsize)
 
     if len(x0) == 0 or len(y0) == 0:
         raise ValueError(
@@ -939,8 +966,8 @@ def _remap_to_standard_grid(
     min_y = max(roi.gridy[0], half_w + 1)
     max_y = min(roi.gridy[1], img_h - 1 - half_w - 1)
 
-    x0_std = np.arange(min_x, max_x + 1, winstepsize, dtype=np.float64)
-    y0_std = np.arange(min_y, max_y + 1, winstepsize, dtype=np.float64)
+    x0_std = _centered_arange(min_x, max_x, winstepsize)
+    y0_std = _centered_arange(min_y, max_y, winstepsize)
 
     if len(x0_std) == 0 or len(y0_std) == 0:
         raise ValueError("Cannot generate standard grid from pyramid results.")
