@@ -18,7 +18,7 @@ Tracking strategies:
     - Skip-3:        ref_indices = (0,0,0,3,3,3,6,6,6)
 
 Usage:
-    python scripts/evaluate_modes.py [--output-dir outputs/mode_comparison]
+    python scripts/evaluate_modes.py [--output-dir reports/mode_comparison]
 """
 
 from __future__ import annotations
@@ -560,7 +560,7 @@ def main():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="outputs/mode_comparison",
+        default="reports/mode_comparison",
         help="Directory for output plots and tables",
     )
     args = parser.parse_args()

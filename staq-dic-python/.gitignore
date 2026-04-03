@@ -8,6 +8,5 @@ build/
 *.egg
 .eggs/
 
-# Generated benchmark outputs and reports
-outputs/
+# Generated reports (benchmarks, PDFs, plots)
 reports/

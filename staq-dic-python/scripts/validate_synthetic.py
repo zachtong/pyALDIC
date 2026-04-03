@@ -38,7 +38,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger("staq_dic.core.pipeline")
 logger.setLevel(logging.INFO)
 
-OUT_DIR = Path("outputs/validate_synthetic")
+OUT_DIR = Path("reports/validate_synthetic")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 

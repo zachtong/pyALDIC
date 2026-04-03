@@ -8,7 +8,7 @@ Generates:
             on quadtree meshes with various deformation types.
 
 Usage:
-    python scripts/visualize_quadtree.py [--output-dir outputs/quadtree]
+    python scripts/visualize_quadtree.py [--output-dir reports/quadtree]
 """
 
 from __future__ import annotations
@@ -711,7 +711,7 @@ def main():
     parser.add_argument(
         "--output-dir",
         type=str,
-        default="outputs/quadtree",
+        default="reports/quadtree",
         help="Directory for output figures",
     )
     args = parser.parse_args()

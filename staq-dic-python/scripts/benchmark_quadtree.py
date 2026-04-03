@@ -29,7 +29,7 @@ Output:
     Console: full 48-row table
 
 Usage:
-    python scripts/benchmark_quadtree.py [--output-dir outputs/benchmark]
+    python scripts/benchmark_quadtree.py [--output-dir reports/benchmark]
 """
 
 from __future__ import annotations
@@ -570,7 +570,7 @@ def print_table(results: list[BenchResult]):
 # ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(description="Benchmark quadtree DIC")
-    parser.add_argument("--output-dir", type=str, default="outputs/benchmark",
+    parser.add_argument("--output-dir", type=str, default="reports/benchmark",
                         help="Output directory")
     args = parser.parse_args()
 

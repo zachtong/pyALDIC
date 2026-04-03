@@ -43,7 +43,7 @@ from staq_dic.solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from staq_dic.utils.outlier_detection import detect_bad_points, fill_nan_idw
 from staq_dic.strain.nodal_strain_fem import global_nodal_strain_fem
 
-OUT_DIR = Path("outputs/local_vs_aldic")
+OUT_DIR = Path("reports/local_vs_aldic")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 H, W = 1024, 1024
