@@ -7,8 +7,9 @@ Combinations:
   (3) Refined  + Local DIC
   (4) Refined  + AL-DIC
 
-Uses the complex 1024×1024 mask with a quadratic displacement field
-and Gaussian noise added to both reference and deformed images.
+Uses the complex 1024×1024 mask with a high-frequency sinusoidal
+displacement field and Gaussian noise added to both reference and
+deformed images.
 
 Output: reports/4way_mesh_solver_comparison.pdf
 """
@@ -75,18 +76,24 @@ def add_noise(img: np.ndarray, std: float, rng) -> np.ndarray:
 
 
 def make_gt_fields(h: int, w: int) -> tuple[np.ndarray, np.ndarray]:
-    """Quadratic displacement field with strain concentration near center.
+    """High-frequency sinusoidal displacement field.
 
-    Peak displacement ~3 px at corners, strong curvature near holes.
+    Two crossing sine waves with different frequencies and orientations.
+    Peak displacement ~3 px, but rapid spatial oscillation creates high
+    local strain that challenges coarse meshes and tests ADMM smoothing.
     """
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float64)
-    dx = (xx - CX) / CX   # normalized to [-1, 1]
-    dy = (yy - CY) / CY
 
-    u = (1.5 * dx**2 + 0.8 * dy**2 + 0.5 * dx * dy
-         + 0.3 * dx + 0.1 * dy + 0.5)
-    v = (0.6 * dx**2 + 1.2 * dy**2 - 0.4 * dx * dy
-         + 0.1 * dx + 0.2 * dy + 0.3)
+    # Spatial frequencies (periods in pixels)
+    # ~64 px period ≈ 4 elements at step=16 — near Nyquist for uniform mesh
+    u = (1.5 * np.sin(2 * np.pi * xx / 64.0)
+         * np.cos(2 * np.pi * yy / 80.0)
+         + 0.8 * np.sin(2 * np.pi * (xx + yy) / 100.0)
+         + 0.5)
+    v = (1.2 * np.cos(2 * np.pi * xx / 80.0)
+         * np.sin(2 * np.pi * yy / 64.0)
+         + 0.6 * np.cos(2 * np.pi * (xx - yy) / 120.0)
+         + 0.3)
     return u, v
 
 
@@ -272,7 +279,7 @@ def main():
         # ── Page 1: Input overview ────────────────────────────────
         fig, axes = plt.subplots(1, 3, figsize=(18, 6))
         fig.suptitle(
-            f"Input: Complex 1024×1024 Mask + Quadratic Displacement + Noise (σ={NOISE_STD})",
+            f"Input: Complex 1024x1024 Mask + High-Freq Sinusoidal Displacement + Noise (std={NOISE_STD})",
             fontsize=13, y=0.98,
         )
 
@@ -395,7 +402,7 @@ def main():
 
         # u-error histogram
         ax1 = fig.add_subplot(gs[0, 0])
-        bins = np.linspace(-0.5, 0.5, 80)
+        bins = np.linspace(-1.5, 1.5, 80)
         for lbl in labels:
             r = results[lbl]
             ax1.hist(r["u_err"][r["valid"]], bins=bins, alpha=0.5,
@@ -419,7 +426,7 @@ def main():
 
         # Error magnitude histogram
         ax3 = fig.add_subplot(gs[0, 2])
-        bins_mag = np.linspace(0, 0.6, 60)
+        bins_mag = np.linspace(0, 2.0, 60)
         for lbl in labels:
             r = results[lbl]
             mag = np.sqrt(r["u_err"][r["valid"]] ** 2
