@@ -49,6 +49,7 @@ from .data_structures import (
     StrainResult,
 )
 from ..io.image_ops import compute_image_gradient, normalize_images
+from ..mesh.mark_inside import mark_inside
 from ..mesh.mesh_setup import mesh_setup
 from ..mesh.refinement import RefinementContext, RefinementPolicy, refine_mesh
 from ..solver.init_disp import init_disp
@@ -627,6 +628,30 @@ def run_aldic(
             # Build mesh from the FFT grid if not provided
             if dic_mesh is None:
                 dic_mesh = mesh_setup(x0, y0, para)
+
+            # Trim mesh: remove elements that fall inside mask holes
+            # so the uniform mesh only covers valid (mask=1) regions.
+            _, outside_idx = mark_inside(
+                dic_mesh.coordinates_fem,
+                dic_mesh.elements_fem,
+                f_mask,
+            )
+            if len(outside_idx) < dic_mesh.elements_fem.shape[0]:
+                trimmed_elems = dic_mesh.elements_fem[outside_idx]
+                dic_mesh = DICMesh(
+                    coordinates_fem=dic_mesh.coordinates_fem,
+                    elements_fem=trimmed_elems,
+                    irregular=dic_mesh.irregular,
+                    mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge,
+                    x0=dic_mesh.x0,
+                    y0=dic_mesh.y0,
+                    element_min_size=dic_mesh.element_min_size,
+                )
+                logger.info(
+                    "Trimmed mesh to mask: %d -> %d elements",
+                    len(outside_idx) + (dic_mesh.elements_fem.shape[0] - len(outside_idx)),
+                    len(outside_idx),
+                )
 
             # Apply mask: NaN for nodes in masked-out regions
             n_nodes = dic_mesh.coordinates_fem.shape[0]
