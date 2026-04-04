@@ -189,6 +189,37 @@ class MainWindow(QMainWindow):
             state.roi_editing_frame, self._roi_ctrl.mask.copy()
         )
 
+    def _on_batch_import(self) -> None:
+        """Open the batch mask import dialog and load assigned masks."""
+        state = self._state
+        if not state.image_files:
+            state.log_message.emit("Load images first.", "warn")
+            return
+
+        from staq_dic.gui.dialogs.batch_import_dialog import BatchImportDialog
+
+        dialog = BatchImportDialog(state.image_files, parent=self)
+        if dialog.exec() != BatchImportDialog.DialogCode.Accepted:
+            return
+
+        # Ensure ROI controller is initialized so we can get image dimensions
+        if self._roi_ctrl is None:
+            self._init_roi_controller()
+        if self._roi_ctrl is None:
+            return
+
+        img_shape = self._roi_ctrl.shape
+        masks = dialog.load_masks(img_shape)
+        for frame_idx, mask in masks.items():
+            state.per_frame_rois[frame_idx] = mask
+            state.log_message.emit(
+                f"  Imported mask for frame {frame_idx}", "info"
+            )
+        state.log_message.emit(
+            f"Batch import: {len(masks)} masks loaded", "success"
+        )
+        state.roi_changed.emit()
+
 
 def _global_exception_hook(exc_type, exc_value, exc_tb):
     """Catch unhandled exceptions so the GUI doesn't silently crash."""
