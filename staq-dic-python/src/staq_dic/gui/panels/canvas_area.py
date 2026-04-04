@@ -44,6 +44,7 @@ from PySide6.QtWidgets import (
 
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.theme import COLORS
+from staq_dic.gui.widgets.frame_navigator import FrameNavigator
 
 if TYPE_CHECKING:
     from staq_dic.gui.controllers.image_controller import ImageController
@@ -483,6 +484,10 @@ class CanvasArea(QWidget):
         # --- Canvas ---
         self._canvas = ImageCanvas()
         layout.addWidget(self._canvas, stretch=1)
+
+        # --- Bottom frame navigator ---
+        self._frame_nav = FrameNavigator()
+        layout.addWidget(self._frame_nav)
 
         # --- Connections ---
         btn_fit.clicked.connect(self._canvas.fit_to_view)
