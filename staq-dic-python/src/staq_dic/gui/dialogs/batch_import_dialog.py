@@ -13,7 +13,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import cv2
 import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
@@ -35,7 +34,7 @@ from PySide6.QtWidgets import (
 from staq_dic.gui.theme import COLORS
 
 # Image file extensions accepted as mask files
-_MASK_EXTENSIONS = {".png", ".bmp", ".tif", ".tiff", ".jpg", ".jpeg"}
+_MASK_EXTENSIONS = {".png", ".bmp", ".tif", ".tiff", ".jpg", ".jpeg", ".jp2", ".webp"}
 
 
 class BatchImportDialog(QDialog):
@@ -236,23 +235,21 @@ class BatchImportDialog(QDialog):
     def load_masks(self, img_shape: tuple[int, int]) -> dict[int, np.ndarray]:
         """Read and threshold all assigned mask files.
 
+        Supports all bit depths (uint8, uint16, float) and common
+        formats (tif, png, bmp, jpg, jp2, webp).
+
         Args:
             img_shape: (height, width) to resize masks to if needed.
 
         Returns:
             Mapping of frame_index -> boolean mask array.
         """
+        from staq_dic.io.io_utils import read_mask_as_bool
+
         result: dict[int, np.ndarray] = {}
         for idx, path in self._assignments.items():
-            # Use np.fromfile + cv2.imdecode for Unicode path support
-            buf = np.fromfile(path, dtype=np.uint8)
-            img = cv2.imdecode(buf, cv2.IMREAD_GRAYSCALE)
-            if img is None:
+            try:
+                result[idx] = read_mask_as_bool(path, target_shape=img_shape)
+            except (FileNotFoundError, IOError):
                 continue
-            if img.shape != img_shape:
-                img = cv2.resize(
-                    img, (img_shape[1], img_shape[0]),
-                    interpolation=cv2.INTER_NEAREST,
-                )
-            result[idx] = img > 127
         return result

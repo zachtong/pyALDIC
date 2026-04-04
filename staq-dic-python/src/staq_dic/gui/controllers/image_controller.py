@@ -23,7 +23,7 @@ from numpy.typing import NDArray
 from staq_dic.gui.app_state import AppState
 
 SUPPORTED_EXTENSIONS: frozenset[str] = frozenset(
-    {".tif", ".tiff", ".png", ".bmp", ".jpg", ".jpeg"}
+    {".tif", ".tiff", ".png", ".bmp", ".jpg", ".jpeg", ".jp2", ".webp"}
 )
 
 
@@ -47,17 +47,20 @@ def _lexicographic_sort_key(name: str) -> str:
     return name.lower()
 
 
-def _read_image_raw(path: str) -> NDArray[np.uint8]:
+def _read_image_raw(path: str) -> NDArray:
     """Read an image using Unicode-safe I/O (np.fromfile + cv2.imdecode).
 
     cv2.imread fails on Windows paths containing CJK or other non-ASCII
     characters.  This approach works universally.
 
+    The image is read with IMREAD_UNCHANGED so the original bit depth
+    (uint8, uint16, float32) and channel count are preserved.
+
     Args:
         path: Absolute path to the image file.
 
     Returns:
-        BGR uint8 image array.
+        Image array in its native dtype (may be uint8, uint16, or float32).
 
     Raises:
         FileNotFoundError: If the file does not exist.
@@ -72,6 +75,58 @@ def _read_image_raw(path: str) -> NDArray[np.uint8]:
     if img is None:
         raise ValueError(f"Failed to decode image: {path}")
     return img
+
+
+def _normalize_to_float64(img: NDArray) -> NDArray[np.float64]:
+    """Normalize an image of any bit depth to float64 in [0.0, 1.0].
+
+    Handles uint8 (0-255), uint16 (0-65535), uint32 (0-4294967295),
+    and floating-point images (assumed already in [0, 1] or clamped).
+    """
+    if img.dtype == np.uint8:
+        return img.astype(np.float64) / 255.0
+    if img.dtype == np.uint16:
+        return img.astype(np.float64) / 65535.0
+    if img.dtype == np.uint32:
+        return img.astype(np.float64) / 4294967295.0
+    if np.issubdtype(img.dtype, np.floating):
+        return np.clip(img.astype(np.float64), 0.0, 1.0)
+    # Fallback: assume unsigned int, scale by max possible value
+    info = np.iinfo(img.dtype)
+    return img.astype(np.float64) / info.max
+
+
+def _to_display_uint8(img: NDArray) -> NDArray[np.uint8]:
+    """Convert an image of any bit depth to uint8 for display.
+
+    Applies the same logic as _normalize_to_float64 but outputs [0, 255].
+    """
+    if img.dtype == np.uint8:
+        return img
+    if img.dtype == np.uint16:
+        return (img / 256).astype(np.uint8)
+    if img.dtype == np.uint32:
+        return (img / 16777216).astype(np.uint8)
+    if np.issubdtype(img.dtype, np.floating):
+        return np.clip(img * 255.0, 0, 255).astype(np.uint8)
+    info = np.iinfo(img.dtype)
+    return (img.astype(np.float64) / info.max * 255).astype(np.uint8)
+
+
+def _to_gray_uint8(img: NDArray) -> NDArray[np.uint8]:
+    """Convert any-depth image to single-channel uint8 grayscale.
+
+    Handles multi-channel (BGR/BGRA) and multi-depth (uint16, float) inputs.
+    """
+    # Convert to single channel first (if multi-channel)
+    if img.ndim == 3:
+        if img.shape[2] == 4:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+        else:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img
+    return _to_display_uint8(gray)
 
 
 class ImageController:
@@ -195,7 +250,7 @@ class ImageController:
         else:
             gray = raw
 
-        result = gray.astype(np.float64) / 255.0
+        result = _normalize_to_float64(gray)
         self._cache[idx] = result
         return result
 
@@ -220,6 +275,14 @@ class ImageController:
             return self._cache_rgb[idx]
 
         raw = _read_image_raw(self._state.image_files[idx])
+
+        # Convert non-uint8 to uint8 first (16-bit → 8-bit, etc.)
+        if raw.dtype != np.uint8:
+            if raw.ndim == 3:
+                # Multi-channel: convert each channel
+                raw = _to_display_uint8(raw)
+            else:
+                raw = _to_display_uint8(raw)
 
         # Convert to RGB
         if raw.ndim == 2:
