@@ -1,10 +1,10 @@
 """Left sidebar panel — image loading, ROI tools, parameters.
 
-Fixed width 220px.  Contains:
-1. IMAGES section with count badge and drop zone
+Fixed width 270px.  Contains:
+1. IMAGES section with count badge and drop zone (always visible)
 2. ImageList (scrollable file list)
-3. ROI toolbar (rect / polygon / circle / import / cut / clear)
-4. PARAMETERS section (subset size, step, search range, tracking mode)
+3. REGION OF INTEREST — collapsible
+4. PARAMETERS — collapsible
 """
 
 from __future__ import annotations
@@ -25,13 +25,14 @@ from PySide6.QtWidgets import (
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.theme import COLORS
+from staq_dic.gui.widgets.collapsible_section import CollapsibleSection
 from staq_dic.gui.widgets.image_list import ImageList
 from staq_dic.gui.widgets.param_panel import ParamPanel
 from staq_dic.gui.widgets.roi_toolbar import ROIToolbar
 
 
 class _SectionHeader(QWidget):
-    """Compact section header with title and optional badge."""
+    """Compact section header with title and optional badge (for IMAGES)."""
 
     def __init__(
         self,
@@ -162,7 +163,7 @@ class LeftSidebar(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # --- IMAGES section ---
+        # --- IMAGES section (always visible, not collapsible) ---
         self._images_header = _SectionHeader("IMAGES")
         layout.addWidget(self._images_header)
 
@@ -186,17 +187,17 @@ class LeftSidebar(QWidget):
         self._image_list = ImageList(self._state, image_ctrl)
         layout.addWidget(self._image_list, stretch=1)
 
-        # --- ROI section ---
-        roi_header = _SectionHeader("REGION OF INTEREST")
-        layout.addWidget(roi_header)
+        # --- REGION OF INTEREST section (collapsible) ---
+        self._roi_section = CollapsibleSection("REGION OF INTEREST", expanded=True)
         self._roi_toolbar = ROIToolbar()
-        layout.addWidget(self._roi_toolbar)
+        self._roi_section.add_widget(self._roi_toolbar)
+        layout.addWidget(self._roi_section)
 
-        # --- PARAMETERS section ---
-        params_header = _SectionHeader("PARAMETERS")
-        layout.addWidget(params_header)
+        # --- PARAMETERS section (collapsible) ---
+        self._params_section = CollapsibleSection("PARAMETERS", expanded=True)
         self._param_panel = ParamPanel()
-        layout.addWidget(self._param_panel)
+        self._params_section.add_widget(self._param_panel)
+        layout.addWidget(self._params_section)
 
         # Connect state changes to update badge
         self._state.images_changed.connect(self._update_badge)
