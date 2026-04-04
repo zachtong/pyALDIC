@@ -8,6 +8,7 @@ import time
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
     QCheckBox,
+    QComboBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -127,6 +128,23 @@ class RightSidebar(QWidget):
 
         # --- Color range section ---
         self._add_section_label(layout, "COLOR RANGE")
+
+        # Colormap selector
+        cmap_row = QHBoxLayout()
+        cmap_row.setSpacing(4)
+        cmap_lbl = QLabel("Colormap")
+        cmap_lbl.setFixedWidth(64)
+        cmap_row.addWidget(cmap_lbl)
+        self._cmap_combo = QComboBox()
+        self._cmap_combo.addItems([
+            "jet", "viridis", "turbo", "coolwarm",
+            "plasma", "inferno", "RdBu_r", "seismic",
+        ])
+        self._cmap_combo.setCurrentText(self._state.colormap)
+        self._cmap_combo.currentTextChanged.connect(self._state.set_colormap)
+        cmap_row.addWidget(self._cmap_combo)
+        layout.addLayout(cmap_row)
+
         self._color_range = ColorRange()
         layout.addWidget(self._color_range)
 
