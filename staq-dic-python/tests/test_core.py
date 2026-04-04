@@ -8,6 +8,7 @@ import pytest
 from staq_dic.core.data_structures import (
     DICPara,
     DICMesh,
+    FrameSchedule,
     GridxyROIRange,
     FrameResult,
     StrainResult,
@@ -162,3 +163,97 @@ class TestResults:
         )
         assert sr.dudx is None
         assert sr.strain_exx is None
+
+
+# ---------------------------------------------------------------------------
+# FrameSchedule extensions
+# ---------------------------------------------------------------------------
+
+class TestFrameScheduleExtensions:
+    # --- from_every_n ---
+
+    def test_from_every_n_basic(self):
+        """every_n=2 with 6 frames: refs at 0,2,4."""
+        sched = FrameSchedule.from_every_n(n=2, n_frames=6)
+        assert sched.ref_indices == (0, 0, 2, 2, 4)
+
+    def test_from_every_n_every_frame(self):
+        """every_n=1 is same as incremental."""
+        sched = FrameSchedule.from_every_n(n=1, n_frames=4)
+        assert sched.ref_indices == (0, 1, 2)
+
+    def test_from_every_n_too_large(self):
+        """n larger than n_frames-1: all frames reference frame 0."""
+        sched = FrameSchedule.from_every_n(n=100, n_frames=4)
+        assert sched.ref_indices == (0, 0, 0)
+
+    def test_from_every_n_n3_frames7(self):
+        """every_n=3 with 7 frames: refs at 0,3,6."""
+        sched = FrameSchedule.from_every_n(n=3, n_frames=7)
+        assert sched.ref_indices == (0, 0, 0, 3, 3, 3)
+
+    def test_from_every_n_invalid_n(self):
+        """n must be >= 1."""
+        with pytest.raises(ValueError, match="n must be >= 1"):
+            FrameSchedule.from_every_n(n=0, n_frames=4)
+
+    def test_from_every_n_invalid_n_frames(self):
+        """n_frames must be >= 2."""
+        with pytest.raises(ValueError, match="n_frames must be >= 2"):
+            FrameSchedule.from_every_n(n=2, n_frames=1)
+
+    # --- from_custom ---
+
+    def test_from_custom_basic(self):
+        """Custom ref frames: 0, 3 with 6 frames."""
+        sched = FrameSchedule.from_custom(custom_refs=[0, 3], n_frames=6)
+        assert sched.ref_indices == (0, 0, 0, 3, 3)
+
+    def test_from_custom_single_ref(self):
+        """Only frame 0 as ref = accumulative."""
+        sched = FrameSchedule.from_custom(custom_refs=[0], n_frames=4)
+        assert sched.ref_indices == (0, 0, 0)
+
+    def test_from_custom_rejects_last_frame(self):
+        """Last frame cannot be a ref."""
+        with pytest.raises(ValueError, match="last frame"):
+            FrameSchedule.from_custom(custom_refs=[0, 5], n_frames=6)
+
+    def test_from_custom_always_includes_zero(self):
+        """Frame 0 is always included even if not in list."""
+        sched = FrameSchedule.from_custom(custom_refs=[3], n_frames=6)
+        assert sched.parent(1) == 0
+
+    def test_from_custom_unsorted_input(self):
+        """custom_refs need not be sorted."""
+        sched = FrameSchedule.from_custom(custom_refs=[3, 0], n_frames=6)
+        assert sched.ref_indices == (0, 0, 0, 3, 3)
+
+    def test_from_custom_invalid_n_frames(self):
+        """n_frames must be >= 2."""
+        with pytest.raises(ValueError, match="n_frames must be >= 2"):
+            FrameSchedule.from_custom(custom_refs=[0], n_frames=1)
+
+    def test_from_custom_negative_ref(self):
+        """Negative ref frame indices are invalid."""
+        with pytest.raises(ValueError, match="negative"):
+            FrameSchedule.from_custom(custom_refs=[-1, 0], n_frames=4)
+
+    def test_from_custom_out_of_range_ref(self):
+        """Ref frame index >= n_frames is invalid."""
+        with pytest.raises(ValueError, match="out of range"):
+            FrameSchedule.from_custom(custom_refs=[0, 10], n_frames=6)
+
+    # --- ref_frame_set ---
+
+    def test_ref_frame_set_accumulative(self):
+        sched = FrameSchedule.from_mode("accumulative", 5)
+        assert sched.ref_frame_set == {0}
+
+    def test_ref_frame_set_incremental(self):
+        sched = FrameSchedule.from_mode("incremental", 5)
+        assert sched.ref_frame_set == {0, 1, 2, 3}
+
+    def test_ref_frame_set_every_n(self):
+        sched = FrameSchedule.from_every_n(n=2, n_frames=6)
+        assert sched.ref_frame_set == {0, 2, 4}

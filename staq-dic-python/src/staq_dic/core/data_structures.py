@@ -138,6 +138,93 @@ class FrameSchedule:
             if ref == frame
         )
 
+    @classmethod
+    def from_every_n(cls, n: int, n_frames: int) -> FrameSchedule:
+        """Create a schedule where every n-th frame is a new reference.
+
+        Reference frames are placed at 0, n, 2n, ... (as long as < n_frames - 1).
+        Each deformed frame references the nearest preceding reference frame.
+
+        Args:
+            n: Reference frame interval. n=1 is equivalent to incremental mode.
+            n_frames: Total number of frames (including reference frame 0).
+
+        Returns:
+            FrameSchedule instance.
+
+        Raises:
+            ValueError: If n < 1 or n_frames < 2.
+        """
+        if n < 1:
+            raise ValueError(f"n must be >= 1 (got {n})")
+        if n_frames < 2:
+            raise ValueError(f"n_frames must be >= 2 (got {n_frames})")
+        n_pairs = n_frames - 1
+        refs: list[int] = []
+        for deformed in range(1, n_frames):
+            # Nearest preceding ref: largest multiple of n that is < deformed
+            ref = (deformed - 1) // n * n
+            refs.append(ref)
+        return cls(ref_indices=tuple(refs))
+
+    @classmethod
+    def from_custom(cls, custom_refs: list[int], n_frames: int) -> FrameSchedule:
+        """Create a schedule from user-specified reference frame indices.
+
+        Frame 0 is always included as a reference even if not in the list.
+        The last frame (n_frames - 1) cannot be a reference frame.
+        Each deformed frame references the nearest preceding reference frame.
+
+        Args:
+            custom_refs: List of 0-based reference frame indices.
+            n_frames: Total number of frames (including reference frame 0).
+
+        Returns:
+            FrameSchedule instance.
+
+        Raises:
+            ValueError: If n_frames < 2, any ref is negative, out of range,
+                or equal to the last frame.
+        """
+        if n_frames < 2:
+            raise ValueError(f"n_frames must be >= 2 (got {n_frames})")
+        for ref in custom_refs:
+            if ref < 0:
+                raise ValueError(
+                    f"Reference frame index {ref} is negative"
+                )
+            if ref >= n_frames:
+                raise ValueError(
+                    f"Reference frame index {ref} is out of range "
+                    f"[0, {n_frames - 1})"
+                )
+            if ref == n_frames - 1:
+                raise ValueError(
+                    f"Reference frame index {ref} is the last frame; "
+                    f"the last frame cannot be a reference"
+                )
+        # Ensure frame 0 is always included, then sort
+        ref_set = sorted(set(custom_refs) | {0})
+        refs: list[int] = []
+        for deformed in range(1, n_frames):
+            # Find the largest ref that is < deformed
+            best_ref = 0
+            for r in ref_set:
+                if r < deformed:
+                    best_ref = r
+                else:
+                    break
+            refs.append(best_ref)
+        return cls(ref_indices=tuple(refs))
+
+    @property
+    def ref_frame_set(self) -> set[int]:
+        """Return the set of unique reference frame indices.
+
+        Always includes frame 0 (implicit root of the DAG).
+        """
+        return set(self.ref_indices) | {0}
+
     def __len__(self) -> int:
         """Number of frame pairs (= n_frames - 1)."""
         return len(self.ref_indices)
@@ -193,6 +280,7 @@ class DICPara:
     new_fft_search: int = 1
     init_fft_search_method: int = 1
     size_of_fft_search_region: int = 10
+    init_guess_mode: Literal["auto", "fft", "previous"] = "auto"
     discontinuity_threshold_cc: float = 0.85
     k_nearest_neighbors: int = 3
 
