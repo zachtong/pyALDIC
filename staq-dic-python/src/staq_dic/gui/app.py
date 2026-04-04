@@ -75,6 +75,9 @@ class MainWindow(QMainWindow):
         self._left_sidebar._image_list.roi_edit_requested.connect(
             self._on_roi_edit_for_frame
         )
+        self._left_sidebar._image_list.roi_import_for_frames.connect(
+            self._on_roi_import_for_frames
+        )
 
         # Initialize ROI controller when images are loaded
         self._state.images_changed.connect(self._init_roi_controller)
@@ -219,6 +222,33 @@ class MainWindow(QMainWindow):
             f"Batch import: {len(masks)} masks loaded", "success"
         )
         state.roi_changed.emit()
+
+    def _on_roi_import_for_frames(self, mapping: dict) -> None:
+        """Import mask files for specific frames (from context menu)."""
+        if self._roi_ctrl is None:
+            self._init_roi_controller()
+        if self._roi_ctrl is None:
+            return
+
+        from staq_dic.io.io_utils import read_mask_as_bool
+
+        img_shape = self._roi_ctrl.shape
+        state = self._state
+        count = 0
+        for frame_idx, path in mapping.items():
+            try:
+                mask = read_mask_as_bool(path, target_shape=img_shape)
+                state.per_frame_rois[frame_idx] = mask
+                count += 1
+            except (FileNotFoundError, IOError) as e:
+                state.log_message.emit(f"Failed to read: {e}", "warn")
+
+        if count:
+            state.log_message.emit(
+                f"Imported ROI for {count} frame{'s' if count > 1 else ''}",
+                "success",
+            )
+            state.roi_changed.emit()
 
 
 def _global_exception_hook(exc_type, exc_value, exc_tb):

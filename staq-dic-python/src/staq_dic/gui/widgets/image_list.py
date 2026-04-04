@@ -1,27 +1,25 @@
-"""Multi-column image list with per-frame ROI buttons and display override.
+"""Multi-column image list with per-frame ROI buttons.
 
-QTreeWidget with 4 columns:
+QTreeWidget with 3 columns:
 1. # (Frame number, "00", "01", ...) — fixed 32px
 2. Filename — stretch
 3. ROI — clickable QPushButton (50px): red "Need" / green "Edit" / gray "Add"
-4. Disp — QCheckBox (40px): display override for deformed configuration
+
+Ref frames get bold + accent-colored filenames for visibility.
 
 Supports:
 - Extended selection (Ctrl+click, Shift+click)
-- Right-click context menu: Delete Selected
+- Right-click context menu: Import/Clear ROI, Delete Selected
 - ROI button indicators based on tracking mode / ref-frame status
-- Display override checkboxes per frame
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QAction, QColor
+from PySide6.QtCore import QEvent, Qt, Signal
+from PySide6.QtGui import QAction, QColor, QFont
 from PySide6.QtWidgets import (
-    QCheckBox,
-    QHBoxLayout,
     QHeaderView,
     QMenu,
     QPushButton,
@@ -39,7 +37,6 @@ from staq_dic.gui.theme import COLORS
 _COL_FRAME = 0
 _COL_FILENAME = 1
 _COL_ROI = 2
-_COL_DISP = 3
 
 # ROI button style templates
 _STYLE_ROI_HAS = (
@@ -57,13 +54,17 @@ _STYLE_ROI_ADD = (
 
 
 class ImageList(QWidget):
-    """Scrollable multi-column image list with ROI indicators and display override."""
+    """Scrollable multi-column image list with ROI indicators."""
 
     # Emitted when images are removed (indices list)
     images_removed = Signal(list)
 
     # Emitted when user clicks an ROI button to edit that frame's ROI
     roi_edit_requested = Signal(int)
+
+    # Emitted when user imports ROI masks for specific frames via context menu
+    # Carries dict {frame_idx: file_path}
+    roi_import_for_frames = Signal(object)
 
     def __init__(
         self,
@@ -77,15 +78,17 @@ class ImageList(QWidget):
 
         # Lookup maps for per-row widgets
         self._roi_buttons: dict[int, QPushButton] = {}
-        self._disp_checks: dict[int, QCheckBox] = {}
+
+        # Suppress _sync_selection when frame change originates from this widget
+        self._suppress_sync = False
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
         self._tree = QTreeWidget()
-        self._tree.setColumnCount(4)
-        self._tree.setHeaderLabels(["#", "Filename", "ROI", "Disp"])
+        self._tree.setColumnCount(3)
+        self._tree.setHeaderLabels(["#", "Filename", "ROI"])
         self._tree.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
         self._tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._tree.customContextMenuRequested.connect(self._show_context_menu)
@@ -97,11 +100,9 @@ class ImageList(QWidget):
         header.setMinimumSectionSize(10)
         header.resizeSection(_COL_FRAME, 32)
         header.resizeSection(_COL_ROI, 50)
-        header.resizeSection(_COL_DISP, 40)
         header.setSectionResizeMode(_COL_FRAME, QHeaderView.ResizeMode.Fixed)
         header.setSectionResizeMode(_COL_FILENAME, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(_COL_ROI, QHeaderView.ResizeMode.Fixed)
-        header.setSectionResizeMode(_COL_DISP, QHeaderView.ResizeMode.Fixed)
 
         # Styling
         self._tree.setStyleSheet(
@@ -141,15 +142,15 @@ class ImageList(QWidget):
         self._state.roi_changed.connect(self._update_roi_indicators)
         self._state.params_changed.connect(self._update_roi_indicators)
 
-        # Tree selection -> state update
-        self._tree.currentItemChanged.connect(self._on_item_changed)
+        # Tree selection -> state update (keyboard: eventFilter, mouse: itemClicked)
+        self._tree.installEventFilter(self)
+        self._tree.itemClicked.connect(self._on_item_clicked)
 
     def _rebuild_list(self) -> None:
         """Rebuild the tree from current state."""
         self._tree.blockSignals(True)
         self._tree.clear()
         self._roi_buttons.clear()
-        self._disp_checks.clear()
 
         for i, filepath in enumerate(self._state.image_files):
             filename = Path(filepath).name
@@ -179,22 +180,6 @@ class ImageList(QWidget):
             self._tree.setItemWidget(item, _COL_ROI, roi_btn)
             self._roi_buttons[i] = roi_btn
 
-            # Display checkbox
-            disp_container = QWidget()
-            disp_layout = QHBoxLayout(disp_container)
-            disp_layout.setContentsMargins(0, 0, 0, 0)
-            disp_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            disp_cb = QCheckBox()
-            disp_cb.setChecked(
-                self._state.display_roi_enabled.get(i, False)
-            )
-            disp_cb.toggled.connect(
-                self._make_disp_toggle_handler(i)
-            )
-            disp_layout.addWidget(disp_cb)
-            self._tree.setItemWidget(item, _COL_DISP, disp_container)
-            self._disp_checks[i] = disp_cb
-
         # Select frame 0 if images are loaded
         if self._state.image_files:
             first_item = self._tree.topLevelItem(0)
@@ -211,15 +196,6 @@ class ImageList(QWidget):
 
         def handler() -> None:
             self.roi_edit_requested.emit(frame)
-
-        return handler
-
-    def _make_disp_toggle_handler(self, frame: int):
-        """Create a closure for the display checkbox toggle of a specific frame."""
-
-        def handler(checked: bool) -> None:
-            self._state.display_roi_enabled[frame] = checked
-            self._state.display_changed.emit()
 
         return handler
 
@@ -250,15 +226,26 @@ class ImageList(QWidget):
                 btn.setText("Add")
                 btn.setStyleSheet(_STYLE_ROI_ADD)
 
-            # Ref-frame row highlight
+            # Ref-frame highlighting: subtle row background + bold accent filename
+            n_cols = 3  # frame, filename, ROI
             if is_ref:
                 highlight = QColor(COLORS.ACCENT)
                 highlight = highlight.lighter(180)
-                for col in range(_COL_DISP + 1):
+                for col in range(n_cols):
                     item.setBackground(col, highlight)
+                # Bold + accent color on filename for ref frames
+                bold_font = QFont()
+                bold_font.setBold(True)
+                item.setFont(_COL_FILENAME, bold_font)
+                item.setForeground(_COL_FILENAME, QColor(COLORS.ACCENT))
             else:
-                for col in range(_COL_DISP + 1):
+                for col in range(n_cols):
                     item.setData(col, Qt.ItemDataRole.BackgroundRole, None)
+                # Reset filename styling
+                item.setFont(_COL_FILENAME, QFont())
+                item.setData(
+                    _COL_FILENAME, Qt.ItemDataRole.ForegroundRole, None
+                )
 
     def _get_ref_frames(self) -> set[int]:
         """Compute which frames are reference frames based on tracking settings."""
@@ -291,36 +278,86 @@ class ImageList(QWidget):
 
     def _sync_selection(self, idx: int) -> None:
         """Sync tree selection when frame is changed externally."""
+        if self._suppress_sync:
+            return
         self._tree.blockSignals(True)
         item = self._tree.topLevelItem(idx)
         if item is not None:
             self._tree.setCurrentItem(item)
         self._tree.blockSignals(False)
 
-    def _on_item_changed(
+    def eventFilter(self, obj, event):
+        """Handle keyboard navigation in the tree — switch frame on arrow keys."""
+        if obj is self._tree and event.type() == QEvent.Type.KeyRelease:
+            if event.key() in (
+                Qt.Key.Key_Up, Qt.Key.Key_Down,
+                Qt.Key.Key_PageUp, Qt.Key.Key_PageDown,
+                Qt.Key.Key_Home, Qt.Key.Key_End,
+            ):
+                current = self._tree.currentItem()
+                if current is not None:
+                    frame = current.data(_COL_FRAME, Qt.ItemDataRole.UserRole)
+                    if frame is not None:
+                        self._suppress_sync = True
+                        self._state.set_current_frame(frame)
+                        self._suppress_sync = False
+        return super().eventFilter(obj, event)
+
+    def _on_item_clicked(
         self,
-        current: QTreeWidgetItem | None,
-        _previous: QTreeWidgetItem | None,
+        item: QTreeWidgetItem,
+        column: int,
     ) -> None:
-        """Handle user clicking a tree item."""
-        if current is None:
+        """Handle mouse click — only switch frame for frame#/filename columns."""
+        if column > _COL_FILENAME:
             return
-        frame = current.data(_COL_FRAME, Qt.ItemDataRole.UserRole)
+        frame = item.data(_COL_FRAME, Qt.ItemDataRole.UserRole)
         if frame is not None:
+            self._suppress_sync = True
             self._state.set_current_frame(frame)
+            self._suppress_sync = False
 
     def _show_context_menu(self, pos) -> None:
-        """Show right-click context menu with delete option."""
-        selected = self._tree.selectedItems()
-        if not selected:
-            return
-
+        """Show right-click context menu with ROI and delete options."""
         menu = QMenu(self)
-        count = len(selected)
-        label = f"Delete {count} image{'s' if count > 1 else ''}"
-        delete_action = QAction(label, self)
-        delete_action.triggered.connect(self._delete_selected)
-        menu.addAction(delete_action)
+        selected = self._tree.selectedItems()
+        sel_frames = self._get_selected_frames()
+        n_sel = len(sel_frames)
+
+        # --- ROI batch operations (when frames are selected) ---
+        if n_sel > 0:
+            import_action = QAction(
+                f"Import ROI for {n_sel} frame{'s' if n_sel > 1 else ''}",
+                self,
+            )
+            import_action.triggered.connect(self._import_roi_selected)
+            menu.addAction(import_action)
+
+            n_with_roi = sum(
+                1 for f in sel_frames if f in self._state.per_frame_rois
+            )
+            clear_label = (
+                f"Clear ROI ({n_with_roi} with ROI)"
+                if n_with_roi
+                else "Clear ROI"
+            )
+            clear_action = QAction(clear_label, self)
+            clear_action.setEnabled(n_with_roi > 0)
+            clear_action.triggered.connect(self._clear_roi_selected)
+            menu.addAction(clear_action)
+
+            menu.addSeparator()
+
+        # --- Delete option ---
+        if selected:
+            count = len(selected)
+            label = f"Delete {count} image{'s' if count > 1 else ''}"
+            delete_action = QAction(label, self)
+            delete_action.triggered.connect(self._delete_selected)
+            menu.addAction(delete_action)
+
+        if not menu.actions():
+            return
         menu.popup(self._tree.mapToGlobal(pos))
 
     def _delete_selected(self) -> None:
@@ -350,11 +387,10 @@ class ImageList(QWidget):
 
         if not files:
             self._state.per_frame_rois.clear()
-            self._state.display_roi_enabled.clear()
             self._state.set_image_files([])
             return
 
-        # Re-key per_frame_rois and display_roi_enabled after deletion.
+        # Re-key per_frame_rois after deletion.
         # Build old->new index mapping for surviving frames.
         deleted_set = set(rows_to_delete)
         old_to_new: dict[int, int] = {}
@@ -370,12 +406,6 @@ class ImageList(QWidget):
                 new_rois[old_to_new[old_key]] = mask
         self._state.per_frame_rois = new_rois  # type: ignore[assignment]
 
-        new_disp: dict[int, bool] = {}
-        for old_key, val in list(self._state.display_roi_enabled.items()):
-            if old_key in old_to_new:
-                new_disp[old_to_new[old_key]] = val
-        self._state.display_roi_enabled = new_disp
-
         # Clear image caches for removed images
         self._image_ctrl.clear_cache()
 
@@ -385,3 +415,47 @@ class ImageList(QWidget):
             self._state.current_frame, len(files) - 1
         )
         self._state.images_changed.emit()
+
+    def _get_selected_frames(self) -> set[int]:
+        """Extract frame indices from currently selected tree items."""
+        frames = set()
+        for item in self._tree.selectedItems():
+            frame = item.data(_COL_FRAME, Qt.ItemDataRole.UserRole)
+            if frame is not None:
+                frames.add(frame)
+        return frames
+
+    def _import_roi_selected(self) -> None:
+        """Open file dialog and import ROI masks for selected frames."""
+        frames = sorted(self._get_selected_frames())
+        if not frames:
+            return
+        from PySide6.QtWidgets import QFileDialog
+
+        paths, _ = QFileDialog.getOpenFileNames(
+            self,
+            f"Select {len(frames)} Mask File{'s' if len(frames) > 1 else ''}",
+            "",
+            "Images (*.png *.bmp *.tif *.tiff *.jpg *.jpeg);;All Files (*)",
+        )
+        if not paths:
+            return
+        if len(paths) != len(frames):
+            self._state.log_message.emit(
+                f"Selected {len(paths)} files for {len(frames)} frames"
+                " — count must match",
+                "warn",
+            )
+            return
+        self.roi_import_for_frames.emit(dict(zip(frames, paths)))
+
+    def _clear_roi_selected(self) -> None:
+        """Clear ROI masks for all selected frames."""
+        frames = self._get_selected_frames()
+        changed = False
+        for f in frames:
+            if f in self._state.per_frame_rois:
+                del self._state.per_frame_rois[f]
+                changed = True
+        if changed:
+            self._state.roi_changed.emit()
