@@ -45,6 +45,7 @@ from PySide6.QtWidgets import (
 
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.theme import COLORS
+from staq_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from staq_dic.gui.widgets.frame_navigator import FrameNavigator
 
 from staq_dic.core.data_structures import split_uv
@@ -499,13 +500,13 @@ class CanvasArea(QWidget):
 
         btn_fit = QPushButton("Fit")
         btn_fit.setToolTip("Fit image to viewport")
-        btn_fit.setFixedWidth(40)
+        btn_fit.setFixedWidth(60)
         if _HAS_ICONS:
             btn_fit.setIcon(icon_maximize())
 
         btn_100 = QPushButton("100%")
         btn_100.setToolTip("Zoom to 100% (1:1)")
-        btn_100.setFixedWidth(48)
+        btn_100.setFixedWidth(60)
 
         btn_zoom_in = QPushButton("+")
         btn_zoom_in.setToolTip("Zoom in")
@@ -544,6 +545,9 @@ class CanvasArea(QWidget):
         self._canvas = ImageCanvas()
         layout.addWidget(self._canvas, stretch=1)
 
+        # --- Colorbar overlay (child of canvas viewport, positioned in resizeEvent) ---
+        self._colorbar = ColorbarOverlay(self._canvas.viewport())
+
         # --- Bottom frame navigator ---
         self._frame_nav = FrameNavigator()
         layout.addWidget(self._frame_nav)
@@ -564,6 +568,12 @@ class CanvasArea(QWidget):
     def canvas(self) -> ImageCanvas:
         """Access the underlying ImageCanvas."""
         return self._canvas
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Reposition the colorbar overlay to fill the canvas viewport."""
+        super().resizeEvent(event)
+        vp = self._canvas.viewport()
+        self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
 
     def set_roi_editing_banner(self, frame: int | None) -> None:
         """Show or hide the ROI editing banner for the given frame."""
@@ -644,6 +654,7 @@ class CanvasArea(QWidget):
             overlay.setPos(0, 0)
             self._canvas.update_roi_overlay()
             self.set_roi_editing_banner(state.roi_editing_frame)
+            self._colorbar.setVisible(False)
             return
 
         # Hide banner when not editing
@@ -656,6 +667,7 @@ class CanvasArea(QWidget):
             overlay.setPos(0, 0)
             # Keep ROI visible before DIC has run
             self._canvas.update_roi_overlay()
+            self._colorbar.setVisible(False)
             return
 
         # --- Results mode: show field overlay, hide ROI ---
@@ -667,6 +679,7 @@ class CanvasArea(QWidget):
         if frame < 0 or frame >= len(result.result_disp):
             overlay.setPixmap(QPixmap())
             overlay.setScale(1.0)
+            self._colorbar.setVisible(False)
             return
 
         try:
@@ -718,6 +731,8 @@ class CanvasArea(QWidget):
                     if per_frame_roi is not None:
                         def_mask = per_frame_roi
 
+            cmap = state.colormap
+
             pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
                 frame,
                 state.display_field,
@@ -725,6 +740,7 @@ class CanvasArea(QWidget):
                 values,
                 img_shape=result.dic_para.img_size,
                 mesh_step=result.dic_para.winstepsize,
+                cmap=cmap,
                 vmin=vmin,
                 vmax=vmax,
                 roi_mask=state.roi_mask,
@@ -737,6 +753,14 @@ class CanvasArea(QWidget):
             overlay.setScale(float(out_step))
             if xg is not None and yg is not None:
                 overlay.setPos(float(xg.min()), float(yg.min()))
+
+            # Update colorbar
+            field_label = {
+                "disp_u": "U (px)",
+                "disp_v": "V (px)",
+            }.get(state.display_field, state.display_field)
+            self._colorbar.update_params(cmap, vmin, vmax, field_label)
+            self._colorbar.setVisible(True)
         except Exception as e:
             tb_str = _tb.format_exc()
             print(f"[_refresh_overlay] {e}\n{tb_str}", flush=True)
@@ -745,3 +769,4 @@ class CanvasArea(QWidget):
             )
             overlay.setPixmap(QPixmap())
             overlay.setScale(1.0)
+            self._colorbar.setVisible(False)
