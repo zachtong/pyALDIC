@@ -1,8 +1,15 @@
 """STAQ-DIC GUI application entry point."""
 
 import sys
+import traceback
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QMainWindow,
+    QHBoxLayout,
+    QWidget,
+)
 
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
@@ -52,12 +59,22 @@ class MainWindow(QMainWindow):
         self._right_sidebar = RightSidebar(self._pipeline_ctrl)
         layout.addWidget(self._right_sidebar, stretch=0)
 
-        # Wire ROI toolbar signals to canvas
+        # Wire ROI toolbar signals
         roi_tb = self._left_sidebar.roi_toolbar
-        roi_tb.tool_changed.connect(self._canvas_area.canvas.set_tool)
-        roi_tb.mode_changed.connect(self._canvas_area.canvas.set_drawing_mode)
+        roi_tb.draw_requested.connect(self._on_draw_requested)
         roi_tb.clear_requested.connect(self._on_roi_clear)
         roi_tb.import_requested.connect(self._on_roi_import)
+        roi_tb.save_requested.connect(self._on_roi_save)
+        roi_tb.invert_requested.connect(self._on_roi_invert)
+        roi_tb.batch_import_requested.connect(self._on_batch_import)
+
+        # When canvas finishes drawing, deactivate toolbar highlight
+        self._canvas_area.canvas.drawing_finished.connect(roi_tb.deactivate)
+
+        # Per-frame ROI editing from image list
+        self._left_sidebar._image_list.roi_edit_requested.connect(
+            self._on_roi_edit_for_frame
+        )
 
         # Initialize ROI controller when images are loaded
         self._state.images_changed.connect(self._init_roi_controller)
@@ -77,27 +94,124 @@ class MainWindow(QMainWindow):
         except (IndexError, FileNotFoundError, ValueError):
             pass
 
-    def _on_roi_clear(self) -> None:
-        """Clear the ROI mask."""
-        if self._roi_ctrl is not None:
-            self._roi_ctrl.clear()
-            self._canvas_area.canvas.update_roi_overlay()
-            self._state.set_roi_mask(None)
+    def _enter_roi_editing(self) -> None:
+        """Switch to ROI editing mode — show ROI overlay, hide field overlay."""
+        self._state.roi_editing = True
+        self._state.display_changed.emit()
 
-    def _on_roi_import(self, path: str) -> None:
-        """Import a mask file into the ROI controller."""
+    def _on_roi_edit_for_frame(self, frame: int) -> None:
+        """Enter ROI editing mode for a specific frame (from image list button)."""
+        state = self._state
+        if not state.image_files:
+            return
+        if self._roi_ctrl is None:
+            self._init_roi_controller()
         if self._roi_ctrl is None:
             return
+        # Load existing per-frame mask into ROI controller
+        existing = state.per_frame_rois.get(frame)
+        if existing is not None:
+            self._roi_ctrl.mask = existing.copy()
+        else:
+            self._roi_ctrl.clear()
+        state.roi_editing_frame = frame
+        state.roi_editing = True
+        state.display_changed.emit()
+
+    def _on_draw_requested(self, shape: str, mode: str) -> None:
+        """Activate one-shot drawing mode on the canvas."""
+        self._enter_roi_editing()
+        canvas = self._canvas_area.canvas
+        canvas.set_drawing_mode(mode)
+        canvas.set_tool(shape)
+
+    def _on_roi_clear(self) -> None:
+        """Clear the ROI mask for the currently edited frame."""
+        if self._roi_ctrl is not None:
+            self._enter_roi_editing()
+            self._roi_ctrl.clear()
+            self._canvas_area.canvas.update_roi_overlay()
+            state = self._state
+            state.set_frame_roi(state.roi_editing_frame, None)
+
+    def _on_roi_import(self, path: str) -> None:
+        """Import a mask file into the ROI controller for the current editing frame."""
+        if self._roi_ctrl is None:
+            return
+        self._enter_roi_editing()
         try:
             self._roi_ctrl.import_mask(path)
             self._canvas_area.canvas.update_roi_overlay()
-            self._state.set_roi_mask(self._roi_ctrl.mask.copy())
+            state = self._state
+            state.set_frame_roi(
+                state.roi_editing_frame, self._roi_ctrl.mask.copy()
+            )
         except IOError:
             pass
+
+    def _on_roi_save(self) -> None:
+        """Save the current ROI mask to a PNG file."""
+        if self._roi_ctrl is None:
+            self._state.log_message.emit(
+                "No ROI to save — load images first.", "warn"
+            )
+            return
+        if not self._roi_ctrl.mask.any():
+            self._state.log_message.emit("ROI mask is empty.", "warn")
+            return
+        self._enter_roi_editing()
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save ROI Mask",
+            "roi_mask.png",
+            "PNG Images (*.png);;All Files (*)",
+        )
+        if not path:
+            return
+        try:
+            self._roi_ctrl.save_mask(path)
+            self._state.log_message.emit(f"Mask saved to {path}", "success")
+        except IOError as e:
+            self._state.log_message.emit(f"Save failed: {e}", "error")
+
+    def _on_roi_invert(self) -> None:
+        """Invert the ROI mask for the currently edited frame."""
+        if self._roi_ctrl is None:
+            self._state.log_message.emit(
+                "No ROI to invert — load images first.", "warn"
+            )
+            return
+        self._enter_roi_editing()
+        self._roi_ctrl.invert()
+        self._canvas_area.canvas.update_roi_overlay()
+        state = self._state
+        state.set_frame_roi(
+            state.roi_editing_frame, self._roi_ctrl.mask.copy()
+        )
+
+
+def _global_exception_hook(exc_type, exc_value, exc_tb):
+    """Catch unhandled exceptions so the GUI doesn't silently crash."""
+    tb_str = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    print(f"\n{'='*60}", flush=True)
+    print("UNHANDLED EXCEPTION — this would normally crash the GUI:", flush=True)
+    print(tb_str, flush=True)
+    print(f"{'='*60}\n", flush=True)
+
+    # Also try to log to GUI console if available
+    try:
+        state = AppState.instance()
+        state.log_message.emit(f"CRASH: {exc_type.__name__}: {exc_value}", "error")
+        state.log_message.emit(tb_str, "error")
+    except Exception:
+        pass
 
 
 def main() -> None:
     """Launch the GUI application."""
+    # Install global exception hook to prevent silent crashes
+    sys.excepthook = _global_exception_hook
+
     app = QApplication(sys.argv)
     app.setStyle("Fusion")  # required for QSS to work correctly
     app.setStyleSheet(build_stylesheet())
