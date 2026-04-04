@@ -6,9 +6,11 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget
 
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
+from staq_dic.gui.controllers.pipeline_controller import PipelineController
 from staq_dic.gui.controllers.roi_controller import ROIController
 from staq_dic.gui.panels.canvas_area import CanvasArea
 from staq_dic.gui.panels.left_sidebar import LeftSidebar
+from staq_dic.gui.panels.right_sidebar import RightSidebar
 from staq_dic.gui.theme import COLORS, build_stylesheet
 
 
@@ -38,6 +40,13 @@ class MainWindow(QMainWindow):
         # Center canvas
         self._canvas_area = CanvasArea(self._image_ctrl)
         layout.addWidget(self._canvas_area, stretch=1)
+
+        # Pipeline controller
+        self._pipeline_ctrl = PipelineController(self._state, self._image_ctrl)
+
+        # Right sidebar -- run controls, progress, display, console
+        self._right_sidebar = RightSidebar(self._pipeline_ctrl)
+        layout.addWidget(self._right_sidebar, stretch=0)
 
         # Wire ROI toolbar signals to canvas
         roi_tb = self._left_sidebar.roi_toolbar
