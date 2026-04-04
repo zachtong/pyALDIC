@@ -77,43 +77,49 @@ class ROIToolbar(QWidget):
         self._btn_add.clicked.connect(self._show_add_menu)
         self._btn_cut.clicked.connect(self._show_cut_menu)
 
-        # --- Row 2: Import / Save / Invert / Clear ---
-        util_row = QHBoxLayout()
-        util_row.setSpacing(4)
+        # --- Row 2: Import (single / batch) ---
+        import_row = QHBoxLayout()
+        import_row.setSpacing(4)
 
         self._btn_import = QPushButton("Import")
         self._btn_import.setToolTip("Import mask from image file")
         self._btn_import.setFixedHeight(26)
         self._btn_import.clicked.connect(self._on_import)
-        util_row.addWidget(self._btn_import)
+        import_row.addWidget(self._btn_import)
 
-        self._btn_batch = QPushButton("Batch")
+        self._btn_batch = QPushButton("Batch Import")
         self._btn_batch.setToolTip("Batch import mask files for multiple frames")
         self._btn_batch.setFixedHeight(26)
         self._btn_batch.clicked.connect(
             lambda: self.batch_import_requested.emit()
         )
-        util_row.addWidget(self._btn_batch)
+        import_row.addWidget(self._btn_batch)
+
+        layout.addLayout(import_row, 1, 0, 1, 2)
+
+        # --- Row 3: Save / Invert / Clear ---
+        action_row = QHBoxLayout()
+        action_row.setSpacing(4)
 
         self._btn_save = QPushButton("Save")
         self._btn_save.setToolTip("Save current mask to PNG file")
         self._btn_save.setFixedHeight(26)
         self._btn_save.clicked.connect(lambda: self.save_requested.emit())
-        util_row.addWidget(self._btn_save)
+        action_row.addWidget(self._btn_save)
 
         self._btn_invert = QPushButton("Invert")
         self._btn_invert.setToolTip("Invert the ROI mask")
         self._btn_invert.setFixedHeight(26)
         self._btn_invert.clicked.connect(lambda: self.invert_requested.emit())
-        util_row.addWidget(self._btn_invert)
+        action_row.addWidget(self._btn_invert)
 
         self._btn_clear = QPushButton("Clear")
         self._btn_clear.setToolTip("Clear all ROI masks")
         self._btn_clear.setFixedHeight(26)
         self._btn_clear.clicked.connect(lambda: self.clear_requested.emit())
-        util_row.addWidget(self._btn_clear)
+        action_row.addWidget(self._btn_clear)
 
-        layout.addLayout(util_row, 1, 0, 1, 2)
+        layout.addLayout(action_row, 2, 0, 1, 2)
 
         # Apply initial styling
         self._update_button_styles()

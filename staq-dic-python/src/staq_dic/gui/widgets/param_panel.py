@@ -1,6 +1,6 @@
 """DIC parameter input panel."""
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
@@ -135,6 +135,14 @@ class ParamPanel(QWidget):
         self._on_tracking_mode_changed(self._tracking_mode.currentText())
         self._on_ref_mode_changed(0)
 
+        # Prevent mouse wheel from changing values when widget is unfocused
+        for widget in [
+            self._subset_size, self._subset_step, self._search_range,
+            self._tracking_mode, self._ref_mode, self._interval_spin,
+        ]:
+            widget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+            widget.installEventFilter(self)
+
     def _on_tracking_mode_changed(self, text: str) -> None:
         """Set tracking mode param and toggle incremental sub-panel visibility."""
         state = AppState.instance()
@@ -167,6 +175,13 @@ class ParamPanel(QWidget):
                 "Invalid frame indices — use comma-separated numbers", "warn"
             )
         state.params_changed.emit()
+
+    def eventFilter(self, obj, event):
+        """Block wheel events on unfocused spinboxes and combos."""
+        if event.type() == QEvent.Type.Wheel and not obj.hasFocus():
+            event.ignore()
+            return True
+        return super().eventFilter(obj, event)
 
     def _on_subset_size_changed(self, display_value: int) -> None:
         """Convert odd display value to even internal winsize."""
