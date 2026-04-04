@@ -4,6 +4,17 @@ Python port of **STAQ-DIC**: Augmented Lagrangian Digital Image Correlation with
 
 ## Features
 
+### GUI (PySide6)
+
+- **Three-column layout** — Left sidebar (image list, ROI tools, parameters), center canvas (QGraphicsView with zoom/pan), right sidebar (run controls, progress, display options, console log).
+- **Per-frame ROI system** — Draw rectangle/polygon/circle (add/cut), import/export masks, batch import, per-frame editing with context menu.
+- **Incremental tracking modes** — Every-frame, every-N, and custom reference frame schedules with visual ref-frame highlighting.
+- **Multi-bit-depth I/O** — Supports uint8/uint16/uint32/float images and masks across tif, tiff, png, bmp, jpg, jpeg, jp2, webp. Unicode-safe paths on Windows.
+- **Visualization** — Two-level cache (interpolation + pixmap), field overlay with colormap/alpha, deformed configuration display, CloughTocher C1 interpolation.
+- **Pipeline controls** — Run/pause/stop with real-time progress bar and elapsed time.
+
+### Algorithm
+
 - **IC-GN solver** — Inverse Compositional Gauss-Newton with 6-DOF (deformation gradient + displacement) and 2-DOF (displacement only) modes. Three-tier backend: Numba prange (multi-core), batch NumPy, sequential fallback.
 - **FFT initial search** — Direct NCC (`cv2.matchTemplate`) and pyramid NCC with sub-pixel quadratic refinement.
 - **ADMM global-local iteration** — Subproblem 1 (local IC-GN) + Subproblem 2 (global FEM regularization with Q8 elements, sparse LU/PCG solver). Beta auto-tuning via grid search.
@@ -20,13 +31,18 @@ Python port of **STAQ-DIC**: Augmented Lagrangian Digital Image Correlation with
 pip install -e ".[dev]"
 ```
 
-Requires Python >= 3.10. Dependencies: NumPy, SciPy, OpenCV, Numba, scikit-image.
+Requires Python >= 3.10. Dependencies: NumPy, SciPy, OpenCV, Numba, scikit-image, PySide6.
 
 ## Project Structure
 
 ```
 src/staq_dic/
 ├── core/           Pipeline, config, data structures, frame scheduling
+├── gui/            PySide6 GUI application
+│   ├── controllers/  Image, ROI, pipeline, visualization controllers
+│   ├── dialogs/      Batch import dialog
+│   ├── panels/       Canvas area, left/right sidebars
+│   └── widgets/      Image list, parameter panel, ROI toolbar, frame nav
 ├── io/             Image I/O and utilities
 ├── mesh/           Quadtree mesh generation, refinement criteria, edge marking
 │   └── criteria/   Refinement criteria (mask boundary, ROI edge, brush, manual, posterior error)
@@ -34,26 +50,31 @@ src/staq_dic/
 ├── strain/         Strain computation, deformation gradient, smoothing
 └── utils/          Interpolation, outlier detection, mask warping, validation
 
-tests/              37 test files (unit, integration, mesh, solver, strain)
-scripts/            31 benchmark and report scripts
-reports/            Generated PDF reports
+tests/              50 test files, 546 tests
 ```
 
-~10,100 lines of algorithm code.
+~10,700 lines of algorithm code, ~4,900 lines of GUI code.
 
 ## Quick Start
 
-```python
-from staq_dic.core.config import DICConfig
-from staq_dic.core.pipeline import run_pipeline
+### Launch GUI
 
-config = DICConfig(
-    winstepsize=16,
-    winsize=32,
-    n_admm_iter=3,
-    reference_mode="accumulative",
-)
-results = run_pipeline(images, mask, config)
+```bash
+python -m staq_dic.gui.app
+```
+
+### Programmatic API
+
+```python
+from staq_dic.core.config import dicpara_default
+from staq_dic.core.pipeline import run_aldic
+from staq_dic.io.io_utils import load_images, load_masks
+
+images = load_images("path/to/images", pattern="*.tif")
+masks = load_masks("path/to/masks", pattern="*.tif")
+
+para = dicpara_default(winsize=32, winstepsize=16)
+result = run_aldic(para, images, masks)
 ```
 
 ## Testing
