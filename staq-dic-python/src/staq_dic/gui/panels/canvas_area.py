@@ -37,6 +37,7 @@ from PySide6.QtWidgets import (
     QGraphicsScene,
     QGraphicsView,
     QHBoxLayout,
+    QLabel,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -82,6 +83,9 @@ class ImageCanvas(QGraphicsView):
 
     # Signal emitted when a point is clicked in image coordinates
     point_clicked = Signal(float, float)
+
+    # Signal emitted when a drawing operation finishes or is canceled
+    drawing_finished = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -175,14 +179,20 @@ class ImageCanvas(QGraphicsView):
             self._roi_item.setPixmap(QPixmap())
             return
         mask = self._roi_ctrl.mask
+        if not mask.any():
+            self._roi_item.setPixmap(QPixmap())
+            return
         h, w = mask.shape
+        # Build RGBA image — ensure contiguous buffer for QImage
         rgba = np.zeros((h, w, 4), dtype=np.uint8)
         rgba[mask, :] = [59, 130, 246, 80]  # blue semi-transparent
+        rgba = np.ascontiguousarray(rgba)
         bytes_per_line = w * 4
         qimg = QImage(
             rgba.data, w, h, bytes_per_line, QImage.Format.Format_RGBA8888
-        )
-        self._roi_item.setPixmap(QPixmap.fromImage(qimg.copy()))
+        ).copy()  # deep-copy so pixmap owns the pixel data
+        self._roi_item.setPixmap(QPixmap.fromImage(qimg))
+        self._roi_item.setPos(0, 0)
 
     def fit_to_view(self) -> None:
         """Fit the entire scene into the viewport."""
@@ -383,6 +393,9 @@ class ImageCanvas(QGraphicsView):
     def _handle_draw_release(self, pos: QPointF) -> None:
         if self._roi_ctrl is None:
             self._cancel_drawing()
+            AppState.instance().log_message.emit(
+                "Load images first before drawing ROI.", "warn"
+            )
             return
 
         if self._current_tool == "rect":
@@ -407,6 +420,10 @@ class ImageCanvas(QGraphicsView):
     def _finalize_polygon(self) -> None:
         if self._roi_ctrl is None or self._draw_state is None:
             self._cancel_drawing()
+            if self._roi_ctrl is None:
+                AppState.instance().log_message.emit(
+                    "Load images first before drawing ROI.", "warn"
+                )
             return
         pts = self._draw_state.get("points", [])
         if len(pts) < 3:
@@ -417,18 +434,27 @@ class ImageCanvas(QGraphicsView):
         self._finish_drawing()
 
     def _finish_drawing(self) -> None:
-        """Clean up preview items and update ROI overlay."""
+        """Clean up preview items, update ROI overlay, and reset to select mode."""
         self._remove_preview_items()
         self._draw_state = None
         self.update_roi_overlay()
         # Update global state
         if self._roi_ctrl is not None:
             AppState.instance().set_roi_mask(self._roi_ctrl.mask.copy())
+        # One-shot: reset to select mode after completing a shape
+        self._current_tool = "select"
+        self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.drawing_finished.emit()
 
     def _cancel_drawing(self) -> None:
-        """Cancel in-progress drawing and remove preview items."""
+        """Cancel in-progress drawing, remove preview items, and reset to select."""
+        was_drawing = self._draw_state is not None
         self._remove_preview_items()
         self._draw_state = None
+        if was_drawing:
+            self._current_tool = "select"
+            self.setCursor(Qt.CursorShape.ArrowCursor)
+            self.drawing_finished.emit()
 
     def _remove_preview_items(self) -> None:
         for item in self._preview_items:
@@ -517,7 +543,7 @@ class CanvasArea(QWidget):
         self._state.images_changed.connect(self._on_images_changed)
         self._state.current_frame_changed.connect(self._on_frame_changed)
         self._state.results_changed.connect(self._refresh_overlay)
-        self._state.display_changed.connect(self._refresh_overlay)
+        self._state.display_changed.connect(self._on_display_changed)
 
     @property
     def canvas(self) -> ImageCanvas:
@@ -530,9 +556,37 @@ class CanvasArea(QWidget):
             self._load_frame(0)
 
     def _on_frame_changed(self, idx: int) -> None:
-        """Update displayed image and overlay when frame changes."""
-        self._load_frame(idx)
+        """Update display when frame changes.
+
+        Navigating frames while in ROI editing mode (with results available)
+        exits ROI editing and returns to results view.
+        """
+        state = self._state
+        # Exit ROI editing when user navigates frames (wants to see results)
+        if state.roi_editing and state.results is not None:
+            state.roi_editing = False
+
+        self._update_background()
         self._refresh_overlay()
+
+    def _on_display_changed(self) -> None:
+        """Handle display settings change (field, color, deformed, roi_editing)."""
+        self._update_background()
+        self._refresh_overlay()
+
+    def _update_background(self) -> None:
+        """Set the background image based on current mode."""
+        state = self._state
+        if state.roi_editing:
+            # ROI editing: always show reference frame
+            self._load_frame(0)
+        elif state.results is not None:
+            if state.show_deformed:
+                self._load_frame(state.current_frame)
+            else:
+                self._load_frame(0)
+        else:
+            self._load_frame(state.current_frame)
 
     def _load_frame(self, idx: int) -> None:
         """Load and display an image frame by index."""
@@ -543,41 +597,96 @@ class CanvasArea(QWidget):
             pass
 
     def _refresh_overlay(self, *_args: object) -> None:
-        """Update the field overlay based on current results and display settings."""
+        """Update field and ROI overlays based on current mode.
+
+        Two mutually exclusive display modes:
+        - ROI editing: show ROI mask overlay (blue), hide field overlay
+        - Results view: show field overlay (colormap), hide ROI overlay
+        """
+        import traceback as _tb
+
         state = self._state
-        if state.results is None:
-            self._canvas._overlay_item.setPixmap(QPixmap())
+        overlay = self._canvas._overlay_item
+        roi_item = self._canvas._roi_item
+
+        # --- ROI editing mode: show ROI overlay, hide field ---
+        if state.roi_editing:
+            overlay.setPixmap(QPixmap())
+            overlay.setScale(1.0)
+            overlay.setPos(0, 0)
+            self._canvas.update_roi_overlay()
             return
+
+        # --- No results yet: show ROI overlay (if any), hide field ---
+        if state.results is None:
+            overlay.setPixmap(QPixmap())
+            overlay.setScale(1.0)
+            overlay.setPos(0, 0)
+            # Keep ROI visible before DIC has run
+            self._canvas.update_roi_overlay()
+            return
+
+        # --- Results mode: show field overlay, hide ROI ---
+        roi_item.setPixmap(QPixmap())
 
         result = state.results
         # Frame 0 is reference; results start at index 0 for frame pair 0->1
         frame = state.current_frame - 1
         if frame < 0 or frame >= len(result.result_disp):
-            self._canvas._overlay_item.setPixmap(QPixmap())
+            overlay.setPixmap(QPixmap())
+            overlay.setScale(1.0)
             return
-
-        nodes = result.dic_mesh.coordinates_fem
-        u_accum = result.result_disp[frame].U_accum
-        if u_accum is None:
-            self._canvas._overlay_item.setPixmap(QPixmap())
-            return
-
-        u, v = split_uv(u_accum)
-        values = u if state.display_field == "disp_u" else v
-
-        vmin, vmax = state.color_min, state.color_max
-        if state.color_auto:
-            valid = values[~np.isnan(values)]
-            if len(valid) > 0:
-                pct = np.percentile(valid, [2, 98])
-                vmin, vmax = float(pct[0]), float(pct[1])
-            else:
-                vmin, vmax = 0.0, 1.0
-            state.color_min = vmin
-            state.color_max = vmax
 
         try:
-            pixmap, xg, yg = self._viz_ctrl.render_field(
+            ref_nodes = result.dic_mesh.coordinates_fem
+            u_accum = result.result_disp[frame].U_accum
+            if u_accum is None:
+                overlay.setPixmap(QPixmap())
+                overlay.setScale(1.0)
+                return
+
+            u, v = split_uv(u_accum)
+            values = u if state.display_field == "disp_u" else v
+
+            # Deformed mode: shift nodes by accumulated displacement
+            is_deformed = state.show_deformed
+            if is_deformed:
+                nodes = ref_nodes + np.column_stack([u, v])
+            else:
+                nodes = ref_nodes
+
+            vmin, vmax = state.color_min, state.color_max
+            if state.color_auto:
+                valid = values[~np.isnan(values)]
+                if len(valid) > 0:
+                    pct = np.percentile(valid, [2, 98])
+                    vmin, vmax = float(pct[0]), float(pct[1])
+                else:
+                    vmin, vmax = 0.0, 1.0
+                state.color_min = vmin
+                state.color_max = vmax
+
+            # In deformed mode, warp the ROI mask from reference to deformed
+            # coordinates via inverse displacement lookup.  This preserves
+            # internal holes that would otherwise be filled by interpolation.
+            ref_uv = (u, v) if is_deformed else None
+
+            # Deformed mask priority:
+            # 1. Explicit deformed masks (e.g., from segmentation)
+            # 2. Per-frame ROI when display override is enabled
+            # 3. Warped mask (handled downstream in viz_controller)
+            def_mask = None
+            if is_deformed:
+                if state.deformed_masks is not None:
+                    def_mask = state.deformed_masks.get(frame)
+                if def_mask is None and state.display_roi_enabled.get(
+                    state.current_frame, False
+                ):
+                    per_frame_roi = state.per_frame_rois.get(state.current_frame)
+                    if per_frame_roi is not None:
+                        def_mask = per_frame_roi
+
+            pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
                 frame,
                 state.display_field,
                 nodes,
@@ -586,13 +695,21 @@ class CanvasArea(QWidget):
                 mesh_step=result.dic_para.winstepsize,
                 vmin=vmin,
                 vmax=vmax,
+                roi_mask=state.roi_mask,
+                deformed=is_deformed,
+                ref_uv=ref_uv,
+                deformed_mask=def_mask,
             )
-        except Exception:
-            # Interpolation can fail with degenerate meshes; clear overlay
-            self._canvas._overlay_item.setPixmap(QPixmap())
-            return
 
-        # Position the overlay at the correct image coordinates
-        self._canvas._overlay_item.setPixmap(pixmap)
-        if xg is not None and yg is not None:
-            self._canvas._overlay_item.setPos(float(xg.min()), float(yg.min()))
+            overlay.setPixmap(pixmap)
+            overlay.setScale(float(out_step))
+            if xg is not None and yg is not None:
+                overlay.setPos(float(xg.min()), float(yg.min()))
+        except Exception as e:
+            tb_str = _tb.format_exc()
+            print(f"[_refresh_overlay] {e}\n{tb_str}", flush=True)
+            state.log_message.emit(
+                f"Overlay error: {type(e).__name__}: {e}", "error"
+            )
+            overlay.setPixmap(QPixmap())
+            overlay.setScale(1.0)
