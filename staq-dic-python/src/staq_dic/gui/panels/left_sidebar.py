@@ -1,10 +1,10 @@
-"""Left sidebar panel — image loading, ROI tools, parameters (placeholder).
+"""Left sidebar panel — image loading, ROI tools, parameters.
 
 Fixed width 220px.  Contains:
 1. IMAGES section with count badge and drop zone
 2. ImageList (scrollable file list)
 3. ROI toolbar (rect / polygon / circle / import / cut / clear)
-4. Parameters placeholder (Task 6)
+4. PARAMETERS section (subset size, step, search range, tracking mode)
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.theme import COLORS
 from staq_dic.gui.widgets.image_list import ImageList
+from staq_dic.gui.widgets.param_panel import ParamPanel
 from staq_dic.gui.widgets.roi_toolbar import ROIToolbar
 
 
@@ -176,14 +177,11 @@ class LeftSidebar(QWidget):
         self._roi_toolbar = ROIToolbar()
         layout.addWidget(self._roi_toolbar)
 
-        # --- PARAMETERS section (placeholder) ---
+        # --- PARAMETERS section ---
         params_header = _SectionHeader("PARAMETERS")
         layout.addWidget(params_header)
-        params_placeholder = QLabel("Parameters \u2014 Task 6")
-        params_placeholder.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 11px; padding: 8px 12px;"
-        )
-        layout.addWidget(params_placeholder)
+        self._param_panel = ParamPanel()
+        layout.addWidget(self._param_panel)
 
         # Connect state changes to update badge
         self._state.images_changed.connect(self._update_badge)
