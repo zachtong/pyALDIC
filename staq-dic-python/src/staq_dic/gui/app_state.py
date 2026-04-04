@@ -48,8 +48,10 @@ class AppState(QObject):
         self.image_folder: Path | None = None
         self.image_files: list[str] = []
         self.current_frame: int = 0
-        # ROI
-        self.roi_mask: NDArray[np.bool_] | None = None
+        # ROI — per-frame system (frame_idx -> bool mask)
+        self.per_frame_rois: dict[int, NDArray[np.bool_]] = {}
+        self.display_roi_enabled: dict[int, bool] = {}
+        self.roi_editing_frame: int = 0
         # Per-frame masks in deformed coordinates (optional, e.g. from segmentation)
         # Mapping: frame_idx -> bool mask.  When set, deformed display uses these
         # directly instead of warping the reference roi_mask.
@@ -76,6 +78,11 @@ class AppState(QObject):
         self.color_min: float = 0.0
         self.color_max: float = 1.0
 
+    @property
+    def roi_mask(self) -> NDArray[np.bool_] | None:
+        """Backward-compatible access to frame-0 ROI mask."""
+        return self.per_frame_rois.get(0)
+
     @classmethod
     def instance(cls) -> AppState:
         if cls._instance is None:
@@ -98,8 +105,39 @@ class AppState(QObject):
         self.current_frame_changed.emit(self.current_frame)
 
     def set_roi_mask(self, mask: NDArray[np.bool_] | None) -> None:
-        self.roi_mask = mask
+        """Set or clear the frame-0 ROI mask (backward-compatible entry point)."""
+        if mask is None:
+            self.per_frame_rois.pop(0, None)
+        else:
+            self.per_frame_rois[0] = mask
         self.roi_changed.emit()
+
+    def set_frame_roi(
+        self, frame: int, mask: NDArray[np.bool_] | None
+    ) -> None:
+        """Set or clear the ROI mask for a specific frame."""
+        if mask is None:
+            self.per_frame_rois.pop(frame, None)
+        else:
+            self.per_frame_rois[frame] = mask
+        self.roi_changed.emit()
+
+    def get_effective_roi(
+        self, frame: int, *, is_ref_frame: bool = False
+    ) -> NDArray[np.bool_] | None:
+        """Return the effective ROI mask for *frame*.
+
+        Resolution order:
+        1. Own mask in per_frame_rois[frame] — always wins.
+        2. If *is_ref_frame* and frame != 0: inherit from per_frame_rois[0].
+        3. Otherwise: None.
+        """
+        own = self.per_frame_rois.get(frame)
+        if own is not None:
+            return own
+        if is_ref_frame:
+            return self.per_frame_rois.get(0)
+        return None
 
     def set_run_state(self, state: RunState) -> None:
         self.run_state = state
