@@ -80,9 +80,11 @@ class ROIController:
         self._apply(canvas, mode)
 
     def import_mask(self, path: str) -> None:
-        """Import an external mask image (grayscale).
+        """Import an external mask image.
 
-        Pixels > 127 become True.  The image is resized if dimensions
+        Supports all bit depths (uint8, uint16, float) and common
+        formats (tif, png, bmp, jpg, jp2, webp).  Pixels brighter
+        than 50% become True.  The image is resized if dimensions
         do not match.
 
         Args:
@@ -91,16 +93,9 @@ class ROIController:
         Raises:
             IOError: If the file cannot be read as an image.
         """
-        buf = np.fromfile(path, dtype=np.uint8)
-        img = cv2.imdecode(buf, cv2.IMREAD_GRAYSCALE)
-        if img is None:
-            raise IOError(f"Failed to read mask: {path}")
-        if img.shape != self._shape:
-            img = cv2.resize(
-                img, (self._shape[1], self._shape[0]),
-                interpolation=cv2.INTER_NEAREST,
-            )
-        self.mask = img > 127
+        from staq_dic.io.io_utils import read_mask_as_bool
+
+        self.mask = read_mask_as_bool(path, target_shape=self._shape)
 
     def clear(self) -> None:
         """Reset the mask to all False."""
