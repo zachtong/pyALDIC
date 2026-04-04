@@ -163,7 +163,10 @@ class PipelineController:
                 "info",
             )
 
-            # Build FrameSchedule from current settings
+            # Build FrameSchedule from current settings.
+            # Only build an explicit schedule for incremental mode;
+            # accumulative is handled by reference_mode alone (no schedule needed).
+            schedule = None
             if state.tracking_mode == "incremental":
                 if state.inc_ref_mode == "every_frame":
                     schedule = FrameSchedule.from_mode("incremental", n_images)
@@ -177,8 +180,6 @@ class PipelineController:
                     )
                 else:
                     schedule = FrameSchedule.from_mode("incremental", n_images)
-            else:
-                schedule = FrameSchedule.from_mode("accumulative", n_images)
 
             # Validate frame 0 ROI exists
             roi_mask_0 = state.per_frame_rois.get(0)
@@ -253,7 +254,7 @@ class PipelineController:
                 "info",
             )
 
-            ref_frame_set = schedule.ref_frame_set
+            ref_frame_set = schedule.ref_frame_set if schedule is not None else {0}
             masks = _build_masks(
                 state.per_frame_rois, n_images,
                 roi_mask_0.shape, ref_frame_set,

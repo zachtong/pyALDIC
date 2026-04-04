@@ -642,6 +642,41 @@ def run_aldic(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
             )
 
+            # When re-running FFT for a subsequent frame (incremental mode
+            # with init_guess_mode="fft"), the FFT grid may differ from the
+            # existing mesh (e.g. auto-retry with enlarged search region on
+            # frame 1 produced a smaller grid).  Interpolate the cleaned U0
+            # onto the existing mesh coordinates.
+            if dic_mesh is not None:
+                n_mesh = dic_mesh.coordinates_fem.shape[0]
+                if len(current_U0) != 2 * n_mesh:
+                    from scipy.interpolate import RegularGridInterpolator
+
+                    ny_fft, nx_fft = len(y0), len(x0)
+                    # Reverse init_disp assembly: U0[0::2] = u.T.ravel()
+                    u_2d = current_U0[0::2].reshape(nx_fft, ny_fft).T
+                    v_2d = current_U0[1::2].reshape(nx_fft, ny_fft).T
+
+                    interp_u = RegularGridInterpolator(
+                        (y0, x0), u_2d, method="linear",
+                        bounds_error=False, fill_value=np.nan,
+                    )
+                    interp_v = RegularGridInterpolator(
+                        (y0, x0), v_2d, method="linear",
+                        bounds_error=False, fill_value=np.nan,
+                    )
+
+                    mesh_xy = dic_mesh.coordinates_fem  # (n, 2): [x, y]
+                    query = np.column_stack([mesh_xy[:, 1], mesh_xy[:, 0]])
+                    current_U0 = np.zeros(2 * n_mesh, dtype=np.float64)
+                    current_U0[0::2] = interp_u(query)
+                    current_U0[1::2] = interp_v(query)
+
+                    logger.info(
+                        "Interpolated FFT U0 (%d nodes) to mesh (%d nodes)",
+                        nx_fft * ny_fft, n_mesh,
+                    )
+
         # Build mesh from the FFT grid if needed (first frame only)
         if dic_mesh is None:
             dic_mesh = mesh_setup(x0, y0, para)
