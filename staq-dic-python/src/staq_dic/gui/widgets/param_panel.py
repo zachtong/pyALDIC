@@ -187,7 +187,7 @@ class ParamPanel(QWidget):
         """Convert odd display value to even internal winsize."""
         # Snap to nearest odd if user somehow enters even
         if display_value % 2 == 0:
-            display_value = display_value - 1
+            display_value = display_value + 1
             self._subset_size.blockSignals(True)
             self._subset_size.setValue(display_value)
             self._subset_size.blockSignals(False)
