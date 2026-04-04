@@ -1,9 +1,9 @@
-"""Left sidebar panel — image loading, ROI tools (placeholder), parameters (placeholder).
+"""Left sidebar panel — image loading, ROI tools, parameters (placeholder).
 
 Fixed width 220px.  Contains:
 1. IMAGES section with count badge and drop zone
 2. ImageList (scrollable file list)
-3. ROI placeholder (Task 5)
+3. ROI toolbar (rect / polygon / circle / import / cut / clear)
 4. Parameters placeholder (Task 6)
 """
 
@@ -25,6 +25,7 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.theme import COLORS
 from staq_dic.gui.widgets.image_list import ImageList
+from staq_dic.gui.widgets.roi_toolbar import ROIToolbar
 
 
 class _SectionHeader(QWidget):
@@ -169,14 +170,11 @@ class LeftSidebar(QWidget):
         self._image_list = ImageList(self._state, image_ctrl)
         layout.addWidget(self._image_list, stretch=1)
 
-        # --- ROI section (placeholder) ---
+        # --- ROI section ---
         roi_header = _SectionHeader("REGION OF INTEREST")
         layout.addWidget(roi_header)
-        roi_placeholder = QLabel("ROI tools \u2014 Task 5")
-        roi_placeholder.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 11px; padding: 8px 12px;"
-        )
-        layout.addWidget(roi_placeholder)
+        self._roi_toolbar = ROIToolbar()
+        layout.addWidget(self._roi_toolbar)
 
         # --- PARAMETERS section (placeholder) ---
         params_header = _SectionHeader("PARAMETERS")
@@ -189,6 +187,11 @@ class LeftSidebar(QWidget):
 
         # Connect state changes to update badge
         self._state.images_changed.connect(self._update_badge)
+
+    @property
+    def roi_toolbar(self) -> ROIToolbar:
+        """Access the ROI toolbar widget."""
+        return self._roi_toolbar
 
     def _update_badge(self) -> None:
         """Update the IMAGES section badge with current count."""
