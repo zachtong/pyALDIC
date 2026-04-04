@@ -159,7 +159,6 @@ class FrameSchedule:
             raise ValueError(f"n must be >= 1 (got {n})")
         if n_frames < 2:
             raise ValueError(f"n_frames must be >= 2 (got {n_frames})")
-        n_pairs = n_frames - 1
         refs: list[int] = []
         for deformed in range(1, n_frames):
             # Nearest preceding ref: largest multiple of n that is < deformed

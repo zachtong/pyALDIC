@@ -27,10 +27,22 @@ def image_folder(tmp_path):
 
 
 class TestImageController:
-    def test_natural_sort(self, qapp, image_folder):
+    def test_lexicographic_sort_default(self, qapp, image_folder):
+        """Default sort is lexicographic (for zero-padded names)."""
         state = AppState.instance()
         state.reset()
         ctrl = ImageController(state)
+        ctrl.load_folder(str(image_folder))
+        names = [Path(f).name for f in state.image_files]
+        # Lexicographic: "1" < "10" < "2" < "20"
+        assert names == ["img_1.tif", "img_10.tif", "img_2.tif", "img_20.tif"]
+
+    def test_natural_sort(self, qapp, image_folder):
+        """Natural sort treats embedded numbers as integers."""
+        state = AppState.instance()
+        state.reset()
+        ctrl = ImageController(state)
+        ctrl.set_natural_sort(True)
         ctrl.load_folder(str(image_folder))
         names = [Path(f).name for f in state.image_files]
         assert names == ["img_1.tif", "img_2.tif", "img_10.tif", "img_20.tif"]

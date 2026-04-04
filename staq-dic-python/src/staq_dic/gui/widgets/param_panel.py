@@ -146,12 +146,11 @@ class ParamPanel(QWidget):
         state = AppState.instance()
         modes = ["every_frame", "every_n", "custom"]
         mode = modes[index]
-        state.inc_ref_mode = mode
+        state.set_param("inc_ref_mode", mode)
         self._interval_spin.setVisible(mode == "every_n")
         self._interval_lbl.setVisible(mode == "every_n")
         self._custom_edit.setVisible(mode == "custom")
         self._custom_lbl.setVisible(mode == "custom")
-        state.params_changed.emit()
 
     def _on_custom_refs_changed(self) -> None:
         """Parse comma-separated frame indices and store in AppState."""
@@ -164,7 +163,9 @@ class ParamPanel(QWidget):
             refs = [int(x.strip()) for x in text.split(",") if x.strip()]
             state.inc_custom_refs = sorted(set(refs))
         except ValueError:
-            pass
+            state.log_message.emit(
+                "Invalid frame indices — use comma-separated numbers", "warn"
+            )
         state.params_changed.emit()
 
     def _on_subset_size_changed(self, display_value: int) -> None:

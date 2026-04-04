@@ -496,6 +496,7 @@ def run_aldic(
     result_fe_mesh: list[DICMesh | None] = [None] * (n_frames - 1)
 
     dic_mesh: DICMesh | None = mesh
+    mesh_is_external = mesh is not None
     current_U0: NDArray[np.float64] | None = U0.copy() if U0 is not None else None
 
     # --- Resolve frame schedule ---
@@ -509,8 +510,15 @@ def run_aldic(
     else:
         schedule = FrameSchedule.from_mode(para.reference_mode, n_frames)
 
+    # --- Resolve init guess mode ---
+    init_guess_mode = para.init_guess_mode
+    if init_guess_mode == "auto":
+        init_guess_mode = (
+            "previous" if para.reference_mode == "accumulative" else "fft"
+        )
     logger.info(
-        "Frame schedule: %s (n_frames=%d)", schedule.ref_indices, n_frames,
+        "Frame schedule: %s (n_frames=%d), init_guess=%s",
+        schedule.ref_indices, n_frames, init_guess_mode,
     )
     logger.info("--- Section 2b Done ---")
 
@@ -581,13 +589,26 @@ def run_aldic(
             # Invalidate subpb1 precompute cache since mesh will change
             subpb1_precompute_cache.pop(ref_idx, None)
 
+        # Force FFT for every frame when init_guess_mode == "fft"
+        # (keep the mesh, only reset the initial guess).
+        # Skip when mesh is externally provided — its grid may differ
+        # from the FFT grid, causing size mismatch.
+        if (
+            init_guess_mode == "fft"
+            and dic_mesh is not None
+            and not mesh_is_external
+        ):
+            current_U0 = None
+
         # =================================================================
         # Section 3: Initial guess / mesh
         # =================================================================
         logger.info("--- Section 3 Start ---")
 
-        if dic_mesh is None or current_U0 is None:
-            # First frame or no pre-built mesh/U0: use FFT integer search
+        need_fft = dic_mesh is None or current_U0 is None
+
+        if need_fft:
+            # FFT integer search for initial guess
             use_pyramid = para.init_fft_search_method >= 2
             if use_pyramid:
                 logger.info("Running pyramid NCC search for initial guess...")
@@ -601,10 +622,6 @@ def run_aldic(
                 )
 
             # Auto-retry with enlarged search region if peaks are clipped.
-            # When the true displacement exceeds the search radius, the NCC
-            # peak sits at the search boundary and the displacement estimate
-            # is truncated — producing catastrophic IC-GN errors at those
-            # nodes that propagate into the interior via SubPb2 FEM.
             if fft_info.get("peak_clipped", False) and not use_pyramid:
                 max_disp = fft_info["max_abs_disp"]
                 needed = int(np.ceil(max_disp * 1.5)) + 2
@@ -625,9 +642,9 @@ def run_aldic(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
             )
 
-            # Build mesh from the FFT grid if not provided
-            if dic_mesh is None:
-                dic_mesh = mesh_setup(x0, y0, para)
+        # Build mesh from the FFT grid if needed (first frame only)
+        if dic_mesh is None:
+            dic_mesh = mesh_setup(x0, y0, para)
 
             # Trim mesh: remove elements that fall inside mask holes
             # so the uniform mesh only covers valid (mask=1) regions.
@@ -653,6 +670,7 @@ def run_aldic(
                     len(outside_idx),
                 )
 
+        if need_fft:
             # Apply mask: NaN for nodes in masked-out regions
             n_nodes = dic_mesh.coordinates_fem.shape[0]
             node_x = np.clip(

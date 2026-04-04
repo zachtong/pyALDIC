@@ -102,6 +102,13 @@ def validate_dicpara(p: DICPara) -> None:
             f"icgn_max_iter must be a positive integer (got {p.icgn_max_iter})."
         )
 
+    # init_guess_mode: enum
+    if p.init_guess_mode not in ("auto", "fft", "previous"):
+        raise ValueError(
+            f"init_guess_mode must be 'auto', 'fft', or 'previous' "
+            f"(got '{p.init_guess_mode}')."
+        )
+
     # size_of_fft_search_region: positive
     if p.size_of_fft_search_region <= 0:
         raise ValueError(
