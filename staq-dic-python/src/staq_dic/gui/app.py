@@ -4,7 +4,10 @@ import sys
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget
 
-from staq_dic.gui.theme import build_stylesheet
+from staq_dic.gui.app_state import AppState
+from staq_dic.gui.controllers.image_controller import ImageController
+from staq_dic.gui.panels.left_sidebar import LeftSidebar
+from staq_dic.gui.theme import COLORS, build_stylesheet
 
 
 class MainWindow(QMainWindow):
@@ -21,7 +24,18 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        # Placeholder panels will be added in later tasks
+        # State and controllers
+        self._state = AppState.instance()
+        self._image_ctrl = ImageController(self._state)
+
+        # Left sidebar — image loading
+        self._left_sidebar = LeftSidebar(self._image_ctrl)
+        layout.addWidget(self._left_sidebar, stretch=0)
+
+        # Center placeholder (canvas — Task 4)
+        center = QWidget()
+        center.setStyleSheet(f"background: {COLORS.BG_CANVAS};")
+        layout.addWidget(center, stretch=1)
 
 
 def main() -> None:
