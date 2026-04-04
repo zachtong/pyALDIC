@@ -558,6 +558,7 @@ class CanvasArea(QWidget):
         self._state.current_frame_changed.connect(self._on_frame_changed)
         self._state.results_changed.connect(self._refresh_overlay)
         self._state.display_changed.connect(self._on_display_changed)
+        self._state.roi_changed.connect(self._on_roi_changed)
 
     @property
     def canvas(self) -> ImageCanvas:
@@ -589,6 +590,11 @@ class CanvasArea(QWidget):
             state.roi_editing = False
 
         self._update_background()
+        self._refresh_overlay()
+
+    def _on_roi_changed(self) -> None:
+        """ROI masks changed — invalidate mask-dependent viz caches and refresh."""
+        self._viz_ctrl.invalidate_masks()
         self._refresh_overlay()
 
     def _on_display_changed(self) -> None:
@@ -699,16 +705,16 @@ class CanvasArea(QWidget):
 
             # Deformed mask priority:
             # 1. Explicit deformed masks (e.g., from segmentation)
-            # 2. Per-frame ROI when display override is enabled
+            # 2. Per-frame ROI (auto-used when available in deformed mode)
             # 3. Warped mask (handled downstream in viz_controller)
             def_mask = None
             if is_deformed:
                 if state.deformed_masks is not None:
                     def_mask = state.deformed_masks.get(frame)
-                if def_mask is None and state.display_roi_enabled.get(
-                    state.current_frame, False
-                ):
-                    per_frame_roi = state.per_frame_rois.get(state.current_frame)
+                if def_mask is None:
+                    per_frame_roi = state.per_frame_rois.get(
+                        state.current_frame
+                    )
                     if per_frame_roi is not None:
                         def_mask = per_frame_roi
 

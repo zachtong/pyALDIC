@@ -74,6 +74,11 @@ class VizController:
         """Clear Tier 2 only (colormap/range changed)."""
         self._pixmap_cache.clear()
 
+    def invalidate_masks(self) -> None:
+        """Clear caches that depend on ROI mask content (pixmap + warp)."""
+        self._pixmap_cache.clear()
+        self._warp_cache.clear()
+
     def store_interp_result(
         self,
         key: tuple,

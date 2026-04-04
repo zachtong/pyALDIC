@@ -76,9 +76,6 @@ class TestPerFrameROI:
         roi = state.get_effective_roi(0, is_ref_frame=True)
         assert np.array_equal(roi, mask0)
 
-    def test_display_roi_enabled_default(self, state):
-        assert state.display_roi_enabled == {}
-
     def test_inc_ref_mode_default(self, state):
         assert state.inc_ref_mode == "every_frame"
 
@@ -94,14 +91,12 @@ class TestPerFrameROI:
     def test_reset_clears_per_frame(self, state):
         state.per_frame_rois[0] = np.ones((10, 10), dtype=bool)
         state.per_frame_rois[3] = np.ones((10, 10), dtype=bool)
-        state.display_roi_enabled[3] = True
         state.inc_ref_mode = "interval"
         state.inc_ref_interval = 10
         state.inc_custom_refs = [1, 3, 5]
         state.roi_editing_frame = 3
         state.reset()
         assert state.per_frame_rois == {}
-        assert state.display_roi_enabled == {}
         assert state.inc_ref_mode == "every_frame"
         assert state.inc_ref_interval == 5
         assert state.inc_custom_refs == []
