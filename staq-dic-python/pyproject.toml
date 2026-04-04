@@ -19,6 +19,7 @@ dependencies = [
     "opencv-python>=4.7",
     "numba>=0.57",
     "scikit-image>=0.20",
+    "PySide6>=6.6.0",
 ]
 
 [project.optional-dependencies]
