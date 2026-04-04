@@ -73,6 +73,7 @@ class AppState(QObject):
         self.display_field: str = "disp_u"
         self.show_deformed: bool = False
         self.roi_editing: bool = False
+        self.colormap: str = "jet"
         self.color_auto: bool = True
         self.color_min: float = 0.0
         self.color_max: float = 1.0
@@ -93,8 +94,20 @@ class AppState(QObject):
 
     # --- Setters (emit signals) ---
     def set_image_files(self, files: list[str]) -> None:
+        # Clear previous results when loading new images
+        had_results = self.results is not None
+        self.results = None
+        self.deformed_masks = None
+        self.run_state = RunState.IDLE
+        self.progress = 0.0
+        self.progress_message = ""
+        self.elapsed_seconds = 0.0
+        self.show_deformed = False
         self.image_files = list(files)
         self.current_frame = 0
+        if had_results:
+            self.results_changed.emit()
+            self.run_state_changed.emit(RunState.IDLE)
         self.images_changed.emit()
 
     def set_current_frame(self, idx: int) -> None:
@@ -150,6 +163,10 @@ class AppState(QObject):
     def set_results(self, results: PipelineResult) -> None:
         self.results = results
         self.results_changed.emit()
+
+    def set_colormap(self, cmap: str) -> None:
+        self.colormap = cmap
+        self.display_changed.emit()
 
     def set_display_field(self, field_name: str) -> None:
         self.display_field = field_name
