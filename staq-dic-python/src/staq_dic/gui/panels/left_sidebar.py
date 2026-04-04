@@ -14,6 +14,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -155,7 +156,7 @@ class LeftSidebar(QWidget):
         self._state = image_ctrl._state
 
         self.setObjectName("leftSidebar")
-        self.setFixedWidth(220)
+        self.setFixedWidth(270)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -167,6 +168,20 @@ class LeftSidebar(QWidget):
 
         self._drop_zone = _DropZone(image_ctrl)
         layout.addWidget(self._drop_zone)
+
+        # Natural sort checkbox
+        self._natural_sort_cb = QCheckBox("Natural Sort (1, 2, …, 10)")
+        self._natural_sort_cb.setChecked(False)
+        self._natural_sort_cb.setToolTip(
+            "Sort by embedded numbers: image1, image2, …, image10\n"
+            "Default (unchecked): lexicographic — best for zero-padded names"
+        )
+        self._natural_sort_cb.setStyleSheet(
+            f"QCheckBox {{ color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
+            f"margin: 2px 12px; }}"
+        )
+        self._natural_sort_cb.toggled.connect(self._image_ctrl.set_natural_sort)
+        layout.addWidget(self._natural_sort_cb)
 
         self._image_list = ImageList(self._state, image_ctrl)
         layout.addWidget(self._image_list, stretch=1)
