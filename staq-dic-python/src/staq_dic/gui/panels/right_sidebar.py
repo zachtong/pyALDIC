@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import re
+import time
+
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import (
+    QCheckBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -111,6 +115,16 @@ class RightSidebar(QWidget):
         self._field_selector = FieldSelector()
         layout.addWidget(self._field_selector)
 
+        # --- Deformed frame toggle ---
+        self._deformed_cb = QCheckBox("Show on deformed frame")
+        self._deformed_cb.setChecked(False)
+        self._deformed_cb.setToolTip(
+            "When checked, overlay results on the deformed (current) frame "
+            "instead of the reference frame"
+        )
+        self._deformed_cb.stateChanged.connect(self._on_deformed_toggled)
+        layout.addWidget(self._deformed_cb)
+
         # --- Color range section ---
         self._add_section_label(layout, "COLOR RANGE")
         self._color_range = ColorRange()
@@ -148,6 +162,9 @@ class RightSidebar(QWidget):
         self._timer = QTimer()
         self._timer.timeout.connect(self._update_elapsed)
         self._timer.setInterval(1000)
+
+        # Track last known frame string to avoid flickering
+        self._last_frame_str: str = ""
 
     @property
     def console(self) -> ConsoleLog:
@@ -204,21 +221,48 @@ class RightSidebar(QWidget):
 
         if running:
             self._timer.start()
-        else:
+        elif not paused:
             self._timer.stop()
 
         if idle:
             self._progress_bar.setValue(0)
             self._progress_label.setText("Ready")
+            self._elapsed_label.setText("ELAPSED  --:--")
+            self._remaining_label.setText("REMAINING  --:--")
+            self._last_frame_str = ""
+
+    def _on_deformed_toggled(self, state: int) -> None:
+        """Toggle between reference and deformed frame display."""
+        from PySide6.QtCore import Qt
+
+        deformed = state == Qt.CheckState.Checked.value
+        self._state.show_deformed = deformed
+        self._state.display_changed.emit()
 
     def _on_progress(self, fraction: float, message: str) -> None:
-        """Update progress bar and label from pipeline progress signal."""
+        """Update progress bar and label — show only percentage + frame."""
         self._progress_bar.setValue(int(fraction * 1000))
-        self._progress_label.setText(message or f"{fraction * 100:.0f}%")
+        # Extract frame info (e.g. "Frame 2/5") from verbose messages
+        frame_match = re.search(r"[Ff]rame\s+(\d+/\d+)", message)
+        if frame_match:
+            self._last_frame_str = frame_match.group(1)
+        # Always show last known frame to avoid flickering
+        if self._last_frame_str:
+            self._progress_label.setText(
+                f"{fraction * 100:.0f}%  \u2014  Frame {self._last_frame_str}"
+            )
+        else:
+            self._progress_label.setText(f"{fraction * 100:.0f}%")
 
     def _update_elapsed(self) -> None:
-        """Refresh elapsed and estimated remaining time labels."""
+        """Refresh elapsed and estimated remaining time labels every second."""
+        # Compute elapsed from wall clock (not stale state.elapsed_seconds)
+        # so the display updates smoothly even between progress callbacks.
         elapsed = self._state.elapsed_seconds
+        if self._state.run_state in (RunState.RUNNING, RunState.PAUSED):
+            elapsed = time.perf_counter() - self._pipeline_ctrl._start_time
+            self._state.elapsed_seconds = elapsed
+
         mins, secs = divmod(int(elapsed), 60)
         self._elapsed_label.setText(f"ELAPSED  {mins:02d}:{secs:02d}")
 
@@ -228,3 +272,5 @@ class RightSidebar(QWidget):
             remaining = estimated_total - elapsed
             r_mins, r_secs = divmod(int(max(0, remaining)), 60)
             self._remaining_label.setText(f"REMAINING  {r_mins:02d}:{r_secs:02d}")
+        else:
+            self._remaining_label.setText("REMAINING  --:--")

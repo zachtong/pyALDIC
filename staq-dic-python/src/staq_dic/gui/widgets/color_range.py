@@ -63,6 +63,16 @@ class ColorRange(QWidget):
         auto = state == Qt.CheckState.Checked.value
         self._min_spin.setEnabled(not auto)
         self._max_spin.setEnabled(not auto)
+        if not auto:
+            # Populate spin boxes with the current auto-computed range
+            # so the user starts from the current display, not stale defaults.
+            app_state = AppState.instance()
+            self._min_spin.blockSignals(True)
+            self._max_spin.blockSignals(True)
+            self._min_spin.setValue(app_state.color_min)
+            self._max_spin.setValue(app_state.color_max)
+            self._min_spin.blockSignals(False)
+            self._max_spin.blockSignals(False)
         self._emit_range()
 
     def _on_range_changed(self) -> None:

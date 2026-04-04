@@ -96,12 +96,31 @@ class ROIController:
         if img is None:
             raise IOError(f"Failed to read mask: {path}")
         if img.shape != self._shape:
-            img = cv2.resize(img, (self._shape[1], self._shape[0]))
+            img = cv2.resize(
+                img, (self._shape[1], self._shape[0]),
+                interpolation=cv2.INTER_NEAREST,
+            )
         self.mask = img > 127
 
     def clear(self) -> None:
         """Reset the mask to all False."""
         self.mask = np.zeros(self._shape, dtype=bool)
+
+    def invert(self) -> None:
+        """Invert the mask (True <-> False)."""
+        self.mask = ~self.mask
+
+    def save_mask(self, path: str) -> None:
+        """Save the current mask as a grayscale PNG (255=True, 0=False).
+
+        Args:
+            path: Filesystem path to write the image.
+        """
+        img = (self.mask.astype(np.uint8)) * 255
+        success, buf = cv2.imencode(".png", img)
+        if not success:
+            raise IOError(f"Failed to encode mask to PNG: {path}")
+        buf.tofile(path)
 
     def _apply(self, canvas: NDArray[np.uint8], mode: str) -> None:
         """Apply a rasterized shape to the mask.

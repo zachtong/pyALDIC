@@ -250,6 +250,9 @@ class BatchImportDialog(QDialog):
             if img is None:
                 continue
             if img.shape != img_shape:
-                img = cv2.resize(img, (img_shape[1], img_shape[0]))
+                img = cv2.resize(
+                    img, (img_shape[1], img_shape[0]),
+                    interpolation=cv2.INTER_NEAREST,
+                )
             result[idx] = img > 127
         return result

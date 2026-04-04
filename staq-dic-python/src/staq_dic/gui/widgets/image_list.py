@@ -343,16 +343,38 @@ class ImageList(QWidget):
 
         # Remove from file list (high indices first to preserve ordering)
         files = list(self._state.image_files)
+        original_count = len(files)
         for row in rows_to_delete:
             if 0 <= row < len(files):
                 del files[row]
-                # Clean up per-frame ROI and display data
-                self._state.per_frame_rois.pop(row, None)
-                self._state.display_roi_enabled.pop(row, None)
 
         if not files:
+            self._state.per_frame_rois.clear()
+            self._state.display_roi_enabled.clear()
             self._state.set_image_files([])
             return
+
+        # Re-key per_frame_rois and display_roi_enabled after deletion.
+        # Build old->new index mapping for surviving frames.
+        deleted_set = set(rows_to_delete)
+        old_to_new: dict[int, int] = {}
+        new_idx = 0
+        for old_idx in range(original_count):
+            if old_idx not in deleted_set:
+                old_to_new[old_idx] = new_idx
+                new_idx += 1
+
+        new_rois: dict[int, object] = {}
+        for old_key, mask in list(self._state.per_frame_rois.items()):
+            if old_key in old_to_new:
+                new_rois[old_to_new[old_key]] = mask
+        self._state.per_frame_rois = new_rois  # type: ignore[assignment]
+
+        new_disp: dict[int, bool] = {}
+        for old_key, val in list(self._state.display_roi_enabled.items()):
+            if old_key in old_to_new:
+                new_disp[old_to_new[old_key]] = val
+        self._state.display_roi_enabled = new_disp
 
         # Clear image caches for removed images
         self._image_ctrl.clear_cache()
