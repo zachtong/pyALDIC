@@ -1,154 +1,191 @@
-"""ROI toolbar — shape drawing tools with add/cut mode toggle.
+"""ROI toolbar — Add/Cut dropdown buttons with shape popup menus.
 
-Layout (2 rows x 3 columns):
-    Row 1: [Rectangle] [Polygon] [Circle]   — exclusive shape toggles
-    Row 2: [Import]    [Cut]     [Clear]     — actions
+Layout:
+    Row 1: [+ Add ^]  [scissors Cut ^]    — dropdown shape selectors
+    Row 2: [Import] [Save] [Invert] [Clear] — utility buttons
 
-Rectangle / Polygon / Circle: selecting one activates that drawing tool.
-Cut: toggles between "add" (blue) and "cut" (red) drawing modes.
-Import: opens a file dialog to load a mask PNG.
-Clear: resets the mask to empty.
+Each Add/Cut click opens a popup menu (Polygon / Rectangle / Circle).
+Selecting a shape activates one-shot drawing mode — the tool auto-resets
+to "select" after completing one shape.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QFileDialog,
     QGridLayout,
+    QHBoxLayout,
+    QMenu,
     QPushButton,
     QWidget,
 )
 
 from staq_dic.gui.theme import COLORS
 
-if TYPE_CHECKING:
-    from staq_dic.gui.controllers.roi_controller import ROIController
-    from staq_dic.gui.panels.canvas_area import ImageCanvas
-
 
 class ROIToolbar(QWidget):
-    """Six-button toolbar for ROI shape drawing and management."""
+    """Add/Cut dropdown toolbar with Import/Save/Invert/Clear utilities."""
 
-    # Emitted when active tool changes: "select", "rect", "polygon", "circle"
-    tool_changed = Signal(str)
-    # Emitted when drawing mode changes: "add" or "cut"
-    mode_changed = Signal(str)
+    # Emitted when user selects a shape from Add or Cut menu: (shape, mode)
+    # shape: "rect", "polygon", "circle"
+    # mode: "add" or "cut"
+    draw_requested = Signal(str, str)
+
     # Emitted when clear is clicked
     clear_requested = Signal()
+
     # Emitted when a mask file is imported (path)
     import_requested = Signal(str)
+
+    # Emitted when save is clicked
+    save_requested = Signal()
+
+    # Emitted when batch import is requested
+    batch_import_requested = Signal()
+
+    # Emitted when invert is clicked
+    invert_requested = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
-        self._active_tool: str = "select"
-        self._drawing_mode: str = "add"
+        self._active_mode: str | None = None  # "add" or "cut" while drawing
 
         layout = QGridLayout(self)
         layout.setContentsMargins(8, 4, 8, 4)
         layout.setSpacing(4)
 
-        # --- Row 1: shape tools (exclusive) ---
-        self._btn_rect = QPushButton("Rect")
-        self._btn_rect.setCheckable(True)
-        self._btn_rect.setToolTip("Draw rectangle ROI")
+        # --- Row 1: Add / Cut dropdown buttons ---
+        self._btn_add = QPushButton("+ Add  \u25b4")
+        self._btn_add.setCheckable(True)
+        self._btn_add.setToolTip("Add region to ROI (Polygon / Rectangle / Circle)")
+        self._btn_add.setFixedHeight(30)
 
-        self._btn_polygon = QPushButton("Poly")
-        self._btn_polygon.setCheckable(True)
-        self._btn_polygon.setToolTip("Draw polygon ROI")
-
-        self._btn_circle = QPushButton("Circle")
-        self._btn_circle.setCheckable(True)
-        self._btn_circle.setToolTip("Draw circle ROI")
-
-        layout.addWidget(self._btn_rect, 0, 0)
-        layout.addWidget(self._btn_polygon, 0, 1)
-        layout.addWidget(self._btn_circle, 0, 2)
-
-        self._shape_buttons = [
-            self._btn_rect,
-            self._btn_polygon,
-            self._btn_circle,
-        ]
-
-        # --- Row 2: actions ---
-        self._btn_import = QPushButton("Import")
-        self._btn_import.setToolTip("Import mask from PNG file")
-
-        self._btn_cut = QPushButton("Add")
+        self._btn_cut = QPushButton("\u2702 Cut  \u25b4")
         self._btn_cut.setCheckable(True)
-        self._btn_cut.setToolTip("Toggle between Add / Cut mode")
+        self._btn_cut.setToolTip("Cut region from ROI (Polygon / Rectangle / Circle)")
+        self._btn_cut.setFixedHeight(30)
+
+        layout.addWidget(self._btn_add, 0, 0)
+        layout.addWidget(self._btn_cut, 0, 1)
+
+        # Build popup menus
+        self._add_menu = self._build_shape_menu("add")
+        self._cut_menu = self._build_shape_menu("cut")
+
+        self._btn_add.clicked.connect(self._show_add_menu)
+        self._btn_cut.clicked.connect(self._show_cut_menu)
+
+        # --- Row 2: Import / Save / Invert / Clear ---
+        util_row = QHBoxLayout()
+        util_row.setSpacing(4)
+
+        self._btn_import = QPushButton("Import")
+        self._btn_import.setToolTip("Import mask from image file")
+        self._btn_import.setFixedHeight(26)
+        self._btn_import.clicked.connect(self._on_import)
+        util_row.addWidget(self._btn_import)
+
+        self._btn_batch = QPushButton("Batch")
+        self._btn_batch.setToolTip("Batch import mask files for multiple frames")
+        self._btn_batch.setFixedHeight(26)
+        self._btn_batch.clicked.connect(
+            lambda: self.batch_import_requested.emit()
+        )
+        util_row.addWidget(self._btn_batch)
+
+        self._btn_save = QPushButton("Save")
+        self._btn_save.setToolTip("Save current mask to PNG file")
+        self._btn_save.setFixedHeight(26)
+        self._btn_save.clicked.connect(lambda: self.save_requested.emit())
+        util_row.addWidget(self._btn_save)
+
+        self._btn_invert = QPushButton("Invert")
+        self._btn_invert.setToolTip("Invert the ROI mask")
+        self._btn_invert.setFixedHeight(26)
+        self._btn_invert.clicked.connect(lambda: self.invert_requested.emit())
+        util_row.addWidget(self._btn_invert)
 
         self._btn_clear = QPushButton("Clear")
         self._btn_clear.setToolTip("Clear all ROI masks")
+        self._btn_clear.setFixedHeight(26)
+        self._btn_clear.clicked.connect(lambda: self.clear_requested.emit())
+        util_row.addWidget(self._btn_clear)
 
-        layout.addWidget(self._btn_import, 1, 0)
-        layout.addWidget(self._btn_cut, 1, 1)
-        layout.addWidget(self._btn_clear, 1, 2)
+        layout.addLayout(util_row, 1, 0, 1, 2)
 
-        # --- Connections ---
-        self._btn_rect.clicked.connect(lambda: self._set_shape("rect"))
-        self._btn_polygon.clicked.connect(lambda: self._set_shape("polygon"))
-        self._btn_circle.clicked.connect(lambda: self._set_shape("circle"))
-        self._btn_cut.clicked.connect(self._toggle_mode)
-        self._btn_clear.clicked.connect(self._on_clear)
-        self._btn_import.clicked.connect(self._on_import)
+        # Apply initial styling
+        self._update_button_styles()
 
-        # Style the Cut/Add button
-        self._update_cut_button_style()
+    def _build_shape_menu(self, mode: str) -> QMenu:
+        """Create a popup menu with Polygon / Rectangle / Circle actions."""
+        menu = QMenu(self)
+        menu.addAction(
+            "\u2b1f  Polygon", lambda: self._on_shape_selected("polygon", mode)
+        )
+        menu.addAction(
+            "\u25a1  Rectangle", lambda: self._on_shape_selected("rect", mode)
+        )
+        menu.addAction(
+            "\u25cb  Circle", lambda: self._on_shape_selected("circle", mode)
+        )
+        return menu
 
-    def _set_shape(self, tool: str) -> None:
-        """Activate a shape tool, deactivating others."""
-        # If the same tool is clicked again, deactivate it
-        if self._active_tool == tool:
-            self._active_tool = "select"
-        else:
-            self._active_tool = tool
+    def _show_add_menu(self) -> None:
+        """Show the Add shape popup above the Add button."""
+        # Uncheck immediately — the checked state is controlled by _on_shape_selected
+        self._btn_add.setChecked(False)
+        # Position menu above the button
+        pos = self._btn_add.mapToGlobal(self._btn_add.rect().topLeft())
+        menu_height = self._add_menu.sizeHint().height()
+        pos.setY(pos.y() - menu_height)
+        self._add_menu.popup(pos)
 
-        # Update button checked state
-        tool_map = {
-            "rect": self._btn_rect,
-            "polygon": self._btn_polygon,
-            "circle": self._btn_circle,
-        }
-        for name, btn in tool_map.items():
-            btn.setChecked(name == self._active_tool)
+    def _show_cut_menu(self) -> None:
+        """Show the Cut shape popup above the Cut button."""
+        self._btn_cut.setChecked(False)
+        pos = self._btn_cut.mapToGlobal(self._btn_cut.rect().topLeft())
+        menu_height = self._cut_menu.sizeHint().height()
+        pos.setY(pos.y() - menu_height)
+        self._cut_menu.popup(pos)
 
-        self.tool_changed.emit(self._active_tool)
+    def _on_shape_selected(self, shape: str, mode: str) -> None:
+        """Handle shape selection from popup menu."""
+        self._active_mode = mode
+        self._update_button_styles()
+        self.draw_requested.emit(shape, mode)
 
-    def _toggle_mode(self) -> None:
-        """Toggle between add and cut drawing modes."""
-        if self._drawing_mode == "add":
-            self._drawing_mode = "cut"
-        else:
-            self._drawing_mode = "add"
-        self._btn_cut.setChecked(self._drawing_mode == "cut")
-        self._update_cut_button_style()
-        self.mode_changed.emit(self._drawing_mode)
+    def deactivate(self) -> None:
+        """Reset the active state — called when drawing finishes or is canceled."""
+        self._active_mode = None
+        self._update_button_styles()
 
-    def _update_cut_button_style(self) -> None:
-        """Style the mode button to reflect current state."""
-        if self._drawing_mode == "cut":
-            self._btn_cut.setText("Cut")
+    def _update_button_styles(self) -> None:
+        """Update Add/Cut button highlight based on active mode."""
+        if self._active_mode == "add":
+            self._btn_add.setChecked(True)
+            self._btn_cut.setChecked(False)
+            self._btn_cut.setStyleSheet("")
+            self._btn_add.setStyleSheet(
+                f"QPushButton {{ background: {COLORS.ACCENT}; "
+                f"color: #ffffff; border: 1px solid {COLORS.ACCENT}; "
+                f"border-radius: 4px; }}"
+            )
+        elif self._active_mode == "cut":
+            self._btn_cut.setChecked(True)
+            self._btn_add.setChecked(False)
+            self._btn_add.setStyleSheet("")
             self._btn_cut.setStyleSheet(
                 f"QPushButton {{ background: {COLORS.DANGER}; "
                 f"color: #ffffff; border: 1px solid {COLORS.DANGER}; "
                 f"border-radius: 4px; }}"
             )
         else:
-            self._btn_cut.setText("Add")
-            self._btn_cut.setStyleSheet(
-                f"QPushButton {{ background: {COLORS.ACCENT}; "
-                f"color: #ffffff; border: 1px solid {COLORS.ACCENT}; "
-                f"border-radius: 4px; }}"
-            )
-
-    def _on_clear(self) -> None:
-        """Emit clear signal."""
-        self.clear_requested.emit()
+            self._btn_add.setChecked(False)
+            self._btn_cut.setChecked(False)
+            self._btn_add.setStyleSheet("")
+            self._btn_cut.setStyleSheet("")
 
     def _on_import(self) -> None:
         """Open file dialog and emit import signal with selected path."""
