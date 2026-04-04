@@ -50,11 +50,18 @@ class AppState(QObject):
         self.current_frame: int = 0
         # ROI
         self.roi_mask: NDArray[np.bool_] | None = None
+        # Per-frame masks in deformed coordinates (optional, e.g. from segmentation)
+        # Mapping: frame_idx -> bool mask.  When set, deformed display uses these
+        # directly instead of warping the reference roi_mask.
+        self.deformed_masks: dict[int, NDArray[np.bool_]] | None = None
         # Parameters
         self.subset_size: int = 40
         self.subset_step: int = 16
         self.search_range: int = 10
-        self.tracking_mode: str = "incremental"
+        self.tracking_mode: str = "accumulative"
+        self.inc_ref_mode: str = "every_frame"
+        self.inc_ref_interval: int = 5
+        self.inc_custom_refs: list[int] = []
         # Computation
         self.run_state: RunState = RunState.IDLE
         self.progress: float = 0.0
@@ -63,6 +70,8 @@ class AppState(QObject):
         self.results: PipelineResult | None = None
         # Display
         self.display_field: str = "disp_u"
+        self.show_deformed: bool = False
+        self.roi_editing: bool = False
         self.color_auto: bool = True
         self.color_min: float = 0.0
         self.color_max: float = 1.0
