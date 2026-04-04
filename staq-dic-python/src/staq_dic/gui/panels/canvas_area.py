@@ -46,6 +46,9 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.theme import COLORS
 from staq_dic.gui.widgets.frame_navigator import FrameNavigator
 
+from staq_dic.core.data_structures import split_uv
+from staq_dic.gui.controllers.viz_controller import VizController
+
 if TYPE_CHECKING:
     from staq_dic.gui.controllers.image_controller import ImageController
     from staq_dic.gui.controllers.roi_controller import ROIController
@@ -436,10 +439,12 @@ class CanvasArea(QWidget):
     def __init__(
         self,
         image_ctrl: ImageController,
+        viz_ctrl: VizController | None = None,
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self._image_ctrl = image_ctrl
+        self._viz_ctrl = viz_ctrl or VizController()
         self._state = AppState.instance()
 
         layout = QVBoxLayout(self)
@@ -497,6 +502,8 @@ class CanvasArea(QWidget):
 
         self._state.images_changed.connect(self._on_images_changed)
         self._state.current_frame_changed.connect(self._on_frame_changed)
+        self._state.results_changed.connect(self._refresh_overlay)
+        self._state.display_changed.connect(self._refresh_overlay)
 
     @property
     def canvas(self) -> ImageCanvas:
@@ -509,8 +516,9 @@ class CanvasArea(QWidget):
             self._load_frame(0)
 
     def _on_frame_changed(self, idx: int) -> None:
-        """Update displayed image when frame changes."""
+        """Update displayed image and overlay when frame changes."""
         self._load_frame(idx)
+        self._refresh_overlay()
 
     def _load_frame(self, idx: int) -> None:
         """Load and display an image frame by index."""
@@ -519,3 +527,58 @@ class CanvasArea(QWidget):
             self._canvas.set_image(rgb)
         except (IndexError, FileNotFoundError, ValueError):
             pass
+
+    def _refresh_overlay(self, *_args: object) -> None:
+        """Update the field overlay based on current results and display settings."""
+        state = self._state
+        if state.results is None:
+            self._canvas._overlay_item.setPixmap(QPixmap())
+            return
+
+        result = state.results
+        # Frame 0 is reference; results start at index 0 for frame pair 0->1
+        frame = state.current_frame - 1
+        if frame < 0 or frame >= len(result.result_disp):
+            self._canvas._overlay_item.setPixmap(QPixmap())
+            return
+
+        nodes = result.dic_mesh.coordinates_fem
+        u_accum = result.result_disp[frame].U_accum
+        if u_accum is None:
+            self._canvas._overlay_item.setPixmap(QPixmap())
+            return
+
+        u, v = split_uv(u_accum)
+        values = u if state.display_field == "disp_u" else v
+
+        vmin, vmax = state.color_min, state.color_max
+        if state.color_auto:
+            valid = values[~np.isnan(values)]
+            if len(valid) > 0:
+                pct = np.percentile(valid, [2, 98])
+                vmin, vmax = float(pct[0]), float(pct[1])
+            else:
+                vmin, vmax = 0.0, 1.0
+            state.color_min = vmin
+            state.color_max = vmax
+
+        try:
+            pixmap, xg, yg = self._viz_ctrl.render_field(
+                frame,
+                state.display_field,
+                nodes,
+                values,
+                img_shape=result.dic_para.img_size,
+                mesh_step=result.dic_para.winstepsize,
+                vmin=vmin,
+                vmax=vmax,
+            )
+        except Exception:
+            # Interpolation can fail with degenerate meshes; clear overlay
+            self._canvas._overlay_item.setPixmap(QPixmap())
+            return
+
+        # Position the overlay at the correct image coordinates
+        self._canvas._overlay_item.setPixmap(pixmap)
+        if xg is not None and yg is not None:
+            self._canvas._overlay_item.setPos(float(xg.min()), float(yg.min()))

@@ -8,6 +8,7 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.controllers.pipeline_controller import PipelineController
 from staq_dic.gui.controllers.roi_controller import ROIController
+from staq_dic.gui.controllers.viz_controller import VizController
 from staq_dic.gui.panels.canvas_area import CanvasArea
 from staq_dic.gui.panels.left_sidebar import LeftSidebar
 from staq_dic.gui.panels.right_sidebar import RightSidebar
@@ -37,8 +38,11 @@ class MainWindow(QMainWindow):
         self._left_sidebar = LeftSidebar(self._image_ctrl)
         layout.addWidget(self._left_sidebar, stretch=0)
 
+        # Visualization controller (two-level cache)
+        self._viz_ctrl = VizController()
+
         # Center canvas
-        self._canvas_area = CanvasArea(self._image_ctrl)
+        self._canvas_area = CanvasArea(self._image_ctrl, viz_ctrl=self._viz_ctrl)
         layout.addWidget(self._canvas_area, stretch=1)
 
         # Pipeline controller
@@ -57,6 +61,9 @@ class MainWindow(QMainWindow):
 
         # Initialize ROI controller when images are loaded
         self._state.images_changed.connect(self._init_roi_controller)
+
+        # Clear viz caches when results change (new pipeline run)
+        self._state.results_changed.connect(self._viz_ctrl.clear_all)
 
     def _init_roi_controller(self) -> None:
         """Create a ROI controller matching the loaded image dimensions."""
