@@ -12,6 +12,12 @@ from PySide6.QtWidgets import (
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.theme import COLORS
 
+try:
+    from staq_dic.gui.icons import icon_chevron_left, icon_chevron_right
+    _HAS_ICONS = True
+except ImportError:  # pragma: no cover
+    _HAS_ICONS = False
+
 
 class FrameNavigator(QWidget):
     """Bottom bar: prev/next buttons, frame label, horizontal slider."""
@@ -34,6 +40,9 @@ class FrameNavigator(QWidget):
         self._prev_btn = QPushButton("<")
         self._prev_btn.setFixedWidth(28)
         self._prev_btn.setToolTip("Previous frame")
+        if _HAS_ICONS:
+            self._prev_btn.setIcon(icon_chevron_left())
+            self._prev_btn.setText("")
         self._prev_btn.clicked.connect(self._on_prev)
         layout.addWidget(self._prev_btn)
 
@@ -57,6 +66,9 @@ class FrameNavigator(QWidget):
         self._next_btn = QPushButton(">")
         self._next_btn.setFixedWidth(28)
         self._next_btn.setToolTip("Next frame")
+        if _HAS_ICONS:
+            self._next_btn.setIcon(icon_chevron_right())
+            self._next_btn.setText("")
         self._next_btn.clicked.connect(self._on_next)
         layout.addWidget(self._next_btn)
 
