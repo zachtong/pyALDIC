@@ -438,9 +438,12 @@ class ImageCanvas(QGraphicsView):
         self._remove_preview_items()
         self._draw_state = None
         self.update_roi_overlay()
-        # Update global state
+        # Save mask to the per-frame ROI for whichever frame is being edited
         if self._roi_ctrl is not None:
-            AppState.instance().set_roi_mask(self._roi_ctrl.mask.copy())
+            state = AppState.instance()
+            state.set_frame_roi(
+                state.roi_editing_frame, self._roi_ctrl.mask.copy()
+            )
         # One-shot: reset to select mode after completing a shape
         self._current_tool = "select"
         self.setCursor(Qt.CursorShape.ArrowCursor)
@@ -526,6 +529,17 @@ class CanvasArea(QWidget):
 
         layout.addWidget(toolbar)
 
+        # --- ROI editing banner (hidden by default) ---
+        self._roi_banner = QLabel()
+        self._roi_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._roi_banner.setFixedHeight(36)
+        self._roi_banner.setVisible(False)
+        self._roi_banner.setStyleSheet(
+            f"background: {COLORS.WARNING}; color: #000; "
+            f"font-size: 14px; font-weight: bold; padding: 4px;"
+        )
+        layout.addWidget(self._roi_banner)
+
         # --- Canvas ---
         self._canvas = ImageCanvas()
         layout.addWidget(self._canvas, stretch=1)
@@ -549,6 +563,14 @@ class CanvasArea(QWidget):
     def canvas(self) -> ImageCanvas:
         """Access the underlying ImageCanvas."""
         return self._canvas
+
+    def set_roi_editing_banner(self, frame: int | None) -> None:
+        """Show or hide the ROI editing banner for the given frame."""
+        if frame is not None:
+            self._roi_banner.setText(f"EDITING ROI FOR FRAME {frame:02d}")
+            self._roi_banner.setVisible(True)
+        else:
+            self._roi_banner.setVisible(False)
 
     def _on_images_changed(self) -> None:
         """Load first image when images are set."""
@@ -578,8 +600,8 @@ class CanvasArea(QWidget):
         """Set the background image based on current mode."""
         state = self._state
         if state.roi_editing:
-            # ROI editing: always show reference frame
-            self._load_frame(0)
+            # ROI editing: show the frame being edited
+            self._load_frame(state.roi_editing_frame)
         elif state.results is not None:
             if state.show_deformed:
                 self._load_frame(state.current_frame)
@@ -615,7 +637,11 @@ class CanvasArea(QWidget):
             overlay.setScale(1.0)
             overlay.setPos(0, 0)
             self._canvas.update_roi_overlay()
+            self.set_roi_editing_banner(state.roi_editing_frame)
             return
+
+        # Hide banner when not editing
+        self.set_roi_editing_banner(None)
 
         # --- No results yet: show ROI overlay (if any), hide field ---
         if state.results is None:
