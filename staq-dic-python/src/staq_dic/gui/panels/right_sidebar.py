@@ -19,6 +19,12 @@ from staq_dic.gui.widgets.color_range import ColorRange
 from staq_dic.gui.widgets.console_log import ConsoleLog
 from staq_dic.gui.widgets.field_selector import FieldSelector
 
+try:
+    from staq_dic.gui.icons import icon_download, icon_pause, icon_play, icon_stop
+    _HAS_ICONS = True
+except ImportError:  # pragma: no cover
+    _HAS_ICONS = False
+
 
 class RightSidebar(QWidget):
     """Right sidebar: run controls, progress, display, console."""
@@ -38,6 +44,8 @@ class RightSidebar(QWidget):
         self._run_btn = QPushButton("Run DIC Analysis")
         self._run_btn.setProperty("class", "btn-primary")
         self._run_btn.setFixedHeight(36)
+        if _HAS_ICONS:
+            self._run_btn.setIcon(icon_play())
         self._run_btn.clicked.connect(self._on_run)
         layout.addWidget(self._run_btn)
 
@@ -45,6 +53,8 @@ class RightSidebar(QWidget):
         self._pause_btn = QPushButton("Pause")
         self._pause_btn.setFixedHeight(30)
         self._pause_btn.setEnabled(False)
+        if _HAS_ICONS:
+            self._pause_btn.setIcon(icon_pause())
         self._pause_btn.clicked.connect(self._on_pause)
         btn_row.addWidget(self._pause_btn)
 
@@ -52,6 +62,8 @@ class RightSidebar(QWidget):
         self._stop_btn.setProperty("class", "btn-danger")
         self._stop_btn.setFixedHeight(30)
         self._stop_btn.setEnabled(False)
+        if _HAS_ICONS:
+            self._stop_btn.setIcon(icon_stop())
         self._stop_btn.clicked.connect(self._on_stop)
         btn_row.addWidget(self._stop_btn)
         layout.addLayout(btn_row)
@@ -59,6 +71,8 @@ class RightSidebar(QWidget):
         self._export_btn = QPushButton("Export Results")
         self._export_btn.setFixedHeight(30)
         self._export_btn.setEnabled(False)
+        if _HAS_ICONS:
+            self._export_btn.setIcon(icon_download())
         self._export_btn.clicked.connect(self._on_export)
         layout.addWidget(self._export_btn)
 

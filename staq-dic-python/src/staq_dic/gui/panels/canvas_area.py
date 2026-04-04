@@ -49,6 +49,12 @@ from staq_dic.gui.widgets.frame_navigator import FrameNavigator
 from staq_dic.core.data_structures import split_uv
 from staq_dic.gui.controllers.viz_controller import VizController
 
+try:
+    from staq_dic.gui.icons import icon_maximize, icon_zoom_in, icon_zoom_out
+    _HAS_ICONS = True
+except ImportError:  # pragma: no cover
+    _HAS_ICONS = False
+
 if TYPE_CHECKING:
     from staq_dic.gui.controllers.image_controller import ImageController
     from staq_dic.gui.controllers.roi_controller import ROIController
@@ -465,6 +471,8 @@ class CanvasArea(QWidget):
         btn_fit = QPushButton("Fit")
         btn_fit.setToolTip("Fit image to viewport")
         btn_fit.setFixedWidth(40)
+        if _HAS_ICONS:
+            btn_fit.setIcon(icon_maximize())
 
         btn_100 = QPushButton("100%")
         btn_100.setToolTip("Zoom to 100% (1:1)")
@@ -473,10 +481,16 @@ class CanvasArea(QWidget):
         btn_zoom_in = QPushButton("+")
         btn_zoom_in.setToolTip("Zoom in")
         btn_zoom_in.setFixedWidth(28)
+        if _HAS_ICONS:
+            btn_zoom_in.setIcon(icon_zoom_in())
+            btn_zoom_in.setText("")
 
         btn_zoom_out = QPushButton("\u2013")  # en-dash as minus
         btn_zoom_out.setToolTip("Zoom out")
         btn_zoom_out.setFixedWidth(28)
+        if _HAS_ICONS:
+            btn_zoom_out.setIcon(icon_zoom_out())
+            btn_zoom_out.setText("")
 
         tb_layout.addWidget(btn_fit)
         tb_layout.addWidget(btn_100)
