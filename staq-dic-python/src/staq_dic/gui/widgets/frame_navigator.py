@@ -1,7 +1,10 @@
-"""Frame navigator — bottom bar with slider and prev/next buttons."""
+"""Frame navigator — bottom bar with slider, prev/next, and playback controls."""
 
-from PySide6.QtCore import Qt
+from __future__ import annotations
+
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -18,9 +21,18 @@ try:
 except ImportError:  # pragma: no cover
     _HAS_ICONS = False
 
+# Speed presets: label -> interval in ms
+_SPEED_PRESETS = [
+    ("1 fps", 1000),
+    ("2 fps", 500),
+    ("5 fps", 200),
+    ("10 fps", 100),
+    ("30 fps", 33),
+]
+
 
 class FrameNavigator(QWidget):
-    """Bottom bar: prev/next buttons, frame label, horizontal slider."""
+    """Bottom bar: prev/next, play/pause, speed selector, frame label, slider."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -34,7 +46,7 @@ class FrameNavigator(QWidget):
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(8, 2, 8, 2)
-        layout.setSpacing(8)
+        layout.setSpacing(6)
 
         # Prev button
         self._prev_btn = QPushButton("<")
@@ -45,6 +57,33 @@ class FrameNavigator(QWidget):
             self._prev_btn.setText("")
         self._prev_btn.clicked.connect(self._on_prev)
         layout.addWidget(self._prev_btn)
+
+        # Play/Pause button
+        self._play_btn = QPushButton("\u25B6")  # ▶
+        self._play_btn.setFixedWidth(28)
+        self._play_btn.setToolTip("Play / Pause animation")
+        self._play_btn.clicked.connect(self._on_play_toggle)
+        layout.addWidget(self._play_btn)
+
+        # Next button
+        self._next_btn = QPushButton(">")
+        self._next_btn.setFixedWidth(28)
+        self._next_btn.setToolTip("Next frame")
+        if _HAS_ICONS:
+            self._next_btn.setIcon(icon_chevron_right())
+            self._next_btn.setText("")
+        self._next_btn.clicked.connect(self._on_next)
+        layout.addWidget(self._next_btn)
+
+        # Speed selector
+        self._speed_combo = QComboBox()
+        for label, _ms in _SPEED_PRESETS:
+            self._speed_combo.addItem(label)
+        self._speed_combo.setCurrentIndex(1)  # default 2 fps
+        self._speed_combo.setFixedWidth(68)
+        self._speed_combo.setToolTip("Playback speed")
+        self._speed_combo.currentIndexChanged.connect(self._on_speed_changed)
+        layout.addWidget(self._speed_combo)
 
         # Frame label
         self._label = QLabel("FRAME 0/0")
@@ -62,15 +101,11 @@ class FrameNavigator(QWidget):
         self._slider.valueChanged.connect(self._on_slider_changed)
         layout.addWidget(self._slider, stretch=1)
 
-        # Next button
-        self._next_btn = QPushButton(">")
-        self._next_btn.setFixedWidth(28)
-        self._next_btn.setToolTip("Next frame")
-        if _HAS_ICONS:
-            self._next_btn.setIcon(icon_chevron_right())
-            self._next_btn.setText("")
-        self._next_btn.clicked.connect(self._on_next)
-        layout.addWidget(self._next_btn)
+        # --- Playback timer ---
+        self._playing = False
+        self._timer = QTimer()
+        self._timer.timeout.connect(self._on_timer_tick)
+        self._timer.setInterval(_SPEED_PRESETS[1][1])  # 2 fps default
 
         # Connect signals
         self._state.images_changed.connect(self._on_images_changed)
@@ -80,6 +115,8 @@ class FrameNavigator(QWidget):
         n = len(self._state.image_files)
         self._slider.setRange(0, max(0, n - 1))
         self._update_label(0, n)
+        # Stop playback when images change
+        self._stop_playback()
 
     def _on_frame_changed(self, idx: int) -> None:
         self._slider.blockSignals(True)
@@ -95,6 +132,42 @@ class FrameNavigator(QWidget):
 
     def _on_next(self) -> None:
         self._state.set_current_frame(self._state.current_frame + 1)
+
+    def _on_play_toggle(self) -> None:
+        if self._playing:
+            self._stop_playback()
+        else:
+            self._start_playback()
+
+    def _start_playback(self) -> None:
+        n = len(self._state.image_files)
+        if n < 2:
+            return
+        self._playing = True
+        self._play_btn.setText("\u23F8")  # ⏸
+        self._play_btn.setToolTip("Pause animation")
+        self._timer.start()
+
+    def _stop_playback(self) -> None:
+        self._playing = False
+        self._timer.stop()
+        self._play_btn.setText("\u25B6")  # ▶
+        self._play_btn.setToolTip("Play animation")
+
+    def _on_timer_tick(self) -> None:
+        n = len(self._state.image_files)
+        if n < 2:
+            self._stop_playback()
+            return
+        next_frame = self._state.current_frame + 1
+        if next_frame >= n:
+            next_frame = 0  # loop
+        self._state.set_current_frame(next_frame)
+
+    def _on_speed_changed(self, index: int) -> None:
+        if 0 <= index < len(_SPEED_PRESETS):
+            _label, ms = _SPEED_PRESETS[index]
+            self._timer.setInterval(ms)
 
     def _update_label(self, idx: int, total: int) -> None:
         self._label.setText(f"FRAME {idx + 1}/{total}" if total > 0 else "FRAME 0/0")
