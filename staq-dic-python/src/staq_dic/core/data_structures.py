@@ -278,7 +278,7 @@ class DICPara:
     # --- 4. FFT initial guess ---
     new_fft_search: int = 1
     init_fft_search_method: int = 2
-    size_of_fft_search_region: int = 10
+    size_of_fft_search_region: int = 20
     init_guess_mode: Literal["auto", "fft", "previous"] = "auto"
     discontinuity_threshold_cc: float = 0.85
     k_nearest_neighbors: int = 3
