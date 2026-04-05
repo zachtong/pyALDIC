@@ -58,7 +58,7 @@ class AppState(QObject):
         # Parameters
         self.subset_size: int = 40
         self.subset_step: int = 16
-        self.search_range: int = 10
+        self.search_range: int = 20
         self.tracking_mode: str = "accumulative"
         self.inc_ref_mode: str = "every_frame"
         self.inc_ref_interval: int = 5
