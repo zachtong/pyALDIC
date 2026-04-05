@@ -546,8 +546,8 @@ def run_aldic(
     # =====================================================================
     # Main frame loop (Sections 3-6)
     # =====================================================================
-    # Progress budget: frame loop gets more of the bar when strain is skipped
-    _loop_end = 0.60 if compute_strain else 0.90
+    # Progress budget: frame loop always fills 0–90%; strain is post-hoc
+    _loop_end = 0.90
     _n_pairs = max(1, n_frames - 2)
     _frame_budget = _loop_end / _n_pairs
 
