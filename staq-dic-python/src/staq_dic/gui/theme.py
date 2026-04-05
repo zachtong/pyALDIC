@@ -168,6 +168,7 @@ QDoubleSpinBox::down-button {{
     background: {c.BG_HOVER};
     border: none;
     width: 16px;
+    border-radius: 2px;
 }}
 
 QSpinBox::up-button:hover,
@@ -177,8 +178,40 @@ QDoubleSpinBox::down-button:hover {{
     background: {c.ACCENT};
 }}
 
-/* ComboBox dropdown */
+QSpinBox::up-arrow,
+QDoubleSpinBox::up-arrow {{
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 5px solid {c.TEXT_SECONDARY};
+    width: 0;
+    height: 0;
+}}
+
+QSpinBox::up-arrow:hover,
+QDoubleSpinBox::up-arrow:hover {{
+    border-bottom-color: #ffffff;
+}}
+
+QSpinBox::down-arrow,
+QDoubleSpinBox::down-arrow {{
+    image: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid {c.TEXT_SECONDARY};
+    width: 0;
+    height: 0;
+}}
+
+QSpinBox::down-arrow:hover,
+QDoubleSpinBox::down-arrow:hover {{
+    border-top-color: #ffffff;
+}}
+
+/* ComboBox dropdown button */
 QComboBox::drop-down {{
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
     border: none;
     width: 24px;
     background: transparent;
@@ -189,15 +222,33 @@ QComboBox::down-arrow {{
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     border-top: 5px solid {c.TEXT_SECONDARY};
-    margin-right: 6px;
+    width: 0;
+    height: 0;
 }}
 
+QComboBox::down-arrow:hover {{
+    border-top-color: {c.TEXT_PRIMARY};
+}}
+
+/* ComboBox popup list */
 QComboBox QAbstractItemView {{
     background: {c.BG_PANEL};
     border: 1px solid {c.BORDER};
+    border-radius: 4px;
+    padding: 4px;
     selection-background-color: {c.ACCENT};
-    selection-color: {c.TEXT_PRIMARY};
+    selection-color: #ffffff;
     outline: none;
+}}
+
+QComboBox QAbstractItemView::item {{
+    padding: 4px 8px;
+    min-height: 22px;
+    border-radius: 3px;
+}}
+
+QComboBox QAbstractItemView::item:hover {{
+    background: {c.BG_HOVER};
 }}
 
 /* ============================================================
