@@ -94,10 +94,14 @@ class AppState(QObject):
 
     # --- Setters (emit signals) ---
     def set_image_files(self, files: list[str]) -> None:
-        # Clear previous results when loading new images
+        # Clear previous results and ROI when loading new images
         had_results = self.results is not None
+        had_roi = bool(self.per_frame_rois)
         self.results = None
         self.deformed_masks = None
+        self.per_frame_rois = {}
+        self.roi_editing = False
+        self.roi_editing_frame = 0
         self.run_state = RunState.IDLE
         self.progress = 0.0
         self.progress_message = ""
@@ -108,6 +112,8 @@ class AppState(QObject):
         if had_results:
             self.results_changed.emit()
             self.run_state_changed.emit(RunState.IDLE)
+        if had_roi:
+            self.roi_changed.emit()
         self.images_changed.emit()
 
     def set_current_frame(self, idx: int) -> None:
