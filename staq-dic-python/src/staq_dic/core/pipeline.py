@@ -546,6 +546,11 @@ def run_aldic(
     # =====================================================================
     # Main frame loop (Sections 3-6)
     # =====================================================================
+    # Progress budget: frame loop gets more of the bar when strain is skipped
+    _loop_end = 0.60 if compute_strain else 0.90
+    _n_pairs = max(1, n_frames - 2)
+    _frame_budget = _loop_end / _n_pairs
+
     for frame_idx in range(1, n_frames):
         # --- Stop check ---
         if should_stop():
@@ -554,8 +559,8 @@ def run_aldic(
                 f"Pipeline aborted by user at frame {frame_idx + 1}"
             )
 
-        frac = (frame_idx - 1) / max(1, n_frames - 2) * 0.6
-        progress(frac, f"Processing frame {frame_idx + 1}/{n_frames}")
+        frac = (frame_idx - 1) * _frame_budget
+        progress(frac, f"Frame {frame_idx}/{n_frames - 1}")
 
         # --- Determine reference frame via schedule ---
         ref_idx = schedule.parent(frame_idx)
@@ -762,7 +767,7 @@ def run_aldic(
                 mask=f_mask, img_size=(img_h, img_w),
             )
             n_nodes = dic_mesh.coordinates_fem.shape[0]
-            progress(frac, f"Frame {frame_idx + 1}: refined to {n_nodes} nodes")
+            progress(frac, f"Frame {frame_idx}/{n_frames - 1}: refined to {n_nodes} nodes")
 
         # Precompute node-to-region mapping for smoothing
         n_nodes = dic_mesh.coordinates_fem.shape[0]
@@ -776,7 +781,7 @@ def run_aldic(
             f"Section 3: U0 length ({len(current_U0)}) != 2*nNodes ({2 * n_nodes})"
         )
 
-        progress(frac, f"Frame {frame_idx + 1}: S3 done ({n_nodes} nodes)")
+        progress(frac + _frame_budget * 0.15, f"Frame {frame_idx}/{n_frames - 1}: S3 done ({n_nodes} nodes)")
         logger.info("--- Section 3 Done ---")
 
         # =================================================================
@@ -798,8 +803,8 @@ def run_aldic(
         )
 
         progress(
-            frac + 0.1,
-            f"Frame {frame_idx + 1}: S4 done (local ICGN, {local_time:.1f}s)",
+            frac + _frame_budget * 0.45,
+            f"Frame {frame_idx}/{n_frames - 1}: S4 done (local ICGN, {local_time:.1f}s)",
         )
         logger.info("--- Section 4 Done (%.1fs) ---", local_time)
 
@@ -904,8 +909,8 @@ def run_aldic(
                 "Section 5: USubpb2 is entirely NaN"
             )
             progress(
-                frac + 0.2,
-                f"Frame {frame_idx + 1}: S5 done ({t5_elapsed:.1f}s)",
+                frac + _frame_budget * 0.65,
+                f"Frame {frame_idx}/{n_frames - 1}: S5 done ({t5_elapsed:.1f}s)",
             )
             logger.info("--- Section 5 Done (%.1fs) ---", t5_elapsed)
 
@@ -1000,8 +1005,8 @@ def run_aldic(
                     break
 
             progress(
-                frac + 0.3,
-                f"Frame {frame_idx + 1}: S6 done (ADMM {admm_step} steps)",
+                frac + _frame_budget * 0.95,
+                f"Frame {frame_idx}/{n_frames - 1}: S6 done (ADMM {admm_step} steps)",
             )
             logger.info("--- Section 6 Done (%d steps) ---", admm_step)
 
@@ -1031,7 +1036,7 @@ def run_aldic(
     # =====================================================================
     # Cumulative displacement transform (tree-based)
     # =====================================================================
-    progress(0.6, "Computing cumulative displacements...")
+    progress(_loop_end, "Computing cumulative displacements...")
     logger.info("--- Cumulative displacement transform ---")
 
     result_disp = _compute_cumulative_displacements_tree(
@@ -1055,7 +1060,7 @@ def run_aldic(
     # Section 8: Compute strains (optional)
     # =====================================================================
     if compute_strain and result_fe_mesh[0] is not None:
-        progress(0.7, "Section 8: Computing strains...")
+        progress(0.65, "Section 8: Computing strains...")
         logger.info("--- Section 8 Start ---")
 
         # Use frame 1 mesh for strain computation (cumulative coords)
@@ -1095,7 +1100,7 @@ def run_aldic(
                 strain_mesh, para_s8, U_local, strain_region_map,
             )
 
-            s8_frac = 0.7 + 0.2 * (i + 1) / (n_frames - 1)
+            s8_frac = 0.65 + 0.25 * (i + 1) / (n_frames - 1)
             progress(s8_frac, f"S8: Frame {i + 2}/{n_frames}")
 
         logger.info("--- Section 8 Done ---")
