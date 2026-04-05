@@ -49,20 +49,6 @@ class ParamPanel(QWidget):
             lambda v: state.set_param("subset_step", int(v))
         )
 
-        # --- Initial Search Range ---
-        self._search_range = self._add_spinbox(
-            layout,
-            "Search Range",
-            state.search_range,
-            minimum=5,
-            maximum=100,
-            step=5,
-            tooltip="FFT cross-correlation search range in pixels",
-        )
-        self._search_range.valueChanged.connect(
-            lambda v: state.set_param("search_range", v)
-        )
-
         # --- Tracking Mode ---
         self._tracking_mode = QComboBox()
         self._tracking_mode.addItems(["Incremental", "Accumulative"])
@@ -137,7 +123,7 @@ class ParamPanel(QWidget):
 
         # Prevent mouse wheel from changing values when widget is unfocused
         for widget in [
-            self._subset_size, self._subset_step, self._search_range,
+            self._subset_size, self._subset_step,
             self._tracking_mode, self._ref_mode, self._interval_spin,
         ]:
             widget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
