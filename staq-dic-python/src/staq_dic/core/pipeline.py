@@ -511,11 +511,14 @@ def run_aldic(
         schedule = FrameSchedule.from_mode(para.reference_mode, n_frames)
 
     # --- Resolve init guess mode ---
+    # "auto" → always "previous"; ref-switch detection forces FFT when needed.
+    # This is optimal: within a same-ref segment, consecutive frames have
+    # similar displacement fields; across ref switches, FFT is forced.
     init_guess_mode = para.init_guess_mode
     if init_guess_mode == "auto":
-        init_guess_mode = (
-            "previous" if para.reference_mode == "accumulative" else "fft"
-        )
+        init_guess_mode = "previous"
+    # Track previous ref to detect ref switches (force FFT on switch)
+    prev_ref_idx: int | None = None
     logger.info(
         "Frame schedule: %s (n_frames=%d), init_guess=%s",
         schedule.ref_indices, n_frames, init_guess_mode,
@@ -567,6 +570,17 @@ def run_aldic(
         logger.info(
             "=== Frame %d/%d (ref=%d) ===", frame_idx + 1, n_frames, ref_idx,
         )
+
+        # Force FFT when reference frame changes — the previous frame's
+        # displacement is relative to a different reference, so it cannot
+        # serve as a valid initial guess for the new reference.
+        if prev_ref_idx is not None and ref_idx != prev_ref_idx:
+            logger.info(
+                "Ref switch %d -> %d: forcing FFT for initial guess",
+                prev_ref_idx, ref_idx,
+            )
+            current_U0 = None
+        prev_ref_idx = ref_idx
 
         # --- Load reference image (with cache) ---
         if ref_idx in ref_cache:
