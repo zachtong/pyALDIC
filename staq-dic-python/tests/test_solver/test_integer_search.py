@@ -91,14 +91,15 @@ class TestIntegerSearchZeroDisplacement:
 
         x0, y0, u, v, info = integer_search(img, img, para)
 
-        # All displacements should be essentially zero
-        # Sub-pixel NCC can introduce small jitter (~0.1 px) on noisy speckle
-        assert np.all(np.isfinite(u))
-        np.testing.assert_allclose(u, 0.0, atol=0.1)
-        np.testing.assert_allclose(v, 0.0, atol=0.1)
+        # Mesh now extends to `half_w` from image edges; nodes too close
+        # to the border for NCC search region are left as NaN (to be
+        # inpainted downstream).  Interior nodes must be finite & near-zero.
+        valid = np.isfinite(u) & np.isfinite(v)
+        assert np.sum(valid) > 0
+        np.testing.assert_allclose(u[valid], 0.0, atol=0.1)
+        np.testing.assert_allclose(v[valid], 0.0, atol=0.1)
 
-        # CC should be very high (self-correlation ≈ 1.0)
-        valid = np.isfinite(info["cc_max"])
+        # CC should be very high (self-correlation ≈ 1.0) on valid nodes
         assert np.all(info["cc_max"][valid] > 0.95)
 
 
@@ -178,17 +179,22 @@ class TestGridGeneration:
             np.testing.assert_allclose(dy, WINSTEPSIZE, atol=1e-10)
 
     def test_grid_within_roi(self):
-        """All grid points should lie within the safe interior."""
+        """All grid points should lie within `half_w` of image edges.
+
+        Mesh padding was reduced to `half_w` (from `half_w + search`) to
+        allow IC-GN edge nodes; NCC for those edge nodes is skipped and
+        displacements are inpainted downstream.
+        """
         img = _make_speckle()
         para = _make_dicpara()
         half_w = WINSIZE // 2
 
         x0, y0, u, v, info = integer_search(img, img, para)
 
-        assert np.all(x0 >= half_w + SEARCH)
-        assert np.all(x0 <= IMG_SIZE - 1 - half_w - SEARCH)
-        assert np.all(y0 >= half_w + SEARCH)
-        assert np.all(y0 <= IMG_SIZE - 1 - half_w - SEARCH)
+        assert np.all(x0 >= half_w)
+        assert np.all(x0 <= IMG_SIZE - 1 - half_w)
+        assert np.all(y0 >= half_w)
+        assert np.all(y0 <= IMG_SIZE - 1 - half_w)
 
 
 class TestReturnShapes:
@@ -330,25 +336,26 @@ class TestComputeQfactors:
 # ---------------------------------------------------------------------------
 
 
-class TestSearchRegionWarning:
-    """Very large search region relative to image triggers a warning path."""
+class TestWinsizeTooLarge:
+    """Very large winsize relative to image cannot generate any mesh nodes."""
 
-    def test_warning_flag_set(self):
-        """When search region is too large, the warning flag should be True."""
+    def test_winsize_too_large_raises(self):
+        """winsize >= image_size leaves no room for mesh nodes → ValueError."""
         img = _make_speckle(h=64, w=64)
-        # search=50 on a 64x64 image with winsize=20 → definitely too large
-        para = _make_dicpara(h=64, w=64, search=50)
+        # winsize=64 → half_w=32 → min_x=32, max_x=31 → no nodes possible
+        para = _make_dicpara(h=64, w=64, winsize=64, search=2)
 
-        x0, y0, u, v, info = integer_search(img, img, para)
-
-        assert info["search_region_warning"] is True
+        with pytest.raises(ValueError, match="No grid points"):
+            integer_search(img, img, para)
 
     def test_reduced_search_still_works(self):
-        """After reducing search region, results should still be valid."""
+        """Large search region (but not winsize) is fine; mesh just gets
+        many NaN edge nodes which the downstream inpaint fills in.
+        """
         img = _make_speckle(h=64, w=64)
         para = _make_dicpara(h=64, w=64, search=30)
 
-        # Should not raise; may produce a warning but still return results
+        # Should not raise: mesh generation only depends on winsize
         x0, y0, u, v, info = integer_search(img, img, para)
 
         # Some valid grid points should exist
@@ -425,7 +432,11 @@ class TestMaskHandling:
                 )
 
     def test_unmasked_nodes_finite(self):
-        """Nodes inside the mask should have finite displacement."""
+        """Nodes well inside the mask AND away from image edges should be finite.
+
+        Edge nodes (within `half_w + search` of any image border) now get
+        NaN from NCC and are inpainted downstream, so we exclude them here.
+        """
         img = _make_speckle()
         mask = np.ones((IMG_SIZE, IMG_SIZE), dtype=np.float64)
         mask[:, IMG_SIZE // 2 :] = 0.0
@@ -433,12 +444,21 @@ class TestMaskHandling:
         para = _make_dicpara(img_ref_mask=mask)
         x0, y0, u, v, info = integer_search(img, img, para)
 
+        half_w = WINSIZE // 2
+        ncc_pad = half_w + SEARCH
+
         for ix in range(len(x0)):
-            if x0[ix] < IMG_SIZE // 2 - WINSIZE:
-                # Nodes well inside the unmasked region should be finite
-                assert np.all(np.isfinite(u[:, ix])), (
-                    f"Node at x={x0[ix]} should be finite (inside mask)"
-                )
+            cx = x0[ix]
+            if cx >= ncc_pad and cx < IMG_SIZE // 2 - WINSIZE:
+                for iy in range(len(y0)):
+                    cy = y0[iy]
+                    # Skip nodes too close to top/bottom for NCC
+                    if cy < ncc_pad or cy > IMG_SIZE - 1 - ncc_pad:
+                        continue
+                    assert np.isfinite(u[iy, ix]), (
+                        f"Node at ({cx}, {cy}) should be finite "
+                        f"(inside mask and NCC range)"
+                    )
 
 
 class TestNoGridPointsRaisesError:
