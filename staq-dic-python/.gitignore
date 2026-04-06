@@ -10,3 +10,6 @@ build/
 
 # Generated reports (benchmarks, PDFs, plots)
 reports/
+
+# Archived one-off diagnostic / bench / report scripts (kept local only)
+scripts/_archive/
