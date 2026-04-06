@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
-from PySide6.QtCore import Qt, Signal, QPointF, QRectF
+from PySide6.QtCore import Qt, Signal, QPointF, QRectF, QTimer, QEvent
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -31,6 +31,7 @@ from PySide6.QtGui import (
     QKeyEvent,
 )
 from PySide6.QtWidgets import (
+    QCheckBox,
     QGraphicsEllipseItem,
     QGraphicsLineItem,
     QGraphicsRectItem,
@@ -47,6 +48,7 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.theme import COLORS
 from staq_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from staq_dic.gui.widgets.frame_navigator import FrameNavigator
+from staq_dic.gui.widgets.mesh_overlay import MeshOverlay
 
 from staq_dic.core.data_structures import split_uv
 from staq_dic.gui.controllers.viz_controller import VizController
@@ -69,6 +71,14 @@ _ZOOM_FACTOR = 1.15
 _ZOOM_MIN = 0.10
 _ZOOM_MAX = 20.0
 
+def _centered_arange(lo: int, hi: int, step: int) -> NDArray[np.float64]:
+    """Generate evenly-spaced grid points centered within [lo, hi]."""
+    span = hi - lo
+    n_steps = span // step
+    offset = (span - n_steps * step) // 2
+    return np.arange(lo + offset, hi + 1, step, dtype=np.float64)
+
+
 _PEN_ADD = QPen(QColor(59, 130, 246, 200), 2)  # blue
 _PEN_CUT = QPen(QColor(239, 68, 68, 200), 2)   # red
 
@@ -87,6 +97,15 @@ class ImageCanvas(QGraphicsView):
 
     # Signal emitted when a drawing operation finishes or is canceled
     drawing_finished = Signal()
+
+    # Signal emitted when the viewport transform changes (zoom, pan, scroll)
+    view_changed = Signal()
+
+    # Signal emitted with scene (x, y) when mouse moves over the canvas
+    scene_hover = Signal(float, float)
+
+    # Signal emitted when mouse leaves the canvas
+    hover_left = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -127,6 +146,9 @@ class ImageCanvas(QGraphicsView):
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
         self.setBackgroundBrush(QBrush(QColor(COLORS.BG_CANVAS)))
+
+        # Enable mouse tracking for hover detection (no button press needed)
+        self.setMouseTracking(True)
 
         # --- Interaction state ---
         self._current_tool: str = "select"   # select, pan, rect, polygon, circle
@@ -202,11 +224,13 @@ class ImageCanvas(QGraphicsView):
             return
         self.fitInView(rect, Qt.AspectRatioMode.KeepAspectRatio)
         self._zoom_level = self.transform().m11()
+        self.view_changed.emit()
 
     def zoom_to_100(self) -> None:
         """Reset zoom to 100% (1:1 pixels)."""
         self.resetTransform()
         self._zoom_level = 1.0
+        self.view_changed.emit()
 
     def zoom_in(self) -> None:
         """Zoom in by one step."""
@@ -224,6 +248,7 @@ class ImageCanvas(QGraphicsView):
             return
         self.scale(factor, factor)
         self._zoom_level = new_level
+        self.view_changed.emit()
 
     # ----- wheel zoom -----
 
@@ -268,6 +293,10 @@ class ImageCanvas(QGraphicsView):
 
         super().mousePressEvent(event)
 
+    def scrollContentsBy(self, dx: int, dy: int) -> None:  # noqa: N802
+        super().scrollContentsBy(dx, dy)
+        self.view_changed.emit()
+
     def mouseMoveEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if self._panning:
             delta = event.position() - self._pan_start
@@ -287,6 +316,10 @@ class ImageCanvas(QGraphicsView):
             self._handle_draw_move(scene_pos)
             event.accept()
             return
+
+        # Emit scene hover for mesh overlay subset window
+        sp = self.mapToScene(event.position().toPoint())
+        self.scene_hover.emit(sp.x(), sp.y())
 
         super().mouseMoveEvent(event)
 
@@ -326,6 +359,10 @@ class ImageCanvas(QGraphicsView):
             return
 
         super().mouseDoubleClickEvent(event)
+
+    def leaveEvent(self, event) -> None:  # noqa: N802
+        self.hover_left.emit()
+        super().leaveEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:  # noqa: N802
         # Escape cancels in-progress drawing
@@ -528,6 +565,18 @@ class CanvasArea(QWidget):
         tb_layout.addWidget(btn_zoom_out)
         tb_layout.addStretch()
 
+        # --- Mesh overlay toggles ---
+        self._btn_grid = QCheckBox("Show Grid")
+        self._btn_grid.setToolTip("Show/hide computational mesh grid")
+        self._btn_grid.setChecked(True)
+
+        self._btn_window = QCheckBox("Show Subset")
+        self._btn_window.setToolTip("Show subset window on hover (requires Grid)")
+        self._btn_window.setChecked(False)
+
+        tb_layout.addWidget(self._btn_grid)
+        tb_layout.addWidget(self._btn_window)
+
         layout.addWidget(toolbar)
 
         # --- ROI editing banner (hidden by default) ---
@@ -548,6 +597,20 @@ class CanvasArea(QWidget):
         # --- Colorbar overlay (child of canvas viewport, positioned in resizeEvent) ---
         self._colorbar = ColorbarOverlay(self._canvas.viewport())
 
+        # --- Mesh overlay (child of canvas viewport, same pattern as colorbar) ---
+        self._mesh_overlay = MeshOverlay(self._canvas.viewport())
+
+        # The viewport can resize independently of CanvasArea (e.g. when
+        # scrollbars appear/disappear on zoom).  Watch its resize events so
+        # we can keep both overlays sized to the actual viewport rect.
+        self._canvas.viewport().installEventFilter(self)
+
+        # Debounce timer for preview mesh generation
+        self._mesh_preview_timer = QTimer()
+        self._mesh_preview_timer.setSingleShot(True)
+        self._mesh_preview_timer.setInterval(300)
+        self._mesh_preview_timer.timeout.connect(self._generate_preview_mesh)
+
         # --- Bottom frame navigator ---
         self._frame_nav = FrameNavigator()
         layout.addWidget(self._frame_nav)
@@ -560,20 +623,56 @@ class CanvasArea(QWidget):
 
         self._state.images_changed.connect(self._on_images_changed)
         self._state.current_frame_changed.connect(self._on_frame_changed)
-        self._state.results_changed.connect(self._refresh_overlay)
+        self._state.results_changed.connect(self._on_results_changed)
         self._state.display_changed.connect(self._on_display_changed)
         self._state.roi_changed.connect(self._on_roi_changed)
+        self._state.params_changed.connect(self._on_params_changed_mesh)
+
+        # Mesh overlay toggle wiring
+        self._btn_grid.toggled.connect(self._on_grid_toggled)
+        self._btn_window.toggled.connect(self._on_window_toggled)
+
+        # Lightweight repaint on pan/zoom (paths already built, just update transform)
+        self._canvas.view_changed.connect(self._sync_mesh_view_transform)
+
+        # Subset window hover
+        self._canvas.scene_hover.connect(self._on_scene_hover)
+        self._canvas.hover_left.connect(self._on_hover_left)
+
+        # Current mesh coords + validity for nearest-node search (scene coords)
+        self._hover_mesh_coords: NDArray[np.float64] | None = None
+        self._hover_valid: NDArray[np.bool_] | None = None
 
     @property
     def canvas(self) -> ImageCanvas:
         """Access the underlying ImageCanvas."""
         return self._canvas
 
-    def resizeEvent(self, event) -> None:  # noqa: N802
-        """Reposition the colorbar overlay to fill the canvas viewport."""
-        super().resizeEvent(event)
+    def _sync_overlay_geometry(self) -> None:
+        """Resize child overlays (colorbar, mesh) to fill the viewport rect."""
         vp = self._canvas.viewport()
-        self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
+        rect = (0, 0, vp.width(), vp.height())
+        self._colorbar.setGeometry(*rect)
+        self._mesh_overlay.setGeometry(*rect)
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        """Reposition overlays to fill the canvas viewport."""
+        super().resizeEvent(event)
+        self._sync_overlay_geometry()
+        self._refresh_mesh_overlay()
+
+    def eventFilter(self, obj, event) -> bool:  # noqa: N802
+        """Catch viewport resize events that don't propagate to CanvasArea.
+
+        The QGraphicsView's viewport widget can be resized independently
+        of CanvasArea — most notably when scrollbars appear/disappear as
+        the user zooms past the Fit threshold.  Without this, the overlay
+        widget keeps its old (smaller) geometry and clips mesh elements
+        in the newly-uncovered viewport region.
+        """
+        if obj is self._canvas.viewport() and event.type() == QEvent.Type.Resize:
+            self._sync_overlay_geometry()
+        return super().eventFilter(obj, event)
 
     def set_roi_editing_banner(self, frame: int | None) -> None:
         """Show or hide the ROI editing banner for the given frame."""
@@ -601,16 +700,26 @@ class CanvasArea(QWidget):
 
         self._update_background()
         self._refresh_overlay()
+        self._refresh_mesh_overlay()
 
     def _on_roi_changed(self) -> None:
         """ROI masks changed — invalidate mask-dependent viz caches and refresh."""
         self._viz_ctrl.invalidate_masks()
         self._refresh_overlay()
+        # Always refresh mesh: clear grid when ROI is removed,
+        # regenerate preview when ROI is (re-)drawn.
+        self._refresh_mesh_overlay()
+
+    def _on_results_changed(self) -> None:
+        """Refresh overlays when results change."""
+        self._refresh_overlay()
+        self._refresh_mesh_overlay()
 
     def _on_display_changed(self) -> None:
         """Handle display settings change (field, color, deformed, roi_editing)."""
         self._update_background()
         self._refresh_overlay()
+        self._refresh_mesh_overlay()
 
     def _update_background(self) -> None:
         """Set the background image based on current mode."""
@@ -676,7 +785,7 @@ class CanvasArea(QWidget):
         result = state.results
         # Frame 0 is reference; results start at index 0 for frame pair 0->1
         frame = state.current_frame - 1
-        if frame < 0 or frame >= len(result.result_disp):
+        if frame >= len(result.result_disp):
             overlay.setPixmap(QPixmap())
             overlay.setScale(1.0)
             self._colorbar.setVisible(False)
@@ -684,17 +793,25 @@ class CanvasArea(QWidget):
 
         try:
             ref_nodes = result.dic_mesh.coordinates_fem
-            u_accum = result.result_disp[frame].U_accum
-            if u_accum is None:
-                overlay.setPixmap(QPixmap())
-                overlay.setScale(1.0)
-                return
 
-            u, v = split_uv(u_accum)
+            if frame < 0:
+                # Reference frame (current_frame=0): zero displacement
+                n_nodes = ref_nodes.shape[0]
+                u = np.zeros(n_nodes)
+                v = np.zeros(n_nodes)
+            else:
+                u_accum = result.result_disp[frame].U_accum
+                if u_accum is None:
+                    overlay.setPixmap(QPixmap())
+                    overlay.setScale(1.0)
+                    return
+                u, v = split_uv(u_accum)
+
             values = u if state.display_field == "disp_u" else v
 
             # Deformed mode: shift nodes by accumulated displacement
-            is_deformed = state.show_deformed
+            # (reference frame always shows undeformed config)
+            is_deformed = state.show_deformed and frame >= 0
             if is_deformed:
                 nodes = ref_nodes + np.column_stack([u, v])
             else:
@@ -702,14 +819,13 @@ class CanvasArea(QWidget):
 
             vmin, vmax = state.color_min, state.color_max
             if state.color_auto:
-                valid = values[~np.isnan(values)]
-                if len(valid) > 0:
-                    pct = np.percentile(valid, [2, 98])
+                # Per-frame auto range: 2-98th percentile of current frame
+                valid_vals = values[~np.isnan(values)]
+                if len(valid_vals) > 0:
+                    pct = np.percentile(valid_vals, [2, 98])
                     vmin, vmax = float(pct[0]), float(pct[1])
                 else:
                     vmin, vmax = 0.0, 1.0
-                state.color_min = vmin
-                state.color_max = vmax
 
             # In deformed mode, warp the ROI mask from reference to deformed
             # coordinates via inverse displacement lookup.  This preserves
@@ -760,6 +876,10 @@ class CanvasArea(QWidget):
                 "disp_v": "V (px)",
             }.get(state.display_field, state.display_field)
             self._colorbar.update_params(cmap, vmin, vmax, field_label)
+            # Ensure colorbar fills the full viewport (may have been
+            # initially sized to 0×0 before the canvas was laid out).
+            vp = self._canvas.viewport()
+            self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
             self._colorbar.setVisible(True)
         except Exception as e:
             tb_str = _tb.format_exc()
@@ -770,3 +890,218 @@ class CanvasArea(QWidget):
             overlay.setPixmap(QPixmap())
             overlay.setScale(1.0)
             self._colorbar.setVisible(False)
+
+    # --- Mesh overlay logic ---
+
+    def _on_grid_toggled(self, checked: bool) -> None:
+        self._state.set_show_mesh(checked)
+        self._btn_window.setEnabled(checked)
+        if not checked:
+            self._btn_window.setChecked(False)
+            self._mesh_overlay.setVisible(False)
+            self._hover_mesh_coords = None
+        else:
+            self._refresh_mesh_overlay()
+
+    def _on_window_toggled(self, checked: bool) -> None:
+        self._state.set_show_subset_window(checked)
+        if not checked:
+            self._mesh_overlay.set_hover_node(None)
+
+    def _on_params_changed_mesh(self) -> None:
+        """Debounced mesh preview update when params change."""
+        if self._state.show_mesh and self._state.results is None:
+            self._mesh_preview_timer.start()
+
+    def _sync_mesh_view_transform(self) -> None:
+        """Lightweight sync — update only the transform, no path rebuild."""
+        if self._mesh_overlay.isVisible():
+            self._mesh_overlay.set_view_transform(
+                self._canvas.viewportTransform(),
+            )
+
+    def _refresh_mesh_overlay(self) -> None:
+        """Rebuild mesh overlay data (paths + transform)."""
+        state = self._state
+        if not state.show_mesh:
+            self._mesh_overlay.setVisible(False)
+            return
+
+        if state.results is not None:
+            self._show_results_mesh()
+        elif state.roi_mask is not None:
+            self._mesh_preview_timer.start()
+        else:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+
+    def _node_valid_mask(
+        self,
+        coords: NDArray[np.float64],
+        roi_mask: NDArray[np.bool_] | None,
+    ) -> NDArray[np.bool_]:
+        """Return per-node boolean: True if node is inside the ROI."""
+        n = coords.shape[0]
+        valid = np.ones(n, dtype=bool)
+        if roi_mask is None:
+            return valid
+        h, w = roi_mask.shape
+        ix = np.clip(np.round(coords[:, 0]).astype(int), 0, w - 1)
+        iy = np.clip(np.round(coords[:, 1]).astype(int), 0, h - 1)
+        valid = roi_mask[iy, ix]
+        return valid
+
+    def _show_results_mesh(self) -> None:
+        """Show mesh from pipeline results for the current frame."""
+        state = self._state
+        result = state.results
+        if result is None:
+            return
+
+        frame = state.current_frame - 1
+        meshes = result.result_fe_mesh_each_frame
+        if not meshes:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+            return
+
+        mesh_idx = max(0, min(frame, len(meshes) - 1))
+        mesh = meshes[mesh_idx]
+
+        coords = mesh.coordinates_fem.copy()
+        elements = mesh.elements_fem
+
+        # In deformed mode, offset nodes by accumulated displacement
+        is_deformed = state.show_deformed and frame >= 0
+        if is_deformed and frame < len(result.result_disp):
+            u_accum = result.result_disp[frame].U_accum
+            if u_accum is not None:
+                u, v = split_uv(u_accum)
+                coords = coords + np.column_stack([u, v])
+
+        # Choose mask for node validity:
+        # - Deformed mode: use deformed frame's mask (per-frame ROI or warped)
+        # - Reference mode: use frame-0 ROI mask
+        if is_deformed:
+            mask_for_valid = state.per_frame_rois.get(state.current_frame)
+            if mask_for_valid is None:
+                mask_for_valid = state.roi_mask
+        else:
+            mask_for_valid = state.roi_mask
+        valid = self._node_valid_mask(coords, mask_for_valid)
+
+        self._hover_mesh_coords = coords
+        self._hover_valid = valid
+        self._mesh_overlay.set_mesh(coords, elements, valid)
+        self._mesh_overlay.set_view_transform(self._canvas.viewportTransform())
+        self._mesh_overlay.setVisible(True)
+
+    def _generate_preview_mesh(self) -> None:
+        """Generate a preview mesh from current ROI and params (debounced)."""
+        state = self._state
+        if not state.show_mesh:
+            return
+        roi_mask = state.roi_mask
+        if roi_mask is None:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+            return
+
+        step = state.subset_step
+        h, w = roi_mask.shape
+        half_w = state.subset_size // 2
+
+        # Match actual DIC padding (integer_search.py): only `half_w` is
+        # required for the IC-GN subset to fit.  Edge nodes too close to
+        # the border for NCC search are NaN'd then inpainted; partial-edge
+        # subsets are handled by the masked-subset code path.
+        pad = half_w
+        min_x, max_x = pad, w - 1 - pad
+        min_y, max_y = pad, h - 1 - pad
+        if max_x <= min_x or max_y <= min_y:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+            return
+
+        x0 = _centered_arange(min_x, max_x, step)
+        y0 = _centered_arange(min_y, max_y, step)
+        if len(x0) < 2 or len(y0) < 2:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+            return
+
+        # Build Q4 mesh (same as mesh_setup but without DICPara)
+        nx, ny = len(x0), len(y0)
+        xx, yy = np.meshgrid(x0, y0, indexing="ij")
+        coords = np.column_stack([xx.ravel(), yy.ravel()])
+
+        ii, jj = np.meshgrid(
+            np.arange(nx - 1), np.arange(ny - 1), indexing="ij",
+        )
+        ii_flat, jj_flat = ii.ravel(), jj.ravel()
+        n0 = ii_flat * ny + jj_flat
+        n1 = (ii_flat + 1) * ny + jj_flat
+        n2 = (ii_flat + 1) * ny + (jj_flat + 1)
+        n3 = ii_flat * ny + (jj_flat + 1)
+        elements = np.full((len(n0), 8), -1, dtype=np.int64)
+        elements[:, 0] = n0
+        elements[:, 1] = n1
+        elements[:, 2] = n2
+        elements[:, 3] = n3
+
+        # Trim elements to ROI mask
+        from staq_dic.mesh.mark_inside import mark_inside
+
+        f_mask = roi_mask.astype(np.float64)
+        _, outside_idx = mark_inside(coords, elements, f_mask)
+        if len(outside_idx) < elements.shape[0]:
+            elements = elements[outside_idx]
+
+        # Compute per-node ROI validity
+        valid = self._node_valid_mask(coords, roi_mask)
+
+        self._hover_mesh_coords = coords
+        self._hover_valid = valid
+        self._mesh_overlay.set_mesh(coords, elements, valid)
+        self._mesh_overlay.set_view_transform(self._canvas.viewportTransform())
+        self._mesh_overlay.setVisible(True)
+
+    def _on_scene_hover(self, sx: float, sy: float) -> None:
+        """Find nearest valid mesh node and show subset window."""
+        state = self._state
+        if (
+            not state.show_mesh
+            or not state.show_subset_window
+            or self._hover_mesh_coords is None
+        ):
+            return
+
+        coords = self._hover_mesh_coords
+        valid = getattr(self, "_hover_valid", None)
+
+        dx = coords[:, 0] - sx
+        dy = coords[:, 1] - sy
+        dist_sq = dx * dx + dy * dy
+
+        # Only consider valid (inside-ROI, non-NaN) nodes
+        mask = ~np.isnan(dist_sq)
+        if valid is not None:
+            mask &= valid
+        if not np.any(mask):
+            self._mesh_overlay.set_hover_node(None)
+            return
+
+        dist_sq_masked = np.where(mask, dist_sq, np.inf)
+        min_idx = int(np.argmin(dist_sq_masked))
+
+        threshold = state.subset_step * 1.5
+        if dist_sq_masked[min_idx] > threshold * threshold:
+            self._mesh_overlay.set_hover_node(None)
+            return
+
+        self._mesh_overlay.set_hover_node(min_idx, float(state.subset_size))
+
+    def _on_hover_left(self) -> None:
+        """Clear hover when mouse leaves the canvas."""
+        self._mesh_overlay.set_hover_node(None)
+

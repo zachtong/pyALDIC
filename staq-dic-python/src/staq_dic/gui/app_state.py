@@ -77,6 +77,8 @@ class AppState(QObject):
         self.color_auto: bool = True
         self.color_min: float = 0.0
         self.color_max: float = 1.0
+        self.show_mesh: bool = True
+        self.show_subset_window: bool = False
 
     @property
     def roi_mask(self) -> NDArray[np.bool_] | None:
@@ -184,6 +186,14 @@ class AppState(QObject):
         self.color_auto = auto
         self.color_min = vmin
         self.color_max = vmax
+        self.display_changed.emit()
+
+    def set_show_mesh(self, show: bool) -> None:
+        self.show_mesh = show
+        self.display_changed.emit()
+
+    def set_show_subset_window(self, show: bool) -> None:
+        self.show_subset_window = show
         self.display_changed.emit()
 
     def set_param(self, name: str, value: object) -> None:

@@ -499,6 +499,11 @@ def run_aldic(
     mesh_is_external = mesh is not None
     current_U0: NDArray[np.float64] | None = U0.copy() if U0 is not None else None
 
+    # Untrimmed mesh stored for re-trimming when mask changes across frames
+    # (e.g., ref-switch in incremental mode with per-frame ROIs/masks).
+    base_mesh: DICMesh | None = None
+    prev_mask_hash: int | None = None
+
     # --- Resolve frame schedule ---
     schedule = para.frame_schedule
     if schedule is not None:
@@ -588,22 +593,28 @@ def run_aldic(
         else:
             f_mask = masks[ref_idx].astype(np.float64)
             f_img_raw = img_normalized[ref_idx].copy()
-            f_img = f_img_raw * f_mask  # masked version for integer_search
+            f_img = f_img_raw * f_mask  # masked version for gradient computation
             Df = compute_image_gradient(f_img, f_mask, img_raw=f_img_raw)
             ref_cache[ref_idx] = (f_img, f_img_raw, f_mask, Df)
 
         # --- Load deformed image ---
         g_mask = masks[frame_idx].astype(np.float64)
-        g_img = img_normalized[frame_idx] * g_mask  # masked for FFT search
+        # Raw (unmasked) image for FFT search: masked images zero out
+        # regions that differ between ref/deformed masks, which corrupts
+        # NCC more than the uniform-gray bubble interior does.
+        g_img_fft = img_normalized[frame_idx].copy()
         # Unmasked deformed image for IC-GN: boundary nodes may have
         # displaced positions outside the mask region, and sampling
         # zeros there corrupts the IC-GN correlation.
         g_img_icgn = img_normalized[frame_idx].copy()
         para = replace(para, img_ref_mask=f_mask)
 
-        # Per-frame mesh independence when refinement policy is active
+        # Per-frame mesh independence when refinement policy is active.
+        # Don't set dic_mesh = None — that would force a full mesh_setup
+        # rebuild.  Instead, force re-trim from base_mesh via mask hash
+        # invalidation; pre-solve refinement (below) then refines further.
         if refinement_policy is not None and refinement_policy.has_pre_solve:
-            dic_mesh = None
+            prev_mask_hash = None  # Force re-trim from base_mesh
             current_U0 = None
             # Invalidate subpb1 precompute cache since mesh will change
             subpb1_precompute_cache.pop(ref_idx, None)
@@ -627,17 +638,25 @@ def run_aldic(
         need_fft = dic_mesh is None or current_U0 is None
 
         if need_fft:
-            # FFT integer search for initial guess
+            # FFT integer search for initial guess.
+            # Use raw (unmasked) images for both ref and deformed:
+            # benchmarked 3 strategies on bubble 30→150→30 (25 frames,
+            # 4 configs: ACC/INC × ref-mask/GT-masks):
+            #   both raw:   ACC+GT 0.26, INC+GT 138
+            #   both mask:  ACC+GT 0.33, INC+GT 181
+            #   mask-f only: ACC+GT 0.26, INC+GT 158
+            # Raw-raw wins across all configs.  para.img_ref_mask
+            # handles node-level ROI filtering afterward.
             use_pyramid = para.init_fft_search_method >= 2
             if use_pyramid:
                 logger.info("Running pyramid NCC search for initial guess...")
                 x0, y0, u_grid, v_grid, fft_info = integer_search_pyramid(
-                    f_img, g_img, para,
+                    f_img_raw, g_img_fft, para,
                 )
             else:
                 logger.info("Running FFT integer search for initial guess...")
                 x0, y0, u_grid, v_grid, fft_info = integer_search(
-                    f_img, g_img, para,
+                    f_img_raw, g_img_fft, para,
                 )
 
             # Auto-retry with enlarged search region if peaks are clipped.
@@ -654,78 +673,105 @@ def run_aldic(
                     para, size_of_fft_search_region=new_search,
                 )
                 x0, y0, u_grid, v_grid, fft_info = integer_search(
-                    f_img, g_img, para_retry,
+                    f_img_raw, g_img_fft, para_retry,
                 )
 
             current_U0 = init_disp(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
             )
 
+        # Build mesh from the FFT grid if needed (first frame only).
+        # Store the untrimmed mesh as base_mesh for later re-trimming
+        # when the mask changes (e.g., ref-switch in incremental mode).
+        if dic_mesh is None:
+            dic_mesh = mesh_setup(x0, y0, para)
+            base_mesh = DICMesh(
+                coordinates_fem=dic_mesh.coordinates_fem.copy(),
+                elements_fem=dic_mesh.elements_fem.copy(),
+                irregular=dic_mesh.irregular,
+                mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge.copy(),
+                x0=dic_mesh.x0,
+                y0=dic_mesh.y0,
+                element_min_size=dic_mesh.element_min_size,
+            )
+
+        # Re-trim mesh when mask changes (handles ref-switch in
+        # incremental mode where different frames have different masks).
+        mask_hash = hash(f_mask.tobytes())
+        if mask_hash != prev_mask_hash:
+            # Start from untrimmed base mesh
+            trim_source = base_mesh if base_mesh is not None else dic_mesh
+            _, outside_idx = mark_inside(
+                trim_source.coordinates_fem,
+                trim_source.elements_fem,
+                f_mask,
+            )
+            if len(outside_idx) < trim_source.elements_fem.shape[0]:
+                trimmed_elems = trim_source.elements_fem[outside_idx]
+            else:
+                trimmed_elems = trim_source.elements_fem.copy()
+            dic_mesh = DICMesh(
+                coordinates_fem=trim_source.coordinates_fem.copy(),
+                elements_fem=trimmed_elems,
+                irregular=trim_source.irregular,
+                mark_coord_hole_edge=trim_source.mark_coord_hole_edge.copy(),
+                x0=trim_source.x0,
+                y0=trim_source.y0,
+                element_min_size=trim_source.element_min_size,
+            )
+            logger.info(
+                "Trimmed mesh to mask (hash=%s): %d -> %d elements",
+                mask_hash,
+                trim_source.elements_fem.shape[0],
+                trimmed_elems.shape[0],
+            )
+            # Invalidate subpb2 cache since mesh topology changed
+            subpb2_cache_obj = None
+            subpb2_cache_mhs_key = None
+            prev_mask_hash = mask_hash
+
+        if need_fft:
             # When re-running FFT for a subsequent frame (incremental mode
             # with init_guess_mode="fft"), the FFT grid may differ from the
             # existing mesh (e.g. auto-retry with enlarged search region on
-            # frame 1 produced a smaller grid).  Interpolate the cleaned U0
-            # onto the existing mesh coordinates.
-            if dic_mesh is not None:
-                n_mesh = dic_mesh.coordinates_fem.shape[0]
-                if len(current_U0) != 2 * n_mesh:
-                    from scipy.interpolate import RegularGridInterpolator
+            # frame 1 produced a smaller grid, or refinement_policy reset
+            # the mesh to base_mesh).  Interpolate the cleaned U0 onto the
+            # current mesh coordinates.
+            n_mesh = dic_mesh.coordinates_fem.shape[0]
+            if len(current_U0) != 2 * n_mesh:
+                from scipy.interpolate import RegularGridInterpolator
 
-                    ny_fft, nx_fft = len(y0), len(x0)
-                    # Reverse init_disp assembly: U0[0::2] = u.T.ravel()
-                    u_2d = current_U0[0::2].reshape(nx_fft, ny_fft).T
-                    v_2d = current_U0[1::2].reshape(nx_fft, ny_fft).T
+                ny_fft, nx_fft = len(y0), len(x0)
+                # Reverse init_disp assembly: U0[0::2] = u.T.ravel()
+                u_2d = current_U0[0::2].reshape(nx_fft, ny_fft).T
+                v_2d = current_U0[1::2].reshape(nx_fft, ny_fft).T
 
-                    interp_u = RegularGridInterpolator(
-                        (y0, x0), u_2d, method="linear",
-                        bounds_error=False, fill_value=np.nan,
-                    )
-                    interp_v = RegularGridInterpolator(
-                        (y0, x0), v_2d, method="linear",
-                        bounds_error=False, fill_value=np.nan,
-                    )
-
-                    mesh_xy = dic_mesh.coordinates_fem  # (n, 2): [x, y]
-                    query = np.column_stack([mesh_xy[:, 1], mesh_xy[:, 0]])
-                    current_U0 = np.zeros(2 * n_mesh, dtype=np.float64)
-                    current_U0[0::2] = interp_u(query)
-                    current_U0[1::2] = interp_v(query)
-
-                    logger.info(
-                        "Interpolated FFT U0 (%d nodes) to mesh (%d nodes)",
-                        nx_fft * ny_fft, n_mesh,
-                    )
-
-        # Build mesh from the FFT grid if needed (first frame only)
-        if dic_mesh is None:
-            dic_mesh = mesh_setup(x0, y0, para)
-
-            # Trim mesh: remove elements that fall inside mask holes
-            # so the uniform mesh only covers valid (mask=1) regions.
-            _, outside_idx = mark_inside(
-                dic_mesh.coordinates_fem,
-                dic_mesh.elements_fem,
-                f_mask,
-            )
-            if len(outside_idx) < dic_mesh.elements_fem.shape[0]:
-                trimmed_elems = dic_mesh.elements_fem[outside_idx]
-                dic_mesh = DICMesh(
-                    coordinates_fem=dic_mesh.coordinates_fem,
-                    elements_fem=trimmed_elems,
-                    irregular=dic_mesh.irregular,
-                    mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge,
-                    x0=dic_mesh.x0,
-                    y0=dic_mesh.y0,
-                    element_min_size=dic_mesh.element_min_size,
+                interp_u = RegularGridInterpolator(
+                    (y0, x0), u_2d, method="linear",
+                    bounds_error=False, fill_value=np.nan,
                 )
+                interp_v = RegularGridInterpolator(
+                    (y0, x0), v_2d, method="linear",
+                    bounds_error=False, fill_value=np.nan,
+                )
+
+                mesh_xy = dic_mesh.coordinates_fem  # (n, 2): [x, y]
+                query = np.column_stack([mesh_xy[:, 1], mesh_xy[:, 0]])
+                current_U0 = np.zeros(2 * n_mesh, dtype=np.float64)
+                current_U0[0::2] = interp_u(query)
+                current_U0[1::2] = interp_v(query)
+
                 logger.info(
-                    "Trimmed mesh to mask: %d -> %d elements",
-                    len(outside_idx) + (dic_mesh.elements_fem.shape[0] - len(outside_idx)),
-                    len(outside_idx),
+                    "Interpolated FFT U0 (%d nodes) to mesh (%d nodes)",
+                    nx_fft * ny_fft, n_mesh,
                 )
 
         if need_fft:
-            # Apply mask: NaN for nodes in masked-out regions
+            # Apply mask: NaN for nodes in masked-out regions.
+            # Note: low-coverage boundary nodes are already NaN from
+            # integer_search (coverage pre-filter skips NCC for them).
+            # init_disp fills those NaN from reliable neighbours, giving
+            # IC-GN a smooth initial guess — no re-NaN here.
             n_nodes = dic_mesh.coordinates_fem.shape[0]
             node_x = np.clip(
                 np.round(dic_mesh.coordinates_fem[:, 0]).astype(int), 0, img_w - 1,
