@@ -114,8 +114,7 @@ def integer_search(
             - ``u``: x-displacement grid (N, M), float64 (sub-pixel).
             - ``v``: y-displacement grid (N, M), float64 (sub-pixel).
             - ``info``: Dict with ``'cc_max'`` (N, M) peak NCC values,
-              ``'qfactors'`` (N, M, 2) quality factors [PCE, PPE],
-              ``'search_region_warning'`` flag.
+              ``'qfactors'`` (N, M, 2) quality factors [PCE, PPE].
     """
     h, w = f_img.shape
     roi = para.gridxy_roi_range
@@ -125,26 +124,22 @@ def integer_search(
     half_w = winsize // 2
 
     # Generate grid points (node centers)
-    # Shrink ROI so that subset + search region fits within image
-    min_x = max(roi.gridx[0], half_w + search)
-    max_x = min(roi.gridx[1], w - 1 - half_w - search)
-    min_y = max(roi.gridy[0], half_w + search)
-    max_y = min(roi.gridy[1], h - 1 - half_w - search)
+    # Mesh padding only requires `half_w` (full subset fits in image).
+    # Edge nodes too close to the image border for NCC search (needing
+    # `half_w + search`) will be left as NaN by `_batch_ncc_search` and
+    # filled by `_inpaint_nans` downstream.  IC-GN handles the resulting
+    # partial-edge subsets via the masked-subset code path.
+    min_x = max(roi.gridx[0], half_w)
+    max_x = min(roi.gridx[1], w - 1 - half_w)
+    min_y = max(roi.gridy[0], half_w)
+    max_y = min(roi.gridy[1], h - 1 - half_w)
 
-    search_region_warning = False
     if min_x >= max_x or min_y >= max_y:
         logger.warning(
-            "SizeOfFFTSearchRegion (%d) too large for image (%dx%d) "
-            "with winsize=%d. Reducing search region.",
-            search, h, w, winsize,
+            "winsize (%d) too large for image (%dx%d). "
+            "Cannot generate any mesh nodes.",
+            winsize, h, w,
         )
-        search_region_warning = True
-        # Fall back: use minimal search region
-        search = max(1, min(search, min(h, w) // 4 - half_w))
-        min_x = max(roi.gridx[0], half_w + search)
-        max_x = min(roi.gridx[1], w - 1 - half_w - search)
-        min_y = max(roi.gridy[0], half_w + search)
-        max_y = min(roi.gridy[1], h - 1 - half_w - search)
 
     x0 = _centered_arange(min_x, max_x, winstepsize)
     y0 = _centered_arange(min_y, max_y, winstepsize)
@@ -157,12 +152,29 @@ def integer_search(
 
     ny, nx = len(y0), len(x0)
 
-    # Vectorized NCC search
+    # Pre-compute template coverage: skip NCC entirely for nodes whose
+    # template window has low mask coverage.  These boundary nodes produce
+    # false NCC peaks (edge feature dominates speckle texture).  Skipping
+    # them lets init_disp fill from reliable neighbours instead.
+    skip_mask = None
+    n_skipped = 0
+    if para.img_ref_mask is not None:
+        coverage = _compute_grid_coverage(x0, y0, para.img_ref_mask, half_w)
+        skip_mask = coverage < 0.75
+        n_skipped = int(np.sum(skip_mask))
+        if n_skipped > 0:
+            logger.info(
+                "Coverage pre-filter: skipping NCC for %d/%d nodes "
+                "(coverage < 75%%)",
+                n_skipped, ny * nx,
+            )
+
+    # Vectorized NCC search (low-coverage nodes excluded via skip_mask)
     u_grid, v_grid, cc_max, qfactors = _batch_ncc_search(
-        f_img, g_img, x0, y0, half_w, search,
+        f_img, g_img, x0, y0, half_w, search, skip_mask=skip_mask,
     )
 
-    # Vectorized mask application
+    # Mask application: NaN for nodes whose center is outside the mask
     if para.img_ref_mask is not None:
         _apply_mask_vectorized(u_grid, v_grid, x0, y0, para.img_ref_mask, h, w)
 
@@ -189,25 +201,58 @@ def integer_search(
         n_clipped = 0
         max_abs_disp = 0.0
 
+    # --- Reliability filtering ---
+    # NaN unreliable nodes so init_disp only interpolates from "seeds"
+    # that truly have accurate NCC results.
+    n_rejected = 0
+
+    # (a) Clipped peaks: NCC peak at search boundary → likely wrong
     if peak_clipped:
+        u_grid[clipped_nodes] = np.nan
+        v_grid[clipped_nodes] = np.nan
+        n_rejected += n_clipped
         logger.warning(
             "FFT search: %d/%d nodes have peaks at search boundary "
-            "(max |disp|=%.1f, search=%d). Consider increasing "
-            "size_of_fft_search_region.",
+            "(max |disp|=%.1f, search=%d) -> NaN'd for interpolation.",
             n_clipped, n_valid, max_abs_disp, search,
         )
 
+    # (b) Low NCC quality: weak/ambiguous correlation peak.
+    # PCE (Peak Correlation Energy) < threshold → NCC landscape is
+    # flat or has multiple competing peaks → unreliable.
+    finite_after_clip = np.isfinite(u_grid) & np.isfinite(v_grid)
+    pce_vals = qfactors[:, :, 0]
+    finite_pce = pce_vals[finite_after_clip]
+    if len(finite_pce) > 0:
+        # Adaptive threshold: nodes significantly below median PCE
+        pce_median = np.median(finite_pce)
+        pce_thresh = max(pce_median * 0.1, 1e-3)
+        low_quality = finite_after_clip & (pce_vals < pce_thresh)
+        n_low_q = int(np.sum(low_quality))
+        if n_low_q > 0:
+            u_grid[low_quality] = np.nan
+            v_grid[low_quality] = np.nan
+            n_rejected += n_low_q
+            logger.info(
+                "Quality filter: %d nodes with PCE < %.3f (median=%.3f) "
+                "-> NaN'd",
+                n_low_q, pce_thresh, pce_median,
+            )
+
+    n_seeds = int(np.sum(np.isfinite(u_grid)))
     logger.info(
-        "Integer search complete: %d/%d valid (%dx%d grid), "
+        "Integer search complete: %d seeds / %d total (%dx%d grid), "
+        "%d rejected (coverage=%d, clipped=%d, quality=%d), "
         "mean cc=%.3f",
-        n_valid, ny * nx, ny, nx,
+        n_seeds, ny * nx, ny, nx,
+        n_skipped + n_rejected, n_skipped, n_clipped,
+        n_rejected - n_clipped,
         np.nanmean(cc_max),
     )
 
     info = dict(
         cc_max=cc_max,
         qfactors=qfactors,
-        search_region_warning=search_region_warning,
         peak_clipped=peak_clipped,
         n_clipped=n_clipped,
         max_abs_disp=max_abs_disp,
@@ -282,6 +327,19 @@ def integer_search_pyramid(
         [f.shape for f in f_pyr],
     )
 
+    # Downsample mask through pyramid levels so coverage filtering
+    # applies at every level (not just finest).  Without this, coarse
+    # levels match bubble/hole edges instead of speckle texture.
+    mask_pyr: list[NDArray[np.float64] | None] = [para.img_ref_mask]
+    if para.img_ref_mask is not None:
+        for _ in range(n_levels - 1):
+            prev = mask_pyr[-1]
+            down = cv2.pyrDown(prev.astype(np.float32)).astype(np.float64)
+            # Re-binarize: treat anything < 0.5 as outside mask
+            mask_pyr.append((down >= 0.5).astype(np.float64))
+    else:
+        mask_pyr = [None] * n_levels
+
     # Coarsest level: full search with scaled parameters
     scale = 2 ** (n_levels - 1)
     coarse_h, coarse_w = f_pyr[-1].shape
@@ -298,7 +356,7 @@ def integer_search_pyramid(
                    min(coarse_h - 1, para.gridxy_roi_range.gridy[1] // scale)),
         ),
         img_size=(coarse_h, coarse_w),
-        img_ref_mask=None,  # Mask applied at finest level only
+        img_ref_mask=mask_pyr[-1],
     )
 
     x0_c, y0_c, u_c, v_c, info_c = integer_search(
@@ -352,6 +410,9 @@ def integer_search_pyramid(
     if para.img_ref_mask is not None:
         _apply_mask_vectorized(u_std, v_std, x0_std, y0_std,
                                para.img_ref_mask, h, w)
+        _apply_template_coverage_filter(
+            u_std, v_std, x0_std, y0_std, para.img_ref_mask, half_w,
+        )
 
     n_valid = np.sum(np.isfinite(u_std))
     logger.info(
@@ -364,7 +425,6 @@ def integer_search_pyramid(
     info = dict(
         cc_max=cc_std,
         qfactors=qfactors,
-        search_region_warning=False,
     )
     return x0_std, y0_std, u_std, v_std, info
 
@@ -381,6 +441,7 @@ def _batch_ncc_search(
     y0: NDArray[np.float64],
     half_w: int,
     search: int,
+    skip_mask: NDArray[np.bool_] | None = None,
 ) -> tuple[
     NDArray[np.float64],
     NDArray[np.float64],
@@ -444,6 +505,8 @@ def _batch_ncc_search(
         var_f[ok_idx] = np.maximum(s_f2 / n_pix - (s_f / n_pix) ** 2, 0.0)
 
     valid = ok_mask & (np.sqrt(var_f) > 1e-6)
+    if skip_mask is not None:
+        valid = valid & ~skip_mask
 
     # --- Stage 2: matchTemplate for valid nodes ---
     valid_iy, valid_ix = np.where(valid)
@@ -694,6 +757,129 @@ def _batch_qfactors(
 # ---------------------------------------------------------------------------
 # Vectorized mask application
 # ---------------------------------------------------------------------------
+
+
+def _compute_grid_coverage(
+    x0: NDArray[np.float64],
+    y0: NDArray[np.float64],
+    mask: NDArray,
+    half_w: int,
+) -> NDArray[np.float64]:
+    """Compute template coverage fraction for each grid node.
+
+    Returns (ny, nx) array of coverage fractions in [0, 1].
+    Uses the same integral-image approach as the other coverage functions.
+    """
+    h, w = mask.shape
+    mask_f = (mask > 0.5).astype(np.float64)
+    integral = np.zeros((h + 1, w + 1), dtype=np.float64)
+    np.cumsum(mask_f, axis=0, out=integral[1:, 1:])
+    np.cumsum(integral[1:, 1:], axis=1, out=integral[1:, 1:])
+
+    win = 2 * half_w + 1
+    n_pix = win * win
+
+    cx_int = np.round(x0).astype(np.intp)
+    cy_int = np.round(y0).astype(np.intp)
+    CX_g, CY_g = np.meshgrid(cx_int, cy_int)
+
+    y1 = np.clip(CY_g - half_w, 0, h)
+    y2 = np.clip(CY_g + half_w + 1, 0, h)
+    x1 = np.clip(CX_g - half_w, 0, w)
+    x2 = np.clip(CX_g + half_w + 1, 0, w)
+
+    s = integral[y2, x2] - integral[y1, x2] - integral[y2, x1] + integral[y1, x1]
+    return s / n_pix
+
+
+def _apply_template_coverage_filter(
+    u_grid: NDArray[np.float64],
+    v_grid: NDArray[np.float64],
+    x0: NDArray[np.float64],
+    y0: NDArray[np.float64],
+    mask: NDArray,
+    half_w: int,
+    min_coverage: float = 0.75,
+) -> None:
+    """Reject nodes whose template window has low mask coverage (in-place).
+
+    Nodes near mask boundaries (e.g. bubble edges) produce false NCC peaks
+    because the gray/speckle step edge dominates over actual speckle texture.
+    This filter computes the fraction of template pixels inside the mask and
+    sets u/v to NaN when coverage < *min_coverage*.
+
+    Uses an integral-image approach: O(H*W) precompute, O(1) per node.
+    """
+    h, w = mask.shape
+    # Integral image of the binary mask (float64 for precision)
+    mask_f = (mask > 0.5).astype(np.float64)
+    integral = np.zeros((h + 1, w + 1), dtype=np.float64)
+    np.cumsum(mask_f, axis=0, out=integral[1:, 1:])
+    np.cumsum(integral[1:, 1:], axis=1, out=integral[1:, 1:])
+
+    # Template window size
+    win = 2 * half_w + 1
+    n_pix = win * win
+
+    cx_int = np.round(x0).astype(np.intp)
+    cy_int = np.round(y0).astype(np.intp)
+    CX_g, CY_g = np.meshgrid(cx_int, cy_int)
+
+    # Clamp template bounds to image
+    y1 = np.clip(CY_g - half_w, 0, h)
+    y2 = np.clip(CY_g + half_w + 1, 0, h)
+    x1 = np.clip(CX_g - half_w, 0, w)
+    x2 = np.clip(CX_g + half_w + 1, 0, w)
+
+    # Sum of mask pixels in each template window via integral image
+    s = (integral[y2, x2] - integral[y1, x2]
+         - integral[y2, x1] + integral[y1, x1])
+    coverage = s / n_pix
+
+    low = coverage < min_coverage
+    u_grid[low] = np.nan
+    v_grid[low] = np.nan
+
+
+def compute_template_coverage(
+    coordinates: NDArray[np.float64],
+    mask: NDArray,
+    half_w: int,
+) -> NDArray[np.float64]:
+    """Compute fraction of template window inside mask for each node.
+
+    Works with arbitrary (n, 2) coordinate arrays [x, y],
+    unlike ``_apply_template_coverage_filter`` which requires regular grids.
+
+    Uses an integral-image approach: O(H*W) precompute, O(1) per node.
+
+    Args:
+        coordinates: (n, 2) array of node coordinates [x, y].
+        mask: (H, W) binary mask (1 = inside ROI).
+        half_w: Half-window size (template is 2*half_w+1 square).
+
+    Returns:
+        (n,) array of coverage fractions in [0, 1].
+    """
+    h, w = mask.shape
+    mask_f = (mask > 0.5).astype(np.float64)
+    integral = np.zeros((h + 1, w + 1), dtype=np.float64)
+    np.cumsum(mask_f, axis=0, out=integral[1:, 1:])
+    np.cumsum(integral[1:, 1:], axis=1, out=integral[1:, 1:])
+
+    win = 2 * half_w + 1
+    n_pix = win * win
+
+    cx = np.clip(np.round(coordinates[:, 0]).astype(np.intp), 0, w - 1)
+    cy = np.clip(np.round(coordinates[:, 1]).astype(np.intp), 0, h - 1)
+
+    y1 = np.clip(cy - half_w, 0, h)
+    y2 = np.clip(cy + half_w + 1, 0, h)
+    x1 = np.clip(cx - half_w, 0, w)
+    x2 = np.clip(cx + half_w + 1, 0, w)
+
+    s = integral[y2, x2] - integral[y1, x2] - integral[y2, x1] + integral[y1, x1]
+    return s / n_pix
 
 
 def _apply_mask_vectorized(
@@ -960,11 +1146,13 @@ def _remap_to_standard_grid(
     winstepsize = para.winstepsize
     half_w = winsize // 2
 
-    # Standard grid (same as direct integer_search would produce)
-    min_x = max(roi.gridx[0], half_w + 1)
-    max_x = min(roi.gridx[1], img_w - 1 - half_w - 1)
-    min_y = max(roi.gridy[0], half_w + 1)
-    max_y = min(roi.gridy[1], img_h - 1 - half_w - 1)
+    # Standard grid (same as direct integer_search would produce).
+    # Mesh padding is `half_w` so partial-edge IC-GN nodes can be created;
+    # NCC for those edge nodes is left as NaN and inpainted downstream.
+    min_x = max(roi.gridx[0], half_w)
+    max_x = min(roi.gridx[1], img_w - 1 - half_w)
+    min_y = max(roi.gridy[0], half_w)
+    max_y = min(roi.gridy[1], img_h - 1 - half_w)
 
     x0_std = _centered_arange(min_x, max_x, winstepsize)
     y0_std = _centered_arange(min_y, max_y, winstepsize)

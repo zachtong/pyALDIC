@@ -95,15 +95,22 @@ def _icgn_6dof_single(
 
     norm_init = -1.0
 
-    tempg = np.empty((Sy, Sx))
+    tempg = np.zeros((Sy, Sx))
 
     for step in range(1, max_iter + 1):
         # --- Warp coordinates and interpolate ---
+        # Only iterate masked-in pixels — masked-out pixels (incl. those
+        # outside the image for partial-edge subsets) are skipped so they
+        # don't trigger out_of_bounds rejection.
         out_of_bounds = False
         margin = 2.5
 
         for i in range(Sy):
             for j in range(Sx):
+                if bw_mask[i, j] < 0.5:
+                    tempg[i, j] = 0.0
+                    continue
+
                 u22 = (1.0 + P[0]) * XX[i, j] + P[2] * YY[i, j] + x0 + P[4]
                 v22 = P[1] * XX[i, j] + (1.0 + P[3]) * YY[i, j] + y0 + P[5]
 
@@ -304,15 +311,21 @@ def _icgn_2dof_single(
     delta_lm = 1e-3
     norm_init = -1.0
 
-    tempg = np.empty((Sy, Sx))
+    tempg = np.zeros((Sy, Sx))
 
     for step in range(1, max_iter + 1):
         # Warp + interpolate
+        # Only iterate masked-in pixels — masked-out pixels (incl. those
+        # outside the image for partial-edge subsets) are skipped so they
+        # don't trigger out_of_bounds rejection.
         out_of_bounds = False
         margin = 2.5
 
         for i in range(Sy):
             for j in range(Sx):
+                if bw_mask[i, j] < 0.5:
+                    tempg[i, j] = 0.0
+                    continue
                 u22 = (1.0 + P[0]) * XX[i, j] + P[2] * YY[i, j] + x0 + P[4]
                 v22 = P[1] * XX[i, j] + (1.0 + P[3]) * YY[i, j] + y0 + P[5]
                 if u22 < margin or u22 > w - 1 - margin or v22 < margin or v22 > h - 1 - margin:
@@ -587,22 +600,23 @@ def _precompute_one_6dof(
     x0r = round(x0)
     y0r = round(y0)
     x_lo = int(x0r) - half_w
-    x_hi = int(x0r) + half_w
     y_lo = int(y0r) - half_w
-    y_hi = int(y0r) + half_w
 
-    if x_lo < 0 or y_lo < 0 or x_hi >= w or y_hi >= h:
+    # Center pixel must be inside image (sanity check on node position)
+    if x0r < 0 or x0r >= w or y0r < 0 or y0r >= h:
         return ref_sub, gx_sub, gy_sub, bw, XX, YY, H, 0.0, 1.0, False, True
 
-    # Extract mask patch and check coverage (mask-based, not pixel-value)
-    n_masked = 0
+    # Extract mask patch — out-of-image pixels treated as mask=0 so the
+    # flood-fill naturally clips the subset to the in-image region.
     mask_patch = np.empty((Sy, Sx), dtype=np.float64)
     for iy in range(Sy):
+        gy_pix = y_lo + iy
         for ix in range(Sx):
-            m = img_ref_mask[y_lo + iy, x_lo + ix]
-            mask_patch[iy, ix] = m
-            if m < 0.5:
-                n_masked += 1
+            gx_pix = x_lo + ix
+            if gy_pix < 0 or gy_pix >= h or gx_pix < 0 or gx_pix >= w:
+                mask_patch[iy, ix] = 0.0
+            else:
+                mask_patch[iy, ix] = img_ref_mask[gy_pix, gx_pix]
 
     # Flood-fill connected center mask
     bw = _flood_fill_center(mask_patch, Sy, Sx)
@@ -617,19 +631,23 @@ def _precompute_one_6dof(
     if n_connected < int(0.5 * Sy * Sx):
         return ref_sub, gx_sub, gy_sub, bw, XX, YY, H, 0.0, 1.0, False, True
 
-    # Extract subsets with mask — img_ref is raw (unmasked)
+    # Extract subsets with mask — img_ref is raw (unmasked).
+    # Since flood-fill already zeroed out-of-image pixels, we can safely
+    # read img_ref/df_dx/df_dy only where bw>0.5.
     n_valid = 0
     sum_f = 0.0
     for iy in range(Sy):
         for ix in range(Sx):
             b = bw[iy, ix]
-            r = img_ref[y_lo + iy, x_lo + ix] * b
-            ref_sub[iy, ix] = r
-            gx_sub[iy, ix] = df_dx[y_lo + iy, x_lo + ix] * b
-            gy_sub[iy, ix] = df_dy[y_lo + iy, x_lo + ix] * b
             XX[iy, ix] = float(x_lo + ix) - x0r
             YY[iy, ix] = float(y_lo + iy) - y0r
             if b > 0.5:
+                gy_pix = y_lo + iy
+                gx_pix = x_lo + ix
+                r = img_ref[gy_pix, gx_pix]
+                ref_sub[iy, ix] = r
+                gx_sub[iy, ix] = df_dx[gy_pix, gx_pix]
+                gy_sub[iy, ix] = df_dy[gy_pix, gx_pix]
                 n_valid += 1
                 sum_f += r
 
@@ -775,22 +793,23 @@ def _precompute_one_2dof(
     x0r = round(x0)
     y0r = round(y0)
     x_lo = int(x0r) - half_wx
-    x_hi = int(x0r) + half_wx
     y_lo = int(y0r) - half_wy
-    y_hi = int(y0r) + half_wy
 
-    if x_lo < 0 or y_lo < 0 or x_hi >= w or y_hi >= h:
+    # Center pixel must be inside image (sanity check on node position)
+    if x0r < 0 or x0r >= w or y0r < 0 or y0r >= h:
         return ref_sub, gx_sub, gy_sub, bw, XX, YY, H2, 0.0, 1.0, False
 
-    # Extract mask patch and check coverage (mask-based, not pixel-value)
-    n_masked = 0
+    # Extract mask patch — out-of-image pixels treated as mask=0 so the
+    # flood-fill naturally clips the subset to the in-image region.
     mask_patch = np.empty((sy, sx), dtype=np.float64)
     for iy in range(sy):
+        gy_pix = y_lo + iy
         for ix in range(sx):
-            m = img_ref_mask[y_lo + iy, x_lo + ix]
-            mask_patch[iy, ix] = m
-            if m < 0.5:
-                n_masked += 1
+            gx_pix = x_lo + ix
+            if gy_pix < 0 or gy_pix >= h or gx_pix < 0 or gx_pix >= w:
+                mask_patch[iy, ix] = 0.0
+            else:
+                mask_patch[iy, ix] = img_ref_mask[gy_pix, gx_pix]
 
     # Flood-fill connected center mask
     bw_local = _flood_fill_center(mask_patch, sy, sx)
@@ -805,7 +824,8 @@ def _precompute_one_2dof(
     if n_connected < int(0.5 * sy * sx):
         return ref_sub, gx_sub, gy_sub, bw, XX, YY, H2, 0.0, 1.0, False
 
-    # Extract subsets and compute stats — img_ref is raw (unmasked)
+    # Extract subsets and compute stats — img_ref is raw (unmasked).
+    # Read pixels only where bw>0.5 (flood-fill already excluded out-of-image).
     n_valid = 0
     sum_f = 0.0
     sum_gx2 = 0.0
@@ -815,19 +835,21 @@ def _precompute_one_2dof(
     for iy in range(sy):
         for ix in range(sx):
             b = bw_local[iy, ix]
-            r = img_ref[y_lo + iy, x_lo + ix] * b
-            gx = df_dx[y_lo + iy, x_lo + ix] * b
-            gy = df_dy[y_lo + iy, x_lo + ix] * b
-            ref_sub[iy, ix] = r
-            gx_sub[iy, ix] = gx
-            gy_sub[iy, ix] = gy
             bw[iy, ix] = b
             XX[iy, ix] = float(x_lo + ix) - x0r
             YY[iy, ix] = float(y_lo + iy) - y0r
-            sum_gx2 += gx * gx
-            sum_gy2 += gy * gy
-            sum_gxgy += gx * gy
             if b > 0.5:
+                gy_pix = y_lo + iy
+                gx_pix = x_lo + ix
+                r = img_ref[gy_pix, gx_pix]
+                gx = df_dx[gy_pix, gx_pix]
+                gy = df_dy[gy_pix, gx_pix]
+                ref_sub[iy, ix] = r
+                gx_sub[iy, ix] = gx
+                gy_sub[iy, ix] = gy
+                sum_gx2 += gx * gx
+                sum_gy2 += gy * gy
+                sum_gxgy += gx * gy
                 n_valid += 1
                 sum_f += r
 
