@@ -8,6 +8,7 @@ import traceback
 
 import numpy as np
 from PySide6.QtCore import QThread, Signal
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 from staq_dic.core.config import dicpara_default
 from staq_dic.core.data_structures import FrameSchedule, GridxyROIRange
@@ -38,6 +39,57 @@ def _build_masks(
         else:
             masks.append(np.ones(img_shape, dtype=np.float64))
     return masks
+
+
+def _confirm_incomplete_ref_rois(
+    state: AppState, ref_frame_set: set[int]
+) -> bool:
+    """Warn the user when some reference frames lack a per-frame ROI mask.
+
+    Returns ``True`` if the run should proceed (no missing refs, or user
+    explicitly confirmed), ``False`` if the user declined.
+
+    The check excludes frame 0 because its ROI is a hard prerequisite
+    that PipelineController.start() validates earlier.
+    """
+    missing = sorted(
+        f for f in ref_frame_set
+        if f != 0 and f not in state.per_frame_rois
+    )
+    if not missing:
+        return True
+
+    # Convert to 1-based frame numbers for display (matches GUI labelling)
+    display_frames = [f + 1 for f in missing]
+    if len(display_frames) <= 10:
+        frames_str = ", ".join(str(f) for f in display_frames)
+    else:
+        head = ", ".join(str(f) for f in display_frames[:10])
+        frames_str = f"{head}, ... ({len(display_frames)} frames total)"
+
+    text = (
+        "<b>Incomplete ROI coverage in incremental mode</b><br><br>"
+        f"You are running incremental mode, but {len(display_frames)} "
+        "reference frame(s) do not have their own ROI mask:<br>"
+        f"<i>Frame {frames_str}</i><br><br>"
+        "These reference frames will <b>inherit frame 1's ROI mask</b>, "
+        "which is geometrically not strictly correct because the "
+        "material moves between frames. Results near the ROI boundary "
+        "may be inaccurate.<br><br>"
+        "For best accuracy, define a per-frame ROI mask for each "
+        "reference frame.<br><br>"
+        "<b>Continue with the inherited masks?</b>"
+    )
+
+    parent = QApplication.activeWindow()
+    button = QMessageBox.question(
+        parent,
+        "Incomplete ROI Coverage",
+        text,
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+        QMessageBox.StandardButton.No,
+    )
+    return button == QMessageBox.StandardButton.Yes
 
 
 class PipelineWorker(QThread):
@@ -255,6 +307,27 @@ class PipelineController:
             )
 
             ref_frame_set = schedule.ref_frame_set if schedule is not None else {0}
+
+            # In incremental mode every reference frame ideally has its own
+            # ROI mask: a mask defined on frame 0 is geometrically wrong for
+            # frame K if the material has moved between them.  When some
+            # ref frames are missing a mask we currently fall back to
+            # frame 0's mask (see _build_masks); ask the user to confirm
+            # before doing so.
+            if (
+                state.tracking_mode == "incremental"
+                and not _confirm_incomplete_ref_rois(
+                    state, ref_frame_set
+                )
+            ):
+                state.log_message.emit(
+                    "Run cancelled: define per-frame ROIs for the "
+                    "missing reference frames or accept the inherited "
+                    "frame-1 mask in the next run.",
+                    "warn",
+                )
+                return
+
             masks = _build_masks(
                 state.per_frame_rois, n_images,
                 roi_mask_0.shape, ref_frame_set,
