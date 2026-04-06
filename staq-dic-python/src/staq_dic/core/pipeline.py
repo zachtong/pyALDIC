@@ -659,22 +659,49 @@ def run_aldic(
                     f_img_raw, g_img_fft, para,
                 )
 
-            # Auto-retry with enlarged search region if peaks are clipped.
-            if fft_info.get("peak_clipped", False) and not use_pyramid:
-                max_disp = fft_info["max_abs_disp"]
-                needed = int(np.ceil(max_disp * 1.5)) + 2
-                new_search = max(para.size_of_fft_search_region, needed)
-                logger.warning(
-                    "FFT peaks clipped at search boundary (%d nodes, "
-                    "max_disp=%.1f). Retrying with search_region=%d.",
-                    fft_info["n_clipped"], max_disp, new_search,
-                )
-                para_retry = replace(
-                    para, size_of_fft_search_region=new_search,
-                )
-                x0, y0, u_grid, v_grid, fft_info = integer_search(
-                    f_img_raw, g_img_fft, para_retry,
-                )
+            # Auto-retry loop: keep enlarging search region until peaks
+            # are no longer clipped (or hard cap reached). Each retry
+            # grows by at least 1.5x so the loop terminates quickly.
+            # Only applies to direct FFT; pyramid has its own failure
+            # mode on masked ROI (see docs/plans/...) and is not retried.
+            if not use_pyramid:
+                img_h, img_w = f_img_raw.shape[:2]
+                max_search_cap = max(32, min(img_h, img_w) // 2)
+                current_search = para.size_of_fft_search_region
+                for retry_idx in range(6):
+                    if not fft_info.get("peak_clipped", False):
+                        break
+                    max_disp = fft_info["max_abs_disp"]
+                    needed = int(np.ceil(max_disp * 1.5)) + 2
+                    grown = int(np.ceil(current_search * 1.5)) + 2
+                    new_search = max(needed, grown)
+                    if new_search >= max_search_cap:
+                        new_search = max_search_cap
+                        logger.warning(
+                            "FFT peaks still clipped (%d nodes, "
+                            "max_disp=%.1f); search_region hit hard cap "
+                            "%d (image half-size). Accepting result.",
+                            fft_info["n_clipped"], max_disp, new_search,
+                        )
+                        if new_search == current_search:
+                            break
+                    else:
+                        logger.warning(
+                            "FFT peaks clipped at search boundary "
+                            "(%d nodes, max_disp=%.1f). Retry %d: "
+                            "search_region %d -> %d.",
+                            fft_info["n_clipped"], max_disp,
+                            retry_idx + 1, current_search, new_search,
+                        )
+                    para_retry = replace(
+                        para, size_of_fft_search_region=new_search,
+                    )
+                    x0, y0, u_grid, v_grid, fft_info = integer_search(
+                        f_img_raw, g_img_fft, para_retry,
+                    )
+                    current_search = new_search
+                    if new_search >= max_search_cap:
+                        break
 
             current_U0 = init_disp(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
