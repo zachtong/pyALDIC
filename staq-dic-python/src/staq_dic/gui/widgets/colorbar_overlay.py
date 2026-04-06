@@ -33,42 +33,27 @@ _RIGHT_MARGIN = 14
 
 
 def _nice_ticks(vmin: float, vmax: float, n: int = 5) -> list[float]:
-    """Generate ~n nicely-rounded tick values between vmin and vmax."""
+    """Generate exactly *n* evenly-spaced tick values from vmin to vmax.
+
+    The bottom tick is always vmin and the top tick is always vmax, with
+    n-2 interior ticks dividing the range into n-1 equal intervals.
+    Example: vmin=-8, vmax=12, n=5  ->  [-8, -3, 2, 7, 12]
+    """
     if vmax <= vmin:
         return [vmin]
-    raw_step = (vmax - vmin) / max(n - 1, 1)
-    # Round step to 1, 2, or 5 × 10^k
-    magnitude = 10 ** np.floor(np.log10(max(abs(raw_step), 1e-15)))
-    residual = raw_step / magnitude
-    if residual <= 1.5:
-        nice_step = 1.0 * magnitude
-    elif residual <= 3.5:
-        nice_step = 2.0 * magnitude
-    elif residual <= 7.5:
-        nice_step = 5.0 * magnitude
-    else:
-        nice_step = 10.0 * magnitude
-
-    start = np.ceil(vmin / nice_step) * nice_step
-    ticks = []
-    val = start
-    while val <= vmax + nice_step * 0.01:
-        ticks.append(float(val))
-        val += nice_step
-    # Always include endpoints if they're missing
-    if not ticks or ticks[0] > vmin + nice_step * 0.1:
-        ticks.insert(0, float(vmin))
-    if ticks[-1] < vmax - nice_step * 0.1:
-        ticks.append(float(vmax))
-    return ticks
+    step = (vmax - vmin) / max(n - 1, 1)
+    return [float(vmin + i * step) for i in range(n)]
 
 
 def _format_tick(val: float) -> str:
     """Format a tick value compactly."""
     if abs(val) < 1e-10:
         return "0"
-    if abs(val) >= 100 or (abs(val) < 0.01 and val != 0):
+    if abs(val) >= 1000 or (abs(val) < 0.01 and val != 0):
         return f"{val:.2e}"
+    # Use integer format when the value is close to an integer
+    if abs(val - round(val)) < 1e-6:
+        return f"{int(round(val))}"
     if abs(val) < 1:
         return f"{val:.3f}"
     return f"{val:.2f}"
