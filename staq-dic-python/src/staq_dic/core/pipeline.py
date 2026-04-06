@@ -613,9 +613,14 @@ def run_aldic(
         # Don't set dic_mesh = None — that would force a full mesh_setup
         # rebuild.  Instead, force re-trim from base_mesh via mask hash
         # invalidation; pre-solve refinement (below) then refines further.
+        # NOTE: do *not* clear current_U0 here.  Sibling reuse (the
+        # `else` branch around line 815) re-fetches the previous
+        # frame's converged U from result_disp and interpolates it
+        # onto the freshly re-trimmed mesh, avoiding an FFT search per
+        # frame.  Clearing current_U0 here would force need_fft=True
+        # and defeat that warm-start path.
         if refinement_policy is not None and refinement_policy.has_pre_solve:
             prev_mask_hash = None  # Force re-trim from base_mesh
-            current_U0 = None
             # Invalidate subpb1 precompute cache since mesh will change
             subpb1_precompute_cache.pop(ref_idx, None)
 
@@ -817,12 +822,16 @@ def run_aldic(
 
             # Sibling reuse: find a completed frame with the same reference
             sibling_U = None
+            sibling_coords = None
             for prev_i in range(frame_idx - 1, 0, -1):
                 if (
                     result_disp[prev_i - 1] is not None
                     and schedule.parent(prev_i) == ref_idx
                 ):
                     sibling_U = result_disp[prev_i - 1].U
+                    sibling_mesh = result_fe_mesh[prev_i - 1]
+                    if sibling_mesh is not None:
+                        sibling_coords = sibling_mesh.coordinates_fem
                     logger.info(
                         "Sibling reuse: frame %d -> frame %d (same ref=%d)",
                         prev_i + 1, frame_idx + 1, ref_idx,
@@ -830,15 +839,56 @@ def run_aldic(
                     break
 
             if sibling_U is not None:
-                current_U0 = sibling_U.copy()
+                # When the sibling's mesh has the same node count as the
+                # current (post-trim) mesh, the node ordering matches and
+                # we can copy directly.  When refinement + per-frame masks
+                # cause the meshes to differ, interpolate via the
+                # connected-component aware ``_interpolate_u0`` helper.
+                if (
+                    sibling_coords is not None
+                    and len(sibling_U) != 2 * n_nodes
+                ):
+                    from ..mesh.generate_mesh import _interpolate_u0
+                    current_U0 = _interpolate_u0(
+                        sibling_coords,
+                        dic_mesh.coordinates_fem,
+                        sibling_U,
+                        f_mask,
+                        (img_h, img_w),
+                    )
+                    logger.info(
+                        "Sibling reuse: interpolated U0 from %d -> %d nodes",
+                        sibling_coords.shape[0], n_nodes,
+                    )
+                else:
+                    current_U0 = sibling_U.copy()
             elif frame_idx >= 2:
                 # Fall back to previous frame result (may have different ref)
                 prev = result_disp[frame_idx - 2]
                 if prev is not None:
-                    current_U0 = prev.U.copy()
+                    prev_mesh = result_fe_mesh[frame_idx - 2]
+                    if (
+                        prev_mesh is not None
+                        and len(prev.U) != 2 * n_nodes
+                    ):
+                        from ..mesh.generate_mesh import _interpolate_u0
+                        current_U0 = _interpolate_u0(
+                            prev_mesh.coordinates_fem,
+                            dic_mesh.coordinates_fem,
+                            prev.U,
+                            f_mask,
+                            (img_h, img_w),
+                        )
+                    else:
+                        current_U0 = prev.U.copy()
                 else:
                     current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
-            # else: frame_idx == 1 with externally provided mesh+U0 — keep it
+            else:
+                # frame_idx == 1: no previous results.  If a stale
+                # current_U0 from a re-trimmed mesh persists, drop it
+                # so the assertion below doesn't trip.
+                if current_U0 is None or len(current_U0) != 2 * n_nodes:
+                    current_U0 = np.zeros(2 * n_nodes, dtype=np.float64)
 
         # --- Pre-solve refinement ---
         if refinement_policy is not None and refinement_policy.has_pre_solve:
@@ -1203,13 +1253,24 @@ def run_aldic(
     valid_strain = [r for r in result_strain if r is not None]
     valid_mesh = [r for r in result_fe_mesh if r is not None]
 
-    pipeline_result = PipelineResult(
-        dic_para=para,
-        dic_mesh=dic_mesh
-        or DICMesh(
+    # The canonical mesh exposed via ``PipelineResult.dic_mesh`` is the
+    # frame-0 reference mesh — that is the mesh on which
+    # ``_compute_cumulative_displacements_tree`` defines ``U_accum`` for
+    # every frame.  Pre-fix this was set to the loop variable
+    # ``dic_mesh`` (the *last* iteration's mesh), which broke GUI
+    # overlay rendering whenever incremental + per-frame refinement
+    # produced differently sized meshes per frame.
+    canonical_mesh = (
+        result_fe_mesh[0]
+        if result_fe_mesh and result_fe_mesh[0] is not None
+        else DICMesh(
             coordinates_fem=np.empty((0, 2)),
             elements_fem=np.empty((0, 8), dtype=np.int64),
-        ),
+        )
+    )
+    pipeline_result = PipelineResult(
+        dic_para=para,
+        dic_mesh=canonical_mesh,
         result_disp=valid_disp,
         result_def_grad=valid_grad,
         result_strain=valid_strain,
