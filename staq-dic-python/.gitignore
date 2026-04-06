@@ -13,3 +13,6 @@ reports/
 
 # Archived one-off diagnostic / bench / report scripts (kept local only)
 scripts/_archive/
+
+# Archived historical plan docs (kept local only)
+docs/plans/_archive/
