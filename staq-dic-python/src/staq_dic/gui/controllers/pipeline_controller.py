@@ -14,6 +14,7 @@ from staq_dic.core.config import dicpara_default
 from staq_dic.core.data_structures import FrameSchedule, GridxyROIRange
 from staq_dic.core.pipeline import run_aldic
 from staq_dic.gui.app_state import AppState, RunState
+from staq_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
 
 
 def _build_masks(
@@ -104,11 +105,13 @@ class PipelineWorker(QThread):
         para,
         images: list[np.ndarray],
         masks: list[np.ndarray],
+        refinement_policy: RefinementPolicy | None = None,
     ) -> None:
         super().__init__()
         self._para = para
         self._images = [img.copy() for img in images]
         self._masks = [m.copy() for m in masks]
+        self._refinement_policy = refinement_policy
 
         self._stop_requested = False
         self._pause_event = threading.Event()
@@ -139,6 +142,7 @@ class PipelineWorker(QThread):
                 progress_fn=self._on_progress,
                 stop_fn=self._should_stop,
                 compute_strain=False,
+                refinement_policy=self._refinement_policy,
             )
             elapsed = time.perf_counter() - t0
             self.log.emit(f"Analysis complete in {elapsed:.1f}s", "success")
@@ -343,8 +347,35 @@ class PipelineController:
                     "info",
                 )
 
+            # Build refinement policy from GUI state. The factory returns
+            # None when both checkboxes are off, which makes run_aldic skip
+            # all refinement (uniform mesh fast path).
+            refinement_policy = build_refinement_policy(
+                refine_inner_boundary=state.refine_inner,
+                refine_outer_boundary=state.refine_outer,
+                min_element_size=state.compute_refinement_min_size(),
+                # half_win is the IC-GN window half-width in pixels.
+                # state.subset_size already stores the even internal value
+                # (display 41 -> internal 40), and half_win = winsize / 2.
+                half_win=max(1, state.subset_size // 2),
+            )
+            if refinement_policy is not None:
+                bits = []
+                if state.refine_inner:
+                    bits.append("inner")
+                if state.refine_outer:
+                    bits.append("outer")
+                state.log_message.emit(
+                    f"  Refinement: {'+'.join(bits)} "
+                    f"(level={state.refinement_level}, "
+                    f"min_size={state.compute_refinement_min_size()} px)",
+                    "info",
+                )
+
             # Launch worker
-            self._worker = PipelineWorker(para, images, masks)
+            self._worker = PipelineWorker(
+                para, images, masks, refinement_policy=refinement_policy
+            )
             self._worker.progress.connect(self._on_progress)
             self._worker.log.connect(
                 lambda msg, lvl: state.log_message.emit(msg, lvl)

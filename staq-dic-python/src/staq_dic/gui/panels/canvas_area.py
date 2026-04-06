@@ -1067,6 +1067,14 @@ class CanvasArea(QWidget):
         if len(outside_idx) < elements.shape[0]:
             elements = elements[outside_idx]
 
+        # Optional: apply user-configured refinement so the preview reflects
+        # what the pipeline will actually compute.  Best-effort: if anything
+        # goes wrong we silently fall back to the uniform mesh.
+        if state.refine_inner or state.refine_outer:
+            refined = self._apply_preview_refinement(coords, elements, f_mask)
+            if refined is not None:
+                coords, elements = refined
+
         # Compute per-node ROI validity
         valid = self._node_valid_mask(coords, roi_mask)
 
@@ -1075,6 +1083,58 @@ class CanvasArea(QWidget):
         self._mesh_overlay.set_mesh(coords, elements, valid)
         self._mesh_overlay.set_view_transform(self._canvas.viewportTransform())
         self._mesh_overlay.setVisible(True)
+
+    def _apply_preview_refinement(
+        self,
+        coords: NDArray[np.float64],
+        elements: NDArray[np.int64],
+        f_mask: NDArray[np.float64],
+    ) -> tuple[NDArray[np.float64], NDArray[np.int64]] | None:
+        """Apply the current refinement policy to a uniform preview mesh.
+
+        Returns the refined ``(coords, elements)`` tuple, or ``None`` if
+        refinement is not applicable or the driver fails for any reason.
+        Refinement is best-effort for preview — failures must never block
+        the GUI.
+        """
+        state = self._state
+        try:
+            from staq_dic.core.data_structures import DICMesh
+            from staq_dic.mesh.refinement import (
+                RefinementContext,
+                build_refinement_policy,
+                refine_mesh,
+            )
+
+            policy = build_refinement_policy(
+                refine_inner_boundary=state.refine_inner,
+                refine_outer_boundary=state.refine_outer,
+                min_element_size=state.compute_refinement_min_size(),
+                half_win=max(1, state.subset_size // 2),
+            )
+            if policy is None or not policy.has_pre_solve:
+                return None
+
+            h, w = f_mask.shape
+            starting_mesh = DICMesh(
+                coordinates_fem=coords,
+                elements_fem=elements,
+                element_min_size=int(state.subset_step),
+            )
+            ctx = RefinementContext(mesh=starting_mesh, mask=f_mask)
+            U0 = np.zeros(2 * coords.shape[0], dtype=np.float64)
+
+            refined_mesh, _ = refine_mesh(
+                starting_mesh,
+                policy.pre_solve,
+                ctx,
+                U0=U0,
+                mask=f_mask,
+                img_size=(h, w),
+            )
+            return refined_mesh.coordinates_fem, refined_mesh.elements_fem
+        except Exception:  # noqa: BLE001
+            return None
 
     def _on_scene_hover(self, sx: float, sy: float) -> None:
         """Find nearest valid mesh node and show subset window."""

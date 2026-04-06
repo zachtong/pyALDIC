@@ -2,6 +2,7 @@
 
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QHBoxLayout,
     QLabel,
@@ -45,9 +46,60 @@ class ParamPanel(QWidget):
             options=[4, 8, 16, 32, 64],
             tooltip="Node spacing in pixels (must be power of 2)",
         )
-        self._subset_step.currentTextChanged.connect(
-            lambda v: state.set_param("subset_step", int(v))
+        self._subset_step.currentTextChanged.connect(self._on_subset_step_changed)
+
+        # --- Mesh Refinement (inner / outer boundary) ---
+        # Two independent toggles + a single level selector that controls how
+        # aggressively the mesh is refined near the active criteria.
+        self._refine_inner_cb = QCheckBox("Refine Inner Boundary")
+        self._refine_inner_cb.setChecked(state.refine_inner)
+        self._refine_inner_cb.setToolTip(
+            "Locally refine the mesh along internal mask boundaries\n"
+            "(holes inside the ROI). Useful for bubble / void edges."
         )
+        self._refine_outer_cb = QCheckBox("Refine Outer Boundary")
+        self._refine_outer_cb.setChecked(state.refine_outer)
+        self._refine_outer_cb.setToolTip(
+            "Locally refine the mesh along the outer ROI boundary."
+        )
+        # Indent the checkboxes so they visually belong to the subset_step row
+        inner_row = QHBoxLayout()
+        inner_row.setContentsMargins(120, 0, 0, 0)
+        inner_row.addWidget(self._refine_inner_cb)
+        layout.addLayout(inner_row)
+        outer_row = QHBoxLayout()
+        outer_row.setContentsMargins(120, 0, 0, 0)
+        outer_row.addWidget(self._refine_outer_cb)
+        layout.addLayout(outer_row)
+
+        # Level selector — items are populated dynamically from
+        # AppState.compute_max_refinement_level() so the choices honor both
+        # the integer constraint (subset_step / 2^level >= 2) and the
+        # physical constraint (node spacing >= subset_size / 4).
+        self._refine_level = QComboBox()
+        self._refine_level.setToolTip(
+            "Refinement aggressiveness. min element size = "
+            "max(2, subset_step / 2^level). Available levels depend on "
+            "subset size and subset step."
+        )
+        level_row = QHBoxLayout()
+        self._refine_level_lbl = QLabel("Refinement Level")
+        self._refine_level_lbl.setFixedWidth(120)
+        level_row.addWidget(self._refine_level_lbl)
+        level_row.addWidget(self._refine_level)
+        layout.addLayout(level_row)
+
+        # Live readout of the computed min element size
+        self._refine_info_lbl = QLabel()
+        self._refine_info_lbl.setContentsMargins(120, 0, 0, 0)
+        self._refine_info_lbl.setStyleSheet("color: #888; font-size: 10px;")
+        layout.addWidget(self._refine_info_lbl)
+
+        # Wire refinement signals
+        self._refine_inner_cb.toggled.connect(self._on_refine_inner_toggled)
+        self._refine_outer_cb.toggled.connect(self._on_refine_outer_toggled)
+        self._refine_level.currentIndexChanged.connect(self._on_refine_level_changed)
+        self._update_refinement_ui()
 
         # --- Tracking Mode ---
         self._tracking_mode = QComboBox()
@@ -125,6 +177,7 @@ class ParamPanel(QWidget):
         for widget in [
             self._subset_size, self._subset_step,
             self._tracking_mode, self._ref_mode, self._interval_spin,
+            self._refine_level,
         ]:
             widget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             widget.installEventFilter(self)
@@ -179,6 +232,80 @@ class ParamPanel(QWidget):
             self._subset_size.blockSignals(False)
         # Store even value internally (display 41 -> internal 40)
         AppState.instance().set_param("subset_size", display_value - 1)
+        # subset_size affects the physical constraint — rebuild dropdown
+        self._update_refinement_ui()
+
+    def _on_subset_step_changed(self, value_text: str) -> None:
+        """Update subset_step in state and refresh refinement readout."""
+        AppState.instance().set_param("subset_step", int(value_text))
+        # subset_step affects both the integer constraint and the min-size
+        # readout — rebuild dropdown.
+        self._update_refinement_ui()
+
+    def _on_refine_inner_toggled(self, on: bool) -> None:
+        AppState.instance().set_refine_inner(on)
+        self._update_refinement_ui()
+
+    def _on_refine_outer_toggled(self, on: bool) -> None:
+        AppState.instance().set_refine_outer(on)
+        self._update_refinement_ui()
+
+    def _on_refine_level_changed(self, index: int) -> None:
+        # Ignore spurious -1 emitted while we are repopulating the combo.
+        if index < 0:
+            return
+        AppState.instance().set_refinement_level(index + 1)
+        self._update_min_size_label()
+
+    def _rebuild_level_dropdown(self) -> None:
+        """Repopulate the level combo to reflect the current max level.
+
+        Called whenever subset_size or subset_step changes. Preserves the
+        currently-selected level when possible, otherwise clamps to the new
+        maximum.
+        """
+        state = AppState.instance()
+        max_level = state.compute_max_refinement_level()
+        labels = ["Light", "Medium", "Heavy", "Extra Heavy", "Ultra"]
+        items = [
+            f"{labels[i] if i < len(labels) else f'L{i + 1}'} (L{i + 1})"
+            for i in range(max_level)
+        ]
+        # Clamp the stored level to the new range BEFORE rebuilding the
+        # combo so set_refinement_level emits at most one signal.
+        target_level = max(1, min(state.refinement_level, max_level))
+        if target_level != state.refinement_level:
+            state.set_refinement_level(target_level)
+
+        self._refine_level.blockSignals(True)
+        self._refine_level.clear()
+        self._refine_level.addItems(items)
+        self._refine_level.setCurrentIndex(target_level - 1)
+        self._refine_level.blockSignals(False)
+
+    def _update_min_size_label(self) -> None:
+        """Refresh just the min-size readout label (no dropdown rebuild)."""
+        state = AppState.instance()
+        any_on = state.refine_inner or state.refine_outer
+        if any_on:
+            min_size = state.compute_refinement_min_size()
+            self._refine_info_lbl.setText(
+                f"min element size = {min_size} px  "
+                f"(subset_step={state.subset_step}, "
+                f"level={state.refinement_level})"
+            )
+            self._refine_info_lbl.setVisible(True)
+        else:
+            self._refine_info_lbl.setVisible(False)
+
+    def _update_refinement_ui(self) -> None:
+        """Rebuild dropdown + refresh enabled state + refresh readout."""
+        state = AppState.instance()
+        self._rebuild_level_dropdown()
+        any_on = state.refine_inner or state.refine_outer
+        self._refine_level.setEnabled(any_on)
+        self._refine_level_lbl.setEnabled(any_on)
+        self._update_min_size_label()
 
     def _add_spinbox(
         self,

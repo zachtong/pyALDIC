@@ -7,6 +7,7 @@ Workers emit signals back to the main thread; controllers update AppState.
 from __future__ import annotations
 
 import enum
+import math
 from pathlib import Path
 
 import numpy as np
@@ -79,6 +80,12 @@ class AppState(QObject):
         self.color_max: float = 1.0
         self.show_mesh: bool = True
         self.show_subset_window: bool = False
+        # Mesh refinement (Item 1: inner/outer boundary refinement)
+        self.refine_inner: bool = False
+        self.refine_outer: bool = False
+        # Refinement level: 1=light, 2=medium, 3=heavy.
+        # min_element_size = max(4, subset_step // 2**level)
+        self.refinement_level: int = 1
 
     @property
     def roi_mask(self) -> NDArray[np.bool_] | None:
@@ -195,6 +202,49 @@ class AppState(QObject):
     def set_show_subset_window(self, show: bool) -> None:
         self.show_subset_window = show
         self.display_changed.emit()
+
+    def set_refine_inner(self, on: bool) -> None:
+        self.refine_inner = on
+        self.params_changed.emit()
+
+    def set_refine_outer(self, on: bool) -> None:
+        self.refine_outer = on
+        self.params_changed.emit()
+
+    def set_refinement_level(self, level: int) -> None:
+        # Always clamp to the currently-valid range. UI will mirror this.
+        max_level = self.compute_max_refinement_level()
+        self.refinement_level = max(1, min(int(level), max_level))
+        self.params_changed.emit()
+
+    def compute_refinement_min_size(self) -> int:
+        """Compute the actual min element size from level + subset_step.
+
+        Floor at 2 px: this is the true mathematical lower bound from
+        ``qrefine_r`` (edge midpoints divide by 2 — anything below 2 px
+        produces fractional pixel coordinates and breaks ``mark_edge``).
+        """
+        return max(2, self.subset_step // (2 ** self.refinement_level))
+
+    def compute_max_refinement_level(self) -> int:
+        """Largest valid refinement level for the current params.
+
+        Two constraints, both must hold:
+          1. Integer/geometry: ``min_size = subset_step / 2^level >= 2``
+             → ``level <= log2(subset_step / 2)``.
+          2. Physical/statistical: node spacing should not be smaller than
+             ``subset_size / 4`` (otherwise adjacent IC-GN subsets overlap
+             by >75% and information becomes severely redundant)
+             → ``level <= log2(subset_size / 4)``.
+
+        Returns at least 1 so the dropdown always has Light available.
+        """
+        # subset_step is always a power of 2 (UI restricts to {4,8,16,32,64})
+        step_limit = max(1, int(math.log2(max(2, self.subset_step) / 2)))
+        # subset_size is the internal even value (display = subset_size + 1).
+        # Use floor(log2(subset_size / 4)).
+        size_limit = max(1, int(math.log2(max(4, self.subset_size) / 4)))
+        return min(step_limit, size_limit)
 
     def set_param(self, name: str, value: object) -> None:
         if hasattr(self, name):
