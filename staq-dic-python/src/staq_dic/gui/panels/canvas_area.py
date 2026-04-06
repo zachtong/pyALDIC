@@ -965,13 +965,23 @@ class CanvasArea(QWidget):
             self._mesh_overlay.setVisible(False)
             return
 
-        mesh_idx = max(0, min(frame, len(meshes) - 1))
-        mesh = meshes[mesh_idx]
+        # Always draw the canonical (frame-0) mesh.
+        #
+        # ``_compute_cumulative_displacements_tree`` defines
+        # ``result_disp[i].U_accum`` on the frame-0 mesh for *every*
+        # frame, so the per-frame mesh in ``meshes[i]`` may have a
+        # different node count when incremental + refined + per-frame
+        # ROIs cause the mask (and therefore the trimmed mesh) to vary
+        # across reference frames.  Drawing the canonical mesh keeps
+        # the overlay shape consistent with ``U_accum`` and also keeps
+        # the mesh topology stable when the user toggles the deformed
+        # switch.
+        canonical_mesh = meshes[0]
+        coords = canonical_mesh.coordinates_fem.copy()
+        elements = canonical_mesh.elements_fem
 
-        coords = mesh.coordinates_fem.copy()
-        elements = mesh.elements_fem
-
-        # In deformed mode, offset nodes by accumulated displacement
+        # In deformed mode, offset canonical nodes by accumulated
+        # displacement (both have the same node count by construction).
         is_deformed = state.show_deformed and frame >= 0
         if is_deformed and frame < len(result.result_disp):
             u_accum = result.result_disp[frame].U_accum
