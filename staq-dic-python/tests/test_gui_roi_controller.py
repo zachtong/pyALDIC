@@ -55,3 +55,27 @@ class TestROIController:
         ctrl.import_mask(str(tmp_path / "mask.png"))
         assert ctrl.mask[50, 50] == True
         assert ctrl.mask[0, 0] == False
+
+    def test_stroke_segment_paints_thick_line(self, qapp):
+        ctrl = ROIController(img_shape=(64, 64))
+        ctrl.stroke_segment(10, 32, 50, 32, radius=3, mode="add")
+        # Line y=32, x in [10..50], +/- 3 px should be set
+        assert ctrl.mask[32, 30]
+        assert ctrl.mask[29, 30]  # within radius (~3 px above line)
+        assert not ctrl.mask[20, 30]  # well outside radius
+        assert ctrl.mask[32, 50]
+        assert not ctrl.mask[32, 60]  # past end of segment
+
+    def test_stroke_segment_zero_length_acts_as_dot(self, qapp):
+        ctrl = ROIController(img_shape=(32, 32))
+        ctrl.stroke_segment(16, 16, 16, 16, radius=2, mode="add")
+        assert ctrl.mask[16, 16]
+        assert ctrl.mask[14, 16]  # within radius
+        assert not ctrl.mask[10, 10]  # outside
+
+    def test_stroke_segment_erase_mode(self, qapp):
+        ctrl = ROIController(img_shape=(32, 32))
+        ctrl.mask[:] = True
+        ctrl.stroke_segment(16, 16, 16, 16, radius=2, mode="cut")
+        assert not ctrl.mask[16, 16]
+        assert ctrl.mask[0, 0]  # untouched corner
