@@ -393,3 +393,62 @@ class TestQ6_PipelineLifecycle:
         state.set_param("tracking_mode", "incremental")
 
         assert state.results is not None
+
+
+class TestBatchImportConsistency:
+    def test_roi_changed_during_editing_reloads_buffer(self, qapp):
+        """Simulates an external per_frame_rois mutation while the user
+        is in ROI editing mode. The buffer must be refreshed WITHOUT
+        the user having to re-click Edit.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Seed frame 0 with a small mask and enter editing on frame 0
+        m0 = np.zeros((128, 128), dtype=bool)
+        m0[0:5, 0:5] = True
+        state.per_frame_rois[0] = m0
+        win._on_roi_edit_for_frame(0)
+        # Sanity baseline
+        assert win._roi_ctrl.mask[0, 0] == True
+        assert win._roi_ctrl.mask[50, 50] == False
+
+        # External mutation (simulates batch import of a new mask for
+        # the frame the user is currently editing).  Use set_frame_roi
+        # so roi_changed is emitted through the normal path.
+        m0_new = np.zeros((128, 128), dtype=bool)
+        m0_new[40:60, 40:60] = True
+        state.set_frame_roi(0, m0_new)
+
+        # The buffer must now mirror the new mask without us having
+        # to call _on_roi_edit_for_frame again.
+        assert win._roi_ctrl.mask[0, 0] == False
+        assert win._roi_ctrl.mask[50, 50] == True
+
+    def test_roi_changed_when_not_editing_does_not_reload(self, qapp):
+        """When the user is NOT in editing mode, a roi_changed emit
+        (e.g. from batch import) must not reload the buffer -- we
+        don't want to touch the stamping buffer when the user is
+        just browsing results.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Not in editing mode
+        assert state.roi_editing is False
+
+        # Manually pre-seed the buffer with an obviously-different
+        # sentinel so we can detect any unwanted reload.
+        sentinel = np.zeros((128, 128), dtype=bool)
+        sentinel[10:20, 10:20] = True
+        win._roi_ctrl.mask[:] = sentinel
+
+        # External mutation: set a DIFFERENT mask via set_frame_roi
+        other = np.zeros((128, 128), dtype=bool)
+        other[80:90, 80:90] = True
+        state.set_frame_roi(0, other)
+
+        # Buffer must still hold the sentinel (handler should no-op
+        # because roi_editing is False)
+        assert win._roi_ctrl.mask[15, 15] == True     # sentinel alive
+        assert win._roi_ctrl.mask[85, 85] == False    # not reloaded

@@ -86,6 +86,12 @@ class MainWindow(QMainWindow):
         # stamping buffer so the next draw operation targets the new frame.
         self._state.current_frame_changed.connect(self._on_frame_changed_for_roi)
 
+        # Defensive: if an external path (batch import, invert, clear)
+        # mutates per_frame_rois[current_frame] while the user is in
+        # editing mode, reload the stamping buffer so the next draw
+        # stamp operates on the fresh mask.
+        self._state.roi_changed.connect(self._on_roi_changed_reload)
+
         # Clear viz caches when results change (new pipeline run)
         self._state.results_changed.connect(self._viz_ctrl.clear_all)
 
@@ -149,6 +155,17 @@ class MainWindow(QMainWindow):
         operation (draw / invert / clear) starts from the right base.
         """
         if self._state.roi_editing:
+            self._load_roi_buffer_for_current_frame()
+
+    def _on_roi_changed_reload(self) -> None:
+        """Refresh the working ROI buffer when per_frame_rois mutates.
+
+        Only runs during ROI editing -- outside editing mode the buffer
+        is irrelevant and must be left alone (otherwise batch import
+        paths that the user isn't actively editing would stomp the
+        in-memory buffer).
+        """
+        if self._state.roi_editing and self._roi_ctrl is not None:
             self._load_roi_buffer_for_current_frame()
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:
