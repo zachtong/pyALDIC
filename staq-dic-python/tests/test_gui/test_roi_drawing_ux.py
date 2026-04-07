@@ -175,3 +175,30 @@ class TestQ3_OverlaySource:
         assert img.pixelColor(50, 50).alpha() == 0
         # And a pixel inside the 10x10 corner should be painted (alpha > 0)
         assert img.pixelColor(2, 2).alpha() > 0
+
+
+class TestQ1_BufferFollowsFrame:
+    def test_navigating_during_roi_editing_reloads_buffer(self, qapp):
+        """Editing frame 0, then arrow-key to frame 3, must reload the
+        ROI controller buffer from per_frame_rois[3].
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Seed two different masks
+        m0 = np.zeros((128, 128), dtype=bool); m0[0:5, 0:5] = True
+        m3 = np.zeros((128, 128), dtype=bool); m3[100:110, 100:110] = True
+        state.per_frame_rois[0] = m0
+        state.per_frame_rois[3] = m3
+
+        # Enter editing on frame 0
+        win._on_roi_edit_for_frame(0)
+        assert win._roi_ctrl.mask[0, 0] == True
+        assert win._roi_ctrl.mask[100, 100] == False
+
+        # Navigate to frame 3 (without re-clicking Edit)
+        state.set_current_frame(3)
+
+        # Buffer must now hold m3, not m0
+        assert win._roi_ctrl.mask[0, 0] == False
+        assert win._roi_ctrl.mask[100, 100] == True
