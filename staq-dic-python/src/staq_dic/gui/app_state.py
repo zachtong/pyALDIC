@@ -82,6 +82,10 @@ class AppState(QObject):
         # Mesh refinement (Item 1: inner/outer boundary refinement)
         self.refine_inner: bool = False
         self.refine_outer: bool = False
+        # User-painted brush refinement mask in frame-0 image coordinates.
+        # When set, BrushRegionCriterion is added to the refinement policy
+        # and is auto-warped to subsequent reference frames inside pipeline.
+        self.refine_brush_mask: NDArray[np.bool_] | None = None
         # Refinement level: 1=light, 2=medium, 3=heavy.
         # min_element_size = max(4, subset_step // 2**level)
         self.refinement_level: int = 1
@@ -104,10 +108,11 @@ class AppState(QObject):
     def set_image_files(self, files: list[str]) -> None:
         # Clear previous results and ROI when loading new images
         had_results = self.results is not None
-        had_roi = bool(self.per_frame_rois)
+        had_roi = bool(self.per_frame_rois) or self.refine_brush_mask is not None
         self.results = None
         self.deformed_masks = None
         self.per_frame_rois = {}
+        self.refine_brush_mask = None
         self.roi_editing = False
         self.run_state = RunState.IDLE
         self.progress = 0.0
@@ -145,6 +150,18 @@ class AppState(QObject):
             self.per_frame_rois.pop(frame, None)
         else:
             self.per_frame_rois[frame] = mask
+        self.roi_changed.emit()
+
+    def set_refine_brush_mask(
+        self, mask: NDArray[np.bool_] | None
+    ) -> None:
+        """Set or clear the user-painted brush refinement mask.
+
+        The mask is always defined in frame-0 image coordinates; the
+        pipeline auto-warps it to subsequent reference frames inside a
+        single Run.
+        """
+        self.refine_brush_mask = mask
         self.roi_changed.emit()
 
     def get_effective_roi(
