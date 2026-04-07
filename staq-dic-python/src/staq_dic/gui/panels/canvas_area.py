@@ -923,8 +923,22 @@ class CanvasArea(QWidget):
             self._mesh_overlay.set_hover_node(None)
 
     def _on_params_changed_mesh(self) -> None:
-        """Debounced mesh preview update when params change."""
-        if self._state.show_mesh and self._state.results is None:
+        """Debounced mesh preview update when params change.
+
+        Two cases require a preview rebuild:
+        1. No results yet — preview is the only mesh source.
+        2. ROI editing on frame 0 — even when stale results exist,
+           ``_refresh_mesh_overlay`` routes editing to the preview
+           path (see Q4), so params changes must rebuild it.
+
+        Without the second case, changing ``subset_step`` while
+        editing post-run leaves the preview mesh stale until the
+        user manually toggles 'display grid' off and on.
+        """
+        state = self._state
+        if not state.show_mesh:
+            return
+        if state.roi_editing or state.results is None:
             self._mesh_preview_timer.start()
 
     def _sync_mesh_view_transform(self) -> None:

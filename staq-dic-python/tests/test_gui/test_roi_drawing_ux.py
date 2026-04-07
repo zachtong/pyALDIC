@@ -452,3 +452,212 @@ class TestBatchImportConsistency:
         # because roi_editing is False)
         assert win._roi_ctrl.mask[15, 15] == True     # sentinel alive
         assert win._roi_ctrl.mask[85, 85] == False    # not reloaded
+
+
+class TestPreviewMeshLiveOnParamsDuringEditing:
+    """When the user edits the frame-0 ROI *after* a DIC run, changing
+    subset_step / subset_size in the right sidebar must immediately
+    refresh the preview mesh.  Without this, the user has to manually
+    toggle 'display grid' off/on to see the updated grid.
+    """
+
+    def test_params_changed_during_editing_with_results_starts_preview_timer(
+        self, qapp, monkeypatch
+    ):
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Stub a prior DIC result so the "results exist" branch is live
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        state.set_results(PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        ))
+
+        # Enter ROI editing on frame 0 (mirror _on_roi_edit_for_frame ordering)
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+        state.set_current_frame(0)
+        state.roi_editing = True
+
+        canvas_area = win._canvas_area
+
+        # Detect timer.start without actually firing the preview pipeline
+        timer_started = {"v": False}
+        monkeypatch.setattr(
+            canvas_area._mesh_preview_timer, "start",
+            lambda *a, **kw: timer_started.__setitem__("v", True),
+        )
+
+        # User changes subset_step in the right sidebar
+        state.set_param("subset_step", 32)
+
+        assert timer_started["v"] is True, (
+            "params_changed during ROI editing must restart the preview "
+            "timer even when stale results still exist"
+        )
+
+    def test_params_changed_no_editing_no_results_still_starts_timer(
+        self, qapp, monkeypatch
+    ):
+        """Regression: preserve existing behavior — when there are no
+        results AND we're not editing, params_changed should still
+        rebuild the preview mesh (the original code path)."""
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+
+        canvas_area = win._canvas_area
+        timer_started = {"v": False}
+        monkeypatch.setattr(
+            canvas_area._mesh_preview_timer, "start",
+            lambda *a, **kw: timer_started.__setitem__("v", True),
+        )
+
+        state.set_param("subset_step", 32)
+
+        assert timer_started["v"] is True
+
+    def test_params_changed_no_editing_with_results_does_not_start_timer(
+        self, qapp, monkeypatch
+    ):
+        """Regression: when results exist and the user is just browsing
+        (not editing ROI), params_changed must NOT trigger a preview
+        rebuild — the results mesh is canonical."""
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        state.set_results(PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        ))
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+        assert state.roi_editing is False
+
+        canvas_area = win._canvas_area
+        timer_started = {"v": False}
+        monkeypatch.setattr(
+            canvas_area._mesh_preview_timer, "start",
+            lambda *a, **kw: timer_started.__setitem__("v", True),
+        )
+
+        state.set_param("subset_step", 32)
+
+        assert timer_started["v"] is False
+
+
+class TestRunButtonClearsStaleResults:
+    """Clicking Run a second time must invalidate the previous run's
+    results immediately, so the canvas does not render a hybrid view
+    of the OLD mesh / OLD field clipped by the NEW ROI while the new
+    worker is computing.
+    """
+
+    def test_start_clears_results_before_worker_launch(
+        self, qapp, monkeypatch, tmp_path
+    ):
+        """The user has a finished result, then edits the frame-0 ROI
+        and clicks Run again.  ``start()`` must drop ``state.results``
+        (and emit ``results_changed``) before the new worker starts —
+        the GUI then snaps to the 'no results' display path showing
+        only the new ROI + preview mesh until the worker delivers
+        the new result.
+        """
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+        from staq_dic.gui.controllers import pipeline_controller as pc_mod
+
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Pretend image_files point to real disk paths so PipelineWorker
+        # init wouldn't blow up; we monkeypatch the worker class anyway.
+        state.image_files = [str(tmp_path / f"img{i}.tif") for i in range(3)]
+
+        # Seed a finished result from the "previous" run
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        old_result = PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        )
+        state.set_results(old_result)
+        state.show_deformed = True  # mimics user toggling deformed view
+        assert state.results is not None
+
+        # Seed a frame-0 ROI large enough to pass start()'s validation
+        roi = np.zeros((128, 128), dtype=bool)
+        roi[10:118, 10:118] = True
+        state.per_frame_rois[0] = roi
+
+        # Stub the image-loading hook used by start()
+        win._pipeline_ctrl._image_ctrl = _StubImageController((128, 128))
+
+        # Capture the moment when the worker would start; the test must
+        # observe state cleared BEFORE this point.
+        observed = {}
+
+        class _FakeWorker:
+            def __init__(self, *args, **kwargs):
+                # Snapshot state at the moment the worker is constructed
+                observed["results"] = state.results
+                observed["deformed_masks"] = state.deformed_masks
+                observed["show_deformed"] = state.show_deformed
+
+            def start(self):
+                pass
+
+            # Signals the controller wires up
+            class _Sig:
+                def connect(self, *_a, **_k):
+                    pass
+            progress = _Sig()
+            log = _Sig()
+            finished_result = _Sig()
+
+        monkeypatch.setattr(pc_mod, "PipelineWorker", _FakeWorker)
+
+        # Pretend tracking mode is accumulative so we don't hit the
+        # incomplete-ROI confirmation dialog.
+        state.tracking_mode = "accumulative"
+
+        win._pipeline_ctrl.start()
+
+        assert observed.get("results") is None, (
+            "state.results must be cleared BEFORE the new worker starts; "
+            "otherwise the GUI renders OLD field/mesh clipped by NEW ROI"
+        )
+        assert observed.get("deformed_masks") is None
+        assert observed.get("show_deformed") is False
