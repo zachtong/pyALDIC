@@ -202,3 +202,101 @@ class TestQ1_BufferFollowsFrame:
         # Buffer must now hold m3, not m0
         assert win._roi_ctrl.mask[0, 0] == False
         assert win._roi_ctrl.mask[100, 100] == True
+
+
+class TestQ4_MeshDuringEditing:
+    def test_roi_editing_routes_to_preview_mesh(self, qapp, monkeypatch):
+        """Even when results exist, entering ROI editing must show the
+        preview mesh (which reflects the in-progress ROI), not the
+        results mesh (which reflects whatever DIC ran on).
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Stub results so the "results path" branch would normally win
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        result = PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        )
+        state.set_results(result)
+
+        # Seed an ROI on frame 0 and enter editing.  Order matters:
+        # ``_on_frame_changed`` exits ROI editing when results exist and
+        # the user navigates frames, so we must set current_frame BEFORE
+        # flipping roi_editing on (mirroring _on_roi_edit_for_frame).
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+        state.set_current_frame(0)
+        state.roi_editing = True
+
+        canvas_area = win._canvas_area
+
+        # Monkeypatch results path so we can detect if it was wrongly taken
+        called = {"results": False}
+        monkeypatch.setattr(
+            canvas_area, "_show_results_mesh",
+            lambda: called.__setitem__("results", True),
+        )
+        # Monkeypatch timer.start so we detect the preview path deterministically
+        timer_started = {"v": False}
+        monkeypatch.setattr(
+            canvas_area._mesh_preview_timer, "start",
+            lambda *a, **kw: timer_started.__setitem__("v", True),
+        )
+
+        canvas_area._refresh_mesh_overlay()
+
+        assert timer_started["v"] is True, (
+            "ROI editing on frame 0 must start the mesh preview timer"
+        )
+        assert called["results"] is False, (
+            "Results path must NOT be taken while ROI editing is active"
+        )
+
+
+class TestQ5_MeshHiddenForNonRefEditing:
+    def test_mesh_hidden_when_editing_non_frame_zero_roi(
+        self, qapp, monkeypatch
+    ):
+        """The preview mesh only models frame-0 geometry.  When the
+        user is editing a per-frame ROI for K != 0, hide the mesh
+        entirely so they don't get a misleading overlay.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+        # Seed frame 0 too, otherwise the old code would accidentally
+        # take the final ``else`` branch (roi_mask is None) and hide.
+        # With frame 0 seeded, the old code would hit the preview-timer
+        # branch and display the mesh, failing this assertion.
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+        state.per_frame_rois[3] = np.ones((128, 128), dtype=bool)
+        state.set_current_frame(3)
+        state.roi_editing = True
+
+        canvas_area = win._canvas_area
+        # Block the preview timer from actually running the preview
+        # pipeline inside the test; we only care about overlay visibility.
+        timer_started = {"v": False}
+        monkeypatch.setattr(
+            canvas_area._mesh_preview_timer, "start",
+            lambda *a, **kw: timer_started.__setitem__("v", True),
+        )
+
+        canvas_area._refresh_mesh_overlay()
+
+        assert timer_started["v"] is False, (
+            "Preview timer must NOT start when editing a non-frame-0 ROI"
+        )
+        assert canvas_area._mesh_overlay.isVisible() is False

@@ -935,10 +935,37 @@ class CanvasArea(QWidget):
             )
 
     def _refresh_mesh_overlay(self) -> None:
-        """Rebuild mesh overlay data (paths + transform)."""
+        """Rebuild mesh overlay data (paths + transform).
+
+        Routing rules:
+        - User toggled mesh off           -> hide
+        - ROI editing on frame K != 0     -> hide (preview mesh only
+                                              models frame-0 geometry,
+                                              would be misleading) [Q5]
+        - ROI editing on frame 0          -> preview mesh from current
+                                              params (ignore results,
+                                              the user is editing the
+                                              ROI not inspecting) [Q4]
+        - Otherwise + results             -> results mesh
+        - Otherwise + frame-0 ROI         -> preview mesh
+        - Else                            -> hide
+        """
         state = self._state
         if not state.show_mesh:
             self._mesh_overlay.setVisible(False)
+            return
+
+        if state.roi_editing:
+            if state.current_frame != 0:
+                self._mesh_overlay.set_mesh(None, None)
+                self._mesh_overlay.setVisible(False)
+                return
+            # Frame-0 editing: always go through preview path
+            if state.roi_mask is not None:
+                self._mesh_preview_timer.start()
+            else:
+                self._mesh_overlay.set_mesh(None, None)
+                self._mesh_overlay.setVisible(False)
             return
 
         if state.results is not None:
