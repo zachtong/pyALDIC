@@ -328,3 +328,68 @@ class TestMeshPreviewTimerRace:
         assert canvas_area._mesh_preview_timer.isActive() is False, (
             "Hide branches must stop pending preview timer to avoid race"
         )
+
+
+class TestQ6_PipelineLifecycle:
+    def test_image_deletion_clears_results(self, qapp):
+        """Deleting an image makes any prior pipeline result stale --
+        clear it.
+        """
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        state.set_results(PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        ))
+        assert state.results is not None
+
+        # Simulate image-list deletion of frames 1 and 2
+        image_list = win._left_sidebar._image_list
+        image_list._tree.topLevelItem(1).setSelected(True)
+        image_list._tree.topLevelItem(2).setSelected(True)
+        image_list._delete_selected()
+
+        assert state.results is None
+
+    def test_tracking_mode_change_keeps_results(self, qapp):
+        """Changing tracking mode is just a UI change -- must NOT
+        clear stale-but-valid results.
+        """
+        from staq_dic.core.data_structures import (
+            DICMesh, FrameResult, PipelineResult,
+        )
+        from staq_dic.core.config import dicpara_default
+
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        coords = np.array([[10, 10], [20, 10], [20, 20], [10, 20]],
+                          dtype=np.float64)
+        elements = np.array([[0, 1, 2, 3, -1, -1, -1, -1]], dtype=np.int64)
+        mesh = DICMesh(coordinates_fem=coords, elements_fem=elements)
+        state.set_results(PipelineResult(
+            dic_para=dicpara_default(),
+            dic_mesh=mesh,
+            result_disp=[FrameResult(U=np.zeros(8), U_accum=np.zeros(8))],
+            result_def_grad=[],
+            result_strain=[],
+            result_fe_mesh_each_frame=[mesh],
+        ))
+
+        state.set_param("tracking_mode", "incremental")
+
+        assert state.results is not None
