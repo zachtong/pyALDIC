@@ -40,6 +40,8 @@ class MainWindow(QMainWindow):
         self._state = AppState.instance()
         self._image_ctrl = ImageController(self._state)
         self._roi_ctrl: ROIController | None = None
+        # Separate buffer for the brush refinement mask (frame 0 only).
+        self._brush_ctrl: ROIController | None = None
 
         # Left sidebar — image loading + ROI toolbar
         self._left_sidebar = LeftSidebar(self._image_ctrl)
@@ -67,6 +69,8 @@ class MainWindow(QMainWindow):
         roi_tb.save_requested.connect(self._on_roi_save)
         roi_tb.invert_requested.connect(self._on_roi_invert)
         roi_tb.batch_import_requested.connect(self._on_batch_import)
+        roi_tb.brush_requested.connect(self._on_brush_requested)
+        roi_tb.brush_clear_requested.connect(self._on_brush_clear)
 
         # When canvas finishes drawing, deactivate toolbar highlight
         self._canvas_area.canvas.drawing_finished.connect(roi_tb.deactivate)
@@ -92,11 +96,17 @@ class MainWindow(QMainWindow):
         # stamp operates on the fresh mask.
         self._state.roi_changed.connect(self._on_roi_changed_reload)
 
+        # Refresh cyan brush overlay whenever state.refine_brush_mask
+        # changes (clear, restore after re-load, etc).
+        self._state.roi_changed.connect(
+            self._canvas_area.canvas.update_refine_overlay
+        )
+
         # Clear viz caches when results change (new pipeline run)
         self._state.results_changed.connect(self._viz_ctrl.clear_all)
 
     def _init_roi_controller(self) -> None:
-        """Create a ROI controller matching the loaded image dimensions."""
+        """Create ROI + brush controllers matching the loaded image dimensions."""
         if not self._state.image_files:
             return
         try:
@@ -104,6 +114,17 @@ class MainWindow(QMainWindow):
             h, w = rgb.shape[:2]
             self._roi_ctrl = ROIController((h, w))
             self._canvas_area.canvas.set_roi_controller(self._roi_ctrl)
+            # Sibling buffer for the brush refinement mask.  Restore from
+            # AppState if a previous Run left a brush mask in place.
+            self._brush_ctrl = ROIController((h, w))
+            if self._state.refine_brush_mask is not None:
+                if self._state.refine_brush_mask.shape == (h, w):
+                    self._brush_ctrl.mask = self._state.refine_brush_mask.copy()
+                else:
+                    # Image dims changed — drop the stale brush mask
+                    self._state.set_refine_brush_mask(None)
+            self._canvas_area.canvas.set_brush_controller(self._brush_ctrl)
+            self._canvas_area.canvas.update_refine_overlay()
         except (IndexError, FileNotFoundError, ValueError):
             pass
 
@@ -244,6 +265,58 @@ class MainWindow(QMainWindow):
         state.set_frame_roi(
             state.current_frame, self._roi_ctrl.mask.copy()
         )
+
+    def _on_brush_requested(self, mode: str, radius: int) -> None:
+        """Activate the brush refinement sub-tool.
+
+        Brush painting is gated to frame 0 (the reference) — the
+        pipeline auto-warps the mask to subsequent ref frames at run
+        time, so any user input on later frames would be silently
+        overwritten.  We require an existing ROI as a sanity check
+        because brush refinement only makes sense inside a defined ROI.
+        """
+        state = self._state
+        if not state.image_files:
+            state.log_message.emit("Load images first.", "warn")
+            return
+        if state.current_frame != 0:
+            state.log_message.emit(
+                "Brush refinement can only be painted on frame 1 "
+                "(the reference). Switch to frame 1 first.",
+                "warn",
+            )
+            return
+        if state.roi_mask is None:
+            state.log_message.emit(
+                "Define a Region of Interest on frame 1 first.",
+                "warn",
+            )
+            return
+        if self._brush_ctrl is None:
+            self._init_roi_controller()
+        if self._brush_ctrl is None:
+            return
+        # Sync controller buffer from current state in case external
+        # paths (clear, restore) mutated state.refine_brush_mask.
+        if state.refine_brush_mask is not None:
+            self._brush_ctrl.mask = state.refine_brush_mask.copy()
+        else:
+            self._brush_ctrl.clear()
+
+        state.roi_editing = True
+        state.display_changed.emit()
+        canvas = self._canvas_area.canvas
+        canvas.set_brush_radius(radius)
+        canvas.set_brush_mode(mode)
+        canvas.set_tool("brush")
+        canvas.update_refine_overlay()
+
+    def _on_brush_clear(self) -> None:
+        """Clear the brush refinement mask buffer and AppState field."""
+        if self._brush_ctrl is not None:
+            self._brush_ctrl.clear()
+        self._state.set_refine_brush_mask(None)
+        self._canvas_area.canvas.update_refine_overlay()
 
     def _on_batch_import(self) -> None:
         """Open the batch mask import dialog and load assigned masks."""
