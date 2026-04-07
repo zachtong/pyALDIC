@@ -348,11 +348,17 @@ class PipelineController:
                 )
 
             # Build refinement policy from GUI state. The factory returns
-            # None when both checkboxes are off, which makes run_aldic skip
-            # all refinement (uniform mesh fast path).
+            # None when no refinement levers are active, which makes
+            # run_aldic skip all refinement (uniform mesh fast path).
+            brush_mask_f64 = (
+                state.refine_brush_mask.astype(np.float64)
+                if state.refine_brush_mask is not None
+                else None
+            )
             refinement_policy = build_refinement_policy(
                 refine_inner_boundary=state.refine_inner,
                 refine_outer_boundary=state.refine_outer,
+                refinement_mask=brush_mask_f64,
                 min_element_size=state.compute_refinement_min_size(),
                 # half_win is the IC-GN window half-width in pixels.
                 # state.subset_size already stores the even internal value
@@ -365,6 +371,8 @@ class PipelineController:
                     bits.append("inner")
                 if state.refine_outer:
                     bits.append("outer")
+                if brush_mask_f64 is not None:
+                    bits.append("brush")
                 state.log_message.emit(
                     f"  Refinement: {'+'.join(bits)} "
                     f"(level={state.refinement_level}, "
