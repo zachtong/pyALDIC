@@ -949,14 +949,20 @@ class CanvasArea(QWidget):
         - Otherwise + results             -> results mesh
         - Otherwise + frame-0 ROI         -> preview mesh
         - Else                            -> hide
+
+        Whenever we take a hide branch (or the results branch, which
+        overrides the preview), stop any pending preview timer so a
+        stale debounced fire cannot undo the hide or clobber results.
         """
         state = self._state
         if not state.show_mesh:
+            self._mesh_preview_timer.stop()
             self._mesh_overlay.setVisible(False)
             return
 
         if state.roi_editing:
             if state.current_frame != 0:
+                self._mesh_preview_timer.stop()
                 self._mesh_overlay.set_mesh(None, None)
                 self._mesh_overlay.setVisible(False)
                 return
@@ -964,15 +970,18 @@ class CanvasArea(QWidget):
             if state.roi_mask is not None:
                 self._mesh_preview_timer.start()
             else:
+                self._mesh_preview_timer.stop()
                 self._mesh_overlay.set_mesh(None, None)
                 self._mesh_overlay.setVisible(False)
             return
 
         if state.results is not None:
+            self._mesh_preview_timer.stop()
             self._show_results_mesh()
         elif state.roi_mask is not None:
             self._mesh_preview_timer.start()
         else:
+            self._mesh_preview_timer.stop()
             self._mesh_overlay.set_mesh(None, None)
             self._mesh_overlay.setVisible(False)
 

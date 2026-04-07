@@ -300,3 +300,31 @@ class TestQ5_MeshHiddenForNonRefEditing:
             "Preview timer must NOT start when editing a non-frame-0 ROI"
         )
         assert canvas_area._mesh_overlay.isVisible() is False
+
+
+class TestMeshPreviewTimerRace:
+    def test_hide_branches_stop_pending_preview_timer(self, qapp):
+        """Regression: taking a hide branch must stop any pending preview
+        timer so a stale debounced fire cannot undo the hide.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Seed frame 0 ROI so preview timer has something to latch onto
+        state.per_frame_rois[0] = np.ones((128, 128), dtype=bool)
+
+        canvas_area = win._canvas_area
+
+        # Simulate a pending preview fire by starting the timer
+        canvas_area._mesh_preview_timer.start()
+        assert canvas_area._mesh_preview_timer.isActive() is True
+
+        # Navigate to frame 3 while in ROI editing -> Q5 hide branch
+        state.roi_editing = True
+        state.set_current_frame(3)
+        canvas_area._refresh_mesh_overlay()
+
+        # The hide branch must have stopped the timer
+        assert canvas_area._mesh_preview_timer.isActive() is False, (
+            "Hide branches must stop pending preview timer to avoid race"
+        )
