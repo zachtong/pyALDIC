@@ -16,9 +16,13 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QGridLayout,
     QHBoxLayout,
+    QLabel,
     QMenu,
     QPushButton,
+    QSpinBox,
+    QVBoxLayout,
     QWidget,
+    QWidgetAction,
 )
 
 from staq_dic.gui.theme import COLORS
@@ -47,6 +51,11 @@ class ROIToolbar(QWidget):
     # Emitted when invert is clicked
     invert_requested = Signal()
 
+    # Brush refinement signals
+    # (mode, radius_px) — mode is "paint" or "erase"
+    brush_requested = Signal(str, int)
+    brush_clear_requested = Signal()
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
@@ -67,15 +76,26 @@ class ROIToolbar(QWidget):
         self._btn_cut.setToolTip("Cut region from ROI (Polygon / Rectangle / Circle)")
         self._btn_cut.setFixedHeight(30)
 
+        self._btn_refine = QPushButton("+ Refine  \u25b4")
+        self._btn_refine.setCheckable(True)
+        self._btn_refine.setToolTip(
+            "Paint extra mesh-refinement zones with a brush\n"
+            "(only on frame 1 — material points auto-warped to later frames)"
+        )
+        self._btn_refine.setFixedHeight(30)
+
         layout.addWidget(self._btn_add, 0, 0)
         layout.addWidget(self._btn_cut, 0, 1)
+        layout.addWidget(self._btn_refine, 0, 2)
 
         # Build popup menus
         self._add_menu = self._build_shape_menu("add")
         self._cut_menu = self._build_shape_menu("cut")
+        self._brush_menu = self._build_brush_menu()
 
         self._btn_add.clicked.connect(self._show_add_menu)
         self._btn_cut.clicked.connect(self._show_cut_menu)
+        self._btn_refine.clicked.connect(self._show_brush_menu)
 
         # --- Row 2: Import (single / batch) ---
         import_row = QHBoxLayout()
@@ -95,7 +115,7 @@ class ROIToolbar(QWidget):
         )
         import_row.addWidget(self._btn_batch)
 
-        layout.addLayout(import_row, 1, 0, 1, 2)
+        layout.addLayout(import_row, 1, 0, 1, 3)
 
         # --- Row 3: Save / Invert / Clear ---
         action_row = QHBoxLayout()
@@ -119,10 +139,71 @@ class ROIToolbar(QWidget):
         self._btn_clear.clicked.connect(lambda: self.clear_requested.emit())
         action_row.addWidget(self._btn_clear)
 
-        layout.addLayout(action_row, 2, 0, 1, 2)
+        layout.addLayout(action_row, 2, 0, 1, 3)
 
         # Apply initial styling
         self._update_button_styles()
+
+    def _build_brush_menu(self) -> QMenu:
+        """Create the Refine brush popup menu (radius + Paint/Erase + Clear)."""
+        menu = QMenu(self)
+
+        # Radius row: label + spinbox embedded via QWidgetAction
+        radius_widget = QWidget()
+        radius_layout = QHBoxLayout(radius_widget)
+        radius_layout.setContentsMargins(8, 4, 8, 4)
+        radius_layout.setSpacing(6)
+        radius_layout.addWidget(QLabel("Radius"))
+        self._brush_radius_spin = QSpinBox()
+        self._brush_radius_spin.setRange(2, 64)
+        self._brush_radius_spin.setValue(16)
+        self._brush_radius_spin.setSuffix(" px")
+        radius_layout.addWidget(self._brush_radius_spin)
+        radius_action = QWidgetAction(menu)
+        radius_action.setDefaultWidget(radius_widget)
+        menu.addAction(radius_action)
+
+        menu.addSeparator()
+        menu.addAction(
+            "\u270E  Paint", lambda: self._on_brush_selected(
+                "paint", self._brush_radius_spin.value()
+            )
+        )
+        menu.addAction(
+            "\u2716  Erase", lambda: self._on_brush_selected(
+                "erase", self._brush_radius_spin.value()
+            )
+        )
+        menu.addSeparator()
+
+        # Clear button as QWidgetAction so we can keep a public ref for tests
+        clear_widget = QWidget()
+        clear_layout = QVBoxLayout(clear_widget)
+        clear_layout.setContentsMargins(8, 4, 8, 4)
+        self._brush_clear_btn = QPushButton("Clear Brush")
+        self._brush_clear_btn.clicked.connect(
+            lambda: self.brush_clear_requested.emit()
+        )
+        clear_layout.addWidget(self._brush_clear_btn)
+        clear_action = QWidgetAction(menu)
+        clear_action.setDefaultWidget(clear_widget)
+        menu.addAction(clear_action)
+
+        return menu
+
+    def _show_brush_menu(self) -> None:
+        """Show the Refine brush popup above the Refine button."""
+        self._btn_refine.setChecked(False)
+        pos = self._btn_refine.mapToGlobal(self._btn_refine.rect().topLeft())
+        menu_height = self._brush_menu.sizeHint().height()
+        pos.setY(pos.y() - menu_height)
+        self._brush_menu.popup(pos)
+
+    def _on_brush_selected(self, mode: str, radius: int) -> None:
+        """Handle Paint / Erase selection from the brush popup."""
+        self._active_mode = "brush_paint" if mode == "paint" else "brush_erase"
+        self._update_button_styles()
+        self.brush_requested.emit(mode, int(radius))
 
     def _build_shape_menu(self, mode: str) -> QMenu:
         """Create a popup menu with Polygon / Rectangle / Circle actions."""
@@ -168,11 +249,17 @@ class ROIToolbar(QWidget):
         self._update_button_styles()
 
     def _update_button_styles(self) -> None:
-        """Update Add/Cut button highlight based on active mode."""
+        """Update Add/Cut/Refine button highlight based on active mode."""
+        # Reset all
+        self._btn_add.setChecked(False)
+        self._btn_cut.setChecked(False)
+        self._btn_refine.setChecked(False)
+        self._btn_add.setStyleSheet("")
+        self._btn_cut.setStyleSheet("")
+        self._btn_refine.setStyleSheet("")
+
         if self._active_mode == "add":
             self._btn_add.setChecked(True)
-            self._btn_cut.setChecked(False)
-            self._btn_cut.setStyleSheet("")
             self._btn_add.setStyleSheet(
                 f"QPushButton {{ background: {COLORS.ACCENT}; "
                 f"color: #ffffff; border: 1px solid {COLORS.ACCENT}; "
@@ -180,18 +267,19 @@ class ROIToolbar(QWidget):
             )
         elif self._active_mode == "cut":
             self._btn_cut.setChecked(True)
-            self._btn_add.setChecked(False)
-            self._btn_add.setStyleSheet("")
             self._btn_cut.setStyleSheet(
                 f"QPushButton {{ background: {COLORS.DANGER}; "
                 f"color: #ffffff; border: 1px solid {COLORS.DANGER}; "
                 f"border-radius: 4px; }}"
             )
-        else:
-            self._btn_add.setChecked(False)
-            self._btn_cut.setChecked(False)
-            self._btn_add.setStyleSheet("")
-            self._btn_cut.setStyleSheet("")
+        elif self._active_mode in ("brush_paint", "brush_erase"):
+            self._btn_refine.setChecked(True)
+            # Cyan accent for paint, dim cyan for erase
+            color = "#14dcc8" if self._active_mode == "brush_paint" else "#0a8a7a"
+            self._btn_refine.setStyleSheet(
+                f"QPushButton {{ background: {color}; color: #001417; "
+                f"border: 1px solid {color}; border-radius: 4px; }}"
+            )
 
     def _on_import(self) -> None:
         """Open file dialog and emit import signal with selected path."""
