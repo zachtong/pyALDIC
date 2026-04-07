@@ -128,3 +128,74 @@ def test_field_change_does_not_recompute(window, state_with_results):
     n_after_compute = len(received)
     window.set_current_field("strain_exx")
     assert len(received) == n_after_compute  # no extra emit
+
+
+# ----------------------------------------------------------------------
+# New fields: displacement before strain, derived fields
+# ----------------------------------------------------------------------
+
+def test_disp_u_available_before_compute(window, state_with_results):
+    """disp_u should render from result_disp without running Compute Strain.
+    Verifies fix for item 2: displacement fields bypass result_strain."""
+    result = state_with_results.results
+    assert not result.result_strain   # strain NOT computed yet
+    # _get_field_values should return the u-component from result_disp
+    vals = window._get_field_values("disp_u", 0, result)
+    assert vals is not None
+    assert len(vals) == result.result_fe_mesh_each_frame[0].coordinates_fem.shape[0]
+
+
+def test_velocity_available_before_compute(window, state_with_results):
+    """velocity field is derived from result_disp increments, no strain needed."""
+    result = state_with_results.results
+    assert not result.result_strain
+    vals = window._get_field_values("velocity", 0, result)
+    assert vals is not None
+    assert (vals >= 0).all()  # velocity magnitude is non-negative
+
+
+def test_disp_magnitude_available_before_compute(window, state_with_results):
+    result = state_with_results.results
+    vals = window._get_field_values("disp_magnitude", 0, result)
+    assert vals is not None
+    assert (vals >= 0).all()
+
+
+def test_strain_rotation_requires_compute(window, state_with_results):
+    """strain_rotation returns None until Compute Strain is run."""
+    result = state_with_results.results
+    assert window._get_field_values("strain_rotation", 0, result) is None
+    window.trigger_compute()
+    result_after = state_with_results.results
+    vals = window._get_field_values("strain_rotation", 0, result_after)
+    assert vals is not None
+
+
+def test_strain_mean_normal_after_compute(window, state_with_results):
+    """strain_mean_normal = (exx + eyy) / 2, available after compute."""
+    window.trigger_compute()
+    result = state_with_results.results
+    sr = result.result_strain[0]
+    expected = (sr.strain_exx + sr.strain_eyy) / 2.0
+    vals = window._get_field_values("strain_mean_normal", 0, result)
+    import numpy as np
+    assert vals is not None
+    np.testing.assert_allclose(vals, expected)
+
+
+def test_auto_range_disabled_populates_spinboxes(window, state_with_results):
+    """Disabling auto range triggers set_range() with field's data range.
+    For a uniform shear field all nodes share one value so vmin == vmax."""
+    window.trigger_compute()
+    window.set_current_field("strain_exy")
+    panel = window.viz_panel()
+    # Start with known far-off defaults
+    panel.set_range(-999.0, 999.0)
+    # Disabling auto should repopulate with the actual field values
+    panel._auto_check.setChecked(False)
+    s = panel.get_state()
+    # Values must be finite and within [-1, 1] for a small-shear field
+    assert abs(s["vmin"]) < 1.0
+    assert abs(s["vmax"]) < 1.0
+    # vmin <= vmax (equality is valid for a uniform-value field)
+    assert s["vmin"] <= s["vmax"]

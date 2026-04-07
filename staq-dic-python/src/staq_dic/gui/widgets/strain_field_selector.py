@@ -1,21 +1,24 @@
 """Field selector for the strain post-processing window.
 
-Exposes both **displacement** and **strain** fields in two clearly
-separated sub-grids:
+Exposes displacement, derived displacement, and strain fields in three
+clearly separated sub-grids:
 
     DISPLACEMENT
-        [Disp U]   [Disp V]
+        [Disp U]    [Disp V]
+        [Magnitude] [Velocity]
 
     STRAIN
         [exx]    [eyy]    [exy]
         [e1]     [e2]     [gmax]
-        [        von Mises (3 cols)        ]
+        [von Mises]  [Rotation w]  [Mean e]
 
-All field names match :class:`StrainResult` attribute names verbatim so
-the window can dispatch via ``getattr(result, name)``. The
-displacement fields are populated by ``compute_strain`` itself
-(``disp_u`` / ``disp_v`` are world-coordinate copies of the input
-displacement, so they only become available after ``Compute Strain``).
+Displacement fields (disp_u / disp_v / disp_magnitude / velocity) are
+populated directly from ``result_disp`` and are visible *before* running
+Compute Strain.  Strain fields require a completed strain computation.
+
+All field names in :data:`FIELD_NAMES` match :class:`StrainResult` attribute
+names OR are special-cased computed fields handled by
+``StrainWindow._get_field_values()``.
 """
 
 from __future__ import annotations
@@ -32,10 +35,16 @@ from PySide6.QtWidgets import (
 
 from staq_dic.gui.theme import COLORS
 
+# ---- Displacement section -------------------------------------------------
+
 DISP_FIELD_NAMES: tuple[str, ...] = (
     "disp_u",
     "disp_v",
+    "disp_magnitude",
+    "velocity",
 )
+
+# ---- Strain section -------------------------------------------------------
 
 STRAIN_FIELD_NAMES: tuple[str, ...] = (
     "strain_exx",
@@ -45,36 +54,49 @@ STRAIN_FIELD_NAMES: tuple[str, ...] = (
     "strain_principal_min",
     "strain_maxshear",
     "strain_von_mises",
+    "strain_rotation",
+    "strain_mean_normal",
 )
+
+# ---- Combined ---------------------------------------------------------------
 
 FIELD_NAMES: tuple[str, ...] = DISP_FIELD_NAMES + STRAIN_FIELD_NAMES
 
 _FIELD_LABELS: dict[str, str] = {
-    "disp_u": "Disp U",
-    "disp_v": "Disp V",
-    "strain_exx": "\u03b5xx",                # ε
-    "strain_eyy": "\u03b5yy",
-    "strain_exy": "\u03b5xy",
-    "strain_principal_max": "\u03b5\u2081",   # ε₁
-    "strain_principal_min": "\u03b5\u2082",   # ε₂
-    "strain_maxshear": "\u03b3 max",          # γ max
-    "strain_von_mises": "von Mises",
+    "disp_u":                "\u0055",               # U
+    "disp_v":                "\u0056",               # V
+    "disp_magnitude":        "|\u0055\u0056|",       # |UV|
+    "velocity":              "Velocity",
+    "strain_exx":            "\u03b5xx",             # εxx
+    "strain_eyy":            "\u03b5yy",
+    "strain_exy":            "\u03b5xy",
+    "strain_principal_max":  "\u03b5\u2081",         # ε₁
+    "strain_principal_min":  "\u03b5\u2082",         # ε₂
+    "strain_maxshear":       "\u03b3 max",           # γ max
+    "strain_von_mises":      "von Mises",
+    "strain_rotation":       "\u03c9 rot",           # ω rot
+    "strain_mean_normal":    "\u03b5\u0305 mean",    # ε̄ mean
 }
 
-# (row, col, colspan) inside each sub-grid.
+# (row, col, colspan) inside each sub-grid, all using 2 columns for disp
+# and 3 columns for strain.
 _DISP_POSITIONS: dict[str, tuple[int, int, int]] = {
-    "disp_u": (0, 0, 1),
-    "disp_v": (0, 1, 1),
+    "disp_u":         (0, 0, 1),
+    "disp_v":         (0, 1, 1),
+    "disp_magnitude": (1, 0, 1),
+    "velocity":       (1, 1, 1),
 }
 
 _STRAIN_POSITIONS: dict[str, tuple[int, int, int]] = {
-    "strain_exx": (0, 0, 1),
-    "strain_eyy": (0, 1, 1),
-    "strain_exy": (0, 2, 1),
+    "strain_exx":           (0, 0, 1),
+    "strain_eyy":           (0, 1, 1),
+    "strain_exy":           (0, 2, 1),
     "strain_principal_max": (1, 0, 1),
     "strain_principal_min": (1, 1, 1),
-    "strain_maxshear": (1, 2, 1),
-    "strain_von_mises": (2, 0, 3),
+    "strain_maxshear":      (1, 2, 1),
+    "strain_von_mises":     (2, 0, 1),
+    "strain_rotation":      (2, 1, 1),
+    "strain_mean_normal":   (2, 2, 1),
 }
 
 
@@ -88,7 +110,7 @@ def _section_label(text: str) -> QLabel:
 
 
 class StrainFieldSelector(QWidget):
-    """Two-section exclusive selector for displacement and strain fields."""
+    """Three-section exclusive selector for displacement and strain fields."""
 
     field_changed = Signal(str)
 
@@ -99,6 +121,7 @@ class StrainFieldSelector(QWidget):
         outer.setContentsMargins(0, 0, 0, 0)
         outer.setSpacing(4)
 
+        # Single shared button group — ensures cross-section mutual exclusion.
         self._group = QButtonGroup(self)
         self._group.setExclusive(True)
         self._buttons: dict[str, QPushButton] = {}
@@ -178,7 +201,6 @@ class StrainFieldSelector(QWidget):
         )
 
     def _on_clicked(self, name: str) -> None:
-        """Handle a user-driven button click."""
         if name == self._current:
             self._buttons[name].setChecked(True)
             return

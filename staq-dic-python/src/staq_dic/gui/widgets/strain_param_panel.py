@@ -1,10 +1,10 @@
 """Strain-only parameter panel for the post-processing window.
 
-Exposes the four knobs whitelisted by ``StrainController.ALLOWED_OVERRIDES``:
+Exposes:
 
-* ``method_to_compute_strain`` (2 = plane fit, 3 = FEM nodal)
-* ``strain_plane_fit_rad`` (px)
-* ``strain_smoothness``
+* ``method_to_compute_strain`` (1 = legacy/FEM, 2 = plane fit, 3 = FEM nodal)
+* ``strain_plane_fit_rad`` (px) — only enabled for method 2
+* Pre-smooth displacement (checkbox) → ``strain_smoothness`` preset
 * ``strain_type`` (0 = infinitesimal, 1 = Eulerian, 2 = Green-Lagrangian)
 
 Tracks a dirty flag so the window can show a "Stale" hint until the
@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDoubleSpinBox,
     QFormLayout,
@@ -22,8 +23,21 @@ from PySide6.QtWidgets import (
 )
 
 
+# Smoothness presets for pre-smooth dropdown.
+# Each value is passed directly to StrainController as strain_smoothness.
+# At step=16 px: factor = 500 * smoothness, sigma = spacing * factor
+#   Light  : factor~0.25, sigma~4 px
+#   Medium : factor~1.0,  sigma~16 px (one mesh step)
+#   Strong : factor~4.0,  sigma~64 px
+_SMOOTH_PRESETS: tuple[tuple[str, float], ...] = (
+    ("Light  (σ ≈ 4 px)",  5e-4),
+    ("Medium (σ ≈ 1 step)", 2e-3),
+    ("Strong (σ ≈ 4 steps)", 8e-3),
+)
+
+
 class StrainParamPanel(QWidget):
-    """Compose method/rad/smoothness/type editors with a dirty flag."""
+    """Compose method/rad/pre-smooth/type editors with a dirty flag."""
 
     params_dirty = Signal()
 
@@ -36,29 +50,34 @@ class StrainParamPanel(QWidget):
 
         # --- Method ---
         self._method_combo = QComboBox()
-        # Display labels paired with the integer code stored in DICPara
-        self._method_codes = (2, 3)
+        # (display_label, int_code) pairs
+        self._method_codes = (1, 2, 3)
+        self._method_combo.addItem("Central diff (legacy, method 1)")
         self._method_combo.addItem("Plane fitting (method 2)")
         self._method_combo.addItem("FEM nodal (method 3)")
-        self._method_combo.setCurrentIndex(0)
+        self._method_combo.setCurrentIndex(1)   # default: method 2
         layout.addRow("Method", self._method_combo)
 
-        # --- Plane-fit radius ---
+        # --- Plane-fit radius (only relevant for method 2) ---
         self._rad_spin = QDoubleSpinBox()
-        self._rad_spin.setDecimals(2)
-        self._rad_spin.setRange(1.0, 200.0)
+        self._rad_spin.setDecimals(1)
+        self._rad_spin.setRange(1.0, 500.0)
         self._rad_spin.setSingleStep(1.0)
         self._rad_spin.setSuffix(" px")
         self._rad_spin.setValue(20.0)
         layout.addRow("Plane-fit rad", self._rad_spin)
 
-        # --- Smoothness ---
-        self._smooth_spin = QDoubleSpinBox()
-        self._smooth_spin.setDecimals(7)
-        self._smooth_spin.setRange(0.0, 1.0)
-        self._smooth_spin.setSingleStep(1e-5)
-        self._smooth_spin.setValue(1e-5)
-        layout.addRow("Smoothness", self._smooth_spin)
+        # --- Pre-smooth displacement ---
+        self._presmooth_check = QCheckBox("Pre-smooth displacement field")
+        self._presmooth_check.setChecked(False)
+        layout.addRow("Smoothing", self._presmooth_check)
+
+        self._smooth_combo = QComboBox()
+        for label, _ in _SMOOTH_PRESETS:
+            self._smooth_combo.addItem(label)
+        self._smooth_combo.setCurrentIndex(0)
+        self._smooth_combo.setEnabled(False)
+        layout.addRow("", self._smooth_combo)
 
         # --- Strain type ---
         self._type_combo = QComboBox()
@@ -71,10 +90,18 @@ class StrainParamPanel(QWidget):
 
         self._dirty = False
 
+        # Wire enable/disable for rad spin based on method
+        self._method_combo.currentIndexChanged.connect(self._on_method_changed)
+        self._on_method_changed(self._method_combo.currentIndex())  # init state
+
+        # Wire pre-smooth toggle
+        self._presmooth_check.toggled.connect(self._on_presmooth_toggled)
+
         # Wire dirty propagation
         self._method_combo.currentIndexChanged.connect(self._mark_dirty)
         self._rad_spin.valueChanged.connect(self._mark_dirty)
-        self._smooth_spin.valueChanged.connect(self._mark_dirty)
+        self._presmooth_check.toggled.connect(self._mark_dirty)
+        self._smooth_combo.currentIndexChanged.connect(self._mark_dirty)
         self._type_combo.currentIndexChanged.connect(self._mark_dirty)
 
     # ------------------------------------------------------------------
@@ -84,15 +111,13 @@ class StrainParamPanel(QWidget):
     def get_override(self) -> dict[str, object]:
         """Return the current parameter values as a dict suitable for
         :meth:`StrainController.compute_all_frames`."""
+        method = self._method_codes[self._method_combo.currentIndex()]
+        smoothness = self._resolve_smoothness()
         return {
-            "method_to_compute_strain": self._method_codes[
-                self._method_combo.currentIndex()
-            ],
+            "method_to_compute_strain": method,
             "strain_plane_fit_rad": float(self._rad_spin.value()),
-            "strain_smoothness": float(self._smooth_spin.value()),
-            "strain_type": self._type_codes[
-                self._type_combo.currentIndex()
-            ],
+            "strain_smoothness": smoothness,
+            "strain_type": self._type_codes[self._type_combo.currentIndex()],
         }
 
     def is_dirty(self) -> bool:
@@ -107,6 +132,20 @@ class StrainParamPanel(QWidget):
     # ------------------------------------------------------------------
     # Internal
     # ------------------------------------------------------------------
+
+    def _resolve_smoothness(self) -> float:
+        if not self._presmooth_check.isChecked():
+            return 0.0
+        idx = self._smooth_combo.currentIndex()
+        return _SMOOTH_PRESETS[idx][1]
+
+    def _on_method_changed(self, index: int) -> None:
+        """Enable plane-fit radius only when method 2 (plane fitting) is selected."""
+        code = self._method_codes[index]
+        self._rad_spin.setEnabled(code == 2)
+
+    def _on_presmooth_toggled(self, checked: bool) -> None:
+        self._smooth_combo.setEnabled(checked)
 
     def _mark_dirty(self, *_args: object) -> None:
         self._dirty = True

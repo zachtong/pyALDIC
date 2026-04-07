@@ -1,6 +1,6 @@
 """Top-level strain post-processing window.
 
-Independent ``QMainWindow`` that consumes the displacement results from
+Independent ``QMainWindow`` that consumes displacement results from
 ``state.results.result_disp``, runs :class:`StrainController` on demand,
 and renders the resulting fields with a *private* ``VizController``.
 
@@ -11,18 +11,31 @@ Decoupling contracts (enforced by tests):
 * Owns a private ``VizController`` cache -- never reads or writes
   ``state.colormap`` / ``state.color_min`` / ``state.color_max`` /
   ``state.display_field``.
-* Reads from ``state.results.result_disp`` and writes back via
-  :func:`dataclasses.replace` through :class:`StrainController` only.
+* Reads ``state.results.result_disp`` for displacement fields and writes
+  back via :func:`dataclasses.replace` through :class:`StrainController`
+  only.
+
+Field routing:
+
+* ``disp_u``, ``disp_v``, ``disp_magnitude``, ``velocity`` -- read from
+  ``result_disp`` directly; available before Compute Strain.
+* ``strain_*``, ``strain_rotation``, ``strain_mean_normal`` -- require a
+  completed :meth:`trigger_compute` call.
 """
 
 from __future__ import annotations
 
+import io
 import traceback as _tb
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import numpy as np
 from numpy.typing import NDArray
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QPixmap, QImage
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -33,22 +46,68 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from staq_dic.core.data_structures import StrainResult
+from staq_dic.core.data_structures import PipelineResult, StrainResult
 from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.controllers.strain_controller import StrainController
 from staq_dic.gui.controllers.viz_controller import VizController
 from staq_dic.gui.panels.strain_canvas import StrainCanvas
-from staq_dic.gui.widgets.strain_field_selector import StrainFieldSelector
+from staq_dic.gui.widgets.console_log import ConsoleLog
+from staq_dic.gui.widgets.strain_field_selector import (
+    DISP_FIELD_NAMES,
+    StrainFieldSelector,
+)
 from staq_dic.gui.widgets.strain_param_panel import StrainParamPanel
 from staq_dic.gui.widgets.strain_viz_panel import StrainVizPanel
+from staq_dic.gui.widgets.velocity_settings import VelocitySettingsWidget
+from staq_dic.gui.theme import COLORS
 
 
-# A namespaced "field bucket" lets the private viz cache distinguish
-# strain frames from displacement frames in the main view, even though
-# both windows share the same AppState. The strain window's frames live
-# in their own keyspace.
+# Namespace prefix for the private VizController cache.
 _FIELD_NS = "strain_window"
+
+
+class _ColorbarLabel(QLabel):
+    """Fixed-width label displaying a vertical matplotlib colorbar strip."""
+
+    _LABEL_WIDTH = 64
+    _CANVAS_HEIGHT = 250
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setFixedWidth(self._LABEL_WIDTH)
+        self.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+
+    def update_colorbar(
+        self, cmap_name: str, vmin: float, vmax: float,
+    ) -> None:
+        """Render and display the colorbar for the given range."""
+        try:
+            fig, ax = plt.subplots(figsize=(0.6, 3.0), dpi=80)
+            fig.patch.set_facecolor("#0b0f1a")
+            fig.subplots_adjust(left=0.12, right=0.42, top=0.97, bottom=0.03)
+            sm = plt.cm.ScalarMappable(
+                cmap=cmap_name,
+                norm=mcolors.Normalize(vmin=vmin, vmax=vmax),
+            )
+            cb = fig.colorbar(sm, cax=ax)
+            cb.ax.tick_params(labelsize=7, colors="#8892a4")
+            cb.ax.yaxis.set_tick_params(color="#8892a4")
+            ax.yaxis.set_tick_params(labelsize=7)
+
+            buf = io.BytesIO()
+            fig.savefig(buf, format="png", dpi=80, facecolor="#0b0f1a")
+            buf.seek(0)
+            plt.close(fig)
+
+            px = QPixmap()
+            px.loadFromData(buf.read())
+            self.setPixmap(px)
+        except Exception:  # pragma: no cover
+            self.clear()
+
+    def clear_colorbar(self) -> None:
+        self.clear()
 
 
 class StrainWindow(QMainWindow):
@@ -61,11 +120,11 @@ class StrainWindow(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Strain Post-Processing")
-        self.resize(1100, 720)
+        self.resize(1200, 760)
 
         self._state = state
         self._strain_ctrl = StrainController(state)
-        self._viz_ctrl = VizController()  # PRIVATE -- isolated from MainWindow
+        self._viz_ctrl = VizController()   # PRIVATE -- isolated from MainWindow
         self._image_ctrl = ImageController(state)
         self._strain_current_frame: int = 0
 
@@ -75,40 +134,59 @@ class StrainWindow(QMainWindow):
         root.setContentsMargins(8, 8, 8, 8)
         root.setSpacing(8)
 
-        # Left pane: canvas + frame slider
+        # Left pane: canvas + colorbar + frame slider
         left = QVBoxLayout()
         left.setSpacing(4)
+
+        canvas_row = QHBoxLayout()
+        canvas_row.setSpacing(4)
         self._canvas = StrainCanvas()
-        left.addWidget(self._canvas, 1)
+        canvas_row.addWidget(self._canvas, 1)
+        self._colorbar = _ColorbarLabel()
+        canvas_row.addWidget(self._colorbar, 0)
+        left.addLayout(canvas_row, 1)
+
         self._frame_slider = QSlider(Qt.Orientation.Horizontal)
         self._frame_slider.setRange(0, 0)
         self._frame_slider.setValue(0)
         self._frame_slider.valueChanged.connect(self._on_frame_slider)
         left.addWidget(self._frame_slider)
+
         self._frame_label = QLabel("Frame: 0")
         self._frame_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         left.addWidget(self._frame_label)
+
         root.addLayout(left, 1)
 
-        # Right pane: selectors + params + buttons + viz
+        # Right pane
         right = QVBoxLayout()
-        right.setSpacing(8)
+        right.setSpacing(6)
         right_widget = QWidget()
         right_widget.setLayout(right)
-        right_widget.setFixedWidth(300)
+        right_widget.setFixedWidth(320)
 
-        right.addWidget(QLabel("Field"))
+        # Field selector
+        right.addWidget(_sec_label("FIELD"))
         self._field_selector = StrainFieldSelector()
         self._field_selector.field_changed.connect(self._on_field_changed)
         right.addWidget(self._field_selector)
 
-        right.addWidget(QLabel("Strain parameters"))
+        # Velocity settings (visible only for velocity field)
+        self._velocity_settings = VelocitySettingsWidget()
+        self._velocity_settings.setVisible(False)
+        self._velocity_settings.settings_changed.connect(self._on_viz_changed)
+        right.addWidget(self._velocity_settings)
+
+        # Strain parameters
+        right.addWidget(_sec_label("STRAIN PARAMETERS"))
         self._param_panel = StrainParamPanel()
         self._param_panel.params_dirty.connect(self._on_params_dirty)
         right.addWidget(self._param_panel)
 
+        # Prominent compute button (matches main window "Run DIC Analysis" style)
         self._compute_btn = QPushButton("Compute Strain")
-        self._compute_btn.setFixedHeight(32)
+        self._compute_btn.setProperty("class", "btn-primary")
+        self._compute_btn.setFixedHeight(40)
         self._compute_btn.clicked.connect(self._on_compute_clicked)
         right.addWidget(self._compute_btn)
 
@@ -118,18 +196,24 @@ class StrainWindow(QMainWindow):
         )
         right.addWidget(self._stale_label)
 
-        right.addWidget(QLabel("Visualization"))
+        # Visualization controls
+        right.addWidget(_sec_label("VISUALIZATION"))
         self._viz_panel = StrainVizPanel()
         self._viz_panel.viz_changed.connect(self._on_viz_changed)
+        self._viz_panel.auto_disabled.connect(self._on_auto_range_disabled)
         right.addWidget(self._viz_panel)
+
+        # Console
+        right.addWidget(_sec_label("LOG"))
+        self._console = ConsoleLog()
+        right.addWidget(self._console)
 
         right.addStretch(1)
         root.addWidget(right_widget, 0)
 
         self.setCentralWidget(central)
 
-        # Track external pipeline runs so we can drop our cached overlays
-        # whenever MainWindow recomputes the displacement results.
+        # Track external pipeline runs
         self._state.results_changed.connect(self._on_state_results_changed)
 
         self._sync_slider_range()
@@ -179,7 +263,7 @@ class StrainWindow(QMainWindow):
 
     def _on_compute_clicked(self) -> None:
         if self._state.results is None:
-            self._state.log_message.emit(
+            self._log(
                 "Strain window: no displacement results to post-process.",
                 "warn",
             )
@@ -188,31 +272,48 @@ class StrainWindow(QMainWindow):
             self._strain_ctrl.compute_and_store(
                 override=self._param_panel.get_override(),
             )
-        except Exception as exc:  # pragma: no cover - defensive UI guard
-            self._state.log_message.emit(
+        except Exception as exc:
+            self._log(
                 f"Strain compute failed: {type(exc).__name__}: {exc}",
                 "error",
             )
             return
-        # _on_state_results_changed will fire from the controller's emit;
-        # it clears caches, syncs the slider and re-renders. We just need
-        # to drop the stale flag here.
+        # _on_state_results_changed fires from the controller's emit,
+        # clears caches, syncs slider, and re-renders.
         self._param_panel.mark_clean()
         self._stale_label.setText("")
+        self._log("Strain computation complete.", "success")
 
     def _on_params_dirty(self) -> None:
-        self._stale_label.setText("Stale (params changed)")
+        self._stale_label.setText("\u26a0 Params changed -- click Compute Strain")
 
-    def _on_field_changed(self, _name: str) -> None:
+    def _on_field_changed(self, name: str) -> None:
+        self._velocity_settings.set_visible_for_field(name)
         self._render_current()
 
     def _on_viz_changed(self) -> None:
-        # Colormap / range / alpha changed -> Tier-2 cache must die.
+        # Colormap / range / opacity / deformed changed -> tier-2 cache dies.
         self._viz_ctrl.clear_pixmap_cache()
         self._render_current()
 
+    def _on_auto_range_disabled(self) -> None:
+        """User switched to manual range: populate spinboxes with current field."""
+        result = self._state.results
+        if result is None:
+            return
+        values = self._get_field_values(
+            self._field_selector.current_field(),
+            self._strain_current_frame,
+            result,
+        )
+        if values is None:
+            return
+        valid = values[~np.isnan(values)]
+        if len(valid) == 0:
+            return
+        self._viz_panel.set_range(float(valid.min()), float(valid.max()))
+
     def _on_state_results_changed(self) -> None:
-        # External Run (or our own compute) replaced PipelineResult.
         self._viz_ctrl.clear_all()
         self._sync_slider_range()
         self._render_current()
@@ -221,6 +322,74 @@ class StrainWindow(QMainWindow):
         self._strain_current_frame = int(value)
         self._frame_label.setText(f"Frame: {value}")
         self._render_current()
+
+    # ------------------------------------------------------------------
+    # Field extraction
+    # ------------------------------------------------------------------
+
+    def _get_field_values(
+        self,
+        field_name: str,
+        frame: int,
+        result: PipelineResult,
+    ) -> NDArray[np.float64] | None:
+        """Extract displayable values for the given field and frame.
+
+        Displacement-family fields (disp_u / disp_v / disp_magnitude /
+        velocity) are served from result_disp so they work before Compute
+        Strain. All strain fields require result_strain.
+        """
+        if field_name in DISP_FIELD_NAMES:
+            return self._get_disp_field(field_name, frame, result)
+
+        # Strain fields need a completed computation
+        if not result.result_strain or frame >= len(result.result_strain):
+            return None
+        sr: StrainResult = result.result_strain[frame]
+
+        if field_name == "strain_rotation":
+            if sr.dudy is None or sr.dvdx is None:
+                return None
+            return (sr.dudy - sr.dvdx) / 2.0
+
+        if field_name == "strain_mean_normal":
+            if sr.strain_exx is None or sr.strain_eyy is None:
+                return None
+            return (sr.strain_exx + sr.strain_eyy) / 2.0
+
+        return getattr(sr, field_name, None)
+
+    def _get_disp_field(
+        self,
+        field_name: str,
+        frame: int,
+        result: PipelineResult,
+    ) -> NDArray[np.float64] | None:
+        """Serve displacement-family fields from result_disp."""
+        if frame >= len(result.result_disp):
+            return None
+        fr = result.result_disp[frame]
+        U = fr.U_accum if fr.U_accum is not None else fr.U
+        u, v = U[0::2], U[1::2]
+
+        if field_name == "disp_u":
+            return u.copy()
+        if field_name == "disp_v":
+            return v.copy()
+        if field_name == "disp_magnitude":
+            return np.sqrt(u ** 2 + v ** 2)
+        if field_name == "velocity":
+            if frame > 0:
+                fr_prev = result.result_disp[frame - 1]
+                U_prev = fr_prev.U_accum if fr_prev.U_accum is not None else fr_prev.U
+                du = u - U_prev[0::2]
+                dv = v - U_prev[1::2]
+            else:
+                du, dv = u, v   # velocity from rest
+            vel_mag = np.sqrt(du ** 2 + dv ** 2)   # px/frame
+            converted, _unit = self._velocity_settings.apply_conversion(vel_mag)
+            return converted
+        return None
 
     # ------------------------------------------------------------------
     # Rendering
@@ -245,47 +414,64 @@ class StrainWindow(QMainWindow):
         self._frame_slider.blockSignals(False)
         self._frame_label.setText(f"Frame: {self._strain_current_frame}")
 
-    def _try_load_background(self) -> None:
+    def _try_load_background(self, img_idx: int = 0) -> None:
         """Best-effort background image fetch -- silent on failure."""
         if not self._state.image_files:
             return
-        # Reference frame for the strain view is always the underlying
-        # frame index 0 (frame 1 in MATLAB nomenclature).
         try:
-            rgb = self._image_ctrl.read_image_rgb(0)
+            rgb = self._image_ctrl.read_image_rgb(img_idx)
             self._canvas.set_image(rgb)
         except (IndexError, FileNotFoundError, ValueError):
             pass
 
     def _render_current(self) -> None:
         try:
-            self._try_load_background()
             result = self._state.results
-            if result is None or not result.result_strain:
+            if result is None:
+                self._try_load_background(0)
                 self._canvas.clear_overlay()
+                self._colorbar.clear_colorbar()
                 return
 
             frame = self._strain_current_frame
-            if frame < 0 or frame >= len(result.result_strain):
-                self._canvas.clear_overlay()
-                return
-
-            sr: StrainResult = result.result_strain[frame]
             field_name = self._field_selector.current_field()
-            values = getattr(sr, field_name, None)
+            values = self._get_field_values(field_name, frame, result)
+
+            viz = self._viz_panel.get_state()
+            show_deformed = bool(viz.get("show_deformed", False))
+
+            # Background image
+            if show_deformed and result.result_strain:
+                # Deformed frame image: frame index = frame + 1 (0 = reference)
+                self._try_load_background(frame + 1)
+            else:
+                self._try_load_background(0)
+
             if values is None:
                 self._canvas.clear_overlay()
+                self._colorbar.clear_colorbar()
                 return
 
             ref_mesh = result.result_fe_mesh_each_frame[0]
             nodes = ref_mesh.coordinates_fem
             mesh_step = result.dic_para.winstepsize
             img_shape = result.dic_para.img_size
+            roi_mask = self._state.per_frame_rois.get(0)
 
             vmin, vmax = self._resolve_range(values)
-            viz = self._viz_panel.get_state()
 
-            roi_mask = self._state.per_frame_rois.get(0)
+            # Deformed rendering: shift node positions by displacement
+            deformed = False
+            ref_uv = None
+            if (
+                show_deformed
+                and result.result_strain
+                and frame < len(result.result_strain)
+            ):
+                sr = result.result_strain[frame]
+                if sr.disp_u is not None and sr.disp_v is not None:
+                    deformed = True
+                    ref_uv = (sr.disp_u, sr.disp_v)
 
             pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
                 frame_idx=frame,
@@ -298,6 +484,8 @@ class StrainWindow(QMainWindow):
                 vmin=vmin,
                 vmax=vmax,
                 roi_mask=roi_mask,
+                deformed=deformed,
+                ref_uv=ref_uv,
             )
             self._canvas.set_overlay_pixmap(pixmap)
             self._canvas.set_overlay_alpha(float(viz["alpha"]))
@@ -306,37 +494,57 @@ class StrainWindow(QMainWindow):
                 self._canvas.set_overlay_pos(
                     float(xg.min()), float(yg.min()),
                 )
-        except Exception as exc:  # pragma: no cover - defensive UI guard
+
+            self._colorbar.update_colorbar(str(viz["colormap"]), vmin, vmax)
+
+        except Exception as exc:  # pragma: no cover
             tb_str = _tb.format_exc()
             print(f"[strain_window._render_current] {exc}\n{tb_str}", flush=True)
-            self._state.log_message.emit(
-                f"Strain render error: {type(exc).__name__}: {exc}",
-                "error",
-            )
+            self._log(f"Render error: {type(exc).__name__}: {exc}", "error")
             self._canvas.clear_overlay()
+            self._colorbar.clear_colorbar()
 
     def _resolve_range(
         self, values: NDArray[np.float64],
     ) -> tuple[float, float]:
-        """Compute (vmin, vmax) from the *local* viz panel state."""
+        """Compute (vmin, vmax) from the local viz panel state."""
         viz = self._viz_panel.get_state()
         if not viz["use_percentile"]:
             return float(viz["vmin"]), float(viz["vmax"])
         valid = values[~np.isnan(values)]
         if len(valid) == 0:
             return 0.0, 1.0
-        pct = np.percentile(valid, [5, 95])
-        return float(pct[0]), float(pct[1])
+        return float(valid.min()), float(valid.max())
+
+    # ------------------------------------------------------------------
+    # Logging
+    # ------------------------------------------------------------------
+
+    def _log(self, message: str, level: str = "info") -> None:
+        """Append a message to the local console."""
+        self._console.append_log(message, level)
 
     # ------------------------------------------------------------------
     # Cleanup
     # ------------------------------------------------------------------
 
     def closeEvent(self, event) -> None:  # noqa: N802
-        # Disconnect from AppState so the window can be safely re-opened
-        # without leaking duplicate slot calls.
         try:
             self._state.results_changed.disconnect(self._on_state_results_changed)
         except (RuntimeError, TypeError):
             pass
         super().closeEvent(event)
+
+
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+def _sec_label(text: str) -> QLabel:
+    """Small all-caps section header."""
+    lbl = QLabel(text)
+    lbl.setStyleSheet(
+        f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
+        f"font-weight: bold; letter-spacing: 1px; margin-top: 6px;"
+    )
+    return lbl
