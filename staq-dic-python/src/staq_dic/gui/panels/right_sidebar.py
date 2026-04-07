@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import time
 
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -33,6 +33,10 @@ except ImportError:  # pragma: no cover
 
 class RightSidebar(QWidget):
     """Right sidebar: run controls, progress, display, console."""
+
+    # Emitted when the user requests the strain post-processing window.
+    # MainWindow owns the lazy singleton instance and the slot wiring.
+    open_strain_window_requested = Signal()
 
     def __init__(self, pipeline_ctrl, parent=None) -> None:
         super().__init__(parent)
@@ -80,6 +84,17 @@ class RightSidebar(QWidget):
             self._export_btn.setIcon(icon_download())
         self._export_btn.clicked.connect(self._on_export)
         layout.addWidget(self._export_btn)
+
+        self._strain_btn = QPushButton("Open Strain Window")
+        self._strain_btn.setFixedHeight(30)
+        self._strain_btn.setToolTip(
+            "Compute and visualize strain in a separate post-processing "
+            "window. Requires displacement results from a completed Run."
+        )
+        self._strain_btn.clicked.connect(
+            self.open_strain_window_requested.emit
+        )
+        layout.addWidget(self._strain_btn)
 
         # --- Progress section ---
         self._add_section_label(layout, "PROGRESS")
