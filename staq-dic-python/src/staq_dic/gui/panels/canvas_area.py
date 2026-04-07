@@ -197,12 +197,21 @@ class ImageCanvas(QGraphicsView):
         self._scene.setSceneRect(QRectF(0, 0, w, h))
 
     def update_roi_overlay(self) -> None:
-        """Refresh the ROI overlay from the current ROI controller mask."""
-        if self._roi_ctrl is None:
-            self._roi_item.setPixmap(QPixmap())
-            return
-        mask = self._roi_ctrl.mask
-        if not mask.any():
+        """Refresh the ROI overlay from per_frame_rois[current_frame].
+
+        Single source of truth: the blue overlay always reflects what is
+        persisted in app state for the current frame.  External mutations
+        (batch import, context-menu import) therefore become visible
+        immediately via the roi_changed signal, without having to re-enter
+        ROI editing mode first.
+
+        The in-memory ``self._roi_ctrl`` buffer is a transient stamping
+        surface for in-progress drawing operations; it is no longer the
+        display source.
+        """
+        state = AppState.instance()
+        mask = state.per_frame_rois.get(state.current_frame)
+        if mask is None or not mask.any():
             self._roi_item.setPixmap(QPixmap())
             return
         h, w = mask.shape
