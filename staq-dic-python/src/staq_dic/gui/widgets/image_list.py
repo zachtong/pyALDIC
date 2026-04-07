@@ -406,6 +406,16 @@ class ImageList(QWidget):
                 new_rois[old_to_new[old_key]] = mask
         self._state.per_frame_rois = new_rois  # type: ignore[assignment]
 
+        # Q6: image-list mutation invalidates pipeline results
+        # (frame count / indices changed).
+        from staq_dic.gui.app_state import RunState
+        had_results = self._state.results is not None
+        if had_results:
+            self._state.results = None
+            self._state.deformed_masks = None
+            self._state.run_state = RunState.IDLE
+            self._state.show_deformed = False
+
         # Clear image caches for removed images
         self._image_ctrl.clear_cache()
 
@@ -414,6 +424,9 @@ class ImageList(QWidget):
         self._state.current_frame = min(
             self._state.current_frame, len(files) - 1
         )
+        if had_results:
+            self._state.results_changed.emit()
+            self._state.run_state_changed.emit(RunState.IDLE)
         self._state.images_changed.emit()
 
     def _get_selected_frames(self) -> set[int]:
