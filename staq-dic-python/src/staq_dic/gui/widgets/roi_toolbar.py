@@ -55,6 +55,9 @@ class ROIToolbar(QWidget):
     # (mode, radius_px) — mode is "paint" or "erase"
     brush_requested = Signal(str, int)
     brush_clear_requested = Signal()
+    # Emitted live whenever the radius spinbox changes, so the canvas
+    # can update its active brush radius without re-clicking Paint/Erase.
+    brush_radius_changed = Signal(int)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -155,9 +158,15 @@ class ROIToolbar(QWidget):
         radius_layout.setSpacing(6)
         radius_layout.addWidget(QLabel("Radius"))
         self._brush_radius_spin = QSpinBox()
-        self._brush_radius_spin.setRange(2, 64)
+        self._brush_radius_spin.setRange(2, 500)
         self._brush_radius_spin.setValue(16)
         self._brush_radius_spin.setSuffix(" px")
+        # Live-update the canvas radius so the user does not have to
+        # re-click Paint/Erase after changing the spinbox.  Applies
+        # equally to paint and erase modes.
+        self._brush_radius_spin.valueChanged.connect(
+            lambda v: self.brush_radius_changed.emit(int(v))
+        )
         radius_layout.addWidget(self._brush_radius_spin)
         radius_action = QWidgetAction(menu)
         radius_action.setDefaultWidget(radius_widget)

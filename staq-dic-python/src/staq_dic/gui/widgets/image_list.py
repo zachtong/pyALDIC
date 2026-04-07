@@ -94,6 +94,14 @@ class ImageList(QWidget):
         self._tree.customContextMenuRequested.connect(self._show_context_menu)
         self._tree.setRootIsDecorated(False)
         self._tree.setIndentation(0)
+        # Disable Qt's built-in autoScroll: when an item-widget QPushButton
+        # (the ROI Add/Edit/Need button) receives a hover/focus event, Qt
+        # otherwise calls ensureVisible() on the owning row, which scrolls
+        # the bottommost visible row fully into view -- producing the
+        # "hovering Add scrolls list to last frame" bug.  We re-add an
+        # explicit scrollToItem in _sync_selection so keyboard navigation
+        # and external frame changes still keep the current row visible.
+        self._tree.setAutoScroll(False)
 
         # Column sizing
         header = self._tree.header()
@@ -173,6 +181,11 @@ class ImageList(QWidget):
             roi_btn = QPushButton("Add")
             roi_btn.setFixedHeight(20)
             roi_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+            # NoFocus prevents the button from stealing focus on hover/click,
+            # which would otherwise let Qt's view scroll-on-focus behaviour
+            # drag the bottommost row into view (in addition to the
+            # tree-level autoScroll guard set in __init__).
+            roi_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             roi_btn.setStyleSheet(_STYLE_ROI_ADD)
             roi_btn.clicked.connect(
                 self._make_roi_click_handler(i)
@@ -284,6 +297,11 @@ class ImageList(QWidget):
         item = self._tree.topLevelItem(idx)
         if item is not None:
             self._tree.setCurrentItem(item)
+            # autoScroll is disabled tree-wide to stop hover-on-button from
+            # scrolling the list, so we have to do explicit scrolling here
+            # to keep the externally-selected frame visible (default hint
+            # is EnsureVisible).
+            self._tree.scrollToItem(item)
         self._tree.blockSignals(False)
 
     def eventFilter(self, obj, event):
@@ -301,6 +319,10 @@ class ImageList(QWidget):
                         self._suppress_sync = True
                         self._state.set_current_frame(frame)
                         self._suppress_sync = False
+                        # autoScroll is disabled tree-wide; scroll
+                        # explicitly so keyboard nav still keeps the
+                        # newly current row visible.
+                        self._tree.scrollToItem(current)
         return super().eventFilter(obj, event)
 
     def _on_item_clicked(
@@ -463,12 +485,20 @@ class ImageList(QWidget):
         self.roi_import_for_frames.emit(dict(zip(frames, paths)))
 
     def _clear_roi_selected(self) -> None:
-        """Clear ROI masks for all selected frames."""
+        """Clear ROI masks for all selected frames.
+
+        If frame 0 is among the cleared frames, also drop the brush
+        refinement mask -- it lives only on frame 0 and is meaningless
+        without an ROI to scope it (Brush#5).
+        """
         frames = self._get_selected_frames()
         changed = False
         for f in frames:
             if f in self._state.per_frame_rois:
                 del self._state.per_frame_rois[f]
                 changed = True
+        if 0 in frames and self._state.refine_brush_mask is not None:
+            self._state.set_refine_brush_mask(None)
+            changed = True
         if changed:
             self._state.roi_changed.emit()
