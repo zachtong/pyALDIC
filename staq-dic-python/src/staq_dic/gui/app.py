@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
     QMainWindow,
+    QMessageBox,
     QHBoxLayout,
     QWidget,
 )
@@ -67,6 +68,9 @@ class MainWindow(QMainWindow):
         self._right_sidebar.open_strain_window_requested.connect(
             self._on_open_strain_window
         )
+
+        # Prompt user to open strain window when a pipeline run completes.
+        self._state.run_state_changed.connect(self._on_run_state_changed)
 
         # Wire ROI toolbar signals
         roi_tb = self._left_sidebar.roi_toolbar
@@ -467,6 +471,22 @@ class MainWindow(QMainWindow):
         self._strain_window.show()
         self._strain_window.raise_()
         self._strain_window.activateWindow()
+
+    def _on_run_state_changed(self, new_state) -> None:
+        """When a pipeline run completes, offer to open the strain window."""
+        from staq_dic.gui.app_state import RunState
+        if new_state != RunState.DONE or self._state.results is None:
+            return
+        reply = QMessageBox.question(
+            self,
+            "Displacement Analysis Complete",
+            "Displacement computation finished.\n\n"
+            "Would you like to open the Strain Post-Processing Window?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if reply == QMessageBox.StandardButton.Yes:
+            self._on_open_strain_window()
 
     def closeEvent(self, event) -> None:
         """Stop and join any running pipeline worker before closing.

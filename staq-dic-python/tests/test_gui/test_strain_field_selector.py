@@ -1,4 +1,4 @@
-"""Tests for StrainFieldSelector -- 9-button (2 disp + 7 strain) selector."""
+"""Tests for StrainFieldSelector -- 13-button selector (4 disp + 9 strain)."""
 
 from __future__ import annotations
 
@@ -21,14 +21,13 @@ def selector():
 
 
 def test_default_field_is_disp_u(selector):
-    """Default selection is disp_u: users land on the displacement view
-    that mirrors the displacement-only data they just computed."""
+    """Default selection is disp_u: displacement is visible without Compute Strain."""
     assert selector.current_field() == "disp_u"
 
 
 def test_field_names_canonical_order():
-    """The selector exposes 9 fields: 2 displacement + 7 strain."""
-    assert DISP_FIELD_NAMES == ("disp_u", "disp_v")
+    """4 displacement fields + 9 strain fields = 13 total."""
+    assert DISP_FIELD_NAMES == ("disp_u", "disp_v", "disp_magnitude", "velocity")
     assert STRAIN_FIELD_NAMES == (
         "strain_exx",
         "strain_eyy",
@@ -37,14 +36,26 @@ def test_field_names_canonical_order():
         "strain_principal_min",
         "strain_maxshear",
         "strain_von_mises",
+        "strain_rotation",
+        "strain_mean_normal",
     )
     assert FIELD_NAMES == DISP_FIELD_NAMES + STRAIN_FIELD_NAMES
-    assert len(FIELD_NAMES) == 9
+    assert len(FIELD_NAMES) == 13
 
 
 def test_set_current_field_to_disp_v(selector):
     selector.set_current_field("disp_v")
     assert selector.current_field() == "disp_v"
+
+
+def test_set_current_field_to_magnitude(selector):
+    selector.set_current_field("disp_magnitude")
+    assert selector.current_field() == "disp_magnitude"
+
+
+def test_set_current_field_to_velocity(selector):
+    selector.set_current_field("velocity")
+    assert selector.current_field() == "velocity"
 
 
 def test_set_current_field_to_strain(selector):
@@ -54,27 +65,30 @@ def test_set_current_field_to_strain(selector):
     assert selector.current_field() == "strain_von_mises"
 
 
+def test_set_current_field_to_rotation(selector):
+    selector.set_current_field("strain_rotation")
+    assert selector.current_field() == "strain_rotation"
+
+
+def test_set_current_field_to_mean_normal(selector):
+    selector.set_current_field("strain_mean_normal")
+    assert selector.current_field() == "strain_mean_normal"
+
+
 def test_unknown_field_is_rejected(selector):
     with pytest.raises(ValueError):
-        selector.set_current_field("displacement_magnitude")
+        selector.set_current_field("totally_unknown_field")
 
 
 def test_exclusive_selection_across_groups(selector):
-    """Selecting a strain field deactivates the disp button (and vice versa)."""
+    """Selecting any field deactivates all others (single button group)."""
     btns = selector.findChildren(QPushButton)
-    assert len(btns) == 9
+    assert len(btns) == 13
 
-    selector.set_current_field("disp_u")
-    checked = [b for b in btns if b.isChecked()]
-    assert len(checked) == 1
-
-    selector.set_current_field("strain_exx")
-    checked = [b for b in btns if b.isChecked()]
-    assert len(checked) == 1
-
-    selector.set_current_field("disp_v")
-    checked = [b for b in btns if b.isChecked()]
-    assert len(checked) == 1
+    for field in ("disp_u", "strain_exx", "velocity", "strain_rotation"):
+        selector.set_current_field(field)
+        checked = [b for b in btns if b.isChecked()]
+        assert len(checked) == 1, f"Expected 1 checked after {field}, got {len(checked)}"
 
 
 def test_field_changed_signal_emits(selector):
