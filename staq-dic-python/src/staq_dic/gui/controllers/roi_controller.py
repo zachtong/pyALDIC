@@ -79,6 +79,44 @@ class ROIController:
         cv2.circle(canvas, (cx, cy), radius, 255, thickness=-1)
         self._apply(canvas, mode)
 
+    def stroke_segment(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        radius: int,
+        mode: str = "add",
+    ) -> None:
+        """Paint or erase a thick line segment (freehand brush stroke).
+
+        Used by the ``+ Refine`` brush sub-tool to paint material-point
+        refinement zones with a draggable cursor.  Each call rasterizes
+        a single segment between consecutive mouse positions.
+
+        Args:
+            x1, y1: Start of the segment (column, row).
+            x2, y2: End of the segment (column, row). When equal to
+                start, the stroke degenerates to a single filled disc.
+            radius: Brush radius in pixels (>= 1).
+            mode: ``"add"`` to union into the mask, ``"cut"`` to subtract.
+        """
+        if radius <= 0:
+            return
+        canvas = np.zeros(self._shape, dtype=np.uint8)
+        if x1 == x2 and y1 == y2:
+            cv2.circle(canvas, (x1, y1), radius, 255, thickness=-1)
+        else:
+            cv2.line(
+                canvas,
+                (x1, y1),
+                (x2, y2),
+                255,
+                thickness=2 * radius,
+                lineType=cv2.LINE_8,
+            )
+        self._apply(canvas, mode)
+
     def import_mask(self, path: str) -> None:
         """Import an external mask image.
 
