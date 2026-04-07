@@ -213,6 +213,7 @@ class ImageCanvas(QGraphicsView):
         mask = state.per_frame_rois.get(state.current_frame)
         if mask is None or not mask.any():
             self._roi_item.setPixmap(QPixmap())
+            self._roi_item.setPos(0, 0)
             return
         h, w = mask.shape
         # Build RGBA image — ensure contiguous buffer for QImage
@@ -481,16 +482,20 @@ class ImageCanvas(QGraphicsView):
         self._finish_drawing()
 
     def _finish_drawing(self) -> None:
-        """Clean up preview items, update ROI overlay, and reset to select mode."""
+        """Clean up preview items, save the stamp to per-frame state,
+        refresh the overlay, and reset to select mode."""
         self._remove_preview_items()
         self._draw_state = None
-        self.update_roi_overlay()
-        # Save mask to the per-frame ROI for whichever frame is being edited
+        # Persist the stamp to per-frame state BEFORE refreshing the
+        # overlay. After Q3 the overlay reads its data from
+        # per_frame_rois[current_frame], so state must be written first
+        # or the first refresh will paint with the previous (stale) mask.
         if self._roi_ctrl is not None:
             state = AppState.instance()
             state.set_frame_roi(
                 state.current_frame, self._roi_ctrl.mask.copy()
             )
+        self.update_roi_overlay()
         # One-shot: reset to select mode after completing a shape
         self._current_tool = "select"
         self.setCursor(Qt.CursorShape.ArrowCursor)

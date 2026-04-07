@@ -138,6 +138,12 @@ class TestQ3_OverlaySource:
         # The overlay must have been refreshed
         assert captured.get("called") is True
 
+        # And the data must have come from per_frame_rois[3], not an
+        # empty buffer: new_mask is all-ones, so any pixel should be
+        # painted.
+        img = canvas._roi_item.pixmap().toImage()
+        assert img.pixelColor(64, 64).alpha() > 0
+
     def test_overlay_data_source_is_per_frame_rois(self, qapp):
         """Direct contract test: update_roi_overlay must use
         per_frame_rois[current_frame] as its data source, not
