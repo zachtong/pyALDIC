@@ -40,6 +40,7 @@ from typing import Callable
 import numpy as np
 from numpy.typing import NDArray
 
+from ._brush_warp import warp_brush_mask_to_ref
 from .data_structures import (
     DICMesh,
     DICPara,
@@ -49,6 +50,7 @@ from .data_structures import (
     StrainResult,
 )
 from ..io.image_ops import compute_image_gradient, normalize_images
+from ..mesh.criteria.brush_region import BrushRegionCriterion
 from ..mesh.mark_inside import mark_inside
 from ..mesh.mesh_setup import mesh_setup
 from ..mesh.refinement import RefinementContext, RefinementPolicy, refine_mesh
@@ -74,6 +76,111 @@ logger = logging.getLogger(__name__)
 def _default_progress(frac: float, msg: str) -> None:
     """Print progress to console (fallback)."""
     logger.info("[%3.0f%%] %s", frac * 100, msg)
+
+
+def _maybe_warp_brush_for_ref(
+    criteria: list,
+    *,
+    ref_idx: int,
+    schedule: "FrameSchedule",
+    result_disp: list,
+    result_fe_mesh: list,
+    img_shape: tuple[int, int],
+) -> list:
+    """Replace the BrushRegionCriterion with a warped version for ref_idx>0.
+
+    The user-painted brush mask lives in frame-0 image coordinates.  When
+    AL-DIC switches to a non-zero reference frame K (incremental mode),
+    the same material points have moved, so the mask must be warped using
+    the cumulative displacement field 0 -> K already computed within the
+    same Run.
+
+    V1 only handles the simple case where ``schedule.parent(ref_idx) == 0``,
+    i.e. K was tracked directly against frame 0 and ``result_disp[K-1].U``
+    is already the frame-0 -> frame-K displacement on K's mesh.  Deeper
+    parent chains fall back to the raw mask with a warning.
+
+    Parameters
+    ----------
+    criteria : list of refinement criteria
+        Original pre-solve criteria from the policy (will be returned
+        unchanged when no brush criterion is present).
+    ref_idx : int
+        Current reference frame index (0-based).  Caller guarantees > 0.
+    schedule : FrameSchedule
+        For walking the parent chain.
+    result_disp : list of FrameResult or None
+        Per-frame displacement results computed so far.  Index ``i``
+        corresponds to frame ``i+1`` (1-based naming).
+    result_fe_mesh : list of DICMesh or None
+        Per-frame meshes computed so far.  Same indexing as result_disp.
+    img_shape : (H, W)
+        Image dimensions in pixels.
+
+    Returns
+    -------
+    new_criteria : list
+        Same as input when no brush criterion exists or warping fails;
+        otherwise the original list with the BrushRegionCriterion
+        replaced by one whose mask has been warped to ref_idx.
+    """
+    brush_idx = next(
+        (i for i, c in enumerate(criteria) if isinstance(c, BrushRegionCriterion)),
+        None,
+    )
+    if brush_idx is None:
+        return criteria
+
+    parent_of_ref = schedule.parent(ref_idx)
+    if parent_of_ref != 0:
+        logger.warning(
+            "Brush warp not yet supported for ref frame %d (parent=%d != 0); "
+            "using raw frame-0 mask",
+            ref_idx, parent_of_ref,
+        )
+        return criteria
+
+    # result_disp[K-1] is the result for frame K (1-based naming).
+    # Since parent(K) == 0, its U is already the frame-0 -> frame-K
+    # displacement on the K-th mesh.
+    disp_for_ref = result_disp[ref_idx - 1] if ref_idx - 1 < len(result_disp) else None
+    mesh_for_ref = (
+        result_fe_mesh[ref_idx - 1] if ref_idx - 1 < len(result_fe_mesh) else None
+    )
+    if disp_for_ref is None or mesh_for_ref is None:
+        logger.warning(
+            "Brush warp skipped: missing prior result for ref frame %d",
+            ref_idx,
+        )
+        return criteria
+
+    brush_orig = criteria[brush_idx]
+    try:
+        warped_bool = warp_brush_mask_to_ref(
+            brush_orig.refinement_mask.astype(bool),
+            disp_for_ref.U,
+            mesh_for_ref.coordinates_fem,
+            img_shape,
+        )
+    except (ValueError, RuntimeError) as exc:
+        logger.warning(
+            "Brush warp failed for ref frame %d: %s — using raw frame-0 mask",
+            ref_idx, exc,
+        )
+        return criteria
+
+    new_criteria = list(criteria)
+    new_criteria[brush_idx] = BrushRegionCriterion(
+        refinement_mask=warped_bool.astype(np.float64),
+        min_element_size=brush_orig.min_element_size,
+    )
+    logger.info(
+        "Brush mask warped to ref frame %d (%d -> %d painted px)",
+        ref_idx,
+        int(brush_orig.refinement_mask.sum()),
+        int(warped_bool.sum()),
+    )
+    return new_criteria
 
 
 def _default_stop() -> bool:
@@ -896,11 +1003,27 @@ def run_aldic(
                 "Applying pre-solve refinement (%d criteria)...",
                 len(refinement_policy.pre_solve),
             )
+            # Material-point auto-warp for the brush refinement criterion.
+            # The user paints the brush mask in frame-0 image coordinates.
+            # When the current ref frame is non-zero (incremental tracking),
+            # the painted region must follow the same material points, so
+            # we warp the mask using the cumulative displacement that has
+            # already been computed for that ref frame within this Run.
+            pre_solve_criteria = list(refinement_policy.pre_solve)
+            if ref_idx > 0:
+                pre_solve_criteria = _maybe_warp_brush_for_ref(
+                    pre_solve_criteria,
+                    ref_idx=ref_idx,
+                    schedule=schedule,
+                    result_disp=result_disp,
+                    result_fe_mesh=result_fe_mesh,
+                    img_shape=(img_h, img_w),
+                )
             ref_ctx = RefinementContext(
                 mesh=dic_mesh, mask=f_mask,
             )
             dic_mesh, current_U0 = refine_mesh(
-                dic_mesh, refinement_policy.pre_solve, ref_ctx, current_U0,
+                dic_mesh, pre_solve_criteria, ref_ctx, current_U0,
                 mask=f_mask, img_size=(img_h, img_w),
             )
             n_nodes = dic_mesh.coordinates_fem.shape[0]
