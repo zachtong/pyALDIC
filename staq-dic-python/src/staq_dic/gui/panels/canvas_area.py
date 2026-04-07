@@ -247,6 +247,45 @@ class ImageCanvas(QGraphicsView):
             raise ValueError(f"brush mode must be 'paint' or 'erase', got {mode!r}")
         self._brush_mode = mode
 
+    def _brush_locked_out(self) -> bool:
+        """Return True if brush painting is currently forbidden.
+
+        Brush refinement is a *pre-Run* input that controls how the mesh
+        is locally refined on frame 0.  Two states must lock it out:
+
+          1. ``current_frame != 0``  -- brush coordinates only make sense
+             at the reference frame; the pipeline auto-warps the painted
+             mask to subsequent ref frames at run time.
+          2. ``state.results is not None``  -- the existing results were
+             computed against the previous mesh, so a new brush stroke
+             would silently invalidate them.  The user must clear results
+             (or start a new run) before painting again.
+
+        When locked out we proactively reset the canvas tool to "select"
+        and emit ``drawing_finished`` so the toolbar Refine button
+        highlight clears -- otherwise the cursor stays in cross-hair mode
+        and the user thinks they are still painting.
+        """
+        state = AppState.instance()
+        if state.current_frame == 0 and state.results is None:
+            return False
+        if state.current_frame != 0:
+            state.log_message.emit(
+                "Brush refinement only paints on frame 1 (the reference). "
+                "Switch to frame 1 first.",
+                "warn",
+            )
+        else:
+            state.log_message.emit(
+                "Cannot paint brush after a Run -- it would invalidate "
+                "the existing results. Start a new run after changing "
+                "inputs to repaint.",
+                "warn",
+            )
+        self.set_tool("select")
+        self.drawing_finished.emit()
+        return True
+
     def set_image(self, rgb: NDArray[np.uint8]) -> None:
         """Display a numpy RGB uint8 array as the background image."""
         h, w = rgb.shape[:2]
@@ -400,6 +439,12 @@ class ImageCanvas(QGraphicsView):
                 )
                 event.accept()
                 return
+            # Defensive lockout: brush only paints on frame 0 with no
+            # results.  If somehow the active-layer guard didn't fire,
+            # this catches the press and silently drops the tool.
+            if self._brush_locked_out():
+                event.accept()
+                return
             scene_pos = self.mapToScene(event.position().toPoint())
             self._brush_last_pos = scene_pos
             self._stroke_at(scene_pos, scene_pos)
@@ -438,6 +483,10 @@ class ImageCanvas(QGraphicsView):
             and (event.buttons() & Qt.MouseButton.LeftButton)
             and self._brush_ctrl is not None
         ):
+            # Defensive lockout: same conditions as the press handler.
+            if self._brush_locked_out():
+                event.accept()
+                return
             scene_pos = self.mapToScene(event.position().toPoint())
             last = self._brush_last_pos
             if last is not None:
@@ -1311,7 +1360,11 @@ class CanvasArea(QWidget):
         # Optional: apply user-configured refinement so the preview reflects
         # what the pipeline will actually compute.  Best-effort: if anything
         # goes wrong we silently fall back to the uniform mesh.
-        if state.refine_inner or state.refine_outer:
+        has_brush = (
+            state.refine_brush_mask is not None
+            and bool(state.refine_brush_mask.any())
+        )
+        if state.refine_inner or state.refine_outer or has_brush:
             refined = self._apply_preview_refinement(coords, elements, f_mask)
             if refined is not None:
                 coords, elements = refined
@@ -1347,9 +1400,19 @@ class CanvasArea(QWidget):
                 refine_mesh,
             )
 
+            # Mirror pipeline_controller.start(): forward the user-painted
+            # brush mask so the preview mesh reflects the *exact* set of
+            # criteria the next Run will apply.  The mask lives in frame-0
+            # image coordinates, identical to f_mask here.
+            brush_mask_f64 = (
+                state.refine_brush_mask.astype(np.float64)
+                if state.refine_brush_mask is not None
+                else None
+            )
             policy = build_refinement_policy(
                 refine_inner_boundary=state.refine_inner,
                 refine_outer_boundary=state.refine_outer,
+                refinement_mask=brush_mask_f64,
                 min_element_size=state.compute_refinement_min_size(),
                 half_win=max(1, state.subset_size // 2),
             )

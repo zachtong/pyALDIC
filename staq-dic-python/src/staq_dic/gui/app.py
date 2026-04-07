@@ -71,6 +71,11 @@ class MainWindow(QMainWindow):
         roi_tb.batch_import_requested.connect(self._on_batch_import)
         roi_tb.brush_requested.connect(self._on_brush_requested)
         roi_tb.brush_clear_requested.connect(self._on_brush_clear)
+        # Live brush radius update — applies to whichever mode (paint or
+        # erase) is currently active without re-opening the popup menu.
+        roi_tb.brush_radius_changed.connect(
+            self._canvas_area.canvas.set_brush_radius
+        )
 
         # When canvas finishes drawing, deactivate toolbar highlight
         self._canvas_area.canvas.drawing_finished.connect(roi_tb.deactivate)
@@ -104,6 +109,17 @@ class MainWindow(QMainWindow):
 
         # Clear viz caches when results change (new pipeline run)
         self._state.results_changed.connect(self._viz_ctrl.clear_all)
+
+        # Brush refinement is a pre-Run input that only makes sense on
+        # frame 0 with no results.  Drop the active brush tool whenever
+        # either condition flips so the user can't keep painting on a
+        # stale or wrong-frame canvas.
+        self._state.current_frame_changed.connect(
+            self._drop_brush_tool_if_invalid
+        )
+        self._state.results_changed.connect(
+            self._drop_brush_tool_if_invalid
+        )
 
     def _init_roi_controller(self) -> None:
         """Create ROI + brush controllers matching the loaded image dimensions."""
@@ -189,6 +205,32 @@ class MainWindow(QMainWindow):
         if self._state.roi_editing and self._roi_ctrl is not None:
             self._load_roi_buffer_for_current_frame()
 
+    def _drop_brush_tool_if_invalid(self, *_args) -> None:
+        """Reset the canvas to ``select`` if brush is no longer paintable.
+
+        Active layer of the brush lockout defense (paired with
+        ``ImageCanvas._brush_locked_out``):
+
+          - ``current_frame_changed`` -> drop brush as soon as the user
+            navigates off frame 0.  Brush coordinates are frame-0 pixel
+            coordinates and only make sense at the reference frame.
+          - ``results_changed``       -> drop brush as soon as a Run lands
+            its PipelineResult.  Painting on top of existing results
+            would silently invalidate them.
+
+        We also emit ``drawing_finished`` so the toolbar Refine button
+        highlight clears.  Otherwise the cursor stays in cross-hair mode
+        and the user thinks they are still painting.
+        """
+        canvas = self._canvas_area.canvas
+        if canvas._current_tool != "brush":
+            return
+        state = self._state
+        if state.current_frame == 0 and state.results is None:
+            return
+        canvas.set_tool("select")
+        canvas.drawing_finished.emit()
+
     def _on_draw_requested(self, shape: str, mode: str) -> None:
         """Activate one-shot drawing mode on the canvas.
 
@@ -203,13 +245,20 @@ class MainWindow(QMainWindow):
         canvas.set_tool(shape)
 
     def _on_roi_clear(self) -> None:
-        """Clear the ROI mask for the currently edited frame."""
+        """Clear the ROI mask for the currently edited frame.
+
+        Brush refinement only lives on frame 0; if the user clears
+        frame 0's ROI, the painted brush region becomes meaningless
+        (it was scoped to the now-deleted ROI), so cascade-delete it.
+        """
         if self._roi_ctrl is not None:
             self._enter_roi_editing()
             self._roi_ctrl.clear()
             self._canvas_area.canvas.update_roi_overlay()
             state = self._state
             state.set_frame_roi(state.current_frame, None)
+            if state.current_frame == 0:
+                self._cascade_clear_brush()
 
     def _on_roi_import(self, path: str) -> None:
         """Import a mask file into the ROI controller for the current editing frame."""
@@ -286,6 +335,19 @@ class MainWindow(QMainWindow):
                 "warn",
             )
             return
+        if state.results is not None:
+            # Brush refinement is a *pre-Run* mesh input.  Painting on
+            # top of an existing PipelineResult would silently invalidate
+            # the displacement field that the user is currently looking
+            # at.  Force them to clear results (or start a new run after
+            # editing inputs) before repainting.
+            state.log_message.emit(
+                "Cannot paint brush after a Run -- it would invalidate "
+                "the existing results. Clear results or start a new run "
+                "to repaint.",
+                "warn",
+            )
+            return
         if state.roi_mask is None:
             state.log_message.emit(
                 "Define a Region of Interest on frame 1 first.",
@@ -313,6 +375,14 @@ class MainWindow(QMainWindow):
 
     def _on_brush_clear(self) -> None:
         """Clear the brush refinement mask buffer and AppState field."""
+        self._cascade_clear_brush()
+
+    def _cascade_clear_brush(self) -> None:
+        """Drop the brush refinement mask + buffer + canvas overlay.
+
+        Shared helper used both by the explicit Clear Brush popup action
+        and by the ROI-clear cascade paths (Brush#5).
+        """
         if self._brush_ctrl is not None:
             self._brush_ctrl.clear()
         self._state.set_refine_brush_mask(None)
@@ -375,6 +445,22 @@ class MainWindow(QMainWindow):
                 "success",
             )
             state.roi_changed.emit()
+
+    def closeEvent(self, event) -> None:
+        """Stop and join any running pipeline worker before closing.
+
+        Bug B: closing the main window while a worker QThread is still
+        running causes Qt to destroy the underlying QThread object
+        before its native thread has exited, producing the
+        "QThread: Destroyed while thread is still running" crash on
+        Windows. Request a stop and wait for the worker to drain
+        before letting the window go.
+        """
+        worker = self._pipeline_ctrl._worker
+        if worker is not None and worker.isRunning():
+            worker.request_stop()
+            worker.wait(5000)
+        super().closeEvent(event)
 
 
 def _global_exception_hook(exc_type, exc_value, exc_tb):

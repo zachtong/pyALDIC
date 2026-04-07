@@ -196,6 +196,20 @@ class PipelineController:
         if state.run_state == RunState.RUNNING:
             return
 
+        # Bug B: ensure the previous worker has truly finished before we
+        # drop our reference to it and create a new one. Without an
+        # explicit wait(), Qt may destroy the previous QThread before
+        # its native thread has exited, producing a hard crash:
+        #   "QThread: Destroyed while thread is still running"
+        # The previous run normally cleared self._worker in _on_finished,
+        # but if the user spams Run quickly the wrapper QObject can
+        # outlive the IDLE state transition for one event-loop tick.
+        if self._worker is not None:
+            if self._worker.isRunning():
+                self._worker.request_stop()
+                self._worker.wait(5000)
+            self._worker = None
+
         if len(state.image_files) < 2:
             state.log_message.emit("Need at least 2 images.", "error")
             return
@@ -393,7 +407,13 @@ class PipelineController:
             had_results = state.results is not None
             state.results = None
             state.deformed_masks = None
-            state.show_deformed = False
+            # NOTE: do NOT reset state.show_deformed here. The user's
+            # "show on deformed frame" preference must persist across
+            # re-runs -- otherwise the checkbox stays checked but the
+            # display silently reverts to reference-frame coordinates.
+            # The new run's deformed_masks will be populated by
+            # _on_finished -> set_results, at which point the canvas
+            # picks the right coordinates based on this preserved flag.
             if had_results:
                 state.results_changed.emit()
 
