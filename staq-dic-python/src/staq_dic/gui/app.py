@@ -103,7 +103,12 @@ class MainWindow(QMainWindow):
         self._state.display_changed.emit()
 
     def _on_roi_edit_for_frame(self, frame: int) -> None:
-        """Enter ROI editing mode for a specific frame (from image list button)."""
+        """Enter ROI editing mode for a specific frame.
+
+        Single source of truth: ``current_frame`` *is* the editing frame.
+        Switching frames here keeps the image list selection, progress bar,
+        and canvas display all in sync with what the user is editing.
+        """
         state = self._state
         if not state.image_files:
             return
@@ -111,18 +116,34 @@ class MainWindow(QMainWindow):
             self._init_roi_controller()
         if self._roi_ctrl is None:
             return
-        # Load existing per-frame mask into ROI controller
-        existing = state.per_frame_rois.get(frame)
+        state.set_current_frame(frame)
+        self._load_roi_buffer_for_current_frame()
+        state.roi_editing = True
+        state.display_changed.emit()
+
+    def _load_roi_buffer_for_current_frame(self) -> None:
+        """Mirror per_frame_rois[current_frame] into the ROI controller buffer.
+
+        Called on entry to ROI editing and whenever current_frame changes
+        during editing.
+        """
+        if self._roi_ctrl is None:
+            return
+        state = self._state
+        existing = state.per_frame_rois.get(state.current_frame)
         if existing is not None:
             self._roi_ctrl.mask = existing.copy()
         else:
             self._roi_ctrl.clear()
-        state.roi_editing_frame = frame
-        state.roi_editing = True
-        state.display_changed.emit()
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:
-        """Activate one-shot drawing mode on the canvas."""
+        """Activate one-shot drawing mode on the canvas.
+
+        The toolbar Draw button always edits the *currently displayed* frame.
+        To edit a different frame, navigate there first (image list click,
+        arrow keys, or per-frame Edit button).
+        """
+        self._load_roi_buffer_for_current_frame()
         self._enter_roi_editing()
         canvas = self._canvas_area.canvas
         canvas.set_drawing_mode(mode)
@@ -135,7 +156,7 @@ class MainWindow(QMainWindow):
             self._roi_ctrl.clear()
             self._canvas_area.canvas.update_roi_overlay()
             state = self._state
-            state.set_frame_roi(state.roi_editing_frame, None)
+            state.set_frame_roi(state.current_frame, None)
 
     def _on_roi_import(self, path: str) -> None:
         """Import a mask file into the ROI controller for the current editing frame."""
@@ -147,7 +168,7 @@ class MainWindow(QMainWindow):
             self._canvas_area.canvas.update_roi_overlay()
             state = self._state
             state.set_frame_roi(
-                state.roi_editing_frame, self._roi_ctrl.mask.copy()
+                state.current_frame, self._roi_ctrl.mask.copy()
             )
         except IOError:
             pass
@@ -189,7 +210,7 @@ class MainWindow(QMainWindow):
         self._canvas_area.canvas.update_roi_overlay()
         state = self._state
         state.set_frame_roi(
-            state.roi_editing_frame, self._roi_ctrl.mask.copy()
+            state.current_frame, self._roi_ctrl.mask.copy()
         )
 
     def _on_batch_import(self) -> None:

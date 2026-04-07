@@ -480,7 +480,7 @@ class ImageCanvas(QGraphicsView):
         if self._roi_ctrl is not None:
             state = AppState.instance()
             state.set_frame_roi(
-                state.roi_editing_frame, self._roi_ctrl.mask.copy()
+                state.current_frame, self._roi_ctrl.mask.copy()
             )
         # One-shot: reset to select mode after completing a shape
         self._current_tool = "select"
@@ -726,7 +726,7 @@ class CanvasArea(QWidget):
         state = self._state
         if state.roi_editing:
             # ROI editing: show the frame being edited
-            self._load_frame(state.roi_editing_frame)
+            self._load_frame(state.current_frame)
         elif state.results is not None:
             if state.show_deformed:
                 self._load_frame(state.current_frame)
@@ -762,7 +762,7 @@ class CanvasArea(QWidget):
             overlay.setScale(1.0)
             overlay.setPos(0, 0)
             self._canvas.update_roi_overlay()
-            self.set_roi_editing_banner(state.roi_editing_frame)
+            self.set_roi_editing_banner(state.current_frame)
             self._colorbar.setVisible(False)
             return
 

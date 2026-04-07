@@ -51,7 +51,6 @@ class AppState(QObject):
         self.current_frame: int = 0
         # ROI — per-frame system (frame_idx -> bool mask)
         self.per_frame_rois: dict[int, NDArray[np.bool_]] = {}
-        self.roi_editing_frame: int = 0
         # Per-frame masks in deformed coordinates (optional, e.g. from segmentation)
         # Mapping: frame_idx -> bool mask.  When set, deformed display uses these
         # directly instead of warping the reference roi_mask.
@@ -110,7 +109,6 @@ class AppState(QObject):
         self.deformed_masks = None
         self.per_frame_rois = {}
         self.roi_editing = False
-        self.roi_editing_frame = 0
         self.run_state = RunState.IDLE
         self.progress = 0.0
         self.progress_message = ""
