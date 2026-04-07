@@ -103,3 +103,69 @@ class TestQ1Q2_FrameSync:
         # And no other frame got the mask
         assert 0 not in state.per_frame_rois
         assert 1 not in state.per_frame_rois
+
+
+class TestQ3_OverlaySource:
+    """The blue ROI overlay must reflect per_frame_rois[current_frame],
+    not the in-memory roi_ctrl.mask buffer.
+    """
+
+    def test_external_mutation_of_per_frame_rois_repaints_overlay(
+        self, qapp, monkeypatch
+    ):
+        """Simulating a batch import that writes to per_frame_rois[3]
+        directly must update the canvas overlay when current_frame=3.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+        state.set_current_frame(3)
+
+        canvas = win._canvas_area.canvas
+        captured: dict[str, object] = {}
+
+        # Spy on update_roi_overlay to record that it was invoked
+        original = canvas.update_roi_overlay
+        def spy():
+            captured["called"] = True
+            original()
+        monkeypatch.setattr(canvas, "update_roi_overlay", spy)
+
+        # External mutation (simulates batch import)
+        new_mask = np.ones((128, 128), dtype=bool)
+        state.per_frame_rois[3] = new_mask
+        state.roi_changed.emit()
+
+        # The overlay must have been refreshed
+        assert captured.get("called") is True
+
+    def test_overlay_data_source_is_per_frame_rois(self, qapp):
+        """Direct contract test: update_roi_overlay must use
+        per_frame_rois[current_frame] as its data source, not
+        the transient roi_ctrl.mask buffer.
+        """
+        win = _make_main_window(qapp)
+        state = AppState.instance()
+
+        # Put a small mask in per_frame_rois and a completely different
+        # (full-image) mask in the controller buffer.  If the overlay
+        # reads the buffer, pixel (50, 50) will be painted; if it reads
+        # per_frame_rois[2], pixel (50, 50) will be transparent because
+        # the persisted mask only covers a 10x10 corner.
+        state.set_current_frame(2)
+        own_mask = np.zeros((128, 128), dtype=bool)
+        own_mask[0:10, 0:10] = True
+        state.per_frame_rois[2] = own_mask
+
+        # Pollute the controller buffer with something different
+        win._roi_ctrl.mask = np.ones((128, 128), dtype=bool)
+
+        canvas = win._canvas_area.canvas
+        canvas.update_roi_overlay()
+
+        pixmap = canvas._roi_item.pixmap()
+        assert not pixmap.isNull()
+        img = pixmap.toImage()
+        # Pixel (50, 50) should be transparent under the per_frame_rois reading
+        assert img.pixelColor(50, 50).alpha() == 0
+        # And a pixel inside the 10x10 corner should be painted (alpha > 0)
+        assert img.pixelColor(2, 2).alpha() > 0
