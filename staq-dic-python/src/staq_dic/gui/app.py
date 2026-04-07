@@ -61,6 +61,13 @@ class MainWindow(QMainWindow):
         self._right_sidebar = RightSidebar(self._pipeline_ctrl)
         layout.addWidget(self._right_sidebar, stretch=0)
 
+        # Lazy strain post-processing window. Created on first request,
+        # then reused as a singleton until MainWindow closes.
+        self._strain_window = None
+        self._right_sidebar.open_strain_window_requested.connect(
+            self._on_open_strain_window
+        )
+
         # Wire ROI toolbar signals
         roi_tb = self._left_sidebar.roi_toolbar
         roi_tb.draw_requested.connect(self._on_draw_requested)
@@ -446,6 +453,21 @@ class MainWindow(QMainWindow):
             )
             state.roi_changed.emit()
 
+    def _on_open_strain_window(self) -> None:
+        """Show the strain post-processing window (lazy singleton)."""
+        if self._state.results is None:
+            self._state.log_message.emit(
+                "Run DIC first -- no displacement results to post-process.",
+                "warn",
+            )
+            return
+        if self._strain_window is None:
+            from staq_dic.gui.strain_window import StrainWindow
+            self._strain_window = StrainWindow(self._state, parent=None)
+        self._strain_window.show()
+        self._strain_window.raise_()
+        self._strain_window.activateWindow()
+
     def closeEvent(self, event) -> None:
         """Stop and join any running pipeline worker before closing.
 
@@ -460,6 +482,11 @@ class MainWindow(QMainWindow):
         if worker is not None and worker.isRunning():
             worker.request_stop()
             worker.wait(5000)
+        # Cascade close: the strain window is a child top-level we own,
+        # so it must close with the main window to keep lifecycle parity.
+        if self._strain_window is not None:
+            self._strain_window.close()
+            self._strain_window = None
         super().closeEvent(event)
 
 
