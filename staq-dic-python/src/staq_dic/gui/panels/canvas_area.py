@@ -59,6 +59,41 @@ try:
 except ImportError:  # pragma: no cover
     _HAS_ICONS = False
 
+
+def resolve_color_range(
+    state: AppState, values: NDArray[np.float64]
+) -> tuple[float, float]:
+    """Return the effective ``(vmin, vmax)`` for colormap rendering.
+
+    Two modes:
+
+    * **Auto** (``state.color_auto`` True): take the 2-98 percentile of
+      the non-NaN entries in *values* (the *current frame's* field).
+      The result is **also written back** to ``state.color_min`` and
+      ``state.color_max`` so that the ColorRange widget reads the live
+      frame range when the user later toggles Auto off -- without it,
+      the spin boxes would always start from the stale 0/1 defaults
+      no matter what the user is currently looking at.
+
+    * **Manual** (``state.color_auto`` False): return the user's
+      dialled-in ``(state.color_min, state.color_max)`` unchanged and
+      do **not** mutate state.  All-NaN frames degrade to ``(0, 1)``
+      so matplotlib's normaliser does not blow up.
+    """
+    if not state.color_auto:
+        return state.color_min, state.color_max
+
+    valid_vals = values[~np.isnan(values)]
+    if len(valid_vals) > 0:
+        pct = np.percentile(valid_vals, [2, 98])
+        vmin, vmax = float(pct[0]), float(pct[1])
+    else:
+        vmin, vmax = 0.0, 1.0
+
+    state.color_min = vmin
+    state.color_max = vmax
+    return vmin, vmax
+
 if TYPE_CHECKING:
     from staq_dic.gui.controllers.image_controller import ImageController
     from staq_dic.gui.controllers.roi_controller import ROIController
@@ -130,6 +165,11 @@ class ImageCanvas(QGraphicsView):
         self._scene.addItem(self._roi_item)
         self._roi_item.setZValue(2)
 
+        # --- Layer 6: brush refinement mask overlay (cyan) ---
+        self._refine_item = QGraphicsPixmapItem()
+        self._scene.addItem(self._refine_item)
+        self._refine_item.setZValue(6)
+
         # --- Render settings ---
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
@@ -151,11 +191,17 @@ class ImageCanvas(QGraphicsView):
         self.setMouseTracking(True)
 
         # --- Interaction state ---
-        self._current_tool: str = "select"   # select, pan, rect, polygon, circle
+        self._current_tool: str = "select"   # select, pan, rect, polygon, circle, brush
         self._drawing_mode: str = "add"      # add or cut
         self._draw_state: dict | None = None  # in-progress drawing data
         self._preview_items: list = []        # temp graphics items while drawing
         self._roi_ctrl: ROIController | None = None
+
+        # Brush sub-tool state (paints state.refine_brush_mask via _brush_ctrl)
+        self._brush_ctrl: ROIController | None = None
+        self._brush_radius: int = 16
+        self._brush_mode: str = "paint"      # "paint" or "erase"
+        self._brush_last_pos: QPointF | None = None
 
         # Pan state (middle-button or left-button when tool == "pan")
         self._panning = False
@@ -167,12 +213,14 @@ class ImageCanvas(QGraphicsView):
     # ----- public API -----
 
     def set_tool(self, tool: str) -> None:
-        """Set the active tool: select, pan, rect, polygon, circle."""
+        """Set the active tool: select, pan, rect, polygon, circle, brush."""
         self._current_tool = tool
         self._cancel_drawing()
+        # Reset brush stroke state whenever tool changes
+        self._brush_last_pos = None
         if tool == "pan":
             self.setCursor(Qt.CursorShape.OpenHandCursor)
-        elif tool in ("rect", "polygon", "circle"):
+        elif tool in ("rect", "polygon", "circle", "brush"):
             self.setCursor(Qt.CursorShape.CrossCursor)
         else:
             self.setCursor(Qt.CursorShape.ArrowCursor)
@@ -184,6 +232,20 @@ class ImageCanvas(QGraphicsView):
     def set_roi_controller(self, ctrl: ROIController) -> None:
         """Attach the ROI controller for mask operations."""
         self._roi_ctrl = ctrl
+
+    def set_brush_controller(self, ctrl: ROIController | None) -> None:
+        """Attach the brush refinement controller (frame-0 mask buffer)."""
+        self._brush_ctrl = ctrl
+
+    def set_brush_radius(self, radius: int) -> None:
+        """Set the freehand-brush radius in pixels."""
+        self._brush_radius = max(1, int(radius))
+
+    def set_brush_mode(self, mode: str) -> None:
+        """Set the brush mode: 'paint' (add) or 'erase' (cut)."""
+        if mode not in ("paint", "erase"):
+            raise ValueError(f"brush mode must be 'paint' or 'erase', got {mode!r}")
+        self._brush_mode = mode
 
     def set_image(self, rgb: NDArray[np.uint8]) -> None:
         """Display a numpy RGB uint8 array as the background image."""
@@ -226,6 +288,32 @@ class ImageCanvas(QGraphicsView):
         ).copy()  # deep-copy so pixmap owns the pixel data
         self._roi_item.setPixmap(QPixmap.fromImage(qimg))
         self._roi_item.setPos(0, 0)
+
+    def update_refine_overlay(self) -> None:
+        """Refresh the cyan brush refinement overlay from state.refine_brush_mask.
+
+        The brush mask lives in frame-0 image coordinates.  When the user
+        is on a non-zero frame the overlay still paints the *frame-0*
+        coordinates, because painting is gated to frame 0 only.  Future
+        ref-frame display warping is performed by the pipeline at run
+        time, not in the GUI.
+        """
+        state = AppState.instance()
+        mask = state.refine_brush_mask
+        if mask is None or not mask.any():
+            self._refine_item.setPixmap(QPixmap())
+            self._refine_item.setPos(0, 0)
+            return
+        h, w = mask.shape
+        rgba = np.zeros((h, w, 4), dtype=np.uint8)
+        rgba[mask, :] = [20, 220, 200, 110]  # cyan semi-transparent
+        rgba = np.ascontiguousarray(rgba)
+        bytes_per_line = w * 4
+        qimg = QImage(
+            rgba.data, w, h, bytes_per_line, QImage.Format.Format_RGBA8888
+        ).copy()
+        self._refine_item.setPixmap(QPixmap.fromImage(qimg))
+        self._refine_item.setPos(0, 0)
 
     def fit_to_view(self) -> None:
         """Fit the entire scene into the viewport."""
@@ -301,6 +389,23 @@ class ImageCanvas(QGraphicsView):
             event.accept()
             return
 
+        # Brush sub-tool: paint a single dot at click site, prime drag state
+        if (
+            event.button() == Qt.MouseButton.LeftButton
+            and self._current_tool == "brush"
+        ):
+            if self._brush_ctrl is None:
+                AppState.instance().log_message.emit(
+                    "Load images first before using the brush.", "warn"
+                )
+                event.accept()
+                return
+            scene_pos = self.mapToScene(event.position().toPoint())
+            self._brush_last_pos = scene_pos
+            self._stroke_at(scene_pos, scene_pos)
+            event.accept()
+            return
+
         super().mousePressEvent(event)
 
     def scrollContentsBy(self, dx: int, dy: int) -> None:  # noqa: N802
@@ -324,6 +429,20 @@ class ImageCanvas(QGraphicsView):
         if self._draw_state is not None:
             scene_pos = self.mapToScene(event.position().toPoint())
             self._handle_draw_move(scene_pos)
+            event.accept()
+            return
+
+        # Brush drag-paint: while LeftButton held, accumulate strokes
+        if (
+            self._current_tool == "brush"
+            and (event.buttons() & Qt.MouseButton.LeftButton)
+            and self._brush_ctrl is not None
+        ):
+            scene_pos = self.mapToScene(event.position().toPoint())
+            last = self._brush_last_pos
+            if last is not None:
+                self._stroke_at(last, scene_pos)
+            self._brush_last_pos = scene_pos
             event.accept()
             return
 
@@ -352,6 +471,20 @@ class ImageCanvas(QGraphicsView):
         ):
             scene_pos = self.mapToScene(event.position().toPoint())
             self._handle_draw_release(scene_pos)
+            event.accept()
+            return
+
+        # Brush stroke finalize: persist current buffer to app state.
+        # Tool stays in "brush" mode for continuous painting.
+        if (
+            event.button() == Qt.MouseButton.LeftButton
+            and self._current_tool == "brush"
+            and self._brush_ctrl is not None
+        ):
+            self._brush_last_pos = None
+            AppState.instance().set_refine_brush_mask(
+                self._brush_ctrl.mask.copy()
+            )
             event.accept()
             return
 
@@ -515,6 +648,55 @@ class ImageCanvas(QGraphicsView):
         for item in self._preview_items:
             self._scene.removeItem(item)
         self._preview_items = []
+
+    def _stroke_at(self, p1: QPointF, p2: QPointF) -> None:
+        """Apply a single brush stroke segment and refresh the overlay.
+
+        Pushes the segment into ``self._brush_ctrl`` (which holds a
+        bool buffer in frame-0 image coordinates), then immediately
+        rebuilds the cyan overlay so the user sees their stroke.
+
+        AppState is updated only on mouse release to keep paint latency
+        low — intermediate strokes mutate the buffer in place.
+        """
+        if self._brush_ctrl is None:
+            return
+        sub_mode = "add" if self._brush_mode == "paint" else "cut"
+        self._brush_ctrl.stroke_segment(
+            int(p1.x()), int(p1.y()),
+            int(p2.x()), int(p2.y()),
+            radius=self._brush_radius,
+            mode=sub_mode,
+        )
+        # Render directly from the controller buffer for instant feedback —
+        # state.refine_brush_mask gets the same buffer on mouse release.
+        self._render_brush_buffer()
+
+    def _render_brush_buffer(self) -> None:
+        """Render the in-progress brush controller buffer to the cyan overlay.
+
+        Called between mouse-down and mouse-up so the user sees their
+        stroke before the buffer is committed to AppState.  Identical
+        rendering logic to ``update_refine_overlay`` but reads from
+        ``self._brush_ctrl.mask`` instead of ``state.refine_brush_mask``.
+        """
+        if self._brush_ctrl is None:
+            return
+        mask = self._brush_ctrl.mask
+        if mask is None or not mask.any():
+            self._refine_item.setPixmap(QPixmap())
+            self._refine_item.setPos(0, 0)
+            return
+        h, w = mask.shape
+        rgba = np.zeros((h, w, 4), dtype=np.uint8)
+        rgba[mask, :] = [20, 220, 200, 110]  # cyan semi-transparent
+        rgba = np.ascontiguousarray(rgba)
+        bytes_per_line = w * 4
+        qimg = QImage(
+            rgba.data, w, h, bytes_per_line, QImage.Format.Format_RGBA8888
+        ).copy()
+        self._refine_item.setPixmap(QPixmap.fromImage(qimg))
+        self._refine_item.setPos(0, 0)
 
 
 # ---------------------------------------------------------------------------
@@ -831,15 +1013,10 @@ class CanvasArea(QWidget):
             else:
                 nodes = ref_nodes
 
-            vmin, vmax = state.color_min, state.color_max
-            if state.color_auto:
-                # Per-frame auto range: 2-98th percentile of current frame
-                valid_vals = values[~np.isnan(values)]
-                if len(valid_vals) > 0:
-                    pct = np.percentile(valid_vals, [2, 98])
-                    vmin, vmax = float(pct[0]), float(pct[1])
-                else:
-                    vmin, vmax = 0.0, 1.0
+            # Auto mode also writes the resolved range back to AppState
+            # so the ColorRange widget can pre-populate its spin boxes
+            # with the live frame range when the user toggles Auto off.
+            vmin, vmax = resolve_color_range(state, values)
 
             # In deformed mode, warp the ROI mask from reference to deformed
             # coordinates via inverse displacement lookup.  This preserves
