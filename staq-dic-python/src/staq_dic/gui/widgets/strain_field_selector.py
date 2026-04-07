@@ -1,14 +1,21 @@
-"""Seven-button exclusive selector for strain fields.
+"""Field selector for the strain post-processing window.
 
-Layout (3 rows, 3 columns):
+Exposes both **displacement** and **strain** fields in two clearly
+separated sub-grids:
 
-    [exx]    [eyy]    [exy]
-    [e1]     [e2]     [gmax]
-    [        von Mises (3 cols)        ]
+    DISPLACEMENT
+        [Disp U]   [Disp V]
 
-Mirrors the visual style of :class:`FieldSelector` (ACCENT for active,
-BG_INPUT for inactive). Field names match :class:`StrainResult` attribute
-names so consumers can ``getattr(result, name)`` directly.
+    STRAIN
+        [exx]    [eyy]    [exy]
+        [e1]     [e2]     [gmax]
+        [        von Mises (3 cols)        ]
+
+All field names match :class:`StrainResult` attribute names verbatim so
+the window can dispatch via ``getattr(result, name)``. The
+displacement fields are populated by ``compute_strain`` itself
+(``disp_u`` / ``disp_v`` are world-coordinate copies of the input
+displacement, so they only become available after ``Compute Strain``).
 """
 
 from __future__ import annotations
@@ -17,14 +24,19 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QButtonGroup,
     QGridLayout,
+    QLabel,
     QPushButton,
+    QVBoxLayout,
     QWidget,
 )
 
 from staq_dic.gui.theme import COLORS
 
-# Canonical order of fields exposed by the selector. The labels in
-# ``_FIELD_LABELS`` map each strain attribute to its on-screen text.
+DISP_FIELD_NAMES: tuple[str, ...] = (
+    "disp_u",
+    "disp_v",
+)
+
 STRAIN_FIELD_NAMES: tuple[str, ...] = (
     "strain_exx",
     "strain_eyy",
@@ -35,7 +47,11 @@ STRAIN_FIELD_NAMES: tuple[str, ...] = (
     "strain_von_mises",
 )
 
+FIELD_NAMES: tuple[str, ...] = DISP_FIELD_NAMES + STRAIN_FIELD_NAMES
+
 _FIELD_LABELS: dict[str, str] = {
+    "disp_u": "Disp U",
+    "disp_v": "Disp V",
     "strain_exx": "\u03b5xx",                # ε
     "strain_eyy": "\u03b5yy",
     "strain_exy": "\u03b5xy",
@@ -45,49 +61,71 @@ _FIELD_LABELS: dict[str, str] = {
     "strain_von_mises": "von Mises",
 }
 
+# (row, col, colspan) inside each sub-grid.
+_DISP_POSITIONS: dict[str, tuple[int, int, int]] = {
+    "disp_u": (0, 0, 1),
+    "disp_v": (0, 1, 1),
+}
+
+_STRAIN_POSITIONS: dict[str, tuple[int, int, int]] = {
+    "strain_exx": (0, 0, 1),
+    "strain_eyy": (0, 1, 1),
+    "strain_exy": (0, 2, 1),
+    "strain_principal_max": (1, 0, 1),
+    "strain_principal_min": (1, 1, 1),
+    "strain_maxshear": (1, 2, 1),
+    "strain_von_mises": (2, 0, 3),
+}
+
+
+def _section_label(text: str) -> QLabel:
+    lbl = QLabel(text)
+    lbl.setStyleSheet(
+        f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
+        f"font-weight: bold; letter-spacing: 1px; margin-top: 4px;"
+    )
+    return lbl
+
 
 class StrainFieldSelector(QWidget):
-    """Seven-button exclusive selector for strain visualization fields."""
+    """Two-section exclusive selector for displacement and strain fields."""
 
     field_changed = Signal(str)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
 
-        layout = QGridLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setHorizontalSpacing(4)
-        layout.setVerticalSpacing(4)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(4)
 
         self._group = QButtonGroup(self)
         self._group.setExclusive(True)
         self._buttons: dict[str, QPushButton] = {}
 
-        # Row 0: exx, eyy, exy
-        # Row 1: e1, e2, gmax
-        # Row 2: von Mises (spans 3 cols)
-        positions: dict[str, tuple[int, int, int]] = {
-            "strain_exx": (0, 0, 1),
-            "strain_eyy": (0, 1, 1),
-            "strain_exy": (0, 2, 1),
-            "strain_principal_max": (1, 0, 1),
-            "strain_principal_min": (1, 1, 1),
-            "strain_maxshear": (1, 2, 1),
-            "strain_von_mises": (2, 0, 3),
-        }
-        for name in STRAIN_FIELD_NAMES:
-            row, col, span = positions[name]
-            btn = QPushButton(_FIELD_LABELS[name])
-            btn.setCheckable(True)
-            btn.setFixedHeight(28)
-            layout.addWidget(btn, row, col, 1, span)
-            self._group.addButton(btn)
-            self._buttons[name] = btn
-            btn.clicked.connect(
-                lambda _checked=False, n=name: self._on_clicked(n)
-            )
+        # --- DISPLACEMENT section ---
+        outer.addWidget(_section_label("DISPLACEMENT"))
+        disp_grid = QGridLayout()
+        disp_grid.setContentsMargins(0, 0, 0, 0)
+        disp_grid.setHorizontalSpacing(4)
+        disp_grid.setVerticalSpacing(4)
+        for name in DISP_FIELD_NAMES:
+            row, col, span = _DISP_POSITIONS[name]
+            self._add_button(name, disp_grid, row, col, span)
+        outer.addLayout(disp_grid)
 
-        self._current: str = "strain_exx"
+        # --- STRAIN section ---
+        outer.addWidget(_section_label("STRAIN"))
+        strain_grid = QGridLayout()
+        strain_grid.setContentsMargins(0, 0, 0, 0)
+        strain_grid.setHorizontalSpacing(4)
+        strain_grid.setVerticalSpacing(4)
+        for name in STRAIN_FIELD_NAMES:
+            row, col, span = _STRAIN_POSITIONS[name]
+            self._add_button(name, strain_grid, row, col, span)
+        outer.addLayout(strain_grid)
+
+        self._current: str = "disp_u"
         self._buttons[self._current].setChecked(True)
         self._update_styles()
 
@@ -96,16 +134,19 @@ class StrainFieldSelector(QWidget):
     # ------------------------------------------------------------------
 
     def current_field(self) -> str:
-        """Return the currently selected strain field name."""
+        """Return the currently selected field name."""
         return self._current
 
     def set_current_field(self, name: str) -> None:
         """Programmatically activate *name*. Emits ``field_changed`` only on
-        an actual change."""
+        an actual change.
+
+        Raises:
+            ValueError: If *name* is not a recognised field.
+        """
         if name not in self._buttons:
             raise ValueError(
-                f"Unknown strain field '{name}'. "
-                f"Allowed: {STRAIN_FIELD_NAMES}"
+                f"Unknown field '{name}'. Allowed: {FIELD_NAMES}"
             )
         if name == self._current:
             return
@@ -118,10 +159,27 @@ class StrainFieldSelector(QWidget):
     # Internal
     # ------------------------------------------------------------------
 
+    def _add_button(
+        self,
+        name: str,
+        grid: QGridLayout,
+        row: int,
+        col: int,
+        col_span: int,
+    ) -> None:
+        btn = QPushButton(_FIELD_LABELS[name])
+        btn.setCheckable(True)
+        btn.setFixedHeight(28)
+        grid.addWidget(btn, row, col, 1, col_span)
+        self._group.addButton(btn)
+        self._buttons[name] = btn
+        btn.clicked.connect(
+            lambda _checked=False, n=name: self._on_clicked(n)
+        )
+
     def _on_clicked(self, name: str) -> None:
         """Handle a user-driven button click."""
         if name == self._current:
-            # Re-clicking the active button keeps it active.
             self._buttons[name].setChecked(True)
             return
         self._current = name
