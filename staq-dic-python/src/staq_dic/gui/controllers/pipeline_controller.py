@@ -372,6 +372,23 @@ class PipelineController:
                     "info",
                 )
 
+            # All validation passed -- this run is committed.  Drop the
+            # previous run's outputs *before* the new worker starts so the
+            # canvas does not render a hybrid view of the OLD field/mesh
+            # clipped by the NEW ROI while the new worker is computing.
+            # Doing it here (rather than at the top of start()) preserves
+            # old results when validation fails earlier in this method.
+            #
+            # ``results_changed`` triggers VizController.clear_all() (wired
+            # in app.py) and CanvasArea._refresh_overlay/_refresh_mesh_overlay,
+            # which both fall back to the "no results" preview path.
+            had_results = state.results is not None
+            state.results = None
+            state.deformed_masks = None
+            state.show_deformed = False
+            if had_results:
+                state.results_changed.emit()
+
             # Launch worker
             self._worker = PipelineWorker(
                 para, images, masks, refinement_policy=refinement_policy
