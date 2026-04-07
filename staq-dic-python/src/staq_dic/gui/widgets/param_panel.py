@@ -79,8 +79,9 @@ class ParamPanel(QWidget):
         self._refine_level = QComboBox()
         self._refine_level.setToolTip(
             "Refinement aggressiveness. min element size = "
-            "max(2, subset_step / 2^level). Available levels depend on "
-            "subset size and subset step."
+            "max(2, subset_step / 2^level). Applies uniformly to inner-, "
+            "outer-boundary AND brush-painted refinement zones. Available "
+            "levels depend on subset size and subset step."
         )
         level_row = QHBoxLayout()
         self._refine_level_lbl = QLabel("Refinement Level")
@@ -99,6 +100,10 @@ class ParamPanel(QWidget):
         self._refine_inner_cb.toggled.connect(self._on_refine_inner_toggled)
         self._refine_outer_cb.toggled.connect(self._on_refine_outer_toggled)
         self._refine_level.currentIndexChanged.connect(self._on_refine_level_changed)
+        # External paths (brush stroke, brush clear, ROI clear cascade)
+        # mutate refine_brush_mask via roi_changed; refresh the level
+        # selector enabled state + min-size readout when that happens.
+        state.roi_changed.connect(self._update_refinement_ui)
         self._update_refinement_ui()
 
         # --- Tracking Mode ---
@@ -286,7 +291,7 @@ class ParamPanel(QWidget):
     def _update_min_size_label(self) -> None:
         """Refresh just the min-size readout label (no dropdown rebuild)."""
         state = AppState.instance()
-        any_on = state.refine_inner or state.refine_outer
+        any_on = self._any_refinement_on()
         if any_on:
             min_size = state.compute_refinement_min_size()
             self._refine_info_lbl.setText(
@@ -298,11 +303,23 @@ class ParamPanel(QWidget):
         else:
             self._refine_info_lbl.setVisible(False)
 
+    def _any_refinement_on(self) -> bool:
+        """True if any refinement source is currently active.
+
+        Brush mask is included so the level selector lights up as soon
+        as the user starts painting, since BrushRegionCriterion shares
+        the same min_element_size as the inner / outer criteria.
+        """
+        state = AppState.instance()
+        if state.refine_inner or state.refine_outer:
+            return True
+        brush = state.refine_brush_mask
+        return brush is not None and bool(brush.any())
+
     def _update_refinement_ui(self) -> None:
         """Rebuild dropdown + refresh enabled state + refresh readout."""
-        state = AppState.instance()
         self._rebuild_level_dropdown()
-        any_on = state.refine_inner or state.refine_outer
+        any_on = self._any_refinement_on()
         self._refine_level.setEnabled(any_on)
         self._refine_level_lbl.setEnabled(any_on)
         self._update_min_size_label()
