@@ -85,22 +85,17 @@ class TestPerFrameROI:
     def test_inc_custom_refs_default(self, state):
         assert state.inc_custom_refs == []
 
-    def test_roi_editing_frame_default(self, state):
-        assert state.roi_editing_frame == 0
-
     def test_reset_clears_per_frame(self, state):
         state.per_frame_rois[0] = np.ones((10, 10), dtype=bool)
         state.per_frame_rois[3] = np.ones((10, 10), dtype=bool)
         state.inc_ref_mode = "interval"
         state.inc_ref_interval = 10
         state.inc_custom_refs = [1, 3, 5]
-        state.roi_editing_frame = 3
         state.reset()
         assert state.per_frame_rois == {}
         assert state.inc_ref_mode == "every_frame"
         assert state.inc_ref_interval == 5
         assert state.inc_custom_refs == []
-        assert state.roi_editing_frame == 0
 
     def test_set_frame_roi(self, state):
         mask = np.ones((30, 30), dtype=bool)
