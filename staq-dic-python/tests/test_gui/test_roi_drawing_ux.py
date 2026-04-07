@@ -660,4 +660,9 @@ class TestRunButtonClearsStaleResults:
             "otherwise the GUI renders OLD field/mesh clipped by NEW ROI"
         )
         assert observed.get("deformed_masks") is None
-        assert observed.get("show_deformed") is False
+        # Bug A regression: state.show_deformed must be PRESERVED across
+        # re-runs.  The user's "show on deformed frame" preference must
+        # not silently revert -- the new run's deformed masks will be
+        # populated by _on_finished -> set_results, at which point the
+        # canvas picks the right coordinates based on this preserved flag.
+        assert observed.get("show_deformed") is True
