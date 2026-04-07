@@ -82,6 +82,10 @@ class MainWindow(QMainWindow):
         # Initialize ROI controller when images are loaded
         self._state.images_changed.connect(self._init_roi_controller)
 
+        # When the user navigates frames during ROI editing, reload the
+        # stamping buffer so the next draw operation targets the new frame.
+        self._state.current_frame_changed.connect(self._on_frame_changed_for_roi)
+
         # Clear viz caches when results change (new pipeline run)
         self._state.results_changed.connect(self._viz_ctrl.clear_all)
 
@@ -135,6 +139,17 @@ class MainWindow(QMainWindow):
             self._roi_ctrl.mask = existing.copy()
         else:
             self._roi_ctrl.clear()
+
+    def _on_frame_changed_for_roi(self, _frame: int) -> None:
+        """Reload the ROI controller buffer for the new current frame.
+
+        Only matters during ROI editing -- the canvas always paints the
+        overlay from per_frame_rois[current_frame] regardless.  But the
+        in-memory buffer must mirror the new frame so the next stamp
+        operation (draw / invert / clear) starts from the right base.
+        """
+        if self._state.roi_editing:
+            self._load_roi_buffer_for_current_frame()
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:
         """Activate one-shot drawing mode on the canvas.
