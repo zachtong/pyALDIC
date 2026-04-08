@@ -231,13 +231,65 @@ class RightSidebar(QWidget):
         self._pipeline_ctrl.stop()
 
     def _on_export(self) -> None:
-        folder = QFileDialog.getExistingDirectory(self, "Export Results To")
-        if not folder:
+        if self._state.results is None:
             return
-        # Export logic will be added when VizController is available (Task 10)
-        self._state.log_message.emit(
-            f"Export to {folder} -- not yet implemented", "warn"
+
+        from staq_dic.gui.dialogs.export_dialog import ExportDialog, VizExportHint
+        from staq_dic.export.export_params import export_params
+        from staq_dic.export.export_npz import export_npz
+        from staq_dic.export.export_mat import export_mat
+        from staq_dic.export.export_csv import export_csv
+
+        hint = VizExportHint(
+            colormap=self._state.colormap,
+            auto_range=self._state.color_auto,
+            vmin=self._state.color_min,
+            vmax=self._state.color_max,
+            show_deformed=self._state.show_deformed,
         )
+        dlg = ExportDialog(
+            self._state.results,
+            self._state.image_folder,
+            hint,
+            self,
+        )
+        if dlg.exec() != ExportDialog.DialogCode.Accepted:
+            return
+
+        cfg = dlg.get_config()
+        results = self._state.results
+        exported: list[str] = []
+        try:
+            export_params(cfg.dest_dir, cfg.prefix, cfg.timestamp, results)
+            exported.append("parameters.json")
+
+            if cfg.export_npz:
+                export_npz(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain, cfg.npz_per_frame,
+                )
+                exported.append(".npz")
+
+            if cfg.export_mat:
+                export_mat(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain,
+                )
+                exported.append(".mat")
+
+            if cfg.export_csv:
+                export_csv(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain,
+                )
+                exported.append("csv/")
+
+            self._state.log_message.emit(
+                f"Export complete \u2192 {cfg.dest_dir}  [{', '.join(exported)}]",
+                "success",
+            )
+        except Exception as exc:
+            self._state.log_message.emit(f"Export failed: {exc}", "error")
 
     def _on_run_state(self, new_state: RunState) -> None:
         """Update button enabled/disabled states on run state change."""
