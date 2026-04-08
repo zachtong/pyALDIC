@@ -79,7 +79,7 @@ class StrainParamPanel(QWidget):
         # Applies Gaussian smoothing to the computed gradient field F_raw,
         # NOT to the displacement field U.  Equivalent to smoothing the
         # strain field after differentiation.
-        self._presmooth_check = QCheckBox("Smooth strain field (post-grad)")
+        self._presmooth_check = QCheckBox("Smooth strain field")
         self._presmooth_check.setChecked(False)
         layout.addRow("Smoothing", self._presmooth_check)
 
