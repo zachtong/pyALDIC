@@ -125,6 +125,11 @@ def compute_strain(
     else:
         F_smooth = F_raw
 
+    # --- Step 2b: Rotation from raw gradients (before strain-type conversion) ---
+    # F_smooth layout per node: [F11, F21, F12, F22] = [du/dx, dv/dx, du/dy, dv/dy]
+    # ω = (dv/dx - du/dy_image) / 2  (CCW positive in image coordinates, y down)
+    rotation = (F_smooth[1::4] - F_smooth[2::4]) / 2.0
+
     # --- Step 3: Strain type conversion ---
     F_strain, F_strain_world = apply_strain_type(F_smooth, para)
 
@@ -163,4 +168,5 @@ def compute_strain(
         strain_principal_min=principal_min,
         strain_maxshear=maxshear,
         strain_von_mises=von_mises,
+        strain_rotation=rotation,
     )

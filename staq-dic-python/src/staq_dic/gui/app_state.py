@@ -71,7 +71,7 @@ class AppState(QObject):
         self.results: PipelineResult | None = None
         # Display
         self.display_field: str = "disp_u"
-        self.show_deformed: bool = False
+        self.show_deformed: bool = True
         self.roi_editing: bool = False
         self.colormap: str = "jet"
         self.color_auto: bool = True
