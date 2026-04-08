@@ -25,17 +25,12 @@ Field routing:
 
 from __future__ import annotations
 
-import io
 import traceback as _tb
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import numpy as np
 from numpy.typing import NDArray
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QPixmap, QImage
+from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -52,6 +47,7 @@ from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.controllers.strain_controller import StrainController
 from staq_dic.gui.controllers.viz_controller import VizController
 from staq_dic.gui.panels.strain_canvas import StrainCanvas
+from staq_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from staq_dic.gui.widgets.console_log import ConsoleLog
 from staq_dic.gui.widgets.strain_field_selector import (
     DISP_FIELD_NAMES,
@@ -65,49 +61,6 @@ from staq_dic.gui.theme import COLORS
 
 # Namespace prefix for the private VizController cache.
 _FIELD_NS = "strain_window"
-
-
-class _ColorbarLabel(QLabel):
-    """Fixed-width label displaying a vertical matplotlib colorbar strip."""
-
-    _LABEL_WIDTH = 64
-    _CANVAS_HEIGHT = 250
-
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(parent)
-        self.setFixedWidth(self._LABEL_WIDTH)
-        self.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
-
-    def update_colorbar(
-        self, cmap_name: str, vmin: float, vmax: float,
-    ) -> None:
-        """Render and display the colorbar for the given range."""
-        try:
-            fig, ax = plt.subplots(figsize=(0.6, 3.0), dpi=80)
-            fig.patch.set_facecolor("#0b0f1a")
-            fig.subplots_adjust(left=0.12, right=0.42, top=0.97, bottom=0.03)
-            sm = plt.cm.ScalarMappable(
-                cmap=cmap_name,
-                norm=mcolors.Normalize(vmin=vmin, vmax=vmax),
-            )
-            cb = fig.colorbar(sm, cax=ax)
-            cb.ax.tick_params(labelsize=7, colors="#8892a4")
-            cb.ax.yaxis.set_tick_params(color="#8892a4")
-            ax.yaxis.set_tick_params(labelsize=7)
-
-            buf = io.BytesIO()
-            fig.savefig(buf, format="png", dpi=80, facecolor="#0b0f1a")
-            buf.seek(0)
-            plt.close(fig)
-
-            px = QPixmap()
-            px.loadFromData(buf.read())
-            self.setPixmap(px)
-        except Exception:  # pragma: no cover
-            self.clear()
-
-    def clear_colorbar(self) -> None:
-        self.clear()
 
 
 class StrainWindow(QMainWindow):
@@ -142,9 +95,9 @@ class StrainWindow(QMainWindow):
         canvas_row.setSpacing(4)
         self._canvas = StrainCanvas()
         canvas_row.addWidget(self._canvas, 1)
-        self._colorbar = _ColorbarLabel()
-        canvas_row.addWidget(self._colorbar, 0)
         left.addLayout(canvas_row, 1)
+        # Colorbar overlaid on the canvas viewport (same pattern as main window)
+        self._colorbar = ColorbarOverlay(self._canvas.viewport())
 
         self._frame_slider = QSlider(Qt.Orientation.Horizontal)
         self._frame_slider.setRange(0, 0)
@@ -430,7 +383,7 @@ class StrainWindow(QMainWindow):
             if result is None:
                 self._try_load_background(0)
                 self._canvas.clear_overlay()
-                self._colorbar.clear_colorbar()
+                self._colorbar.setVisible(False)
                 return
 
             frame = self._strain_current_frame
@@ -440,38 +393,48 @@ class StrainWindow(QMainWindow):
             viz = self._viz_panel.get_state()
             show_deformed = bool(viz.get("show_deformed", False))
 
-            # Background image
-            if show_deformed and result.result_strain:
-                # Deformed frame image: frame index = frame + 1 (0 = reference)
+            # Background image: show deformed frame whenever show_deformed is on
+            if show_deformed:
                 self._try_load_background(frame + 1)
             else:
                 self._try_load_background(0)
 
             if values is None:
                 self._canvas.clear_overlay()
-                self._colorbar.clear_colorbar()
+                self._colorbar.setVisible(False)
                 return
 
-            ref_mesh = result.result_fe_mesh_each_frame[0]
-            nodes = ref_mesh.coordinates_fem
+            # Use dic_mesh (canonical mesh = result_fe_mesh_each_frame[0]) as
+            # reference node positions — mirrors main window's approach.
+            ref_nodes = result.dic_mesh.coordinates_fem
             mesh_step = result.dic_para.winstepsize
             img_shape = result.dic_para.img_size
             roi_mask = self._state.per_frame_rois.get(0)
 
             vmin, vmax = self._resolve_range(values)
 
-            # Deformed rendering: shift node positions by displacement
+            # Deformed rendering: shift node positions by accumulated
+            # displacement, then let VizController warp the ROI mask.
+            # Matches main window _refresh_overlay exactly:
+            #   nodes = ref_nodes + column_stack([u, v])
+            #   ref_uv = (u, v)   -- raw pixel displacements for inverse warp
+            #   deformed_mask = per_frame_rois.get(frame + 1)
             deformed = False
             ref_uv = None
-            if (
-                show_deformed
-                and result.result_strain
-                and frame < len(result.result_strain)
-            ):
-                sr = result.result_strain[frame]
-                if sr.disp_u is not None and sr.disp_v is not None:
+            deformed_mask = None
+            nodes = ref_nodes
+
+            if show_deformed and frame < len(result.result_disp):
+                fr_d = result.result_disp[frame]
+                U = fr_d.U_accum if fr_d.U_accum is not None else fr_d.U
+                if U is not None:
+                    u, v = U[0::2], U[1::2]
+                    nodes = ref_nodes + np.column_stack([u, v])
                     deformed = True
-                    ref_uv = (sr.disp_u, sr.disp_v)
+                    ref_uv = (u, v)
+                    # Per-frame deformed ROI — strain frame F corresponds to
+                    # main window current_frame F+1, so use per_frame_rois[F+1]
+                    deformed_mask = self._state.per_frame_rois.get(frame + 1)
 
             pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
                 frame_idx=frame,
@@ -486,6 +449,7 @@ class StrainWindow(QMainWindow):
                 roi_mask=roi_mask,
                 deformed=deformed,
                 ref_uv=ref_uv,
+                deformed_mask=deformed_mask,
             )
             self._canvas.set_overlay_pixmap(pixmap)
             self._canvas.set_overlay_alpha(float(viz["alpha"]))
@@ -495,14 +459,18 @@ class StrainWindow(QMainWindow):
                     float(xg.min()), float(yg.min()),
                 )
 
-            self._colorbar.update_colorbar(str(viz["colormap"]), vmin, vmax)
+            cmap_name = str(viz["colormap"])
+            vp = self._canvas.viewport()
+            self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
+            self._colorbar.update_params(cmap_name, vmin, vmax)
+            self._colorbar.setVisible(True)
 
         except Exception as exc:  # pragma: no cover
             tb_str = _tb.format_exc()
             print(f"[strain_window._render_current] {exc}\n{tb_str}", flush=True)
             self._log(f"Render error: {type(exc).__name__}: {exc}", "error")
             self._canvas.clear_overlay()
-            self._colorbar.clear_colorbar()
+            self._colorbar.setVisible(False)
 
     def _resolve_range(
         self, values: NDArray[np.float64],
