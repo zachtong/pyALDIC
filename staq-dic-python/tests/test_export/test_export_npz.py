@@ -11,7 +11,7 @@ def test_npz_single_file_shapes(tmp_path, minimal_result):
                    include_disp=True, include_strain=True, per_frame=False)
     assert p.name.endswith(".npz")
     data = np.load(str(p))
-    N, T = 5, 2
+    N, T = 12, 2  # 3x4 grid fixture
     assert data["coordinates"].shape == (N, 2)
     assert data["disp_u"].shape == (N, T)
     assert data["disp_v"].shape == (N, T)
@@ -44,7 +44,7 @@ def test_npz_per_frame_returns_list(tmp_path, minimal_result):
         assert p.exists()
         data = np.load(str(p))
         assert "disp_u" in data
-        assert data["disp_u"].shape == (5,)  # single frame: (N,) not (N,T)
+        assert data["disp_u"].shape == (12,)  # single frame: (N,) not (N,T), N=12
 
 
 def test_npz_single_file_returns_path(tmp_path, minimal_result):
