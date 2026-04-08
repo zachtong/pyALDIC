@@ -46,6 +46,7 @@ from staq_dic.gui.app_state import AppState
 from staq_dic.gui.controllers.image_controller import ImageController
 from staq_dic.gui.controllers.strain_controller import StrainController
 from staq_dic.gui.controllers.viz_controller import VizController
+from staq_dic.gui.panels.canvas_area import visible_values
 from staq_dic.gui.panels.strain_canvas import StrainCanvas
 from staq_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from staq_dic.gui.widgets.console_log import ConsoleLog
@@ -405,8 +406,6 @@ class StrainWindow(QMainWindow):
             img_shape = result.dic_para.img_size
             roi_mask = self._state.per_frame_rois.get(0)
 
-            vmin, vmax = self._resolve_range(values)
-
             # Deformed rendering: shift node positions by accumulated
             # displacement, then let VizController warp the ROI mask.
             # Matches main window _refresh_overlay exactly:
@@ -429,6 +428,14 @@ class StrainWindow(QMainWindow):
                     # Per-frame deformed ROI — strain frame F corresponds to
                     # main window current_frame F+1, so use per_frame_rois[F+1]
                     deformed_mask = self._state.per_frame_rois.get(frame + 1)
+
+            # Auto-range uses only the nodes visible within the (possibly
+            # trimmed) deformed mask -- prevents out-of-view nodes from
+            # pulling the colorbar range out of sync with what the user sees.
+            range_values = visible_values(
+                values, nodes, deformed_mask if deformed else None,
+            )
+            vmin, vmax = self._resolve_range(range_values)
 
             pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
                 frame_idx=frame,

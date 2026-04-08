@@ -17,7 +17,7 @@ def panel():
 
 
 def test_default_override(panel):
-    """Default: method 2, plane_fit_rad 20, no pre-smooth (smoothness=0),
+    """Default: plane fitting (method 2), vsg=41 -> rad=20, no pre-smooth,
     strain_type 0 (infinitesimal)."""
     o = panel.get_override()
     assert o == {
@@ -33,11 +33,10 @@ def test_override_keys_match_whitelist(panel):
     assert set(o.keys()) == ALLOWED_OVERRIDES
 
 
-def test_method_1_in_combo(panel):
-    """All three methods (1, 2, 3) are available in the combo."""
-    assert 1 in panel._method_codes
-    assert 2 in panel._method_codes
-    assert 3 in panel._method_codes
+def test_only_two_methods_in_combo(panel):
+    """Only plane fitting (2) and FEM nodal (3) are available."""
+    assert panel._method_codes == (2, 3)
+    assert panel._method_combo.count() == 2
 
 
 def test_default_method_is_2(panel):
@@ -45,32 +44,27 @@ def test_default_method_is_2(panel):
 
 
 def test_changing_method_to_fem(panel):
-    """Selecting FEM nodal (index 2 = method 3) updates override."""
-    panel._method_combo.setCurrentIndex(2)   # method 3
+    """Selecting FEM nodal (index 1 = method 3) updates override."""
+    panel._method_combo.setCurrentIndex(1)   # method 3
     assert panel.get_override()["method_to_compute_strain"] == 3
 
 
-def test_changing_method_to_legacy(panel):
-    """Selecting legacy (index 0 = method 1) updates override."""
-    panel._method_combo.setCurrentIndex(0)
-    assert panel.get_override()["method_to_compute_strain"] == 1
+def test_vsg_spin_enabled_only_for_plane_fitting(panel):
+    """VSG size is only enabled when plane fitting (method 2) is selected."""
+    panel._method_combo.setCurrentIndex(0)   # plane fitting (method 2)
+    assert panel._vsg_spin.isEnabled() is True
+
+    panel._method_combo.setCurrentIndex(1)   # FEM nodal (method 3)
+    assert panel._vsg_spin.isEnabled() is False
 
 
-def test_rad_spin_enabled_only_for_method2(panel):
-    """Plane-fit radius is only enabled when method 2 is selected."""
-    panel._method_combo.setCurrentIndex(1)   # method 2
-    assert panel._rad_spin.isEnabled() is True
-
-    panel._method_combo.setCurrentIndex(0)   # method 1
-    assert panel._rad_spin.isEnabled() is False
-
-    panel._method_combo.setCurrentIndex(2)   # method 3
-    assert panel._rad_spin.isEnabled() is False
-
-
-def test_changing_rad_updates_override(panel):
-    panel._rad_spin.setValue(10.0)
+def test_changing_vsg_updates_override(panel):
+    """VSG -> rad conversion: rad = (VSG - 1) / 2."""
+    panel._vsg_spin.setValue(21)   # rad = (21-1)/2 = 10
     assert panel.get_override()["strain_plane_fit_rad"] == 10.0
+
+    panel._vsg_spin.setValue(41)   # rad = (41-1)/2 = 20
+    assert panel.get_override()["strain_plane_fit_rad"] == 20.0
 
 
 def test_changing_strain_type_updates_override(panel):
@@ -115,12 +109,12 @@ def test_initially_clean(panel):
 
 
 def test_dirty_after_param_change(panel):
-    panel._rad_spin.setValue(10.0)
+    panel._vsg_spin.setValue(51)
     assert panel.is_dirty() is True
 
 
 def test_mark_clean_resets_dirty(panel):
-    panel._rad_spin.setValue(10.0)
+    panel._vsg_spin.setValue(51)
     assert panel.is_dirty() is True
     panel.mark_clean()
     assert panel.is_dirty() is False
@@ -129,5 +123,5 @@ def test_mark_clean_resets_dirty(panel):
 def test_params_dirty_signal(panel):
     received: list[bool] = []
     panel.params_dirty.connect(lambda: received.append(True))
-    panel._rad_spin.setValue(15.0)
+    panel._vsg_spin.setValue(61)
     assert len(received) >= 1

@@ -2,10 +2,15 @@
 
 Exposes:
 
-* ``method_to_compute_strain`` (1 = legacy/FEM, 2 = plane fit, 3 = FEM nodal)
-* ``strain_plane_fit_rad`` (px) — only enabled for method 2
-* Pre-smooth displacement (checkbox) → ``strain_smoothness`` preset
+* ``method_to_compute_strain`` (2 = plane fitting, 3 = FEM nodal)
+* ``strain_plane_fit_rad`` (px) -- derived from VSG size; only enabled for
+  plane fitting method
+* Pre-smooth displacement (checkbox) -> ``strain_smoothness`` preset
 * ``strain_type`` (0 = infinitesimal, 1 = Eulerian, 2 = Green-Lagrangian)
+
+VSG size (Virtual Strain Gauge diameter in pixels) replaces the raw
+plane-fit radius. Conversion: ``rad = (VSG - 1) / 2``.  FEM nodal method
+hides the VSG control since gauge size is determined by mesh spacing.
 
 Tracks a dirty flag so the window can show a "Stale" hint until the
 user explicitly recomputes.
@@ -17,8 +22,8 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
-    QDoubleSpinBox,
     QFormLayout,
+    QSpinBox,
     QWidget,
 )
 
@@ -35,9 +40,13 @@ _SMOOTH_PRESETS: tuple[tuple[str, float], ...] = (
     ("Strong (σ ≈ 4 steps)", 8e-3),
 )
 
+# Default VSG size in pixels (must be odd).
+# rad = (VSG - 1) / 2 = (41 - 1) / 2 = 20 px  (matches prior default).
+_DEFAULT_VSG_PX = 41
+
 
 class StrainParamPanel(QWidget):
-    """Compose method/rad/pre-smooth/type editors with a dirty flag."""
+    """Compose method / VSG / pre-smooth / type editors with a dirty flag."""
 
     params_dirty = Signal()
 
@@ -50,22 +59,20 @@ class StrainParamPanel(QWidget):
 
         # --- Method ---
         self._method_combo = QComboBox()
-        # (display_label, int_code) pairs
-        self._method_codes = (1, 2, 3)
-        self._method_combo.addItem("Central diff (legacy, method 1)")
-        self._method_combo.addItem("Plane fitting (method 2)")
-        self._method_combo.addItem("FEM nodal (method 3)")
-        self._method_combo.setCurrentIndex(1)   # default: method 2
+        self._method_codes = (2, 3)
+        self._method_combo.addItem("Plane fitting")
+        self._method_combo.addItem("FEM nodal")
+        self._method_combo.setCurrentIndex(0)   # default: plane fitting (method 2)
         layout.addRow("Method", self._method_combo)
 
-        # --- Plane-fit radius (only relevant for method 2) ---
-        self._rad_spin = QDoubleSpinBox()
-        self._rad_spin.setDecimals(1)
-        self._rad_spin.setRange(1.0, 500.0)
-        self._rad_spin.setSingleStep(1.0)
-        self._rad_spin.setSuffix(" px")
-        self._rad_spin.setValue(20.0)
-        layout.addRow("Plane-fit rad", self._rad_spin)
+        # --- VSG size (virtual strain gauge diameter, pixels) ---
+        # Odd integer: VSG = 2*rad + 1.  Shown only for plane fitting.
+        self._vsg_spin = QSpinBox()
+        self._vsg_spin.setRange(3, 401)
+        self._vsg_spin.setSingleStep(2)
+        self._vsg_spin.setSuffix(" px")
+        self._vsg_spin.setValue(_DEFAULT_VSG_PX)
+        layout.addRow("VSG size", self._vsg_spin)
 
         # --- Pre-smooth displacement ---
         self._presmooth_check = QCheckBox("Pre-smooth displacement field")
@@ -90,7 +97,7 @@ class StrainParamPanel(QWidget):
 
         self._dirty = False
 
-        # Wire enable/disable for rad spin based on method
+        # Wire enable/disable for VSG spin based on method
         self._method_combo.currentIndexChanged.connect(self._on_method_changed)
         self._on_method_changed(self._method_combo.currentIndex())  # init state
 
@@ -99,7 +106,7 @@ class StrainParamPanel(QWidget):
 
         # Wire dirty propagation
         self._method_combo.currentIndexChanged.connect(self._mark_dirty)
-        self._rad_spin.valueChanged.connect(self._mark_dirty)
+        self._vsg_spin.valueChanged.connect(self._mark_dirty)
         self._presmooth_check.toggled.connect(self._mark_dirty)
         self._smooth_combo.currentIndexChanged.connect(self._mark_dirty)
         self._type_combo.currentIndexChanged.connect(self._mark_dirty)
@@ -110,13 +117,16 @@ class StrainParamPanel(QWidget):
 
     def get_override(self) -> dict[str, object]:
         """Return the current parameter values as a dict suitable for
-        :meth:`StrainController.compute_all_frames`."""
+        :meth:`StrainController.compute_all_frames`.
+
+        VSG size is converted to plane-fit radius: ``rad = (VSG - 1) / 2``.
+        """
         method = self._method_codes[self._method_combo.currentIndex()]
-        smoothness = self._resolve_smoothness()
+        rad = (self._vsg_spin.value() - 1) / 2.0
         return {
             "method_to_compute_strain": method,
-            "strain_plane_fit_rad": float(self._rad_spin.value()),
-            "strain_smoothness": smoothness,
+            "strain_plane_fit_rad": rad,
+            "strain_smoothness": self._resolve_smoothness(),
             "strain_type": self._type_codes[self._type_combo.currentIndex()],
         }
 
@@ -136,13 +146,12 @@ class StrainParamPanel(QWidget):
     def _resolve_smoothness(self) -> float:
         if not self._presmooth_check.isChecked():
             return 0.0
-        idx = self._smooth_combo.currentIndex()
-        return _SMOOTH_PRESETS[idx][1]
+        return _SMOOTH_PRESETS[self._smooth_combo.currentIndex()][1]
 
     def _on_method_changed(self, index: int) -> None:
-        """Enable plane-fit radius only when method 2 (plane fitting) is selected."""
+        """Show / enable VSG size only for plane fitting (method 2)."""
         code = self._method_codes[index]
-        self._rad_spin.setEnabled(code == 2)
+        self._vsg_spin.setEnabled(code == 2)
 
     def _on_presmooth_toggled(self, checked: bool) -> None:
         self._smooth_combo.setEnabled(checked)
