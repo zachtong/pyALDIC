@@ -55,7 +55,6 @@ STRAIN_FIELD_NAMES: tuple[str, ...] = (
     "strain_maxshear",
     "strain_von_mises",
     "strain_rotation",
-    "strain_mean_normal",
 )
 
 # ---- Combined ---------------------------------------------------------------
@@ -75,7 +74,6 @@ _FIELD_LABELS: dict[str, str] = {
     "strain_maxshear":       "\u03b3 max",           # γ max
     "strain_von_mises":      "von Mises",
     "strain_rotation":       "\u03c9 rot",           # ω rot
-    "strain_mean_normal":    "\u03b5\u0305 mean",    # ε̄ mean
 }
 
 # (row, col, colspan) inside each sub-grid, all using 2 columns for disp
@@ -96,7 +94,7 @@ _STRAIN_POSITIONS: dict[str, tuple[int, int, int]] = {
     "strain_maxshear":      (1, 2, 1),
     "strain_von_mises":     (2, 0, 1),
     "strain_rotation":      (2, 1, 1),
-    "strain_mean_normal":   (2, 2, 1),
+    # (2, 2) intentionally left empty — reserved for a future field
 }
 
 
