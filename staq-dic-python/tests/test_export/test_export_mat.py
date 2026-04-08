@@ -21,9 +21,9 @@ def test_mat_shapes(tmp_path, minimal_result):
     p = export_mat(tmp_path, "exp", "ts", minimal_result,
                    include_disp=True, include_strain=True)
     mat = scipy.io.loadmat(str(p))
-    assert mat["CoordinatesFEM"].shape == (5, 2)
-    assert mat["disp_U"].shape == (5, 2)   # N x T
-    assert mat["strain_exx"].shape == (5, 2)
+    assert mat["CoordinatesFEM"].shape == (12, 2)  # 3x4 grid fixture
+    assert mat["disp_U"].shape == (12, 2)   # N x T
+    assert mat["strain_exx"].shape == (12, 2)
 
 
 def test_mat_no_strain_if_excluded(tmp_path, minimal_result):

@@ -57,7 +57,7 @@ def test_csv_row_count_matches_nodes(tmp_path, minimal_result):
                        include_disp=True, include_strain=False)
     with open(paths[0], encoding="utf-8-sig") as f:
         rows = list(csv.DictReader(f))
-    assert len(rows) == 5  # 5 nodes in minimal_result
+    assert len(rows) == 12  # 3x4 grid = 12 nodes in minimal_result
 
 
 def test_csv_utf8_bom(tmp_path, minimal_result):

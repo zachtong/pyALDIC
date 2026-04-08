@@ -16,10 +16,11 @@ from staq_dic.core.config import dicpara_default
 @pytest.fixture
 def minimal_result():
     """Minimal PipelineResult with 2 frames and 5 nodes for testing."""
-    N = 5
-    coords = np.zeros((N, 2), dtype=np.float64)
-    coords[:, 0] = np.arange(N, dtype=np.float64)  # x = 0,1,2,3,4
-    coords[:, 1] = np.zeros(N, dtype=np.float64)    # y = 0
+    # Use a 3x4 grid of nodes so the geometry is 2D (avoids collinear Delaunay failures)
+    xs, ys = np.meshgrid(np.linspace(4, 60, 4), np.linspace(4, 60, 3))
+    coords = np.column_stack([xs.ravel(), ys.ravel()]).astype(np.float64)
+    N = coords.shape[0]  # 12 nodes
+
     mesh = DICMesh(
         coordinates_fem=coords,
         elements_fem=np.zeros((0, 8), dtype=np.int64),
