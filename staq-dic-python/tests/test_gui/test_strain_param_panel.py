@@ -17,7 +17,7 @@ def panel():
 
 
 def test_default_override(panel):
-    """Default: plane fitting (method 2), vsg=41 -> rad=20, no pre-smooth,
+    """Default: plane fitting (method 2), vsg=41 -> rad=20, no post-grad smoothing,
     strain_type 0 (infinitesimal)."""
     o = panel.get_override()
     assert o == {
