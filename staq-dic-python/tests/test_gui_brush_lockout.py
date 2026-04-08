@@ -1,21 +1,17 @@
-"""Test brush refinement lockout: only paintable on frame 0 with no results.
+"""Test brush refinement lockout: only locked out on non-zero frames.
 
-Brush is a pre-Run input that controls mesh refinement on frame 0.  It must
-be locked out as soon as either condition becomes true:
+Brush painting is allowed at any time on frame 0 (reference frame),
+including after a completed Run.  This is consistent with how ROI edits
+and mesh-parameter changes work -- the old results remain visible until
+the next Run replaces them.
 
-  1. The user navigates away from frame 0 -- brush coordinates only make
-     sense at the reference frame.
-  2. A pipeline run has produced results -- they were computed against the
-     previous mesh; a new brush stroke would silently invalidate them.
+The only hard lock is ``current_frame != 0``:
 
-Three layers must enforce this:
-
-  - Entry guard:  ``_on_brush_requested`` rejects entering brush mode.
-  - Active layer: switching frame OR finishing a run drops the active
-    brush tool back to ``select`` and emits ``drawing_finished`` so the
-    toolbar button highlight is reset.
-  - Mouse layer:  any stray mouse press / move with the brush tool still
-    set is rejected silently.
+  - Entry guard:  ``_on_brush_requested`` rejects entering brush mode on
+    non-reference frames.
+  - Active layer: switching frame drops the active brush tool back to
+    ``select`` and emits ``drawing_finished`` so the toolbar resets.
+  - Mouse layer:  stray mouse press / move on non-zero frames is rejected.
 """
 
 from __future__ import annotations
@@ -118,15 +114,15 @@ def _seed_results(state: AppState) -> None:
     state.set_results(result)
 
 
-def test_brush_entry_blocked_when_results_exist(qapp, monkeypatch):
-    """Once results exist, the Refine button must refuse to enter brush mode."""
+def test_brush_entry_allowed_when_results_exist(qapp, monkeypatch):
+    """Brush must be paintable on frame 0 even after a completed Run."""
     win, state = _build_main_window(monkeypatch)
     _seed_results(state)
 
     win._on_brush_requested("paint", 16)
 
-    assert win._canvas_area.canvas._current_tool != "brush", (
-        "Brush entry must be blocked when results exist"
+    assert win._canvas_area.canvas._current_tool == "brush", (
+        "Brush must be allowed on frame 0 even when results exist"
     )
 
 
@@ -155,26 +151,20 @@ def test_frame_switch_during_brush_drops_tool(qapp, monkeypatch):
     )
 
 
-def test_run_completion_drops_active_brush_tool(qapp, monkeypatch):
-    """Set_results() (mimicking a finished Run) must reset an active brush tool."""
+def test_run_completion_keeps_active_brush_tool(qapp, monkeypatch):
+    """A completed Run must NOT interrupt an active brush session on frame 0."""
     win, state = _build_main_window(monkeypatch)
 
     # Enter brush mode
     win._on_brush_requested("paint", 16)
     assert win._canvas_area.canvas._current_tool == "brush"
 
-    finished_emissions: list[bool] = []
-    win._canvas_area.canvas.drawing_finished.connect(
-        lambda: finished_emissions.append(True)
-    )
-
     # Pipeline completes -- results land
     _seed_results(state)
 
-    assert win._canvas_area.canvas._current_tool != "brush", (
-        "Pipeline completion must drop the active brush tool"
+    assert win._canvas_area.canvas._current_tool == "brush", (
+        "Brush must stay active on frame 0 when a Run completes"
     )
-    assert len(finished_emissions) >= 1
 
 
 def test_brush_mouse_press_rejected_on_non_zero_frame(qapp, monkeypatch):

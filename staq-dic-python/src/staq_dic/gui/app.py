@@ -128,9 +128,6 @@ class MainWindow(QMainWindow):
         self._state.current_frame_changed.connect(
             self._drop_brush_tool_if_invalid
         )
-        self._state.results_changed.connect(
-            self._drop_brush_tool_if_invalid
-        )
 
     def _init_roi_controller(self) -> None:
         """Create ROI + brush controllers matching the loaded image dimensions."""
@@ -219,25 +216,18 @@ class MainWindow(QMainWindow):
     def _drop_brush_tool_if_invalid(self, *_args) -> None:
         """Reset the canvas to ``select`` if brush is no longer paintable.
 
-        Active layer of the brush lockout defense (paired with
-        ``ImageCanvas._brush_locked_out``):
+        The only condition that invalidates an active brush session is
+        navigating away from frame 0 -- brush coordinates only make sense
+        on the reference frame.  Painting after a completed Run is allowed
+        (consistent with ROI / mesh-parameter edits).
 
-          - ``current_frame_changed`` -> drop brush as soon as the user
-            navigates off frame 0.  Brush coordinates are frame-0 pixel
-            coordinates and only make sense at the reference frame.
-          - ``results_changed``       -> drop brush as soon as a Run lands
-            its PipelineResult.  Painting on top of existing results
-            would silently invalidate them.
-
-        We also emit ``drawing_finished`` so the toolbar Refine button
-        highlight clears.  Otherwise the cursor stays in cross-hair mode
-        and the user thinks they are still painting.
+        We emit ``drawing_finished`` so the toolbar Refine button
+        highlight clears; otherwise the cursor stays in cross-hair mode.
         """
         canvas = self._canvas_area.canvas
         if canvas._current_tool != "brush":
             return
-        state = self._state
-        if state.current_frame == 0 and state.results is None:
+        if self._state.current_frame == 0:
             return
         canvas.set_tool("select")
         canvas.drawing_finished.emit()
@@ -343,19 +333,6 @@ class MainWindow(QMainWindow):
             state.log_message.emit(
                 "Brush refinement can only be painted on frame 1 "
                 "(the reference). Switch to frame 1 first.",
-                "warn",
-            )
-            return
-        if state.results is not None:
-            # Brush refinement is a *pre-Run* mesh input.  Painting on
-            # top of an existing PipelineResult would silently invalidate
-            # the displacement field that the user is currently looking
-            # at.  Force them to clear results (or start a new run after
-            # editing inputs) before repainting.
-            state.log_message.emit(
-                "Cannot paint brush after a Run -- it would invalidate "
-                "the existing results. Clear results or start a new run "
-                "to repaint.",
                 "warn",
             )
             return

@@ -60,6 +60,34 @@ except ImportError:  # pragma: no cover
     _HAS_ICONS = False
 
 
+def visible_values(
+    values: NDArray[np.float64],
+    nodes: NDArray[np.float64],
+    mask: NDArray[np.bool_] | None,
+) -> NDArray[np.float64]:
+    """Return *values* with entries outside *mask* set to NaN.
+
+    Used so the colormap range is computed only from nodes that are
+    actually rendered (within the deformed-frame ROI), not from the full
+    reference-mesh node set which may include nodes clipped by the mask.
+    Falls back to the original array when *mask* is None or when the
+    intersection is empty (avoids a degenerate all-NaN range).
+    """
+    if mask is None or len(values) == 0:
+        return values
+    h, w = mask.shape
+    ix = np.round(nodes[:, 0]).astype(int)
+    iy = np.round(nodes[:, 1]).astype(int)
+    in_bounds = (ix >= 0) & (ix < w) & (iy >= 0) & (iy < h)
+    vis = np.zeros(len(values), dtype=bool)
+    vis[in_bounds] = mask[iy[in_bounds], ix[in_bounds]]
+    if not np.any(vis):
+        return values   # fallback: no node hit the mask
+    out = values.copy()
+    out[~vis] = np.nan
+    return out
+
+
 def resolve_color_range(
     state: AppState, values: NDArray[np.float64]
 ) -> tuple[float, float]:
@@ -250,38 +278,27 @@ class ImageCanvas(QGraphicsView):
     def _brush_locked_out(self) -> bool:
         """Return True if brush painting is currently forbidden.
 
-        Brush refinement is a *pre-Run* input that controls how the mesh
-        is locally refined on frame 0.  Two states must lock it out:
+        The only hard lock is ``current_frame != 0``: brush coordinates
+        only make sense on the reference frame -- the pipeline auto-warps
+        the painted mask to subsequent ref frames at run time.
 
-          1. ``current_frame != 0``  -- brush coordinates only make sense
-             at the reference frame; the pipeline auto-warps the painted
-             mask to subsequent ref frames at run time.
-          2. ``state.results is not None``  -- the existing results were
-             computed against the previous mesh, so a new brush stroke
-             would silently invalidate them.  The user must clear results
-             (or start a new run) before painting again.
+        Painting after a completed Run is intentionally allowed.  Like
+        ROI edits and mesh-parameter changes, the user is free to refine
+        the mask at any time; the old results remain visible until the
+        next Run overwrites them.
 
-        When locked out we proactively reset the canvas tool to "select"
-        and emit ``drawing_finished`` so the toolbar Refine button
-        highlight clears -- otherwise the cursor stays in cross-hair mode
-        and the user thinks they are still painting.
+        When locked out we reset the canvas tool to "select" and emit
+        ``drawing_finished`` so the toolbar Refine button highlight
+        clears -- otherwise the cursor stays in cross-hair mode.
         """
         state = AppState.instance()
-        if state.current_frame == 0 and state.results is None:
+        if state.current_frame == 0:
             return False
-        if state.current_frame != 0:
-            state.log_message.emit(
-                "Brush refinement only paints on frame 1 (the reference). "
-                "Switch to frame 1 first.",
-                "warn",
-            )
-        else:
-            state.log_message.emit(
-                "Cannot paint brush after a Run -- it would invalidate "
-                "the existing results. Start a new run after changing "
-                "inputs to repaint.",
-                "warn",
-            )
+        state.log_message.emit(
+            "Brush refinement only paints on frame 1 (the reference). "
+            "Switch to frame 1 first.",
+            "warn",
+        )
         self.set_tool("select")
         self.drawing_finished.emit()
         return True
@@ -1062,11 +1079,6 @@ class CanvasArea(QWidget):
             else:
                 nodes = ref_nodes
 
-            # Auto mode also writes the resolved range back to AppState
-            # so the ColorRange widget can pre-populate its spin boxes
-            # with the live frame range when the user toggles Auto off.
-            vmin, vmax = resolve_color_range(state, values)
-
             # In deformed mode, warp the ROI mask from reference to deformed
             # coordinates via inverse displacement lookup.  This preserves
             # internal holes that would otherwise be filled by interpolation.
@@ -1086,6 +1098,12 @@ class CanvasArea(QWidget):
                     )
                     if per_frame_roi is not None:
                         def_mask = per_frame_roi
+
+            # Auto range uses only the nodes visible in the deformed frame so
+            # the colorbar reflects what is actually rendered, not clipped data.
+            vmin, vmax = resolve_color_range(
+                state, visible_values(values, nodes, def_mask)
+            )
 
             cmap = state.colormap
 
