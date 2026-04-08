@@ -286,22 +286,30 @@ def main() -> None:
         return
 
     # ── Summary table ──────────────────────────────────────────────────────
-    print("=" * 72)
+    print("=" * 82)
     print(f"{'Image':>12}  {'Step':>4}  {'Mode':<20}  {'Nodes':>6}  "
-          f"{'nodes/s':>9}  {'Time(s)':>7}  {'Overhead':>9}")
-    print("-" * 72)
+          f"{'nodes/s':>9}  {'Time(s)':>7}  {'vs direct':>10}  {'vs pipeline':>12}")
+    print("-" * 82)
 
-    # Group by scenario to show overhead
+    # Group by scenario to show overhead relative to both baselines
     from itertools import groupby
     for (img_size, step), group in groupby(results, key=lambda r: (r["img_size"], r["step"])):
         group_list = list(group)
-        local = next((r for r in group_list if r["mode"] == "LOCAL_ICGN"), None)
+        direct = next((r for r in group_list if r["mode"] == "LOCAL_ICGN"), None)
+        pipeline = next((r for r in group_list if r["mode"] == "PIPELINE_ONLY"), None)
         for r in group_list:
-            if local and r["mode"] != "LOCAL_ICGN":
-                overhead = r["elapsed_s"] / local["elapsed_s"] if local["elapsed_s"] > 0 else float("nan")
-                overhead_str = f"{overhead:.1f}×"
-            else:
-                overhead_str = "reference"
+            if r["mode"] == "LOCAL_ICGN":
+                vs_direct_str = "reference"
+                vs_pipeline_str = ""
+            elif r["mode"] == "PIPELINE_ONLY":
+                vs_d = r["elapsed_s"] / direct["elapsed_s"] if direct and direct["elapsed_s"] > 0 else float("nan")
+                vs_direct_str = f"{vs_d:.1f}×"
+                vs_pipeline_str = "reference"
+            else:  # ADMM
+                vs_d = r["elapsed_s"] / direct["elapsed_s"] if direct and direct["elapsed_s"] > 0 else float("nan")
+                vs_p = r["elapsed_s"] / pipeline["elapsed_s"] if pipeline and pipeline["elapsed_s"] > 0 else float("nan")
+                vs_direct_str = f"{vs_d:.1f}×"
+                vs_pipeline_str = f"{vs_p:.1f}x  **"
             print(
                 f"  {r['img_size']}×{r['img_size']:4d}  "
                 f"{r['step']:4d}  "
@@ -309,9 +317,14 @@ def main() -> None:
                 f"{r['n_nodes']:6d}  "
                 f"{r['nodes_per_sec']:9.0f}  "
                 f"{r['elapsed_s']:7.3f}  "
-                f"{overhead_str:>9}"
+                f"{vs_direct_str:>10}  "
+                f"{vs_pipeline_str:>12}"
             )
-    print("=" * 72)
+    print("=" * 82)
+    print()
+    print("  Note: 'vs direct' compares to bare local_icgn() call (no FFT/mesh overhead).")
+    print("        'vs pipeline' compares to same pipeline WITHOUT FEM/ADMM — the")
+    print("        meaningful ADMM overhead metric.  Typical: 2–4× for 3 ADMM iters.")
 
     # ── Literature comparison ──────────────────────────────────────────────
     print()
@@ -478,43 +491,59 @@ def _write_pdf_report(path: Path, results: list[dict],
         fig, ax = plt.subplots(figsize=(10, 5))
         fig.suptitle("ADMM Wall-clock Overhead vs Local IC-GN (×)", fontsize=12)
 
-        pipeline_overheads, admm_overheads = [], []
+        # Two subplots: left=vs direct ICGN, right=vs pipeline (the meaningful metric)
+        fig2, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(14, 5))
+
+        pipeline_vs_direct, admm_vs_direct, admm_vs_pipeline = [], [], []
         for (img_s, step) in scenarios:
-            local = next((r for r in results if r["img_size"] == img_s
-                          and r["step"] == step and r["mode"] == "LOCAL_ICGN"), None)
-            pipe = next((r for r in results if r["img_size"] == img_s
-                         and r["step"] == step and r["mode"] == "PIPELINE_ONLY"), None)
-            admm = next((r for r in results if r["img_size"] == img_s
-                         and r["step"] == step and r["mode"] == "ADMM_3ITER"), None)
-            pipeline_overheads.append(
-                pipe["elapsed_s"] / local["elapsed_s"]
-                if local and pipe and local["elapsed_s"] > 0 else 0.0
+            direct_ = next((r for r in results if r["img_size"] == img_s
+                            and r["step"] == step and r["mode"] == "LOCAL_ICGN"), None)
+            pipe_ = next((r for r in results if r["img_size"] == img_s
+                          and r["step"] == step and r["mode"] == "PIPELINE_ONLY"), None)
+            admm_ = next((r for r in results if r["img_size"] == img_s
+                          and r["step"] == step and r["mode"] == "ADMM_3ITER"), None)
+            pipeline_vs_direct.append(
+                pipe_["elapsed_s"] / direct_["elapsed_s"]
+                if direct_ and pipe_ and direct_["elapsed_s"] > 0 else 0.0
             )
-            admm_overheads.append(
-                admm["elapsed_s"] / local["elapsed_s"]
-                if local and admm and local["elapsed_s"] > 0 else 0.0
+            admm_vs_direct.append(
+                admm_["elapsed_s"] / direct_["elapsed_s"]
+                if direct_ and admm_ and direct_["elapsed_s"] > 0 else 0.0
+            )
+            admm_vs_pipeline.append(
+                admm_["elapsed_s"] / pipe_["elapsed_s"]
+                if pipe_ and admm_ and pipe_["elapsed_s"] > 0 else 0.0
             )
 
-        ax.bar(x - width / 2, pipeline_overheads, width, label="Pipeline / Local IC-GN",
-               color=mode_colors["PIPELINE_ONLY"], alpha=0.85)
-        ax.bar(x + width / 2, admm_overheads, width, label="ADMM×3 / Local IC-GN",
-               color=mode_colors["ADMM_3ITER"], alpha=0.85)
+        for ax_, ys1, ys2, lbl1, lbl2, title in [
+            (ax_left, pipeline_vs_direct, admm_vs_direct,
+             "Pipeline / Direct IC-GN", "ADMM×3 / Direct IC-GN",
+             "Overhead vs bare local_icgn()\n(includes FFT+mesh fixed cost)"),
+            (ax_right, [1.0] * len(scenarios), admm_vs_pipeline,
+             "Pipeline (=1×)", "ADMM×3 / Pipeline",
+             "Overhead vs same pipeline without ADMM\n(true ADMM cost — matches '2–4×' rule of thumb)"),
+        ]:
+            ax_.bar(x - width / 2, ys1, width, label=lbl1,
+                    color=mode_colors["PIPELINE_ONLY"], alpha=0.85)
+            ax_.bar(x + width / 2, ys2, width, label=lbl2,
+                    color=mode_colors["ADMM_3ITER"], alpha=0.85)
+            for xi, (a, b) in enumerate(zip(ys1, ys2)):
+                ax_.text(xi - width / 2, a + 0.1, f"{a:.1f}×", ha="center", fontsize=8)
+                ax_.text(xi + width / 2, b + 0.1, f"{b:.1f}×", ha="center", fontsize=8)
+            ax_.axhline(1.0, color="gray", linestyle="--", alpha=0.5)
+            ax_.set_xticks(x)
+            ax_.set_xticklabels(
+                [f"{s[0]}×{s[0]}\nstep={s[1]}" for s in scenarios], fontsize=9
+            )
+            ax_.set_ylabel("Time ratio (×)")
+            ax_.set_title(title, fontsize=9)
+            ax_.legend(fontsize=8)
+            ax_.grid(axis="y", alpha=0.3)
 
-        for xi, (p, a) in enumerate(zip(pipeline_overheads, admm_overheads)):
-            ax.text(xi - width / 2, p + 0.05, f"{p:.1f}×", ha="center", fontsize=9)
-            ax.text(xi + width / 2, a + 0.05, f"{a:.1f}×", ha="center", fontsize=9)
-
-        ax.axhline(1.0, color="gray", linestyle="--", alpha=0.5, label="1× reference")
-        ax.set_xticks(x)
-        ax.set_xticklabels(
-            [f"{s[0]}×{s[0]}\nstep={s[1]}" for s in scenarios], fontsize=9
-        )
-        ax.set_ylabel("Time / Local IC-GN time")
-        ax.legend(fontsize=9)
-        ax.grid(axis="y", alpha=0.3)
-        fig.tight_layout()
-        pdf.savefig(fig)
-        plt.close(fig)
+        fig2.suptitle("ADMM Wall-clock Overhead", fontsize=12)
+        fig2.tight_layout()
+        pdf.savefig(fig2)
+        plt.close(fig2)
 
         # --- Page 3: literature comparison (horizontal bar) ---
         fig, ax = plt.subplots(figsize=(12, 6))
