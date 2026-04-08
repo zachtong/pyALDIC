@@ -37,10 +37,9 @@ def test_field_names_canonical_order():
         "strain_maxshear",
         "strain_von_mises",
         "strain_rotation",
-        "strain_mean_normal",
     )
     assert FIELD_NAMES == DISP_FIELD_NAMES + STRAIN_FIELD_NAMES
-    assert len(FIELD_NAMES) == 13
+    assert len(FIELD_NAMES) == 12
 
 
 def test_set_current_field_to_disp_v(selector):
@@ -70,11 +69,6 @@ def test_set_current_field_to_rotation(selector):
     assert selector.current_field() == "strain_rotation"
 
 
-def test_set_current_field_to_mean_normal(selector):
-    selector.set_current_field("strain_mean_normal")
-    assert selector.current_field() == "strain_mean_normal"
-
-
 def test_unknown_field_is_rejected(selector):
     with pytest.raises(ValueError):
         selector.set_current_field("totally_unknown_field")
@@ -83,7 +77,7 @@ def test_unknown_field_is_rejected(selector):
 def test_exclusive_selection_across_groups(selector):
     """Selecting any field deactivates all others (single button group)."""
     btns = selector.findChildren(QPushButton)
-    assert len(btns) == 13
+    assert len(btns) == 12
 
     for field in ("disp_u", "strain_exx", "velocity", "strain_rotation"):
         selector.set_current_field(field)

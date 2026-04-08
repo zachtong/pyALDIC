@@ -304,11 +304,6 @@ class StrainWindow(QMainWindow):
         if field_name == "strain_rotation":
             return sr.strain_rotation  # pre-computed from raw F before strain-type conversion
 
-        if field_name == "strain_mean_normal":
-            if sr.strain_exx is None or sr.strain_eyy is None:
-                return None
-            return (sr.strain_exx + sr.strain_eyy) / 2.0
-
         return getattr(sr, field_name, None)
 
     def _get_disp_field(

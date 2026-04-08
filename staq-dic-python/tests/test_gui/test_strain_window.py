@@ -171,18 +171,6 @@ def test_strain_rotation_requires_compute(window, state_with_results):
     assert vals is not None
 
 
-def test_strain_mean_normal_after_compute(window, state_with_results):
-    """strain_mean_normal = (exx + eyy) / 2, available after compute."""
-    window.trigger_compute()
-    result = state_with_results.results
-    sr = result.result_strain[0]
-    expected = (sr.strain_exx + sr.strain_eyy) / 2.0
-    vals = window._get_field_values("strain_mean_normal", 0, result)
-    import numpy as np
-    assert vals is not None
-    np.testing.assert_allclose(vals, expected)
-
-
 def test_auto_range_disabled_populates_spinboxes(window, state_with_results):
     """Disabling auto range triggers set_range() with field's data range.
     For a uniform shear field all nodes share one value so vmin == vmax."""
