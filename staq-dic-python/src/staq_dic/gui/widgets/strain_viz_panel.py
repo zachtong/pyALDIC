@@ -53,6 +53,11 @@ class StrainVizPanel(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
 
+        # --- Show on deformed (first: sets rendering mode before other controls) ---
+        self._deformed_check = QCheckBox("Show on deformed frame")
+        self._deformed_check.setChecked(True)
+        layout.addRow("Deformed", self._deformed_check)
+
         # --- Colormap ---
         self._cmap_combo = QComboBox()
         for name in _COLORMAP_OPTIONS:
@@ -87,11 +92,6 @@ class StrainVizPanel(QWidget):
         self._opacity_slider.setRange(0, 100)
         self._opacity_slider.setValue(70)
         layout.addRow("Opacity", self._opacity_slider)
-
-        # --- Show on deformed ---
-        self._deformed_check = QCheckBox("Show on deformed frame")
-        self._deformed_check.setChecked(False)
-        layout.addRow("Deformed", self._deformed_check)
 
         # Wire signals
         self._cmap_combo.currentIndexChanged.connect(self._emit_changed)

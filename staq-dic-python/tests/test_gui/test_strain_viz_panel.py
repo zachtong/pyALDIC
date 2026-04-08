@@ -16,12 +16,12 @@ def panel():
 
 
 def test_default_state(panel):
-    """Default colormap is jet, auto range on, opacity = 0.70, show_deformed off."""
+    """Default colormap is jet, auto range on, opacity = 0.70, show_deformed on."""
     s = panel.get_state()
     assert s["colormap"] == "jet"
     assert s["use_percentile"] is True
     assert s["alpha"] == pytest.approx(0.70)
-    assert s["show_deformed"] is False
+    assert s["show_deformed"] is True
     assert "vmin" in s and "vmax" in s
 
 

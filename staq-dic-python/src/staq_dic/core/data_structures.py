@@ -435,6 +435,7 @@ class StrainResult:
     strain_principal_min: NDArray[np.float64] | None = None
     strain_maxshear: NDArray[np.float64] | None = None
     strain_von_mises: NDArray[np.float64] | None = None
+    strain_rotation: NDArray[np.float64] | None = None
 
 
 @dataclass(frozen=True)

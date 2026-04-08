@@ -29,7 +29,7 @@ import traceback as _tb
 
 import numpy as np
 from numpy.typing import NDArray
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QHBoxLayout,
@@ -98,6 +98,7 @@ class StrainWindow(QMainWindow):
         left.addLayout(canvas_row, 1)
         # Colorbar overlaid on the canvas viewport (same pattern as main window)
         self._colorbar = ColorbarOverlay(self._canvas.viewport())
+        self._canvas.viewport().installEventFilter(self)
 
         self._frame_slider = QSlider(Qt.Orientation.Horizontal)
         self._frame_slider.setRange(0, 0)
@@ -301,9 +302,7 @@ class StrainWindow(QMainWindow):
         sr: StrainResult = result.result_strain[frame]
 
         if field_name == "strain_rotation":
-            if sr.dudy is None or sr.dvdx is None:
-                return None
-            return (sr.dudy - sr.dvdx) / 2.0
+            return sr.strain_rotation  # pre-computed from raw F before strain-type conversion
 
         if field_name == "strain_mean_normal":
             if sr.strain_exx is None or sr.strain_eyy is None:
@@ -495,6 +494,30 @@ class StrainWindow(QMainWindow):
     # ------------------------------------------------------------------
     # Cleanup
     # ------------------------------------------------------------------
+
+    def showEvent(self, event) -> None:  # noqa: N802
+        super().showEvent(event)
+        # Reconnect signal: it was disconnected in closeEvent so re-open after
+        # a DIC re-run no longer receives the stale connection (Bug B fix).
+        try:
+            self._state.results_changed.disconnect(self._on_state_results_changed)
+        except (RuntimeError, TypeError):
+            pass
+        self._state.results_changed.connect(self._on_state_results_changed)
+        # Clear viz cache so a previous session's overlay never bleeds through
+        # when the user re-opens after running new DIC data (Bug B fix).
+        self._viz_ctrl.clear_all()
+        self._sync_slider_range()
+        # Re-render now that the viewport has its real size (Bug A fix).
+        self._render_current()
+
+    def eventFilter(self, obj, event) -> bool:  # noqa: N802
+        """Update colorbar geometry when the canvas viewport is resized."""
+        if obj is self._canvas.viewport() and event.type() == QEvent.Type.Resize:
+            if self._colorbar.isVisible():
+                vp = self._canvas.viewport()
+                self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
+        return super().eventFilter(obj, event)
 
     def closeEvent(self, event) -> None:  # noqa: N802
         try:
