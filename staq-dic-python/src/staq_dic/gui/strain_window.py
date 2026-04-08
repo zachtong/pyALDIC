@@ -120,19 +120,7 @@ class StrainWindow(QMainWindow):
         right_widget.setLayout(right)
         right_widget.setFixedWidth(320)
 
-        # Field selector
-        right.addWidget(_sec_label("FIELD"))
-        self._field_selector = StrainFieldSelector()
-        self._field_selector.field_changed.connect(self._on_field_changed)
-        right.addWidget(self._field_selector)
-
-        # Velocity settings (visible only for velocity field)
-        self._velocity_settings = VelocitySettingsWidget()
-        self._velocity_settings.setVisible(False)
-        self._velocity_settings.settings_changed.connect(self._on_viz_changed)
-        right.addWidget(self._velocity_settings)
-
-        # Strain parameters
+        # Strain parameters (first: user computes before viewing)
         right.addWidget(_sec_label("STRAIN PARAMETERS"))
         self._param_panel = StrainParamPanel()
         self._param_panel.params_dirty.connect(self._on_params_dirty)
@@ -150,6 +138,18 @@ class StrainWindow(QMainWindow):
             "color: #fbbf24; font-size: 11px; font-style: italic;"
         )
         right.addWidget(self._stale_label)
+
+        # Field selector (second: choose what to display after compute)
+        right.addWidget(_sec_label("FIELD"))
+        self._field_selector = StrainFieldSelector()
+        self._field_selector.field_changed.connect(self._on_field_changed)
+        right.addWidget(self._field_selector)
+
+        # Velocity settings (visible only for velocity field)
+        self._velocity_settings = VelocitySettingsWidget()
+        self._velocity_settings.setVisible(False)
+        self._velocity_settings.settings_changed.connect(self._on_viz_changed)
+        right.addWidget(self._velocity_settings)
 
         # Visualization controls
         right.addWidget(_sec_label("VISUALIZATION"))
