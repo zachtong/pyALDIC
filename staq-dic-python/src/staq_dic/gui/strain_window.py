@@ -133,6 +133,15 @@ class StrainWindow(QMainWindow):
         self._compute_btn.clicked.connect(self._on_compute_clicked)
         right.addWidget(self._compute_btn)
 
+        self._export_strain_btn = QPushButton("Export Strain")
+        self._export_strain_btn.setFixedHeight(30)
+        self._export_strain_btn.setToolTip(
+            "Export displacement and strain results to NPZ / MAT / CSV / PNG"
+        )
+        self._export_strain_btn.setEnabled(False)
+        self._export_strain_btn.clicked.connect(self._on_export_strain)
+        right.addWidget(self._export_strain_btn)
+
         self._stale_label = QLabel("")
         self._stale_label.setStyleSheet(
             "color: #fbbf24; font-size: 11px; font-style: italic;"
@@ -238,6 +247,71 @@ class StrainWindow(QMainWindow):
         self._param_panel.mark_clean()
         self._stale_label.setText("")
         self._log("Strain computation complete.", "success")
+        # Enable export once strain is available
+        self._export_strain_btn.setEnabled(True)
+
+    def _on_export_strain(self) -> None:
+        """Open the export dialog pre-filled with this window's viz settings."""
+        if self._state.results is None:
+            return
+
+        from staq_dic.gui.dialogs.export_dialog import ExportDialog, VizExportHint
+        from staq_dic.export.export_params import export_params
+        from staq_dic.export.export_npz import export_npz
+        from staq_dic.export.export_mat import export_mat
+        from staq_dic.export.export_csv import export_csv
+
+        viz = self._viz_panel.get_state()
+        hint = VizExportHint(
+            colormap=str(viz["colormap"]),
+            auto_range=bool(viz["use_percentile"]),
+            vmin=float(viz["vmin"]),
+            vmax=float(viz["vmax"]),
+            show_deformed=bool(viz.get("show_deformed", False)),
+        )
+        dlg = ExportDialog(
+            self._state.results,
+            self._state.image_folder,
+            hint,
+            self,
+        )
+        if dlg.exec() != ExportDialog.DialogCode.Accepted:
+            return
+
+        cfg = dlg.get_config()
+        results = self._state.results
+        exported: list[str] = []
+        try:
+            export_params(cfg.dest_dir, cfg.prefix, cfg.timestamp, results)
+            exported.append("parameters.json")
+
+            if cfg.export_npz:
+                export_npz(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain, cfg.npz_per_frame,
+                )
+                exported.append(".npz")
+
+            if cfg.export_mat:
+                export_mat(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain,
+                )
+                exported.append(".mat")
+
+            if cfg.export_csv:
+                export_csv(
+                    cfg.dest_dir, cfg.prefix, cfg.timestamp, results,
+                    cfg.include_disp, cfg.include_strain,
+                )
+                exported.append("csv/")
+
+            self._log(
+                f"Export complete \u2192 {cfg.dest_dir}  [{', '.join(exported)}]",
+                "success",
+            )
+        except Exception as exc:
+            self._log(f"Export failed: {exc}", "error")
 
     def _on_params_dirty(self) -> None:
         self._stale_label.setText("\u26a0 Params changed -- click Compute Strain")
@@ -272,6 +346,12 @@ class StrainWindow(QMainWindow):
         self._viz_ctrl.clear_all()
         self._sync_slider_range()
         self._render_current()
+        # Disable export if strain was cleared (e.g. user re-ran DIC)
+        has_strain = (
+            self._state.results is not None
+            and bool(self._state.results.result_strain)
+        )
+        self._export_strain_btn.setEnabled(has_strain)
 
     def _on_frame_slider(self, value: int) -> None:
         self._strain_current_frame = int(value)
