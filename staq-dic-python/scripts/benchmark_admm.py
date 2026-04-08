@@ -39,20 +39,28 @@ Benchmark design
 
 Literature comparison
 ---------------------
-Approximate throughput values from published DIC benchmarks are included
-for context.  These are based on:
-  [1] Pan B. (2013) "Bias error analysis of DIC", Strain.
-      Typical CPU IC-GN (MATLAB, single-thread): ~2 000–8 000 nodes/s.
-  [2] Blaber J. et al. (2015) "Ncorr: Open-Source 2D DIC Matlab",
-      Exp. Mech.  MATLAB + C subset loop: ~3 000–10 000 nodes/s.
-  [3] Dong Y. & Pan B. (2017) "A Review of Speckle Pattern Fabrication
-      and Assessment …", Exp. Mech.
-      GPU IC-GN (CUDA): ~500 000–2 000 000 nodes/s (hardware-dependent).
-  [4] Yang J. & Bhattacharya K. (2019) "Augmented Lagrangian DIC",
-      Exp. Mech.  MATLAB AL-DIC with ADMM: ~500–3 000 nodes/s (full
-      pipeline, sequential, 1024² image, est. from paper wall-clock times).
-  [5] Yang J. & Bhattacharya K. (2021) "Fast Adaptive Mesh AL-DIC",
-      Exp. Mech.  Adaptive mesh reduces node count; overall ~2x speedup.
+Throughput values from published DIC benchmarks (searched April 2026):
+
+  [1] Pan, Li & Tong (2013) "Fast, Robust and Accurate DIC Without Redundant
+      Computations", Exp. Mech. 53:1277–1289.
+      CPU single-thread IC-GN on Core i5-750 @ 2.67 GHz: < 4 000 POI/s.
+      (IC-GN is 3–5× faster than FA-NR but no absolute nodes/s published;
+       the < 4 000 POI/s figure is cited by subsequent paDIC 2015 paper.)
+  [2] Blaber, Adair & Antoniou (2015) "Ncorr: Open-Source 2D DIC Matlab",
+      Exp. Mech. 55:1105–1122.  MATLAB IC-GN; no absolute POI/s published;
+      speed limited by MATLAB runtime.  Estimated ~2 000–5 000 POI/s.
+  [3] Jiang et al. (2015) "High accuracy DIC powered by GPU-based parallel
+      computing", Opt. Las. Eng.  (paDIC)
+      CPU single-thread (Core i5-3570 @ 3.4 GHz): < 4 000 POI/s.
+      GPU (NVIDIA GTX 760, 1152 CUDA cores): 113 000–166 000 POI/s (57–76×).
+  [4] Yang & Bhattacharya (2019) "Augmented Lagrangian DIC",
+      Exp. Mech. 59:187–205.  MATLAB AL-DIC, 20 Xeon E5-2650 threads:
+      2–4× slower than equivalent local DIC (no absolute POI/s published).
+  [5] Jiang et al. (2023) "OpenCorr: An open-source C++ library for DIC",
+      Opt. Las. Eng. 165:107566.
+      C++ IC-GN, single core: ~775 POI/s (1.29 ms/POI).
+  [6] Pyvale (2025) arXiv:2601.12941.  Python+C/C++, AMD Threadripper 7980X
+      64 cores: 32 000×32 000 image in 48 s ≈ 88 000 POI/s (step=15 px).
 """
 
 from __future__ import annotations
@@ -310,22 +318,27 @@ def main() -> None:
     print("Literature reference throughput (CPU IC-GN, approximate):")
     print("-" * 72)
     lit_table = [
-        ("Pan 2013 [1]",         "Sequential MATLAB IC-GN",     "2 000–8 000"),
-        ("Ncorr 2015 [2]",       "MATLAB + C subset loop",       "3 000–10 000"),
-        ("Yang 2019 [4]",        "MATLAB AL-DIC (ADMM, 1024²)", "500–3 000"),
-        ("GPU IC-GN [3]",        "CUDA (hardware-dependent)",   "500 000–2 000 000"),
-        ("STAQ-DIC (ours)",      "Numba prange, LOCAL_ICGN",    _our_range(results, "LOCAL_ICGN")),
-        ("STAQ-DIC (ours)",      "Numba, ADMM 3 iters",         _our_range(results, "ADMM_3ITER")),
+        ("Pan 2013 [1]",         "CPU s-thread IC-GN (i5-750)",  "< 4 000"),
+        ("paDIC 2015 [3]",       "CPU s-thread IC-GN (i5-3570)", "< 4 000"),
+        ("OpenCorr 2023 [5]",    "C++ single-core IC-GN",        "~775"),
+        ("Ncorr 2015 [2]",       "MATLAB IC-GN (estimated)",     "~2 000–5 000"),
+        ("Yang 2019 [4]",        "MATLAB AL-DIC (20-thread Xeon)","2–4× slower than local"),
+        ("Pyvale 2025 [6]",      "Python+C, 64-thread Threadripper", "~88 000"),
+        ("paDIC GPU [3]",        "GTX 760 CUDA IC-GN",           "113 000–166 000"),
+        ("STAQ-DIC (ours)",      "Numba prange, LOCAL_ICGN",     _our_range(results, "LOCAL_ICGN")),
+        ("STAQ-DIC (ours)",      "Numba+FEM, ADMM 3 iters",      _our_range(results, "ADMM_3ITER")),
     ]
-    print(f"  {'Source':<22}  {'Method':<38}  {'nodes/s':>16}")
-    print(f"  {'-'*22}  {'-'*38}  {'-'*16}")
+    print(f"  {'Source':<22}  {'Method':<40}  {'nodes/s':>22}")
+    print(f"  {'-'*22}  {'-'*40}  {'-'*22}")
     for src, method, speed in lit_table:
-        print(f"  {src:<22}  {method:<38}  {speed:>16}")
+        print(f"  {src:<22}  {method:<40}  {speed:>22}")
     print()
-    print("  [1] Pan B. (2013) Strain 49:321–334.")
-    print("  [2] Blaber J. et al. (2015) Exp Mech 55:1105–1122.")
-    print("  [3] Dong Y. & Pan B. (2017) Exp Mech 57:1283–1306.")
-    print("  [4] Yang J. & Bhattacharya K. (2019) Exp Mech 59:361–374.")
+    print("  [1] Pan et al. (2013) Exp Mech 53:1277–1289.")
+    print("  [2] Blaber et al. (2015) Exp Mech 55:1105–1122.")
+    print("  [3] Jiang et al. (2015) Opt Las Eng (paDIC).")
+    print("  [4] Yang & Bhattacharya (2019) Exp Mech 59:187–205.")
+    print("  [5] Jiang et al. (2023) Opt Las Eng 165:107566 (OpenCorr).")
+    print("  [6] Pyvale (2025) arXiv:2601.12941.")
     print()
 
     # ── Save text report ───────────────────────────────────────────────────
@@ -376,18 +389,20 @@ def _write_text_report(path: Path, results: list[dict],
     lines += [
         "=" * 72,
         "",
-        "Literature reference throughput (CPU IC-GN, approximate):",
-        f"  {'Source':<22}  {'Method':<38}  {'nodes/s':>16}",
-        f"  {'-'*22}  {'-'*38}  {'-'*16}",
+        "Literature reference throughput (IC-GN DIC benchmarks):",
+        f"  {'Source':<22}  {'Method':<40}  {'nodes/s':>22}",
+        f"  {'-'*22}  {'-'*40}  {'-'*22}",
     ]
     for src, method, speed in lit_table:
-        lines.append(f"  {src:<22}  {method:<38}  {speed:>16}")
+        lines.append(f"  {src:<22}  {method:<40}  {speed:>22}")
     lines += [
         "",
-        "  [1] Pan B. (2013) Strain 49:321-334.",
-        "  [2] Blaber J. et al. (2015) Exp Mech 55:1105-1122.",
-        "  [3] Dong Y. & Pan B. (2017) Exp Mech 57:1283-1306.",
-        "  [4] Yang J. & Bhattacharya K. (2019) Exp Mech 59:361-374.",
+        "  [1] Pan et al. (2013) Exp Mech 53:1277-1289.",
+        "  [2] Blaber et al. (2015) Exp Mech 55:1105-1122.",
+        "  [3] Jiang et al. (2015) Opt Las Eng (paDIC).",
+        "  [4] Yang & Bhattacharya (2019) Exp Mech 59:187-205.",
+        "  [5] Jiang et al. (2023) Opt Las Eng 165:107566 (OpenCorr).",
+        "  [6] Pyvale (2025) arXiv:2601.12941.",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -509,10 +524,12 @@ def _write_pdf_report(path: Path, results: list[dict],
         our_admm  = _our_range(results, "ADMM_3ITER")
 
         lit_entries = [
-            ("Pan 2013 [1]\n(MATLAB IC-GN)", 2000, 8000, "#9E9E9E"),
-            ("Ncorr 2015 [2]\n(MATLAB+C IC-GN)", 3000, 10000, "#9E9E9E"),
-            ("Yang 2019 [4]\n(MATLAB AL-DIC)", 500, 3000, "#FF9800"),
-            ("GPU IC-GN [3]\n(CUDA)", 500000, 2000000, "#F44336"),
+            ("OpenCorr 2023 [5]\n(C++ single core)", 500, 1100, "#9E9E9E"),
+            ("Pan/paDIC CPU [1,3]\n(single-thread ~3 GHz)", 2000, 4000, "#9E9E9E"),
+            ("Ncorr 2015 [2]\n(MATLAB, est.)", 2000, 5000, "#9E9E9E"),
+            ("Yang 2019 AL-DIC [4]\n(MATLAB, 20 Xeon threads)", 1000, 6000, "#FF9800"),
+            ("Pyvale 2025 [6]\n(64-thread Threadripper)", 70000, 100000, "#9C27B0"),
+            ("paDIC GPU [3]\n(GTX 760 CUDA)", 113000, 166000, "#F44336"),
             ("STAQ-DIC LOCAL\n(Numba, this machine)", *_parse_range(our_local), "#2196F3"),
             ("STAQ-DIC ADMM×3\n(Numba, this machine)", *_parse_range(our_admm), "#4CAF50"),
         ]
