@@ -65,7 +65,7 @@ FIELD_NAMES: tuple[str, ...] = DISP_FIELD_NAMES + STRAIN_FIELD_NAMES
 _FIELD_LABELS: dict[str, str] = {
     "disp_u":                "\u0055",               # U
     "disp_v":                "\u0056",               # V
-    "disp_magnitude":        "|\u0055\u0056|",       # |UV|
+    "disp_magnitude":        "Magnitude",
     "velocity":              "Velocity",
     "strain_exx":            "\u03b5xx",             # εxx
     "strain_eyy":            "\u03b5yy",
