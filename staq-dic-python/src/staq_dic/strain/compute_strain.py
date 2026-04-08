@@ -125,10 +125,30 @@ def compute_strain(
     else:
         F_smooth = F_raw
 
-    # --- Step 2b: Rotation from raw gradients (before strain-type conversion) ---
-    # F_smooth layout per node: [F11, F21, F12, F22] = [du/dx, dv/dx, du/dy, dv/dy]
-    # ω = (dv/dx - du/dy_image) / 2  (CCW positive in image coordinates, y down)
-    rotation = (F_smooth[1::4] - F_smooth[2::4]) / 2.0
+    # --- Step 2b: Rotation via polar decomposition F_cm = R U ---
+    # Exact for large angles; returns degrees (CCW positive in image coordinates).
+    # F_cm = I + grad(u):  [[1+du/dx, du/dy], [dv/dx, 1+dv/dy]]
+    _f11 = 1.0 + F_smooth[0::4]
+    _f12 = F_smooth[2::4]
+    _f21 = F_smooth[1::4]
+    _f22 = 1.0 + F_smooth[3::4]
+    _Fmat = np.stack(
+        [np.stack([_f11, _f12], axis=-1),
+         np.stack([_f21, _f22], axis=-1)],
+        axis=1,
+    )  # (n_nodes, 2, 2)
+    try:
+        _Usvd, _s, _Vt = np.linalg.svd(_Fmat)
+        _R = _Usvd @ _Vt
+        # Ensure proper rotation (det = +1), not reflection
+        _flip = np.linalg.det(_R) < 0
+        if np.any(_flip):
+            _Usvd[_flip, :, -1] *= -1
+            _R = _Usvd @ _Vt
+        rotation = np.degrees(np.arctan2(_R[:, 1, 0], _R[:, 0, 0]))
+    except np.linalg.LinAlgError:
+        # Fallback: infinitesimal approximation in degrees
+        rotation = np.degrees((F_smooth[1::4] - F_smooth[2::4]) / 2.0)
 
     # --- Step 3: Strain type conversion ---
     F_strain, F_strain_world = apply_strain_type(F_smooth, para)

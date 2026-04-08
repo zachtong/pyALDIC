@@ -58,7 +58,7 @@ class TestApplyStrainType:
         para = DICPara(strain_type=2)
         F_strain, _ = apply_strain_type(F, para)
 
-        # For small dudx: 0.5*(2*dudx - dudx² - dvdx²) ≈ dudx
+        # For small dudx: dudx + 0.5*(dudx² + dvdx²) ≈ dudx
         np.testing.assert_allclose(F_strain[0::4], eps, rtol=0.01)
         np.testing.assert_allclose(F_strain[3::4], eps, rtol=0.01)
 
@@ -76,18 +76,44 @@ class TestApplyStrainType:
         np.testing.assert_allclose(F_strain[3], expected_eyy, atol=1e-14)
 
     def test_green_lagrangian_finite(self):
-        """Verify Green-Lagrangian formula for finite strain."""
+        """Verify Green-Lagrangian formula E=(F_cm^T F_cm - I)/2 for finite strain."""
         dudx, dvdx, dudy, dvdy = 0.1, 0.02, 0.03, 0.2
         F = _make_F(1, f11=dudx, f21=dvdx, f12=dudy, f22=dvdy)
         para = DICPara(strain_type=2)
         F_strain, _ = apply_strain_type(F, para)
 
-        expected_exx = 0.5 * (2 * dudx - dudx**2 - dvdx**2)
-        expected_eyy = 0.5 * (2 * dvdy - dudy**2 - dvdy**2)
-        expected_exy = 0.5 * (dudy + dvdx - dudx * dudy - dvdx * dvdy)
+        # F_cm = I + grad(u); E = (F_cm^T F_cm - I)/2
+        expected_exx = dudx + 0.5 * (dudx**2 + dvdx**2)
+        expected_eyy = dvdy + 0.5 * (dudy**2 + dvdy**2)
+        expected_exy = 0.5 * (dudy + dvdx + dudx * dudy + dvdx * dvdy)
         np.testing.assert_allclose(F_strain[0], expected_exx, atol=1e-14)
         np.testing.assert_allclose(F_strain[3], expected_eyy, atol=1e-14)
         np.testing.assert_allclose(F_strain[2], expected_exy, atol=1e-14)
+
+    def test_green_lagrangian_rigid_rotation_invariant(self):
+        """GL strain must be near-zero for rigid rotation (rotation-invariance)."""
+        # Exact rotation by 10 deg: u=(cosθ-1)x - sinθ·y, v=sinθ·x + (cosθ-1)y
+        theta = np.radians(10.0)
+        dudx = np.cos(theta) - 1.0
+        dvdx = np.sin(theta)
+        dudy = -np.sin(theta)
+        dvdy = np.cos(theta) - 1.0
+        F = _make_F(1, f11=dudx, f21=dvdx, f12=dudy, f22=dvdy)
+        para = DICPara(strain_type=2)
+        F_strain, _ = apply_strain_type(F, para)
+        # E should be ~0 for a rigid rotation (rotation-invariance of GL)
+        np.testing.assert_allclose(F_strain[0], 0.0, atol=1e-12)  # Exx
+        np.testing.assert_allclose(F_strain[3], 0.0, atol=1e-12)  # Eyy
+        np.testing.assert_allclose(F_strain[2], 0.0, atol=1e-12)  # Exy
+
+    def test_green_lagrangian_simple_shear_eyy_positive(self):
+        """GL Eyy must be +γ²/2 for simple shear (fibres in y ARE stretched)."""
+        gamma = 0.2
+        F = _make_F(1, f11=0.0, f21=0.0, f12=gamma, f22=0.0)  # u=γy, v=0
+        para = DICPara(strain_type=2)
+        F_strain, _ = apply_strain_type(F, para)
+        # Standard GL: Eyy = (gamma^2)/2 > 0
+        np.testing.assert_allclose(F_strain[3], gamma**2 / 2.0, atol=1e-14)
 
     def test_world_coord_sign_flip(self):
         """World coordinates should flip F21 and F12 signs."""

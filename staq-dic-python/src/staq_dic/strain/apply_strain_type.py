@@ -68,15 +68,16 @@ def apply_strain_type(
         F_strain[2::4] = dudy / (1.0 - dvdy)          # exy
         F_strain[1::4] = dvdx / (1.0 - dudx)          # eyx
     elif strain_type == 2:
-        # Green-Lagrangian
+        # Green-Lagrangian: E = (F_cm^T F_cm - I) / 2, where F_cm = I + grad(u)
+        # Positive quadratic terms because fibers in the reference config stretch.
         dudx = F[0::4]
         dvdx = F[1::4]
         dudy = F[2::4]
         dvdy = F[3::4]
-        F_strain[0::4] = 0.5 * (2.0 * dudx - dudx**2 - dvdx**2)
-        F_strain[3::4] = 0.5 * (2.0 * dvdy - dudy**2 - dvdy**2)
-        F_strain[2::4] = 0.5 * (dudy + dvdx - dudx * dudy - dvdx * dvdy)
-        F_strain[1::4] = 0.5 * (dvdx + dudy - dudy * dudx - dvdy * dvdx)
+        F_strain[0::4] = dudx + 0.5 * (dudx**2 + dvdx**2)
+        F_strain[3::4] = dvdy + 0.5 * (dudy**2 + dvdy**2)
+        F_strain[2::4] = 0.5 * (dudy + dvdx + dudx * dudy + dvdx * dvdy)
+        F_strain[1::4] = 0.5 * (dvdx + dudy + dudy * dudx + dvdy * dvdx)
     else:
         warnings.warn(
             f"Unknown strain_type {strain_type}, using infinitesimal.",
