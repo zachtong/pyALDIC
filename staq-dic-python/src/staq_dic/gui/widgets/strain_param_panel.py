@@ -5,7 +5,8 @@ Exposes:
 * ``method_to_compute_strain`` (2 = plane fitting, 3 = FEM nodal)
 * ``strain_plane_fit_rad`` (px) -- derived from VSG size; only enabled for
   plane fitting method
-* Pre-smooth displacement (checkbox) -> ``strain_smoothness`` preset
+* Post-gradient strain smoothing (checkbox) -> ``strain_smoothness`` preset
+  (smooths the gradient field F_raw, NOT the displacement field U)
 * ``strain_type`` (0 = infinitesimal, 1 = Eulerian, 2 = Green-Lagrangian)
 
 VSG size (Virtual Strain Gauge diameter in pixels) replaces the raw
@@ -74,8 +75,11 @@ class StrainParamPanel(QWidget):
         self._vsg_spin.setValue(_DEFAULT_VSG_PX)
         layout.addRow("VSG size", self._vsg_spin)
 
-        # --- Pre-smooth displacement ---
-        self._presmooth_check = QCheckBox("Pre-smooth displacement field")
+        # --- Post-gradient strain smoothing ---
+        # Applies Gaussian smoothing to the computed gradient field F_raw,
+        # NOT to the displacement field U.  Equivalent to smoothing the
+        # strain field after differentiation.
+        self._presmooth_check = QCheckBox("Smooth strain field (post-grad)")
         self._presmooth_check.setChecked(False)
         layout.addRow("Smoothing", self._presmooth_check)
 
