@@ -1069,7 +1069,11 @@ class CanvasArea(QWidget):
                     return
                 u, v = split_uv(u_accum)
 
-            values = u if state.display_field == "disp_u" else v
+            raw_values = u if state.display_field == "disp_u" else v
+            if state.use_physical_units and state.pixel_size > 0:
+                values = raw_values * state.pixel_size
+            else:
+                values = raw_values
 
             # Deformed mode: shift nodes by accumulated displacement
             # (reference frame always shows undeformed config)
@@ -1125,13 +1129,18 @@ class CanvasArea(QWidget):
 
             overlay.setPixmap(pixmap)
             overlay.setScale(float(out_step))
+            overlay.setOpacity(state.overlay_alpha)
             if xg is not None and yg is not None:
                 overlay.setPos(float(xg.min()), float(yg.min()))
 
-            # Update colorbar
+            # Update colorbar — include physical-unit suffix when enabled
+            if state.use_physical_units:
+                _disp_unit = "\u03bcm"
+            else:
+                _disp_unit = "px"
             field_label = {
-                "disp_u": "U (px)",
-                "disp_v": "V (px)",
+                "disp_u": f"U ({_disp_unit})",
+                "disp_v": f"V ({_disp_unit})",
             }.get(state.display_field, state.display_field)
             self._colorbar.update_params(cmap, vmin, vmax, field_label)
             # Ensure colorbar fills the full viewport (may have been

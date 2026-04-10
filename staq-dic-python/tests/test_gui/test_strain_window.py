@@ -136,11 +136,12 @@ def test_field_change_does_not_recompute(window, state_with_results):
 
 def test_disp_u_available_before_compute(window, state_with_results):
     """disp_u should render from result_disp without running Compute Strain.
-    Verifies fix for item 2: displacement fields bypass result_strain."""
+    Verifies fix for item 2: displacement fields bypass result_strain.
+    frame=1 is the first deformed frame (frame=0 is the reference, no data)."""
     result = state_with_results.results
     assert not result.result_strain   # strain NOT computed yet
     # _get_field_values should return the u-component from result_disp
-    vals = window._get_field_values("disp_u", 0, result)
+    vals = window._get_field_values("disp_u", 1, result)
     assert vals is not None
     assert len(vals) == result.result_fe_mesh_each_frame[0].coordinates_fem.shape[0]
 
@@ -149,25 +150,32 @@ def test_velocity_available_before_compute(window, state_with_results):
     """velocity field is derived from result_disp increments, no strain needed."""
     result = state_with_results.results
     assert not result.result_strain
-    vals = window._get_field_values("velocity", 0, result)
+    vals = window._get_field_values("velocity", 1, result)
     assert vals is not None
     assert (vals >= 0).all()  # velocity magnitude is non-negative
 
 
 def test_disp_magnitude_available_before_compute(window, state_with_results):
     result = state_with_results.results
-    vals = window._get_field_values("disp_magnitude", 0, result)
+    vals = window._get_field_values("disp_magnitude", 1, result)
     assert vals is not None
     assert (vals >= 0).all()
+
+
+def test_reference_frame_returns_none_for_disp(window, state_with_results):
+    """frame=0 is the reference image — all displacement fields return None."""
+    result = state_with_results.results
+    for field in ("disp_u", "disp_v", "disp_magnitude"):
+        assert window._get_field_values(field, 0, result) is None, field
 
 
 def test_strain_rotation_requires_compute(window, state_with_results):
     """strain_rotation returns None until Compute Strain is run."""
     result = state_with_results.results
-    assert window._get_field_values("strain_rotation", 0, result) is None
+    assert window._get_field_values("strain_rotation", 1, result) is None
     window.trigger_compute()
     result_after = state_with_results.results
-    vals = window._get_field_values("strain_rotation", 0, result_after)
+    vals = window._get_field_values("strain_rotation", 1, result_after)
     assert vals is not None
 
 

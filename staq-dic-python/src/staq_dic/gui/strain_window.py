@@ -57,6 +57,8 @@ from staq_dic.gui.widgets.strain_field_selector import (
 from staq_dic.gui.widgets.strain_param_panel import StrainParamPanel
 from staq_dic.gui.widgets.strain_viz_panel import StrainVizPanel
 from staq_dic.gui.widgets.velocity_settings import VelocitySettingsWidget
+from staq_dic.gui.widgets.physical_units_widget import PhysicalUnitsWidget
+from staq_dic.gui.widgets.strain_field_selector import field_colorbar_label
 from staq_dic.gui.theme import COLORS
 
 
@@ -167,6 +169,11 @@ class StrainWindow(QMainWindow):
         self._viz_panel.auto_disabled.connect(self._on_auto_range_disabled)
         right.addWidget(self._viz_panel)
 
+        # Physical units
+        right.addWidget(_sec_label("PHYSICAL UNITS"))
+        self._physical_units = PhysicalUnitsWidget()
+        right.addWidget(self._physical_units)
+
         # Console
         right.addWidget(_sec_label("LOG"))
         self._console = ConsoleLog()
@@ -177,8 +184,9 @@ class StrainWindow(QMainWindow):
 
         self.setCentralWidget(central)
 
-        # Track external pipeline runs
+        # Track external pipeline runs and shared display settings
         self._state.results_changed.connect(self._on_state_results_changed)
+        self._state.display_changed.connect(self._on_viz_changed)
 
         self._sync_slider_range()
         self._render_current()
@@ -199,7 +207,7 @@ class StrainWindow(QMainWindow):
         self._frame_slider.blockSignals(True)
         self._frame_slider.setValue(clamped)
         self._frame_slider.blockSignals(False)
-        self._frame_label.setText(f"Frame: {clamped}")
+        self._frame_label.setText(f"Frame: {clamped + 1}/{n}")
         self._render_current()
 
     def current_field(self) -> str:
@@ -326,15 +334,21 @@ class StrainWindow(QMainWindow):
         self._render_current()
 
     def _on_auto_range_disabled(self) -> None:
-        """User switched to manual range: populate spinboxes with current field."""
+        """User switched to manual range: populate spinboxes with current field.
+
+        Tries the current frame first; if that is the reference frame (frame 0,
+        which has no data), falls back to frame 1 so the spinboxes are always
+        populated with a meaningful range when results are available.
+        """
         result = self._state.results
         if result is None:
             return
-        values = self._get_field_values(
-            self._field_selector.current_field(),
-            self._strain_current_frame,
-            result,
-        )
+        field = self._field_selector.current_field()
+        frame = self._strain_current_frame
+        values = self._get_field_values(field, frame, result)
+        if values is None and frame == 0:
+            # Reference frame has no data — use first deformed frame instead
+            values = self._get_field_values(field, 1, result)
         if values is None:
             return
         valid = values[~np.isnan(values)]
@@ -355,7 +369,8 @@ class StrainWindow(QMainWindow):
 
     def _on_frame_slider(self, value: int) -> None:
         self._strain_current_frame = int(value)
-        self._frame_label.setText(f"Frame: {value}")
+        n = self._strain_frame_count()
+        self._frame_label.setText(f"Frame: {value + 1}/{n}")
         self._render_current()
 
     # ------------------------------------------------------------------
@@ -377,10 +392,13 @@ class StrainWindow(QMainWindow):
         if field_name in DISP_FIELD_NAMES:
             return self._get_disp_field(field_name, frame, result)
 
-        # Strain fields need a completed computation
-        if not result.result_strain or frame >= len(result.result_strain):
+        # Strain fields — reference frame (0) has no strain data
+        if frame == 0:
             return None
-        sr: StrainResult = result.result_strain[frame]
+        strain_idx = frame - 1   # 0-based index into result_strain
+        if not result.result_strain or strain_idx >= len(result.result_strain):
+            return None
+        sr: StrainResult = result.result_strain[strain_idx]
 
         if field_name == "strain_rotation":
             return sr.strain_rotation  # pre-computed from raw F before strain-type conversion
@@ -393,27 +411,38 @@ class StrainWindow(QMainWindow):
         frame: int,
         result: PipelineResult,
     ) -> NDArray[np.float64] | None:
-        """Serve displacement-family fields from result_disp."""
-        if frame >= len(result.result_disp):
+        """Serve displacement-family fields from result_disp.
+
+        *frame* is the image-file index (0 = reference frame, 1..N = deformed).
+        Returns None for the reference frame (index 0) since there is no
+        displacement relative to itself.
+        """
+        if frame == 0:
+            return None  # reference frame has no displacement data
+        disp_idx = frame - 1   # 0-based index into result_disp
+        if disp_idx >= len(result.result_disp):
             return None
-        fr = result.result_disp[frame]
+        fr = result.result_disp[disp_idx]
         U = fr.U_accum if fr.U_accum is not None else fr.U
         u, v = U[0::2], U[1::2]
 
+        state = self._state
+        px = state.pixel_size if (state.use_physical_units and state.pixel_size > 0) else 1.0
+
         if field_name == "disp_u":
-            return u.copy()
+            return u.copy() * px
         if field_name == "disp_v":
-            return v.copy()
+            return v.copy() * px
         if field_name == "disp_magnitude":
-            return np.sqrt(u ** 2 + v ** 2)
+            return np.sqrt(u ** 2 + v ** 2) * px
         if field_name == "velocity":
-            if frame > 0:
-                fr_prev = result.result_disp[frame - 1]
+            if disp_idx > 0:
+                fr_prev = result.result_disp[disp_idx - 1]
                 U_prev = fr_prev.U_accum if fr_prev.U_accum is not None else fr_prev.U
                 du = u - U_prev[0::2]
                 dv = v - U_prev[1::2]
             else:
-                du, dv = u, v   # velocity from rest
+                du, dv = u, v   # velocity from rest (first deformed frame)
             vel_mag = np.sqrt(du ** 2 + dv ** 2)   # px/frame
             converted, _unit = self._velocity_settings.apply_conversion(vel_mag)
             return converted
@@ -424,12 +453,15 @@ class StrainWindow(QMainWindow):
     # ------------------------------------------------------------------
 
     def _strain_frame_count(self) -> int:
+        """Total frames including reference (= len(image_files) when loaded)."""
+        n_images = len(self._state.image_files)
+        if n_images > 0:
+            return n_images
+        # Fallback when images are not loaded (should not happen in normal use).
         result = self._state.results
         if result is None:
             return 0
-        if result.result_strain:
-            return len(result.result_strain)
-        return len(result.result_disp)
+        return len(result.result_disp) + 1  # +1 for reference
 
     def _sync_slider_range(self) -> None:
         n = self._strain_frame_count()
@@ -440,7 +472,9 @@ class StrainWindow(QMainWindow):
             self._strain_current_frame = max_idx
         self._frame_slider.setValue(self._strain_current_frame)
         self._frame_slider.blockSignals(False)
-        self._frame_label.setText(f"Frame: {self._strain_current_frame}")
+        self._frame_label.setText(
+            f"Frame: {self._strain_current_frame + 1}/{n}" if n > 0 else "Frame: 0/0"
+        )
 
     def _try_load_background(self, img_idx: int = 0) -> None:
         """Best-effort background image fetch -- silent on failure."""
@@ -468,9 +502,10 @@ class StrainWindow(QMainWindow):
             viz = self._viz_panel.get_state()
             show_deformed = bool(viz.get("show_deformed", False))
 
-            # Background image: show deformed frame whenever show_deformed is on
-            if show_deformed:
-                self._try_load_background(frame + 1)
+            # Background image: frame is now the image-file index (0=ref, 1..N=deformed).
+            # show_deformed → load the current image; otherwise always show reference.
+            if show_deformed and frame >= 1:
+                self._try_load_background(frame)
             else:
                 self._try_load_background(0)
 
@@ -497,17 +532,19 @@ class StrainWindow(QMainWindow):
             deformed_mask = None
             nodes = ref_nodes
 
-            if show_deformed and frame < len(result.result_disp):
-                fr_d = result.result_disp[frame]
+            # frame is the image-file index (0=reference, 1..N=deformed).
+            # result_disp index = frame - 1.
+            disp_idx = frame - 1
+            if show_deformed and frame >= 1 and disp_idx < len(result.result_disp):
+                fr_d = result.result_disp[disp_idx]
                 U = fr_d.U_accum if fr_d.U_accum is not None else fr_d.U
                 if U is not None:
                     u, v = U[0::2], U[1::2]
                     nodes = ref_nodes + np.column_stack([u, v])
                     deformed = True
                     ref_uv = (u, v)
-                    # Per-frame deformed ROI — strain frame F corresponds to
-                    # main window current_frame F+1, so use per_frame_rois[F+1]
-                    deformed_mask = self._state.per_frame_rois.get(frame + 1)
+                    # Per-frame deformed ROI: use per_frame_rois[frame] (image index)
+                    deformed_mask = self._state.per_frame_rois.get(frame)
 
             # Auto-range uses only the nodes visible within the (possibly
             # trimmed) deformed mask -- prevents out-of-view nodes from
@@ -541,9 +578,14 @@ class StrainWindow(QMainWindow):
                 )
 
             cmap_name = str(viz["colormap"])
+            colorbar_label = field_colorbar_label(
+                field_name,
+                self._state.use_physical_units,
+                self._state.frame_rate,
+            )
             vp = self._canvas.viewport()
             self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
-            self._colorbar.update_params(cmap_name, vmin, vmax)
+            self._colorbar.update_params(cmap_name, vmin, vmax, colorbar_label)
             self._colorbar.setVisible(True)
 
         except Exception as exc:  # pragma: no cover
@@ -579,13 +621,17 @@ class StrainWindow(QMainWindow):
 
     def showEvent(self, event) -> None:  # noqa: N802
         super().showEvent(event)
-        # Reconnect signal: it was disconnected in closeEvent so re-open after
-        # a DIC re-run no longer receives the stale connection (Bug B fix).
-        try:
-            self._state.results_changed.disconnect(self._on_state_results_changed)
-        except (RuntimeError, TypeError):
-            pass
-        self._state.results_changed.connect(self._on_state_results_changed)
+        # Reconnect signals: they are disconnected in closeEvent so re-opening
+        # after a DIC re-run does not receive stale connections (Bug B fix).
+        for sig, slot in [
+            (self._state.results_changed, self._on_state_results_changed),
+            (self._state.display_changed, self._on_viz_changed),
+        ]:
+            try:
+                sig.disconnect(slot)
+            except (RuntimeError, TypeError):
+                pass
+            sig.connect(slot)
         # Clear viz cache so a previous session's overlay never bleeds through
         # when the user re-opens after running new DIC data (Bug B fix).
         self._viz_ctrl.clear_all()
@@ -602,10 +648,14 @@ class StrainWindow(QMainWindow):
         return super().eventFilter(obj, event)
 
     def closeEvent(self, event) -> None:  # noqa: N802
-        try:
-            self._state.results_changed.disconnect(self._on_state_results_changed)
-        except (RuntimeError, TypeError):
-            pass
+        for sig, slot in [
+            (self._state.results_changed, self._on_state_results_changed),
+            (self._state.display_changed, self._on_viz_changed),
+        ]:
+            try:
+                sig.disconnect(slot)
+            except (RuntimeError, TypeError):
+                pass
         super().closeEvent(event)
 
 
