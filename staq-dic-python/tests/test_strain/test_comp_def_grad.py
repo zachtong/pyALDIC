@@ -111,3 +111,101 @@ class TestCompDefGrad:
 
         F = comp_def_grad(U, coords, elems, rad=10.0)
         assert F.shape == (0,)
+
+
+class TestCompDefGradFiltering:
+    """Tests for invalid-neighbor filtering (NaN displacement + mask)."""
+
+    def _make_linear_case(self, nx=7, ny=7, spacing=16, dudx=0.01):
+        """Grid with exact linear u = dudx * x displacement."""
+        x = np.arange(nx) * spacing
+        y = np.arange(ny) * spacing
+        xx, yy = np.meshgrid(x, y)
+        coords = np.column_stack([xx.ravel(), yy.ravel()]).astype(np.float64)
+        n = coords.shape[0]
+        U = np.zeros(2 * n)
+        U[0::2] = dudx * coords[:, 0]
+        elems = np.empty((0, 8), dtype=np.int64)
+        return coords, U, elems, n
+
+    def test_nan_displacement_excluded_from_fit(self):
+        """Nodes with NaN displacement must not corrupt valid neighbors' gradient.
+
+        Setup: linear u = 0.01*x field, NaN injected at one interior node.
+        Expected: valid nodes adjacent to the NaN node still recover du/dx ≈ 0.01.
+        Old behavior (before fix): those neighbors return NaN because lstsq
+        propagates NaN from the bad node into the design matrix.
+        """
+        coords, U, elems, n = self._make_linear_case(dudx=0.01)
+
+        # Inject NaN at the grid center node
+        cx, cy = coords[:, 0].mean(), coords[:, 1].mean()
+        center = np.argmin((coords[:, 0] - cx) ** 2 + (coords[:, 1] - cy) ** 2)
+        U[2 * center] = np.nan
+        U[2 * center + 1] = np.nan
+
+        F = comp_def_grad(U, coords, elems, rad=25.0)
+
+        # Nodes adjacent to center (within 20px) but not NaN themselves
+        adj = (
+            (np.abs(coords[:, 0] - cx) < 20) &
+            (np.abs(coords[:, 1] - cy) < 20) &
+            (np.arange(n) != center)
+        )
+        for i in np.where(adj)[0]:
+            assert np.isfinite(F[4 * i]), (
+                f"Node {i} adjacent to NaN node has F=NaN — "
+                "NaN neighbors not properly excluded"
+            )
+            np.testing.assert_allclose(F[4 * i], 0.01, atol=0.005,
+                                       err_msg=f"du/dx wrong at node {i}")
+
+    def test_mask_excludes_outside_nodes_from_fit(self):
+        """Nodes outside the mask must not contaminate inside neighbors.
+
+        Setup: linear u = 0.01*x field, one column of nodes has WRONG large
+        displacement but is outside the mask. Valid interior nodes should still
+        recover du/dx ≈ 0.01.
+        """
+        coords, U, elems, n = self._make_linear_case(nx=7, ny=7, spacing=16, dudx=0.01)
+
+        # Corrupt the rightmost column with wrong large displacement
+        right_col = coords[:, 0] == coords[:, 0].max()
+        U[0::2][right_col] = 999.0   # grossly wrong, but finite (not caught by isfinite alone)
+
+        # Mask: exclude rightmost column (nodes at x=96, cut off at col=90)
+        H, W = 130, 130
+        mask = np.ones((H, W), dtype=np.float64)
+        mask[:, 90:] = 0.0  # nodes at x=96 → col=96 ≥ 90 → excluded
+
+        F_no_mask = comp_def_grad(U, coords, elems, rad=25.0, mask=None)
+        F_masked  = comp_def_grad(U, coords, elems, rad=25.0, mask=mask)
+
+        # Second-to-last column nodes (at x=80, adjacent to corrupt column)
+        second_right = (coords[:, 0] == coords[:, 0].max() - 16)
+        for i in np.where(second_right)[0]:
+            # Without mask: corrupted by wrong neighbor
+            assert not np.isclose(F_no_mask[4 * i], 0.01, atol=0.05), (
+                "Expected no-mask result to be wrong (sanity check)"
+            )
+            # With mask: corrupt column excluded → correct result
+            np.testing.assert_allclose(
+                F_masked[4 * i], 0.01, atol=0.01,
+                err_msg=f"Node {i} contaminated by out-of-mask neighbor",
+            )
+
+    def test_all_nan_returns_all_nan(self):
+        """If all nodes have NaN displacement, all F should be NaN."""
+        coords, U, elems, n = self._make_linear_case()
+        U[:] = np.nan
+
+        F = comp_def_grad(U, coords, elems, rad=25.0)
+        assert np.all(np.isnan(F))
+
+    def test_mask_all_excluded_returns_all_nan(self):
+        """If mask excludes all nodes, all F should be NaN."""
+        coords, U, elems, n = self._make_linear_case()
+        mask = np.zeros((200, 200), dtype=np.float64)  # all zeros — exclude everything
+
+        F = comp_def_grad(U, coords, elems, rad=25.0, mask=mask)
+        assert np.all(np.isnan(F))
