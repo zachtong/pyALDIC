@@ -98,6 +98,28 @@ _STRAIN_POSITIONS: dict[str, tuple[int, int, int]] = {
 }
 
 
+def field_colorbar_label(
+    field_name: str,
+    use_physical: bool = False,
+    frame_rate: float = 1.0,
+) -> str:
+    """Return a colorbar label string with appropriate units.
+
+    Displacement fields show ``px`` or ``\u03bcm`` depending on *use_physical*.
+    Velocity shows ``px/fr`` or ``\u03bcm/s`` (uses *frame_rate* to determine
+    whether the per-second conversion is meaningful).
+    Strain fields are dimensionless and show no unit suffix.
+    """
+    base = _FIELD_LABELS.get(field_name, field_name)
+    if field_name in ("disp_u", "disp_v", "disp_magnitude"):
+        return f"{base} (\u03bcm)" if use_physical else f"{base} (px)"
+    if field_name == "velocity":
+        if use_physical and frame_rate > 0:
+            return f"{base} (\u03bcm/s)"
+        return f"{base} (px/fr)"
+    return base  # strain fields: dimensionless
+
+
 def _section_label(text: str) -> QLabel:
     lbl = QLabel(text)
     lbl.setStyleSheet(

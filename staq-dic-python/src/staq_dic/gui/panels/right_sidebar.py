@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import time
 
-from PySide6.QtCore import QTimer, Signal
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QProgressBar,
     QPushButton,
+    QSlider,
     QVBoxLayout,
     QWidget,
 )
@@ -23,6 +24,7 @@ from staq_dic.gui.theme import COLORS
 from staq_dic.gui.widgets.color_range import ColorRange
 from staq_dic.gui.widgets.console_log import ConsoleLog
 from staq_dic.gui.widgets.field_selector import FieldSelector
+from staq_dic.gui.widgets.physical_units_widget import PhysicalUnitsWidget
 
 try:
     from staq_dic.gui.icons import icon_download, icon_pause, icon_play, icon_stop
@@ -126,8 +128,8 @@ class RightSidebar(QWidget):
         stats_row.addWidget(self._remaining_label)
         layout.addLayout(stats_row)
 
-        # --- Display field section ---
-        self._add_section_label(layout, "DISPLAY FIELD")
+        # --- Field section ---
+        self._add_section_label(layout, "FIELD")
         self._field_selector = FieldSelector()
         layout.addWidget(self._field_selector)
 
@@ -141,8 +143,8 @@ class RightSidebar(QWidget):
         self._deformed_cb.stateChanged.connect(self._on_deformed_toggled)
         layout.addWidget(self._deformed_cb)
 
-        # --- Color range section ---
-        self._add_section_label(layout, "COLOR RANGE")
+        # --- Visualization section ---
+        self._add_section_label(layout, "VISUALIZATION")
 
         # Colormap selector
         cmap_row = QHBoxLayout()
@@ -163,9 +165,28 @@ class RightSidebar(QWidget):
         self._color_range = ColorRange()
         layout.addWidget(self._color_range)
 
-        # --- Console section ---
+        # Opacity slider (mirrors strain window's StrainVizPanel)
+        opacity_row = QHBoxLayout()
+        opacity_row.setSpacing(4)
+        opacity_lbl = QLabel("Opacity")
+        opacity_lbl.setFixedWidth(64)
+        opacity_row.addWidget(opacity_lbl)
+        self._opacity_slider = QSlider(Qt.Orientation.Horizontal)
+        self._opacity_slider.setRange(0, 100)
+        self._opacity_slider.setValue(int(self._state.overlay_alpha * 100))
+        self._opacity_slider.setToolTip("Overlay opacity (0 = transparent, 100 = opaque)")
+        self._opacity_slider.valueChanged.connect(self._on_opacity_changed)
+        opacity_row.addWidget(self._opacity_slider)
+        layout.addLayout(opacity_row)
+
+        # --- Physical units section ---
+        self._add_section_label(layout, "PHYSICAL UNITS")
+        self._physical_units = PhysicalUnitsWidget()
+        layout.addWidget(self._physical_units)
+
+        # --- Log section ---
         console_header = QHBoxLayout()
-        lbl = QLabel("CONSOLE")
+        lbl = QLabel("LOG")
         lbl.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
@@ -318,11 +339,13 @@ class RightSidebar(QWidget):
 
     def _on_deformed_toggled(self, state: int) -> None:
         """Toggle between reference and deformed frame display."""
-        from PySide6.QtCore import Qt
-
         deformed = state == Qt.CheckState.Checked.value
         self._state.show_deformed = deformed
         self._state.display_changed.emit()
+
+    def _on_opacity_changed(self, value: int) -> None:
+        """Update overlay opacity from slider (0–100 → 0.0–1.0)."""
+        self._state.set_overlay_alpha(value / 100.0)
 
     def _on_progress(self, fraction: float, message: str) -> None:
         """Update progress bar and label — show only percentage + frame."""

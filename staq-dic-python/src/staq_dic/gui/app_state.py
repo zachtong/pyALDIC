@@ -39,6 +39,7 @@ class AppState(QObject):
     results_changed = Signal()
     display_changed = Signal()
     log_message = Signal(str, str)  # (message, level)
+    physical_units_changed = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -77,8 +78,13 @@ class AppState(QObject):
         self.color_auto: bool = True
         self.color_min: float = 0.0
         self.color_max: float = 1.0
+        self.overlay_alpha: float = 0.7
         self.show_mesh: bool = True
         self.show_subset_window: bool = False
+        # Physical units
+        self.use_physical_units: bool = False
+        self.pixel_size: float = 1.0    # μm / px
+        self.frame_rate: float = 1.0    # fps
         # Mesh refinement (Item 1: inner/outer boundary refinement)
         self.refine_inner: bool = False
         self.refine_outer: bool = False
@@ -216,6 +222,19 @@ class AppState(QObject):
 
     def set_show_subset_window(self, show: bool) -> None:
         self.show_subset_window = show
+        self.display_changed.emit()
+
+    def set_overlay_alpha(self, alpha: float) -> None:
+        self.overlay_alpha = max(0.0, min(1.0, float(alpha)))
+        self.display_changed.emit()
+
+    def set_physical_units(
+        self, enabled: bool, pixel_size: float, frame_rate: float
+    ) -> None:
+        self.use_physical_units = bool(enabled)
+        self.pixel_size = max(0.0, float(pixel_size))
+        self.frame_rate = max(0.0, float(frame_rate))
+        self.physical_units_changed.emit()
         self.display_changed.emit()
 
     def set_refine_inner(self, on: bool) -> None:

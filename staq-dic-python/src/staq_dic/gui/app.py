@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle("STAQ-DIC v0.1")
-        self.setMinimumSize(1200, 800)
+        self.setMinimumSize(1380, 800)
 
         central = QWidget()
         self.setCentralWidget(central)
