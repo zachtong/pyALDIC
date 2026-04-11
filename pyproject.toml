@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "al-dic"
+version = "0.1.0"
+description = "AL-DIC: Augmented Lagrangian Digital Image Correlation with adaptive quadtree mesh"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Zach Tong", email = "zachtong@utexas.edu" },
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "opencv-python>=4.7",
+    "numba>=0.57",
+    "scikit-image>=0.20",
+    "PySide6>=6.6.0",
+    "imageio>=2.28",
+]
+
+[project.scripts]
+al-dic = "al_dic.gui.app:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-xdist>=3.0",
+    "matplotlib>=3.6",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/al_dic"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"

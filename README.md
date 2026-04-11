@@ -1,174 +1,121 @@
-# STAQ-DIC-GUI
+# AL-DIC Python
 
-**S**patio**T**emporally **A**daptive **Q**uadtree Mesh Digital Image Correlation
-
-A MATLAB toolkit for full-field displacement and strain measurement using DIC with adaptive quadtree mesh refinement and RBF-based smoothing. Includes a programmatic GUI for interactive analysis.
+Python port of **AL-DIC**: Augmented Lagrangian Digital Image Correlation with adaptive quadtree mesh.
 
 ## Features
 
-- Augmented Lagrangian DIC (AL-DIC) formulation for robust displacement tracking
-- Adaptive quadtree mesh with automatic refinement near boundaries and high-gradient regions
-- RBF (Radial Basis Function) smoothing for displacement and strain fields
-- Programmatic GUI (`gui_aldic`) with composable region tools (rectangle, polygon, circle, cut polygon, import masks), parameter editing, solver mode selection (ALDIC / Local DIC only), natural sort, progress tracking, and full-image overlay visualization with configurable colormap and transparency
-- CLI entry point (`main_aldic`) for scripting and batch processing
-- Incremental and accumulative reference frame modes
-- Optional POD-GPR prediction for multi-frame sequences
-- Full strain analysis: engineering strains, principal strains, von Mises strain, max shear
+### GUI (PySide6)
 
-## Requirements
+- **Three-column layout** — Left sidebar (image list, ROI tools, parameters), center canvas (QGraphicsView with zoom/pan), right sidebar (run controls, progress, display options, console log).
+- **Per-frame ROI system** — Draw rectangle/polygon/circle (add/cut), import/export masks, batch import, per-frame editing with context menu.
+- **Incremental tracking modes** — Every-frame, every-N, and custom reference frame schedules with visual ref-frame highlighting.
+- **Multi-bit-depth I/O** — Supports uint8/uint16/uint32/float images and masks across tif, tiff, png, bmp, jpg, jpeg, jp2, webp. Unicode-safe paths on Windows.
+- **Visualization** — Two-level cache (interpolation + pixmap), field overlay with colormap/alpha, deformed configuration display, CloughTocher C1 interpolation.
+- **Pipeline controls** — Run/pause/stop with real-time progress bar and elapsed time.
 
-- MATLAB R2020b or later
-- Image Processing Toolbox
-- Statistics and Machine Learning Toolbox (for `knnsearch`, `pdist2`)
-- Curve Fitting Toolbox (for ADMM beta optimization)
-- A C/C++ compiler supported by MATLAB (for MEX compilation of `ba_interp2_spline.cpp`)
+### Algorithm
+
+- **IC-GN solver** — Inverse Compositional Gauss-Newton with 6-DOF (deformation gradient + displacement) and 2-DOF (displacement only) modes. Three-tier backend: Numba prange (multi-core), batch NumPy, sequential fallback.
+- **FFT initial search** — Direct NCC (`cv2.matchTemplate`) and pyramid NCC with sub-pixel quadratic refinement.
+- **ADMM global-local iteration** — Subproblem 1 (local IC-GN) + Subproblem 2 (global FEM regularization with Q8 elements, sparse LU/PCG solver). Beta auto-tuning via grid search.
+- **Adaptive quadtree mesh** — Refinement policies: mask boundary, ROI edge, brush region, manual selection, posterior error criterion.
+- **Window splitting** — Masked subset IC-GN: gradients from raw image, connected-component center mask, Hessian conditioning check.
+- **Frame scheduling** — Accumulative, incremental, and custom DAG modes with cumulative displacement composition.
+- **Mask warping** — Iterative inverse mapping for automatic mask update when changing reference frames. Topology-preserving with fragment cleanup.
+- **Outlier detection & fill** — Statistical criterion + k-NN inverse-distance RBF interpolation.
+- **Strain computation** — FEM-based nodal strain with configurable smoothing.
+
+## Installation
+
+```bash
+pip install -e ".[dev]"
+```
+
+Requires Python >= 3.10. Dependencies: NumPy, SciPy, OpenCV, Numba, scikit-image, PySide6.
+
+## Project Structure
+
+```
+src/al_dic/
+├── core/           Pipeline, config, data structures, frame scheduling
+├── gui/            PySide6 GUI application
+│   ├── controllers/  Image, ROI, pipeline, visualization controllers
+│   ├── dialogs/      Batch import dialog
+│   ├── panels/       Canvas area, left/right sidebars
+│   └── widgets/      Image list, parameter panel, ROI toolbar, frame nav
+├── io/             Image I/O and utilities
+├── mesh/           Quadtree mesh generation, refinement criteria, edge marking
+│   └── criteria/   Refinement criteria (mask boundary, ROI edge, brush, manual, posterior error)
+├── solver/         IC-GN, ADMM (Subpb1/Subpb2), FFT search, FEM assembly, Numba kernels
+├── strain/         Strain computation, deformation gradient, smoothing
+└── utils/          Interpolation, outlier detection, mask warping, validation
+
+tests/              50 test files, 546 tests
+```
+
+~10,700 lines of algorithm code, ~4,900 lines of GUI code.
 
 ## Quick Start
 
-### GUI mode (recommended)
+### Launch GUI
 
-```matlab
-gui_aldic
+```bash
+# After pip install:
+al-dic
+
+# Or as a module:
+python -m al_dic
 ```
 
-1. Click **Browse Folder** to load images.
-2. Define a region: **Draw Rect**, **Draw Poly**, **Add Circle**, or **Import Masks**. All operations are additive (stackable). Use **Cut Polygon** to subtract areas. **Clear** resets everything.
-3. Adjust parameters (subset size, grid spacing, etc.). Uncheck **Compute Strain** for a displacement-only run.
-4. Click **Run DIC**. Results overlay on the full original image with configurable colormap, transparency, and color range.
-5. Use **Compute Strain** button post-hoc to add strain fields to displacement-only results. Save via **Save Results**.
+### Programmatic API
 
-### CLI mode
+```python
+from al_dic.core.config import dicpara_default
+from al_dic.core.pipeline import run_aldic
+from al_dic.io.io_utils import load_images, load_masks
 
-```matlab
-main_aldic
+images = load_images("path/to/images", pattern="*.tif")
+masks = load_masks("path/to/masks", pattern="*.tif")
+
+para = dicpara_default(winsize=32, winstepsize=16)
+result = run_aldic(para, images, masks)
 ```
 
-Follow the interactive prompts to select images, define ROI, and configure parameters.
+## Testing
 
-### Programmatic / batch mode
+```bash
+# Run all tests
+pytest
 
-```matlab
-DICpara = struct('winsize', 40, 'winstepsize', 16, 'winsizeMin', 8, ...
-    'SizeOfFFTSearchRegion', 10, 'showPlots', false);
-DICpara.gridxyROIRange.gridx = [30, 226];
-DICpara.gridxyROIRange.gridy = [30, 226];
-DICpara = dicpara_default(DICpara);
+# Run with parallel workers
+pytest -n auto
 
-[file_name, Img, DICpara] = read_images(DICpara, file_name_cell, Img_cell);
-[~, ImgMask] = read_masks(DICpara, mask_file_name_cell, ImgMask_cell);
-results = run_aldic(DICpara, file_name, Img, ImgMask);
+# Run specific test module
+pytest tests/test_solver/test_icgn_solver.py
 ```
 
-### Synthetic tests
+## Accuracy
 
-```matlab
-test_aldic_synthetic
-```
+| Test Case | Displacement RMSE | Strain RMSE |
+|-----------|------------------|-------------|
+| Rigid translation (2.5px) | < 0.03 px | < 0.01 |
+| Affine (2% strain) | < 0.05 px | < 0.02 |
+| Rotation (2°) | < 0.05 px | < 0.08 |
+| Large deformation (10%) | < 1.0 px | < 0.05 |
 
-Generates synthetic speckle images and validates DIC accuracy across 10 test cases (zero displacement, translation, affine, annular mask, shear, large deformation, multi-frame incremental/accumulative, local-only DIC, pure rotation).
+High-resolution (1024², step=4, ~56k nodes): AL-DIC achieves 0.004 px RMSE, 60-78% improvement over local DIC for large deformation.
 
-## Directory Structure
+## Performance
 
-```
-STAQ-DIC-GUI/
-├── gui_aldic.m               GUI entry point (programmatic uifigure)
-├── run_aldic.m               Core DIC pipeline (callable function)
-├── main_aldic.m              CLI entry point (thin interactive wrapper)
-├── test_aldic_synthetic.m    Automated synthetic test suite (10 cases)
-├── test_case6_profile.m      Performance profiling on real experimental data
-├── config/                   Parameter defaults (dicpara_default.m)
-├── io/                       Image I/O and preprocessing
-│   ├── read_images.m         Load images (interactive or programmatic)
-│   ├── read_masks.m          Load mask images
-│   ├── normalize_img.m       Image normalization
-│   └── img_gradient.m        Image gradient computation
-├── mesh/                     Quadtree mesh generation and refinement
-│   ├── mesh_setup.m          Initial uniform mesh
-│   ├── generate_mesh.m       Quadtree refinement with hanging-node handling
-│   ├── qrefine_r.m           Red-refinement of quadrilateral elements
-│   ├── mark_edge.m           Mark elements for refinement
-│   ├── mark_inside.m         Identify elements inside/outside mask
-│   ├── provide_geometric_data.m
-│   └── precompute_node_regions.m  One-time mask→node region mapping for smoothing
-├── solver/                   DIC solvers
-│   ├── integer_search.m      FFT-based integer displacement search
-│   ├── local_icgn.m          Inverse Compositional Gauss-Newton (IC-GN)
-│   ├── subpb1_solver.m       ADMM Subproblem 1 (local)
-│   ├── subpb2_solver.m       ADMM Subproblem 2 (global FEM)
-│   ├── init_disp.m           Initialize displacement field
-│   ├── remove_outliers.m     Outlier detection and removal
-│   └── por_gpr.m             POD-GPR displacement prediction
-├── strain/                   Strain computation and smoothing
-│   ├── apply_strain_type.m   Vectorized strain type conversion (infinitesimal/Eulerian/Green-Lagrangian)
-│   ├── compute_strain.m      Legacy strain dispatcher (plane-fit/FD, retained as alternative)
-│   ├── comp_def_grad.m       Local weighted LSQ deformation gradient (used by compute_strain)
-│   ├── global_nodal_strain_fem.m  FEM-based nodal strain (primary method, O(nEle))
-│   ├── global_nodal_strain_rbf.m  RBF-based global strain
-│   ├── plane_fit.m           Local plane-fit strain method
-│   ├── smooth_disp_rbf.m     Sparse Gaussian displacement smoothing
-│   ├── smooth_strain_rbf.m   Sparse Gaussian strain smoothing
-│   └── smooth_field_sparse.m Core sparse Gaussian kernel smoother
-├── plotting/                 Visualization functions and colormaps
-├── third_party/              External dependencies
-│   ├── ba_interp2_spline.cpp MEX source for bicubic spline interpolation
-│   ├── rbfinterp/            Radial basis function interpolation
-│   ├── gridfit.m             Surface fitting (John D'Errico)
-│   ├── inpaint_nans.m        NaN interpolation (John D'Errico)
-│   ├── regularizeNd.m        N-dimensional regularization
-│   ├── findpeak.m            Peak finding for cross-correlation
-│   └── coolwarm.m            Coolwarm colormap
-├── licences/                 License information
-└── staq-dic-python/          Python port (NumPy/SciPy/Numba)
-    ├── src/staq_dic/         Core algorithm: IC-GN, ADMM, FFT search, mesh
-    ├── tests/                218+ tests (unit, integration, cross-validation)
-    └── scripts/              Benchmarks, profiling, diagnostics
-```
+| Config | Nodes | Total Time |
+|--------|-------|------------|
+| 256², step=16 | 225 | ~0.07s |
+| 256², step=8 | 961 | ~0.26s |
+| 256², step=4 | 3,969 | ~1.3s |
+| 1024², step=4 | ~56,000 | ~6.5s |
 
-## Architecture
-
-```
-gui_aldic.m ──┐
-              ├──> run_aldic(DICpara, file_name, Img, ImgMask)
-main_aldic.m ─┘         │
-                         ├── Section 3: integer_search → mesh_setup → generate_mesh
-                         ├── Section 4: local_icgn (IC-GN Subproblem 1)
-                         ├── Section 5: subpb2_solver (FEM Subproblem 2)
-                         ├── Section 6: ADMM iterations (Subpb1 ↔ Subpb2)
-                         ├── Section 7: Convergence check
-                         └── Section 8: global_nodal_strain_fem + apply_strain_type → ResultStrain
-```
-
-Both `gui_aldic` and `main_aldic` call the same `run_aldic()` function. The GUI adds `ProgressFcn` / `StopFcn` / `ComputeStrain` callbacks and sets `showPlots=false` (all visualization is handled by the GUI's results viewer with full-image overlay). `run_aldic` also supports `ExportIntermediates` / `ExportDir` for saving checkpoint `.mat` files at each pipeline section (used for Python port cross-validation).
-
-## Key Parameters
-
-All parameters are defined in `config/dicpara_default.m` with inline documentation.
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `winsize` | 40 | Subset (window) size in pixels. No power-of-2 restriction. |
-| `winstepsize` | 16 | Grid spacing in pixels. **Must be a power of 2.** |
-| `winsizeMin` | 8 | Minimum quadtree element size. **Must be a power of 2.** |
-| `SizeOfFFTSearchRegion` | 10 | FFT search region for initial guess (pixels) |
-| `mu` | 1e-3 | ADMM penalty parameter |
-| `alpha` | 0 | Regularization in global subproblem |
-| `ADMM_maxIter` | 3 | Maximum ADMM outer iterations |
-| `tol` | 1e-2 | IC-GN convergence tolerance |
-| `referenceMode` | 'incremental' | `'incremental'` or `'accumulative'` |
-| `StrainType` | 0 | 0=infinitesimal, 1=Eulerian-Almansi, 2=Green-Lagrangian |
-
-> **Why power of 2?** Quadtree refinement (`qrefine_r.m`) halves element sizes by computing midpoints `(a+b)/2`. Non-power-of-2 step sizes eventually produce fractional pixel coordinates, which crash `mark_edge.m` when used as array indices.
-
-## References
-
-- Yang, J., & Bhattacharya, K. (2019). Augmented Lagrangian Digital Image Correlation. *Experimental Mechanics*, 59, 187-205.
-- Yang, J., & Bhattacharya, K. (2021). Combining image compression with digital image correlation. *Experimental Mechanics*, 61, 469-489.
+Numba JIT, post-warmup. First run adds ~0.5s for compilation.
 
 ## License
 
-See `licences/license.txt` for details.
-
-## Author
-
-Originally developed by Jin Yang (Caltech/UW-Madison).
-Customized and restructured by Zach Tong (UT Austin).
+MIT
