@@ -17,6 +17,8 @@
   <img src="https://img.shields.io/badge/Python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/GUI-PySide6-41cd52?style=flat-square" alt="PySide6"/>
   <img src="https://img.shields.io/badge/License-BSD--3--Clause-22c55e?style=flat-square" alt="License"/>
+  <a href="https://doi.org/10.5281/zenodo.19521071"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.19521071-blue?style=flat-square" alt="DOI"/></a>
+  <a href="https://pypi.org/project/al-dic/"><img src="https://img.shields.io/pypi/v/al-dic?style=flat-square&label=PyPI" alt="PyPI"/></a>
 </p>
 
 ---
@@ -208,9 +210,17 @@ pytest tests/test_solver/test_icgn_solver.py
 
 ## Citation
 
-If you use pyALDIC in your research, please cite:
+If you use pyALDIC in your research, please cite the software and the accompanying paper:
 
 ```bibtex
+@software{tong2026pyaldic_software,
+  author = {Tong, Zixiang},
+  title  = {pyALDIC: Augmented Lagrangian Digital Image Correlation in Python},
+  year   = {2026},
+  doi    = {10.5281/zenodo.19521071},
+  url    = {https://github.com/zachtong/pyALDIC}
+}
+
 @article{tong2026pyaldic,
   author  = {Tong, Zixiang and Yang, Jin},
   title   = {pyALDIC: A Python Package for Augmented Lagrangian
