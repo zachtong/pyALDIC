@@ -43,6 +43,16 @@ Standard subset-based DIC (IC-GN) solves each node independently — accurate fo
 
 ## Key Features
 
+### User-Friendly GUI
+
+A complete desktop application built with PySide6. Three-column layout with image list, ROI tools, and parameter controls on the left — interactive zoom/pan canvas in the center — run controls, field overlay, and console log on the right. Load images, draw ROIs, configure parameters, run DIC, and visualize results — all without writing a single line of code.
+
+<p align="center">
+  <!-- TODO: Full-window screenshot of the GUI with data loaded and displacement overlay -->
+  <!-- <img src="docs/images/feature-gui.png" alt="pyALDIC GUI" width="90%"/> -->
+  <i>Desktop GUI — demo coming soon</i>
+</p>
+
 ### Adaptive Spatial Refinement
 
 Quadtree mesh refinement with 5 built-in criteria: mask boundary, ROI edge, brush region, manual selection, and posterior error. Concentrates computational effort where it matters — near boundaries, discontinuities, and high-gradient regions.
