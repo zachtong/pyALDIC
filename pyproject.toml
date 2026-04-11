@@ -8,10 +8,39 @@ version = "0.1.0"
 description = "AL-DIC: Augmented Lagrangian Digital Image Correlation with adaptive quadtree mesh"
 readme = "README.md"
 requires-python = ">=3.10"
-license = "MIT"
+license = "BSD-3-Clause"
 authors = [
-    { name = "Zach Tong", email = "zachtong@utexas.edu" },
+    { name = "Zixiang (Zach) Tong", email = "zachtong@utexas.edu" },
+    { name = "Jin Yang" },
 ]
+keywords = [
+    "digital-image-correlation",
+    "DIC",
+    "experimental-mechanics",
+    "strain-measurement",
+    "augmented-lagrangian",
+    "ADMM",
+    "quadtree-mesh",
+    "inverse-compositional-gauss-newton",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/zachtong/pyALDIC"
+Repository = "https://github.com/zachtong/pyALDIC"
+Issues = "https://github.com/zachtong/pyALDIC/issues"
 
 dependencies = [
     "numpy>=1.24",
