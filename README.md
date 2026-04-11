@@ -221,6 +221,7 @@ If you use pyALDIC in your research, please cite the software and the accompanyi
   url    = {https://github.com/zachtong/pyALDIC}
 }
 
+%% JOSS paper (in preparation — will be updated upon publication)
 @article{tong2026pyaldic,
   author  = {Tong, Zixiang and Yang, Jin},
   title   = {pyALDIC: A Python Package for Augmented Lagrangian
