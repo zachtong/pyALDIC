@@ -42,6 +42,9 @@ CLAUDE.md
 # Git worktrees
 .worktrees/
 
+# JOSS paper (local drafting only)
+joss-paper/
+
 # Figma design files
 Figma_design_files/
 

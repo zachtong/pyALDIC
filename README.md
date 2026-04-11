@@ -1,6 +1,10 @@
-# AL-DIC Python
+# pyALDIC
 
-Python port of **AL-DIC**: Augmented Lagrangian Digital Image Correlation with adaptive quadtree mesh.
+[![CI](https://github.com/zachtong/pyALDIC/actions/workflows/ci.yml/badge.svg)](https://github.com/zachtong/pyALDIC/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: BSD 3-Clause](https://img.shields.io/badge/license-BSD--3--Clause-green.svg)](LICENSE)
+
+Python implementation of **AL-DIC** (Augmented Lagrangian Digital Image Correlation) with adaptive quadtree mesh refinement and a built-in GUI.
 
 ## Features
 
@@ -116,6 +120,16 @@ High-resolution (1024², step=4, ~56k nodes): AL-DIC achieves 0.004 px RMSE, 60-
 
 Numba JIT, post-warmup. First run adds ~0.5s for compilation.
 
+## Citation
+
+If you use pyALDIC in your research, please cite:
+
+> Tong, Z. and Yang, J. (2026). pyALDIC: A Python Package for Augmented Lagrangian Digital Image Correlation. *Journal of Open Source Software* (in preparation).
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## License
 
-MIT
+BSD 3-Clause. See [LICENSE](LICENSE) for details.
