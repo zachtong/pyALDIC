@@ -257,15 +257,22 @@ class ROIToolbar(QWidget):
         self._active_mode = None
         self._update_button_styles()
 
+    _BASE_STYLE = (
+        f"QPushButton {{ background: {COLORS.BG_INPUT}; "
+        f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
+        f"border-radius: 4px; }}"
+    )
+
     def _update_button_styles(self) -> None:
         """Update Add/Cut/Refine button highlight based on active mode."""
-        # Reset all
+        # Reset all to a consistent base style (never use empty string —
+        # that triggers Qt style-engine fallback and causes layout jitter).
         self._btn_add.setChecked(False)
         self._btn_cut.setChecked(False)
         self._btn_refine.setChecked(False)
-        self._btn_add.setStyleSheet("")
-        self._btn_cut.setStyleSheet("")
-        self._btn_refine.setStyleSheet("")
+        self._btn_add.setStyleSheet(self._BASE_STYLE)
+        self._btn_cut.setStyleSheet(self._BASE_STYLE)
+        self._btn_refine.setStyleSheet(self._BASE_STYLE)
 
         if self._active_mode == "add":
             self._btn_add.setChecked(True)
