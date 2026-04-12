@@ -214,7 +214,7 @@ If you use pyALDIC in your research, please cite the software and the accompanyi
 
 ```bibtex
 @software{tong2026pyaldic_software,
-  author = {Tong, Zixiang},
+  author = {Tong, Zixiang and Yang, Jin},
   title  = {pyALDIC: Augmented Lagrangian Digital Image Correlation in Python},
   year   = {2026},
   doi    = {10.5281/zenodo.19521071},
@@ -238,7 +238,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 
 ## Acknowledgments
 
-- Based on the [AL-DIC](https://github.com/jyang526843/2D_ALDIC) MATLAB implementation by Jin Yang
+- Based on the [AL-DIC](https://github.com/jyang526843/2D_ALDIC) MATLAB implementation by Dr. Jin Yang
 - Developed at **The University of Texas at Austin**
 
 ## License
