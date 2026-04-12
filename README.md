@@ -80,17 +80,20 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
   <i>GUI visualization and export — demo coming soon</i>
 </p>
 
-### Comparison with Existing Tools
+### Comparison with DIC Tools
 
-|  | **pyALDIC** | Ncorr | DICe | VIC-2D | MatchID |
+|  | **pyALDIC** | **Ncorr** | **DICe** | **VIC-2D** | **MatchID** |
 |---|---|---|---|---|---|
-| **Algorithm** | ADMM global–local | Subset (IC-GN) | Subset + Global | Subset (proprietary) | Subset (proprietary) |
-| **Regularization** | FEM Q8 global | — | — | — | — |
-| **Adaptive mesh** | Quadtree | — | — | — | — |
-| **Mask handling** | Auto warp + window splitting | Manual | Manual | GUI masks | GUI masks |
-| **Platform** | Python (cross-platform) | MATLAB | C++ | Windows | Windows |
-| **Cost** | Free (BSD-3) | Free (MATLAB req.) | Free | $5K–50K+ | $5K–30K+ |
-| **Open source** | Yes | Yes | Yes | No | No |
+| **Algorithm** | ${\color{green}\textsf{ADMM global-local}}$ | Subset (IC-GN) | Subset / Global | Subset (proprietary) | Subset (proprietary) |
+| **Regularization** | ${\color{green}\textsf{FEM Q8 global}}$ | — | Tikhonov (global mode) | — | — |
+| **Adaptive mesh** | ${\color{green}\textsf{Quadtree (5 criteria)}}$ | — | — | — | — |
+| **Mask handling** | ${\color{green}\textsf{Auto warp + split}}$ | Manual | Manual ROI | GUI masks | GUI masks |
+| **Multi-frame** | Accum. + Incremental | Accumulative | Both | Both | Both |
+| **GUI** | Built-in (PySide6) | MATLAB GUI | CLI + ParaView | Built-in | Built-in |
+| **Platform** | ${\color{green}\textsf{Cross-platform}}$ | MATLAB (cross-platform) | Cross-platform | Windows only | Windows only |
+| **Export formats** | ${\color{green}\textsf{MAT, NPZ, CSV, PNG, GIF, PDF}}$ | MAT | ExodusII, VTK | Proprietary | CSV, images |
+| **Cost** | ${\color{green}\textsf{Free (BSD-3)}}$ | Free (needs MATLAB license) | Free (BSD) | `$5K–50K+` | `$5K–30K+` |
+| **Open source** | ${\color{green}\textsf{Yes}}$ | Yes | Yes | No | No |
 
 ---
 
@@ -153,34 +156,26 @@ export_mat(out, "result", "run01", result, fields=fields)
 
 ## Accuracy
 
-**Standard conditions** — both solvers achieve 0.01 px sub-pixel accuracy:
+Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
 
-| Test Case | Local DIC | AL-DIC |
-|-----------|-----------|--------|
-| Rigid translation (2.5 px) | 0.010 px | 0.010 px |
-| Affine strain (2%) | 0.012 px | 0.011 px |
-| Rotation (2°) | 0.011 px | 0.011 px |
+| Test Case | RMSE |
+|-----------|------|
+| Rigid translation (2.5 px) | 0.010 px |
+| Rotation (2°) | 0.011 px |
+| Affine strain (2%) | 0.011 px |
 
-**Noisy conditions** (5% Gaussian noise) — AL-DIC's global regularization reduces scatter:
-
-| Test Case | Local DIC | AL-DIC | Improvement |
-|-----------|-----------|--------|-------------|
-| Rigid translation (2.5 px) | 0.105 px | 0.100 px | **+5%** |
-| Affine strain (2%) | 0.107 px | 0.102 px | **+5%** |
-| Rotation (2°) | 0.104 px | 0.099 px | **+5%** |
-
-512² images, winsize=32, step=8, Lagrangian ground truth. AL-DIC's global FEM regularizer (ADMM) reduces noise-induced scatter by enforcing kinematic compatibility across neighboring nodes.
+512² images, winsize=32, step=8. Under 5% Gaussian noise, RMSE stays below 0.11 px. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
 
 ## Performance
 
-| Config | Nodes | Local DIC | Local POIs/s | AL-DIC (3 iter) | AL-DIC POIs/s |
-|--------|-------|-----------|-------------|-----------------|---------------|
-| 256², step=8 | 784 | 0.012 s | ~67,000 | 0.037 s | ~21,000 |
-| 512², step=8 | 3,600 | 0.038 s | ~95,000 | 0.14 s | ~25,000 |
-| 512², step=4 | 14,400 | 0.16 s | ~90,000 | 0.63 s | ~23,000 |
-| 1024², step=4 | 61,504 | 0.75 s | ~82,000 | 2.9 s | ~21,000 |
+| Config | Nodes | Solver Time | Throughput | Pipeline FPS† |
+|--------|-------|-------------|------------|---------------|
+| 256², step=8 | 784 | 0.04 s | ~20,000 POIs/s | ~5 |
+| 512², step=8 | 3,600 | 0.17 s | ~22,000 POIs/s | ~1 |
+| 512², step=4 | 14,400 | 0.57 s | ~25,000 POIs/s | ~0.2 |
+| 1024², step=4 | 61,504 | 2.7 s | ~23,000 POIs/s | ~0.06 |
 
-Per-frame solver time (IC-GN + ADMM), excluding one-time precomputation. Numba JIT, post-warmup. First run adds ~0.5 s for compilation.
+†**Solver Time** = IC-GN + ADMM (3 iterations), excluding precomputation. **Pipeline FPS** = full per-frame pipeline (FFT init + IC-GN + ADMM), excluding strain. Numba JIT, post-warmup; first run adds ~0.5 s for compilation. **Using Local DIC mode (no ADMM) is ~3× faster.**
 
 ---
 
