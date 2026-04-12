@@ -1,7 +1,5 @@
 <p align="center">
-  <!-- TODO: Create banner (1280x640px, dark background + UI screenshot + logo)
-       Save to docs/images/banner.png or banner.svg -->
-  <!-- <img src="docs/images/banner.png" alt="pyALDIC Banner" width="100%"/> -->
+  <img src="assets/banner.png" alt="pyALDIC Banner" width="100%"/>
 </p>
 
 <h1 align="center">pyALDIC</h1>
@@ -60,9 +58,7 @@ A complete desktop application built with PySide6. Three-column layout with imag
 Quadtree mesh refinement with 5 built-in criteria: mask boundary, ROI edge, brush region, manual selection, and posterior error. Concentrates computational effort where it matters — near boundaries, discontinuities, and high-gradient regions.
 
 <p align="center">
-  <!-- TODO: Screenshot or GIF showing quadtree refinement near a crack/mask boundary -->
-  <!-- <img src="docs/images/feature-adaptive-mesh.gif" alt="Adaptive Mesh Refinement" width="80%"/> -->
-  <i>Adaptive quadtree mesh — demo coming soon</i>
+  <img src="assets/adaptive-mesh.gif" alt="Adaptive Mesh Refinement" width="80%"/>
 </p>
 
 ### Dual Solver: Local DIC + AL-DIC
@@ -70,9 +66,7 @@ Quadtree mesh refinement with 5 built-in criteria: mask boundary, ROI edge, brus
 Run traditional local IC-GN (fast, independent nodes) or full AL-DIC with ADMM global–local coupling (regularized, smoother). Switch between modes with a single parameter — same GUI, same workflow.
 
 <p align="center">
-  <!-- TODO: Side-by-side comparison: local DIC vs AL-DIC displacement field -->
-  <!-- <img src="docs/images/feature-local-vs-aldic.png" alt="Local DIC vs AL-DIC" width="80%"/> -->
-  <i>Local DIC vs AL-DIC comparison — demo coming soon</i>
+  <img src="assets/local-vs-aldic.gif" alt="Local DIC vs AL-DIC Comparison" width="80%"/>
 </p>
 
 ### Dual Tracking Modes
@@ -90,9 +84,7 @@ Run traditional local IC-GN (fast, independent nodes) or full AL-DIC with ADMM g
 Near mask boundaries, standard square subsets include invalid pixels. pyALDIC automatically detects partially masked subsets, splits them using connected-component analysis, and solves IC-GN on the valid region only — with Hessian conditioning checks to ensure reliability.
 
 <p align="center">
-  <!-- TODO: Visualization of window splitting near a mask boundary -->
-  <!-- <img src="docs/images/feature-window-splitting.png" alt="Window Splitting" width="80%"/> -->
-  <i>Window splitting near mask boundaries — demo coming soon</i>
+  <img src="assets/window-splitting.png" alt="Window Splitting" width="80%"/>
 </p>
 
 ### Visualization & Export
