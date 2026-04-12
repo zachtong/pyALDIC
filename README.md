@@ -123,29 +123,52 @@ python -m al_dic
 ### Programmatic API
 
 ```python
+from pathlib import Path
 from al_dic.core.config import dicpara_default
 from al_dic.core.pipeline import run_aldic
 from al_dic.io.io_utils import load_images, load_masks
+from al_dic.export.export_npz import export_npz
+from al_dic.export.export_mat import export_mat
 
+# Load images and masks
 images = load_images("path/to/images", pattern="*.tif")
 masks = load_masks("path/to/masks", pattern="*.tif")
 
+# Configure and run
 para = dicpara_default(winsize=32, winstepsize=16)
-result = run_aldic(para, images, masks)
+result = run_aldic(para, images, masks, compute_strain=True)
+
+# Access results
+for i, fr in enumerate(result.result_disp):
+    print(f"Frame {i}: max disp = {abs(fr.U).max():.4f} px")
+
+# Export to .npz and .mat
+out = Path("output")
+fields = ["disp_u", "disp_v", "strain_exx", "strain_eyy", "strain_exy"]
+export_npz(out, "result", "run01", result, fields=fields)
+export_mat(out, "result", "run01", result, fields=fields)
 ```
 
 ---
 
 ## Accuracy
 
-| Test Case | Displacement RMSE | Strain RMSE |
-|-----------|------------------|-------------|
-| Rigid translation (2.5 px) | < 0.03 px | < 0.01 |
-| Affine (2% strain) | < 0.05 px | < 0.02 |
-| Rotation (2°) | < 0.05 px | < 0.08 |
-| Large deformation (10%) | < 1.0 px | < 0.05 |
+**Standard conditions** — both solvers achieve sub-pixel accuracy:
 
-High-resolution (1024², step=4, ~56k nodes): AL-DIC achieves **0.004 px RMSE**, 60–78% improvement over local DIC for large deformation.
+| Test Case | Local DIC | AL-DIC | Improvement |
+|-----------|-----------|--------|-------------|
+| Rigid translation (2.5 px) | 0.042 px | 0.040 px | +3% |
+| Affine strain (2%) | 0.077 px | 0.076 px | +0.4% |
+| Rotation (2°) | 0.154 px | 0.138 px | **+10%** |
+
+**Challenging conditions** — low-texture patches + noise reveal AL-DIC's regularization advantage:
+
+| Test Case | Local DIC | AL-DIC | Improvement |
+|-----------|-----------|--------|-------------|
+| Rotation (2°) + degraded texture | 1.155 px | 0.459 px | **+60%** |
+| Large deformation (10%) + degraded texture | 0.259 px | 0.236 px | **+9%** |
+
+512² images, winsize=32, step=8, Lagrangian ground truth. Local DIC solves each node independently; AL-DIC couples them through a global FEM regularizer (ADMM), propagating information from well-textured regions into featureless areas. Full report: [`reports/local-vs-aldic-comparison.pdf`](reports/local-vs-aldic-comparison.pdf).
 
 ## Performance
 
