@@ -168,7 +168,7 @@ export_mat(out, "result", "run01", result, fields=fields)
 | Rotation (2°) + noise (5%) | 0.104 px | 0.099 px | **+5%** |
 | Rotation (2°) + degraded texture | 0.49 px | 0.38 px | **+23%** |
 
-512² images, winsize=32, step=8, Lagrangian ground truth. Under noisy/degraded conditions, AL-DIC's global FEM regularizer (ADMM) reduces scatter from noise and recovers failed nodes in low-texture regions by propagating information from well-textured neighbors. The +5% noise improvement is consistent across all field types. Full report: [`reports/local-vs-aldic-comparison.pdf`](reports/local-vs-aldic-comparison.pdf).
+512² images, winsize=32, step=8, Lagrangian ground truth. Under noisy/degraded conditions, AL-DIC's global FEM regularizer (ADMM) reduces scatter from noise and recovers failed nodes in low-texture regions by propagating information from well-textured neighbors. The +5% noise improvement is consistent across all field types.
 
 ## Performance
 
