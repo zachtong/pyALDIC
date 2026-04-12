@@ -161,14 +161,21 @@ export_mat(out, "result", "run01", result, fields=fields)
 | Affine strain (2%) | 0.012 px | 0.011 px |
 | Rotation (2°) | 0.011 px | 0.011 px |
 
-**Challenging conditions** — AL-DIC's global regularization advantage:
+**Noisy conditions** (5% Gaussian noise) — AL-DIC's global regularization reduces scatter:
 
 | Test Case | Local DIC | AL-DIC | Improvement |
 |-----------|-----------|--------|-------------|
-| Rotation (2°) + noise (5%) | 0.104 px | 0.099 px | **+5%** |
-| Rotation (2°) + degraded texture | 0.49 px | 0.38 px | **+23%** |
+| Rigid translation (2.5 px) | 0.105 px | 0.100 px | **+5%** |
+| Affine strain (2%) | 0.107 px | 0.102 px | **+5%** |
+| Rotation (2°) | 0.104 px | 0.099 px | **+5%** |
 
-512² images, winsize=32, step=8, Lagrangian ground truth. Under noisy/degraded conditions, AL-DIC's global FEM regularizer (ADMM) reduces scatter from noise and recovers failed nodes in low-texture regions by propagating information from well-textured neighbors. The +5% noise improvement is consistent across all field types.
+**Degraded texture** (low-texture patches + 4% noise) — AL-DIC recovers failed nodes:
+
+| Test Case | Local DIC | AL-DIC | Improvement |
+|-----------|-----------|--------|-------------|
+| Rotation (2°) | 0.49 px | 0.38 px | **+23%** |
+
+512² images, winsize=32, step=8, Lagrangian ground truth. AL-DIC's global FEM regularizer (ADMM) provides two levels of improvement: (1) consistent noise reduction across all field types, and (2) recovery of failed nodes in low-texture regions by propagating information from well-textured neighbors.
 
 ## Performance
 
