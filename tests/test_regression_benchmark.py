@@ -6,8 +6,9 @@ future code changes degrading solver accuracy or throughput.
 Config: 512x512, winsize=32, step=8, speckle sigma=3.0, noise=0.005,
         ADMM iter=3, Lagrangian ground truth, Numba JIT post-warmup.
 
-Run with:  pytest tests/test_regression_benchmark.py -m slow
-Skip with: pytest -m "not slow"
+Run all:           pytest tests/test_regression_benchmark.py -m slow
+Skip performance:  pytest -m "not perf"  (used in CI — runner CPU varies)
+Skip all slow:     pytest -m "not slow"
 """
 
 from __future__ import annotations
@@ -342,8 +343,13 @@ class TestCategory1Accuracy:
 
 
 @pytest.mark.slow
+@pytest.mark.perf
 class TestCategory1Performance:
-    """Solver throughput must stay above locked lower bounds."""
+    """Solver throughput must stay above locked lower bounds.
+
+    Marked ``perf`` — excluded from CI (runner CPU varies).
+    Run locally with: pytest -m slow
+    """
 
     @pytest.mark.parametrize(
         "field_fn,field_kw,local_pois_min,aldic_pois_min",
@@ -488,6 +494,7 @@ class TestCategory2MeshRefinement:
         assert rmse_int < 0.03, (
             f"Interior RMSE {rmse_int:.4f} exceeds threshold 0.03")
 
+    @pytest.mark.perf
     def test_refinement_overhead_reasonable(self, ref_img, warmup):
         """Refinement + solve should be < 5x the uniform solve time."""
         mask = _make_hole_mask()

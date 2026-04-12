@@ -31,7 +31,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Run tests
+      - name: Run tests (excluding performance benchmarks)
         env:
           QT_QPA_PLATFORM: offscreen
-        run: pytest --tb=short -q --ignore=tests/test_reports
+        # Accuracy regression tests run in CI; performance (perf) tests
+        # are skipped because runner CPU varies. Run locally: pytest -m slow
+        run: pytest --tb=short -q --ignore=tests/test_reports -m "not perf"

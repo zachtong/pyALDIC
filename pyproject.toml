@@ -69,6 +69,7 @@ testpaths = ["tests"]
 addopts = "-v --tb=short"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "perf: performance/throughput tests -- excluded from CI (runner CPU varies)",
 ]
 
 [tool.coverage.run]
