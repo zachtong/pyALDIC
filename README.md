@@ -2,10 +2,7 @@
   <img src="assets/banner.png" alt="pyALDIC Banner" width="100%"/>
 </p>
 
-<h1 align="center">pyALDIC</h1>
-
 <p align="center">
-  <b>Augmented Lagrangian Digital Image Correlation in Python</b><br/>
   Full-field displacement and strain measurement with adaptive mesh refinement,<br/>
   ADMM global–local optimization, and a built-in desktop GUI.
 </p>
@@ -24,20 +21,6 @@
 ## Why pyALDIC?
 
 Standard subset-based DIC (IC-GN) solves each node independently — accurate for small deformations, but struggles with large displacement gradients, discontinuities, and noisy images. pyALDIC uses an **Augmented Lagrangian (ADMM)** framework that couples local IC-GN subproblems with a global FEM regularizer, producing smoother, more accurate fields while maintaining sub-pixel precision.
-
-### Comparison with Existing Tools
-
-|  | **pyALDIC** | Ncorr | DICe | VIC-2D | MatchID |
-|---|---|---|---|---|---|
-| **Algorithm** | ADMM global–local | Subset (IC-GN) | Subset + Global | Subset (proprietary) | Subset (proprietary) |
-| **Regularization** | FEM Q8 global | — | — | — | — |
-| **Adaptive mesh** | Quadtree | — | — | — | — |
-| **Mask handling** | Auto warp + window splitting | Manual | Manual | GUI masks | GUI masks |
-| **Platform** | Python (cross-platform) | MATLAB | C++ | Windows | Windows |
-| **Cost** | Free (BSD-3) | Free (MATLAB req.) | Free | $5K–50K+ | $5K–30K+ |
-| **Open source** | Yes | Yes | Yes | No | No |
-
-<!-- TODO: Fill in accuracy comparison data from benchmark tests -->
 
 ---
 
@@ -58,7 +41,7 @@ A complete desktop application built with PySide6. Three-column layout with imag
 Quadtree mesh refinement with 5 built-in criteria: mask boundary, ROI edge, brush region, manual selection, and posterior error. Concentrates computational effort where it matters — near boundaries, discontinuities, and high-gradient regions.
 
 <p align="center">
-  <img src="assets/adaptive-mesh.gif" alt="Adaptive Mesh Refinement" width="80%"/>
+  <img src="assets/adaptive-mesh.gif" alt="Adaptive Mesh Refinement" width="40%"/>
 </p>
 
 ### Dual Solver: Local DIC + AL-DIC
@@ -96,6 +79,18 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
   <!-- <img src="docs/images/feature-visualization.png" alt="Visualization & Export" width="80%"/> -->
   <i>GUI visualization and export — demo coming soon</i>
 </p>
+
+### Comparison with Existing Tools
+
+|  | **pyALDIC** | Ncorr | DICe | VIC-2D | MatchID |
+|---|---|---|---|---|---|
+| **Algorithm** | ADMM global–local | Subset (IC-GN) | Subset + Global | Subset (proprietary) | Subset (proprietary) |
+| **Regularization** | FEM Q8 global | — | — | — | — |
+| **Adaptive mesh** | Quadtree | — | — | — | — |
+| **Mask handling** | Auto warp + window splitting | Manual | Manual | GUI masks | GUI masks |
+| **Platform** | Python (cross-platform) | MATLAB | C++ | Windows | Windows |
+| **Cost** | Free (BSD-3) | Free (MATLAB req.) | Free | $5K–50K+ | $5K–30K+ |
+| **Open source** | Yes | Yes | Yes | No | No |
 
 ---
 
