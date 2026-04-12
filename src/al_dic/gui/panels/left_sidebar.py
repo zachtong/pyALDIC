@@ -222,6 +222,15 @@ class LeftSidebar(QWidget):
         # native drawing from all descendant buttons and inputs, causing
         # unexpected style and margin changes.
         settings_container = QWidget()
+        # Force the container to follow the scroll-area viewport width.
+        # Without this, child widgets' minimumSizeHint (e.g. 343 px from
+        # the collapsed ADVANCED section's default 640 px content widget)
+        # prevents setWidgetResizable(True) from constraining the container
+        # to the 288 px viewport, causing horizontal overflow.
+        from PySide6.QtWidgets import QSizePolicy
+        settings_container.setSizePolicy(
+            QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred
+        )
         settings_layout = QVBoxLayout(settings_container)
         settings_layout.setContentsMargins(0, 0, 0, 0)
         settings_layout.setSpacing(0)

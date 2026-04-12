@@ -67,3 +67,20 @@ packages = ["src/al_dic"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+[tool.coverage.run]
+source = ["al_dic"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.",
+]
+omit = [
+    # Numba JIT kernels: coverage.py cannot trace LLVM-compiled code
+    "src/al_dic/solver/numba_kernels.py",
+]

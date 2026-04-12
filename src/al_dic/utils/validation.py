@@ -70,10 +70,16 @@ def assert_mesh_consistent(
             f"elements_fem shape {elements_fem.shape} must be (M, 8)."
         )
     n_nodes = coordinates_fem.shape[0]
-    if elements_fem.max() >= n_nodes:
+    # Q8 meshes use -1 as placeholder for unused mid-edge nodes
+    real_indices = elements_fem[elements_fem >= 0]
+    if real_indices.size > 0 and real_indices.max() >= n_nodes:
         raise ValueError(
-            f"Element index {elements_fem.max()} >= n_nodes {n_nodes} "
+            f"Element index {real_indices.max()} >= n_nodes {n_nodes} "
             f"(indices must be 0-based)."
         )
-    if elements_fem.min() < 0:
-        raise ValueError("Element indices contain negative values.")
+    if elements_fem.size > 0 and elements_fem[elements_fem != -1].size > 0:
+        non_placeholder = elements_fem[elements_fem != -1]
+        if non_placeholder.min() < 0:
+            raise ValueError(
+                "Element indices contain negative values other than -1 placeholder."
+            )

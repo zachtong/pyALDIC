@@ -19,10 +19,13 @@ MATLAB/Python differences:
 
 from __future__ import annotations
 
+import logging
 import time
 
 import numpy as np
 from numpy.typing import NDArray
+
+logger = logging.getLogger(__name__)
 
 from ..core.data_structures import DICPara, ImageGradients
 from ..utils.outlier_detection import detect_bad_points, fill_nan_idw
@@ -181,7 +184,12 @@ def _dispatch_2dof(coords, U_old_2d, F_old_2d, udual_2d, img_def, pre,
                 )
                 return U_out, conv_iter
         except Exception:
-            pass
+            logger.warning(
+                "Numba 2-DOF backend failed, falling back to batch NumPy. "
+                "If this persists, clear Numba cache: delete *.nbi/*.nbc in "
+                "solver/__pycache__/",
+                exc_info=True,
+            )
 
     # --- Fallback: batch vectorized ---
     try:
@@ -192,7 +200,10 @@ def _dispatch_2dof(coords, U_old_2d, F_old_2d, udual_2d, img_def, pre,
         )
         return U_out, conv_iter
     except Exception:
-        pass
+        logger.warning(
+            "Batch 2-DOF backend failed, falling back to sequential.",
+            exc_info=True,
+        )
 
     # --- Last resort: sequential ---
     return _sequential_2dof(

@@ -12,9 +12,13 @@ pre-computation even when Numba handles the iteration loop.
 
 from __future__ import annotations
 
+import logging
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.ndimage import map_coordinates, label
+
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +64,10 @@ def precompute_subsets_6dof(
                     "Sy": Sy, "Sx": Sx, "img_h": h, "img_w": w,
                 }
         except Exception:
-            pass
+            logger.warning(
+                "Numba precompute_6dof failed, using Python fallback.",
+                exc_info=True,
+            )
 
     # --- Fallback: Python loop ---
     return _precompute_subsets_6dof_python(
@@ -199,7 +206,10 @@ def precompute_subsets_2dof(
                     "valid": valid, "Sy": Sy, "Sx": Sx, "img_h": h, "img_w": w,
                 }
         except Exception:
-            pass
+            logger.warning(
+                "Numba precompute_2dof failed, using Python fallback.",
+                exc_info=True,
+            )
 
     # --- Fallback: Python loop ---
     return _precompute_subsets_2dof_python(

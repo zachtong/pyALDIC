@@ -88,6 +88,66 @@ class TestDICPara:
         p = dicpara_default(reference_mode="accumulative")
         assert p.reference_mode == "accumulative"
 
+    # --- Extended config validation tests (Phase 1.2) ---
+
+    def test_invalid_admm_max_iter_zero(self):
+        with pytest.raises(ValueError, match="admm_max_iter"):
+            dicpara_default(admm_max_iter=0)
+
+    def test_invalid_cluster_no_negative(self):
+        with pytest.raises(ValueError, match="cluster_no"):
+            dicpara_default(cluster_no=-1)
+
+    def test_invalid_icgn_max_iter_zero(self):
+        with pytest.raises(ValueError, match="icgn_max_iter"):
+            dicpara_default(icgn_max_iter=0)
+
+    def test_invalid_init_guess_mode(self):
+        with pytest.raises(ValueError, match="init_guess_mode"):
+            dicpara_default(init_guess_mode="invalid")
+
+    def test_valid_init_guess_modes(self):
+        for mode in ("auto", "fft", "previous"):
+            p = dicpara_default(init_guess_mode=mode)
+            assert p.init_guess_mode == mode
+
+    def test_invalid_size_of_fft_search_region_zero(self):
+        with pytest.raises(ValueError, match="size_of_fft_search_region"):
+            dicpara_default(size_of_fft_search_region=0)
+
+    def test_invalid_strain_plane_fit_rad_negative(self):
+        with pytest.raises(ValueError, match="strain_plane_fit_rad"):
+            dicpara_default(strain_plane_fit_rad=-1)
+
+    def test_invalid_disp_smoothness_negative(self):
+        with pytest.raises(ValueError, match="disp_smoothness"):
+            dicpara_default(disp_smoothness=-0.1)
+
+    def test_invalid_strain_smoothness_negative(self):
+        with pytest.raises(ValueError, match="strain_smoothness"):
+            dicpara_default(strain_smoothness=-0.1)
+
+    def test_invalid_alpha_negative(self):
+        with pytest.raises(ValueError, match="alpha"):
+            dicpara_default(alpha=-1)
+
+    def test_frame_schedule_wrong_type(self):
+        with pytest.raises(TypeError, match="FrameSchedule"):
+            dicpara_default(frame_schedule="bad")
+
+    def test_frame_schedule_non_incremental_warns(self):
+        sched = FrameSchedule.from_mode("accumulative", 4)
+        with pytest.warns(UserWarning, match="frame_schedule"):
+            dicpara_default(
+                frame_schedule=sched,
+                reference_mode="accumulative",
+            )
+
+    def test_valid_frame_schedule(self):
+        sched = FrameSchedule.from_mode("incremental", 4)
+        p = dicpara_default(frame_schedule=sched)
+        assert p.frame_schedule is sched
+
 
 # ---------------------------------------------------------------------------
 # Interleaved vector utilities

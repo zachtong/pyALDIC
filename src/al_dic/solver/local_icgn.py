@@ -14,6 +14,7 @@ MATLAB/Python differences:
 
 from __future__ import annotations
 
+import logging
 import time
 
 import numpy as np
@@ -21,6 +22,8 @@ from numpy.typing import NDArray
 
 from ..core.data_structures import DICPara, ImageGradients
 from ..utils.outlier_detection import detect_bad_points, fill_nan_idw
+
+logger = logging.getLogger(__name__)
 
 
 def local_icgn(
@@ -141,7 +144,12 @@ def _dispatch_6dof(coords, U0_2d, img_def, pre, tol, max_iter):
                 F_2d = P_out[:, :4]
                 return U_2d, F_2d, conv_iter
         except Exception:
-            pass
+            logger.warning(
+                "Numba 6-DOF backend failed, falling back to batch NumPy. "
+                "If this persists, clear Numba cache: delete *.nbi/*.nbc in "
+                "solver/__pycache__/",
+                exc_info=True,
+            )
 
     # --- Fallback: batch vectorized ---
     try:
@@ -151,7 +159,10 @@ def _dispatch_6dof(coords, U0_2d, img_def, pre, tol, max_iter):
         )
         return U_2d, F_2d, conv_iter
     except Exception:
-        pass
+        logger.warning(
+            "Batch 6-DOF backend failed, falling back to sequential.",
+            exc_info=True,
+        )
 
     # --- Last resort: sequential per-node ---
     return _sequential_6dof(coords, U0_2d, img_def, pre, tol, max_iter)

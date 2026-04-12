@@ -70,17 +70,14 @@ class ROIToolbar(QWidget):
 
         # --- Row 1: Add / Cut dropdown buttons ---
         self._btn_add = QPushButton("+ Add  \u25b4")
-        self._btn_add.setCheckable(True)
         self._btn_add.setToolTip("Add region to ROI (Polygon / Rectangle / Circle)")
         self._btn_add.setFixedHeight(30)
 
         self._btn_cut = QPushButton("\u2702 Cut  \u25b4")
-        self._btn_cut.setCheckable(True)
         self._btn_cut.setToolTip("Cut region from ROI (Polygon / Rectangle / Circle)")
         self._btn_cut.setFixedHeight(30)
 
         self._btn_refine = QPushButton("+ Refine  \u25b4")
-        self._btn_refine.setCheckable(True)
         self._btn_refine.setToolTip(
             "Paint extra mesh-refinement zones with a brush\n"
             "(only on frame 1 — material points auto-warped to later frames)"
@@ -144,6 +141,19 @@ class ROIToolbar(QWidget):
 
         layout.addLayout(action_row, 2, 0, 1, 3)
 
+        # Lock all utility button geometry to prevent layout jitter
+        # when stylesheets change on the row-0 buttons.
+        _util_style = (
+            f"QPushButton {{ background: {COLORS.BG_INPUT}; "
+            f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
+            f"{self._GEOM} }}"
+        )
+        for btn in (
+            self._btn_import, self._btn_batch,
+            self._btn_save, self._btn_invert, self._btn_clear,
+        ):
+            btn.setStyleSheet(_util_style)
+
         # Apply initial styling
         self._update_button_styles()
 
@@ -202,7 +212,6 @@ class ROIToolbar(QWidget):
 
     def _show_brush_menu(self) -> None:
         """Show the Refine brush popup above the Refine button."""
-        self._btn_refine.setChecked(False)
         pos = self._btn_refine.mapToGlobal(self._btn_refine.rect().topLeft())
         menu_height = self._brush_menu.sizeHint().height()
         pos.setY(pos.y() - menu_height)
@@ -230,8 +239,6 @@ class ROIToolbar(QWidget):
 
     def _show_add_menu(self) -> None:
         """Show the Add shape popup above the Add button."""
-        # Uncheck immediately — the checked state is controlled by _on_shape_selected
-        self._btn_add.setChecked(False)
         # Position menu above the button
         pos = self._btn_add.mapToGlobal(self._btn_add.rect().topLeft())
         menu_height = self._add_menu.sizeHint().height()
@@ -240,7 +247,6 @@ class ROIToolbar(QWidget):
 
     def _show_cut_menu(self) -> None:
         """Show the Cut shape popup above the Cut button."""
-        self._btn_cut.setChecked(False)
         pos = self._btn_cut.mapToGlobal(self._btn_cut.rect().topLeft())
         menu_height = self._cut_menu.sizeHint().height()
         pos.setY(pos.y() - menu_height)
@@ -257,44 +263,42 @@ class ROIToolbar(QWidget):
         self._active_mode = None
         self._update_button_styles()
 
+    # Shared geometry tokens — keep padding/margin identical across all
+    # states so that Qt never recalculates sizeHint on style switches.
+    _GEOM = "border-radius: 4px; padding: 2px 4px; margin: 0px;"
+
     _BASE_STYLE = (
         f"QPushButton {{ background: {COLORS.BG_INPUT}; "
         f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
-        f"border-radius: 4px; }}"
+        f"{_GEOM} }}"
     )
+
+    def _make_active_style(self, bg: str, fg: str = "#ffffff") -> str:
+        return (
+            f"QPushButton {{ background: {bg}; color: {fg}; "
+            f"border: 1px solid {bg}; {self._GEOM} }}"
+        )
 
     def _update_button_styles(self) -> None:
         """Update Add/Cut/Refine button highlight based on active mode."""
         # Reset all to a consistent base style (never use empty string —
         # that triggers Qt style-engine fallback and causes layout jitter).
-        self._btn_add.setChecked(False)
-        self._btn_cut.setChecked(False)
-        self._btn_refine.setChecked(False)
         self._btn_add.setStyleSheet(self._BASE_STYLE)
         self._btn_cut.setStyleSheet(self._BASE_STYLE)
         self._btn_refine.setStyleSheet(self._BASE_STYLE)
 
         if self._active_mode == "add":
-            self._btn_add.setChecked(True)
             self._btn_add.setStyleSheet(
-                f"QPushButton {{ background: {COLORS.ACCENT}; "
-                f"color: #ffffff; border: 1px solid {COLORS.ACCENT}; "
-                f"border-radius: 4px; }}"
+                self._make_active_style(COLORS.ACCENT)
             )
         elif self._active_mode == "cut":
-            self._btn_cut.setChecked(True)
             self._btn_cut.setStyleSheet(
-                f"QPushButton {{ background: {COLORS.DANGER}; "
-                f"color: #ffffff; border: 1px solid {COLORS.DANGER}; "
-                f"border-radius: 4px; }}"
+                self._make_active_style(COLORS.DANGER)
             )
         elif self._active_mode in ("brush_paint", "brush_erase"):
-            self._btn_refine.setChecked(True)
-            # Cyan accent for paint, dim cyan for erase
             color = "#14dcc8" if self._active_mode == "brush_paint" else "#0a8a7a"
             self._btn_refine.setStyleSheet(
-                f"QPushButton {{ background: {color}; color: #001417; "
-                f"border: 1px solid {color}; border-radius: 4px; }}"
+                self._make_active_style(color, "#001417")
             )
 
     def _on_import(self) -> None:

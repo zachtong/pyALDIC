@@ -271,3 +271,88 @@ class TestTopologyPreservation:
         d_raw, _ = _topology(result_raw)
         # Cleaned should have fewer or equal domains
         assert d_clean <= d_raw
+
+
+# ---------------------------------------------------------------------------
+# Downsample / upsample and edge cases
+# ---------------------------------------------------------------------------
+
+class TestWarpMaskExtended:
+    """Extended edge case tests for warp_mask internals."""
+
+    def test_downsample_upsample_roundtrip(self):
+        """Downsample then upsample should approximately preserve the mask."""
+        from al_dic.utils.warp_mask import _downsample, _upsample
+
+        h, w = 256, 256
+        mask = np.zeros((h, w), dtype=np.float64)
+        mask[40:216, 40:216] = 1.0
+        u = np.full((h, w), 3.0, dtype=np.float64)
+        v = np.full((h, w), 2.0, dtype=np.float64)
+
+        scale = 0.5
+        mask_ds, u_ds, v_ds = _downsample(mask, u, v, scale)
+        mask_up = _upsample(mask_ds, h, w)
+
+        # Area should be approximately preserved
+        area_orig = mask.sum()
+        area_up = mask_up.sum()
+        assert abs(area_up - area_orig) / area_orig < 0.1
+
+    def test_downsample_preserves_structure(self):
+        """Downsampled mask should still have the same overall shape."""
+        from al_dic.utils.warp_mask import _downsample
+
+        h, w = 512, 512
+        mask = np.zeros((h, w), dtype=np.float64)
+        mask[100:412, 100:412] = 1.0
+        u = np.full((h, w), 1.0, dtype=np.float64)
+        v = np.full((h, w), 1.0, dtype=np.float64)
+
+        mask_ds, u_ds, v_ds = _downsample(mask, u, v, scale=0.25)
+        assert mask_ds.shape[0] < h
+        assert mask_ds.shape[1] < w
+        assert mask_ds.sum() > 0
+
+    def test_upsample_pad_when_undersized(self):
+        """Upsample should pad with zeros if repeat undershoots target."""
+        from al_dic.utils.warp_mask import _upsample
+
+        small = np.ones((10, 10), dtype=np.float64)
+        result = _upsample(small, 256, 256)
+        assert result.shape == (256, 256)
+
+    def test_total_area_zero_returns_unchanged(self):
+        """All-zero mask should pass through without error."""
+        h, w = 64, 64
+        mask = np.zeros((h, w), dtype=np.float64)
+        u = np.zeros((h, w), dtype=np.float64)
+        v = np.zeros((h, w), dtype=np.float64)
+
+        result = warp_mask(mask, u, v)
+        assert result.sum() == 0.0
+
+    def test_large_image_triggers_downsample(self):
+        """Images > max_warp_pixels should trigger downsample path."""
+        h, w = 1024, 1024
+        mask = np.zeros((h, w), dtype=np.float64)
+        mask[200:824, 200:824] = 1.0
+        u = np.full((h, w), 5.0, dtype=np.float64)
+        v = np.full((h, w), 3.0, dtype=np.float64)
+
+        # max_warp_pixels = 512*512, so 1024*1024 triggers downsample
+        result = warp_mask(mask, u, v, max_warp_pixels=512 * 512)
+        assert result.shape == (h, w)
+        assert result.sum() > 0
+
+    def test_max_warp_pixels_zero_disables_downsample(self):
+        """max_warp_pixels=0 should disable downsampling."""
+        h, w = 128, 128
+        mask = np.zeros((h, w), dtype=np.float64)
+        mask[20:108, 20:108] = 1.0
+        u = np.full((h, w), 3.0, dtype=np.float64)
+        v = np.full((h, w), 2.0, dtype=np.float64)
+
+        result = warp_mask(mask, u, v, max_warp_pixels=0)
+        assert result.shape == (h, w)
+        assert result.sum() > 0
