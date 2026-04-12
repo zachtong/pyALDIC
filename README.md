@@ -153,22 +153,22 @@ export_mat(out, "result", "run01", result, fields=fields)
 
 ## Accuracy
 
-**Standard conditions** — both solvers achieve sub-pixel accuracy:
+**Standard conditions** — both solvers achieve 0.01 px sub-pixel accuracy:
+
+| Test Case | Local DIC | AL-DIC |
+|-----------|-----------|--------|
+| Rigid translation (2.5 px) | 0.010 px | 0.010 px |
+| Affine strain (2%) | 0.012 px | 0.011 px |
+| Rotation (2°) | 0.011 px | 0.011 px |
+
+**Challenging conditions** — AL-DIC's global regularization advantage:
 
 | Test Case | Local DIC | AL-DIC | Improvement |
 |-----------|-----------|--------|-------------|
-| Rigid translation (2.5 px) | 0.042 px | 0.040 px | +3% |
-| Affine strain (2%) | 0.077 px | 0.076 px | +0.4% |
-| Rotation (2°) | 0.154 px | 0.138 px | **+10%** |
+| Rotation (2°) + noise (5%) | 0.104 px | 0.099 px | **+5%** |
+| Rotation (2°) + degraded texture | 0.49 px | 0.38 px | **+23%** |
 
-**Challenging conditions** — low-texture patches + noise reveal AL-DIC's regularization advantage:
-
-| Test Case | Local DIC | AL-DIC | Improvement |
-|-----------|-----------|--------|-------------|
-| Rotation (2°) + degraded texture | 1.155 px | 0.459 px | **+60%** |
-| Large deformation (10%) + degraded texture | 0.259 px | 0.236 px | **+9%** |
-
-512² images, winsize=32, step=8, Lagrangian ground truth. Local DIC solves each node independently; AL-DIC couples them through a global FEM regularizer (ADMM), propagating information from well-textured regions into featureless areas. Full report: [`reports/local-vs-aldic-comparison.pdf`](reports/local-vs-aldic-comparison.pdf).
+512² images, winsize=32, step=8, Lagrangian ground truth. Under noisy/degraded conditions, AL-DIC's global FEM regularizer (ADMM) reduces scatter from noise and recovers failed nodes in low-texture regions by propagating information from well-textured neighbors. The +5% noise improvement is consistent across all field types. Full report: [`reports/local-vs-aldic-comparison.pdf`](reports/local-vs-aldic-comparison.pdf).
 
 ## Performance
 
