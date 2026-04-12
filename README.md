@@ -173,14 +173,14 @@ export_mat(out, "result", "run01", result, fields=fields)
 
 ## Performance
 
-| Config | Nodes | Total Time |
-|--------|-------|------------|
-| 256², step=16 | 225 | ~0.07 s |
-| 256², step=8 | 961 | ~0.26 s |
-| 256², step=4 | 3,969 | ~1.3 s |
-| 1024², step=4 | ~56,000 | ~6.5 s |
+| Config | Nodes | Local DIC | Local POIs/s | AL-DIC (3 iter) | AL-DIC POIs/s |
+|--------|-------|-----------|-------------|-----------------|---------------|
+| 256², step=8 | 784 | 0.07 s | ~12,000 | 0.25 s | ~3,100 |
+| 512², step=8 | 3,600 | 0.40 s | ~9,000 | 1.8 s | ~2,000 |
+| 512², step=4 | 14,400 | 1.5 s | ~9,500 | 9.7 s | ~1,500 |
+| 1024², step=4 | 61,504 | 7.0 s | ~8,800 | 30 s | ~2,100 |
 
-Numba JIT, post-warmup. First run adds ~0.5 s for compilation.
+Full pipeline time (mesh + FFT + solve). Numba JIT, post-warmup. First run adds ~0.5 s for compilation.
 
 ---
 
