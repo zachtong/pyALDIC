@@ -80,7 +80,9 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
   <i>GUI visualization and export — demo coming soon</i>
 </p>
 
-### Comparison with DIC Tools
+---
+
+## Comparison with DIC Tools
 
 |  | **pyALDIC** | **Ncorr** | **DICe** | **VIC-2D** | **MatchID** |
 |---|---|---|---|---|---|
@@ -94,6 +96,31 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
 | **Export formats** | ${\color{green}\textsf{MAT, NPZ, CSV, PNG, GIF, PDF}}$ | MAT | ExodusII, VTK | Proprietary | CSV, images |
 | **Cost** | ${\color{green}\textsf{Free (BSD-3)}}$ | Free (needs MATLAB license) | Free (BSD) | `$5K–50K+` | `$5K–30K+` |
 | **Open source** | ${\color{green}\textsf{Yes}}$ | Yes | Yes | No | No |
+
+---
+
+## Accuracy
+
+Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
+
+| Test Case | RMSE |
+|-----------|------|
+| Rigid translation (2.5 px) | 0.010 px |
+| Rotation (2°) | 0.011 px |
+| Affine strain (2%) | 0.011 px |
+
+512² images, winsize=32, step=8. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
+
+## Performance
+
+| Config | Nodes | Solver Time | Throughput | Pipeline FPS† |
+|--------|-------|-------------|------------|---------------|
+| 256², step=8 | 784 | 0.04 s | ~20,000 POIs/s | ~5 |
+| 512², step=8 | 3,600 | 0.17 s | ~22,000 POIs/s | ~1 |
+| 512², step=4 | 14,400 | 0.57 s | ~25,000 POIs/s | ~0.2 |
+| 1024², step=4 | 61,504 | 2.7 s | ~23,000 POIs/s | ~0.06 |
+
+†**Solver Time** = IC-GN + ADMM (3 iterations), excluding precomputation. **Pipeline FPS** = full per-frame pipeline (FFT init + IC-GN + ADMM), excluding strain. Numba JIT, post-warmup; first run adds ~0.5 s for compilation. **Using Local DIC mode (no ADMM) is ~3× faster.**
 
 ---
 
@@ -123,7 +150,8 @@ al-dic
 python -m al_dic
 ```
 
-### Programmatic API
+<details>
+<summary><b>Programmatic API</b></summary>
 
 ```python
 from pathlib import Path
@@ -152,30 +180,7 @@ export_npz(out, "result", "run01", result, fields=fields)
 export_mat(out, "result", "run01", result, fields=fields)
 ```
 
----
-
-## Accuracy
-
-Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
-
-| Test Case | RMSE |
-|-----------|------|
-| Rigid translation (2.5 px) | 0.010 px |
-| Rotation (2°) | 0.011 px |
-| Affine strain (2%) | 0.011 px |
-
-512² images, winsize=32, step=8. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
-
-## Performance
-
-| Config | Nodes | Solver Time | Throughput | Pipeline FPS† |
-|--------|-------|-------------|------------|---------------|
-| 256², step=8 | 784 | 0.04 s | ~20,000 POIs/s | ~5 |
-| 512², step=8 | 3,600 | 0.17 s | ~22,000 POIs/s | ~1 |
-| 512², step=4 | 14,400 | 0.57 s | ~25,000 POIs/s | ~0.2 |
-| 1024², step=4 | 61,504 | 2.7 s | ~23,000 POIs/s | ~0.06 |
-
-†**Solver Time** = IC-GN + ADMM (3 iterations), excluding precomputation. **Pipeline FPS** = full per-frame pipeline (FFT init + IC-GN + ADMM), excluding strain. Numba JIT, post-warmup; first run adds ~0.5 s for compilation. **Using Local DIC mode (no ADMM) is ~3× faster.**
+</details>
 
 ---
 
@@ -222,7 +227,7 @@ pytest tests/test_solver/test_icgn_solver.py
 
 ## Citation
 
-If you use pyALDIC in your research, please cite the software and the accompanying paper:
+If you use pyALDIC in your research, please cite:
 
 ```bibtex
 @software{tong2026pyaldic_software,
@@ -231,16 +236,6 @@ If you use pyALDIC in your research, please cite the software and the accompanyi
   year   = {2026},
   doi    = {10.5281/zenodo.19521071},
   url    = {https://github.com/zachtong/pyALDIC}
-}
-
-%% JOSS paper (in preparation — will be updated upon publication)
-@article{tong2026pyaldic,
-  author  = {Tong, Zixiang and Yang, Jin},
-  title   = {pyALDIC: A Python Package for Augmented Lagrangian
-             Digital Image Correlation},
-  journal = {Journal of Open Source Software},
-  year    = {2026},
-  note    = {in preparation}
 }
 ```
 
