@@ -164,7 +164,7 @@ Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
 | Rotation (2°) | 0.011 px |
 | Affine strain (2%) | 0.011 px |
 
-512² images, winsize=32, step=8. Under 5% Gaussian noise, RMSE stays below 0.11 px. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
+512² images, winsize=32, step=8. Even under 5% Gaussian noise (50× the standard imaging level), RMSE remains below 0.11 px — only ~10× degradation for a 50× noise increase. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
 
 ## Performance
 
