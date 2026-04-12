@@ -22,7 +22,7 @@ class ParamPanel(QWidget):
         super().__init__(parent)
         state = AppState.instance()
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(8, 0, 4, 0)
 
         # --- Subset Size (display odd, store even internally) ---
         # User sees 21, 41 etc. (odd = 2*half+1 centered window).

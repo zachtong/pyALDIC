@@ -17,10 +17,29 @@ from al_dic.gui.controllers.image_controller import ImageController
 from al_dic.gui.controllers.pipeline_controller import PipelineController
 from al_dic.gui.controllers.roi_controller import ROIController
 from al_dic.gui.controllers.viz_controller import VizController
+from al_dic.gui.icons import icon_app
 from al_dic.gui.panels.canvas_area import CanvasArea
 from al_dic.gui.panels.left_sidebar import LeftSidebar
 from al_dic.gui.panels.right_sidebar import RightSidebar
 from al_dic.gui.theme import COLORS, build_stylesheet
+
+
+def _enable_dark_title_bar(window: QMainWindow) -> None:
+    """Enable immersive dark title bar on Windows 10/11."""
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+        hwnd = int(window.winId())
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        ctypes.windll.dwmapi.DwmSetWindowAttribute(
+            hwnd,
+            DWMWA_USE_IMMERSIVE_DARK_MODE,
+            ctypes.byref(ctypes.c_int(1)),
+            ctypes.sizeof(ctypes.c_int),
+        )
+    except Exception:  # pragma: no cover
+        pass  # non-critical — fall back to default title bar
 
 
 class MainWindow(QMainWindow):
@@ -28,8 +47,10 @@ class MainWindow(QMainWindow):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("AL-DIC v0.1")
+        self.setWindowTitle("pyALDIC")
+        self.setWindowIcon(icon_app())
         self.setMinimumSize(1380, 800)
+        _enable_dark_title_bar(self)
 
         central = QWidget()
         self.setCentralWidget(central)

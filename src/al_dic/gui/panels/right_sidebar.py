@@ -195,7 +195,7 @@ class RightSidebar(QWidget):
         console_header.addWidget(lbl)
         console_header.addStretch()
         clear_btn = QPushButton("Clear")
-        clear_btn.setFixedSize(40, 20)
+        clear_btn.setFixedSize(56, 20)
         clear_btn.setStyleSheet(
             f"font-size: 10px; color: {COLORS.TEXT_MUTED}; border: none;"
         )
