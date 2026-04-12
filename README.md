@@ -175,12 +175,12 @@ export_mat(out, "result", "run01", result, fields=fields)
 
 | Config | Nodes | Local DIC | Local POIs/s | AL-DIC (3 iter) | AL-DIC POIs/s |
 |--------|-------|-----------|-------------|-----------------|---------------|
-| 256², step=8 | 784 | 0.07 s | ~12,000 | 0.25 s | ~3,100 |
-| 512², step=8 | 3,600 | 0.40 s | ~9,000 | 1.8 s | ~2,000 |
-| 512², step=4 | 14,400 | 1.5 s | ~9,500 | 9.7 s | ~1,500 |
-| 1024², step=4 | 61,504 | 7.0 s | ~8,800 | 30 s | ~2,100 |
+| 256², step=8 | 784 | 0.012 s | ~67,000 | 0.037 s | ~21,000 |
+| 512², step=8 | 3,600 | 0.038 s | ~95,000 | 0.14 s | ~25,000 |
+| 512², step=4 | 14,400 | 0.16 s | ~90,000 | 0.63 s | ~23,000 |
+| 1024², step=4 | 61,504 | 0.75 s | ~82,000 | 2.9 s | ~21,000 |
 
-Full pipeline time (mesh + FFT + solve). Numba JIT, post-warmup. First run adds ~0.5 s for compilation.
+Per-frame solver time (IC-GN + ADMM), excluding one-time precomputation. Numba JIT, post-warmup. First run adds ~0.5 s for compilation.
 
 ---
 
