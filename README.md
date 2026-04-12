@@ -99,12 +99,18 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
 ### Installation
 
 ```bash
+pip install al-dic
+```
+
+For development (editable install with test dependencies):
+
+```bash
 git clone https://github.com/zachtong/pyALDIC.git
 cd pyALDIC
 pip install -e ".[dev]"
 ```
 
-Requires Python >= 3.10. Dependencies: NumPy, SciPy, OpenCV, Numba, scikit-image, PySide6.
+Requires Python >= 3.10.
 
 ### Launch GUI
 
