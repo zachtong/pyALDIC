@@ -1,0 +1,60 @@
+\section{Loading images}
+\label{sec:loading-images}
+
+\subsection{Dropping or browsing a folder}
+
+Click the drop zone or drag a folder of image files onto it. Every
+image in the folder is loaded in natural sort order. The first image
+is always treated as the reference frame (frame 1 in the UI,
+index 0 internally).
+
+Supported formats: \texttt{.tif}, \texttt{.tiff}, \texttt{.png},
+\texttt{.bmp}, \texttt{.jpg}, \texttt{.jpeg}. Grayscale is assumed;
+RGB inputs are converted to luminance on load.
+
+\begin{warnbox}
+All images in the folder must have the same dimensions. If they
+don't, loading stops and an error dialog tells you which image is
+the first mismatch.
+\end{warnbox}
+
+\subsection{The image list}
+
+After loading, the left sidebar shows three columns:
+
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Column & Width & Content \\
+  \midrule
+  \# & fixed & 1-based frame number \\
+  Filename & flex & file name without extension \\
+  Region & 50 px & Need / Edit / Add button \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+The \emph{Region} column button changes its label based on state:
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[\textcolor{aldicred}{\textbf{Need}}]
+    This frame is a reference frame (per the current workflow type)
+    and does not yet have a Region of Interest.
+  \item[\textcolor{aldicgreen}{\textbf{Edit}}]
+    This frame already has a Region of Interest; click to modify it.
+  \item[Add]
+    This frame is \emph{not} a required reference frame, but you can
+    optionally add one.
+\end{description}
+
+Clicking any row's button activates Region of Interest editing for
+that specific frame; the canvas switches to show that frame's
+reference and the \emph{EDITING REGION OF INTEREST FOR FRAME xx}
+banner appears.
+
+\subsection{Navigating frames}
+
+The frame slider at the bottom of the canvas scrubs through the
+sequence. Clicking a row in the image list also jumps to that frame.
+Keyboard: left/right arrow keys move by one frame when the canvas
+has focus.

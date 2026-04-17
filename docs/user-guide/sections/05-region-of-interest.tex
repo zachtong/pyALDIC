@@ -1,0 +1,109 @@
+\section{Drawing a Region of Interest}
+\label{sec:region-of-interest}
+
+\subsection{Live hint}
+
+The top of the \emph{Region of Interest} section is a blue-accent
+info box that updates live as you change the workflow type. It tells
+you exactly which frames need a region:
+
+\begin{itemize}
+  \item \emph{Accumulative} $\to$ ``Only frame 1 needs a Region of
+    Interest. All later frames are compared against it directly.''
+  \item \emph{Incremental + Every Frame} $\to$ ``Frame 1 needs a
+    Region of Interest. It is automatically warped forward to each
+    later frame.''
+  \item \emph{Incremental + Every N Frames} $\to$ ``Draw a Region of
+    Interest on frames: 1, 6, 11, 16, \ldots''
+  \item \emph{Incremental + Custom Frames} $\to$ Lists your custom
+    reference frame indices.
+\end{itemize}
+
+\subsection{The Region of Interest toolbar}
+
+Three rows of buttons, from top to bottom:
+
+\subsubsection*{Row 1 --- Shape operations}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[+ Add $\blacktriangledown$]
+    Opens a popup menu: Polygon / Rectangle / Circle. Pick one, then
+    draw on the canvas. The drawn region is added (OR'd) to the
+    Region of Interest mask.
+  \item[\ding{46} Cut $\blacktriangledown$]
+    Same menu, but the drawn region is subtracted (AND-NOT) from the
+    Region of Interest mask. Use this to cut holes around features
+    you don't want to track (bubbles, voids, damaged areas).
+  \item[+ Refine $\blacktriangledown$]
+    Paint brush for marking mesh-refinement zones (does \emph{not}
+    change the Region of Interest --- it marks areas where the
+    quadtree mesh should be subdivided for finer resolution).
+\end{description}
+
+\begin{warnbox}
+The Refine brush is gated to frame 1 only. On any other frame the
+button renders with a dashed border and muted colours; hovering shows
+the explanation. This is because the brush paints in frame-1 pixel
+coordinates and is automatically warped forward --- painting on a
+deformed frame would place refinement zones in the wrong material
+points.
+\end{warnbox}
+
+\subsubsection*{Row 2 --- Import / Batch Import}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Import]
+    Load a grayscale / binary image and use it as the Region of
+    Interest for the currently-edited frame. Any pixel above zero
+    counts as ``inside''.
+  \item[Batch Import]
+    Opens a dialog to import several mask files at once and assign
+    them to specific frames. Useful when you have pre-segmented
+    masks from e.g.\ SAM, thresholding, or a dedicated segmentation
+    tool.
+\end{description}
+
+\subsubsection*{Row 3 --- Save / Invert / Clear}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Save]
+    Writes the current frame's Region of Interest mask to a PNG.
+  \item[Invert]
+    Flips inside/outside on the current frame.
+  \item[Clear]
+    Empties the current frame's Region of Interest mask. Does not
+    delete other frames' regions.
+\end{description}
+
+\subsection{Drawing shapes}
+
+After selecting a shape from Add or Cut:
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Polygon]
+    Click to place vertices, double-click or press Enter to close.
+    Right-click to cancel.
+  \item[Rectangle]
+    Click-drag to define the bounding box.
+  \item[Circle]
+    Click the centre, drag outward to set the radius, release to
+    commit.
+\end{description}
+
+While drawing, the toolbar button for the active mode highlights.
+The canvas cursor changes to a crosshair. Click \emph{Esc} or the
+already-highlighted button again to cancel.
+
+\subsection{Per-frame editing}
+
+Click the Region column button for any frame to jump to editing that
+frame's region. The canvas shows the selected frame's image (in
+frame-1 coordinates for accumulative mode, or whichever ref frame
+you're editing for incremental). A banner overlays the top of the
+canvas:
+
+\begin{center}
+  \texttt{EDITING REGION OF INTEREST FOR FRAME 07}
+\end{center}
+
+Changes are committed as soon as you finish a shape operation.

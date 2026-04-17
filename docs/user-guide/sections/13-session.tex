@@ -1,0 +1,79 @@
+\section{Sessions --- save and resume}
+\label{sec:session}
+
+pyALDIC can serialize your entire setup (image folder reference,
+parameters, Regions of Interest, physical units) into a single
+JSON file so you can close the application and pick up exactly
+where you left off.
+
+\subsection{File format}
+
+\begin{itemize}
+  \item Extension: \texttt{.aldic.json}
+  \item Single-file portable: the Regions of Interest are stored
+        inline as base64-encoded PNG.
+  \item Versioned: the top-level key \texttt{schema\_version}
+        protects against silent misinterpretation of newer schemas.
+\end{itemize}
+
+\subsection{What is saved}
+
+\begin{itemize}
+  \item Image folder path and the ordered list of filenames.
+  \item Every per-frame Region of Interest mask.
+  \item Core DIC parameters: subset size, step, search range,
+        tracking mode, reference-update policy, solver choice,
+        refinement settings, initial-guess mode.
+  \item Physical units (pixel size, unit, frame rate).
+\end{itemize}
+
+\subsection{What is not saved}
+
+\begin{itemize}
+  \item Pipeline results (re-run with Run --- cheap vs.\ re-
+        configuring).
+  \item Run state / progress / elapsed time.
+  \item Transient visualization preferences (colormaps, opacity,
+        colour ranges).
+\end{itemize}
+
+\subsection{Menu}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[File $\to$ Save Session\ldots] (\texttt{Ctrl+S})
+    Opens a file dialog. Suggested extension
+    \texttt{*.aldic.json}. Overwrites if the file exists.
+  \item[File $\to$ Open Session\ldots] (\texttt{Ctrl+O})
+    Opens a file dialog. Filter: \texttt{pyALDIC Session
+    (*.aldic.json)}.
+\end{description}
+
+\subsection{Opening a session whose images moved}
+
+If the image folder path in the session no longer exists, pyALDIC
+does \emph{not} fail the load. Instead it:
+\begin{enumerate}
+  \item Restores parameters and Regions of Interest.
+  \item Logs a warning: ``Image folder ... no longer exists;
+        parameters and Regions of Interest were restored but images
+        must be re-selected manually.''
+  \item Leaves the image list empty.
+\end{enumerate}
+
+You can then drop a new folder of the same images and the Regions
+of Interest will still be aligned.
+
+\begin{tipbox}
+This behaviour is deliberate so you can share a \texttt{.aldic.json}
+file with a colleague whose images live at a different path.
+They re-drop the images; all parameters and Regions of Interest
+come along.
+\end{tipbox}
+
+\subsection{Corrupt or future-version files}
+
+Malformed JSON, non-object root, or an unknown
+\texttt{schema\_version} raise a modal error dialog. The fatal-
+error path is used so you cannot miss the failure. The application
+keeps whatever state it had before the attempted load; nothing is
+silently replaced.

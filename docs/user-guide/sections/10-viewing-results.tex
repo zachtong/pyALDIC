@@ -1,0 +1,83 @@
+\section{Viewing results}
+\label{sec:viewing-results}
+
+After a run, the right sidebar populates with field-viewing
+controls. The canvas shows a colour-mapped overlay of the selected
+field on the background image.
+
+\subsection{FIELD section}
+
+Two toggle buttons (exclusive): \textbf{Disp U} and \textbf{Disp V}.
+Selected field is highlighted; clicking the other switches.
+
+Below the toggles, the \emph{Show on deformed frame} checkbox (see
+Section~\ref{sec:canvas}) controls whether the overlay plots on the
+deformed frame or the reference.
+
+\subsection{VISUALIZATION section}
+
+\subsubsection*{Colormap}
+
+Eight built-in maps: \texttt{jet}, \texttt{viridis}, \texttt{turbo},
+\texttt{coolwarm}, \texttt{plasma}, \texttt{inferno},
+\texttt{RdBu\_r}, \texttt{seismic}.
+
+\emph{RdBu\_r} and \emph{seismic} are diverging (white at zero);
+best for displacement that crosses zero.
+
+pyALDIC remembers the colormap choice per-field. Switching from
+\texttt{disp\_u} to \texttt{disp\_v} restores whatever map you set
+last time for that field.
+
+\subsubsection*{Color Range}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Auto (default)]
+    Range is set from the 2--98 percentile of visible node values
+    (excludes extreme outliers but uses real data).
+  \item[Manual]
+    Uncheck Auto, then type \emph{Min} and \emph{Max} explicitly.
+    Useful for reporting (all frames share one range) or when you
+    know the physically meaningful bounds.
+\end{description}
+
+\subsubsection*{Opacity}
+
+Slider (0--100\%). Default 70\%. Adjusts the alpha blending between
+the field overlay and the background image.
+
+\subsection{PHYSICAL UNITS section}
+
+A checkbox plus two fields:
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Pixel Size]
+    Numeric value, dropdown unit (nm, \textmu m, mm, cm, m, inch).
+    Converts raw pixel displacements to physical length on all
+    displacement-family fields.
+  \item[Frame Rate]
+    Used to convert inter-frame velocity ($\Delta U / $ frame) to
+    physical speed (length / s).
+\end{description}
+
+Strain fields are dimensionless and unaffected by these settings.
+
+\subsection{Console log}
+
+Scrollable read-only widget at the bottom of the right sidebar.
+Colour-coded by severity:
+
+\begin{center}
+\begin{tabular}{ll}
+  \toprule
+  Level & Colour \\
+  \midrule
+  info     & blue / white \\
+  warning  & yellow       \\
+  error    & red          \\
+  success  & green        \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Every line is prefixed with a \texttt{HH:MM:SS} timestamp.

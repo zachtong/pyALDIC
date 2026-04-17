@@ -15,8 +15,9 @@ reports/
 # Development scripts (benchmarks, reports, profiling)
 scripts/
 
-# Development plan docs
-docs/
+# Development plan docs are local-only; docs/user-guide/ is versioned.
+docs/plans/
+docs/CODEMAPS/
 
 # MATLAB legacy code
 matlab-legacy/

@@ -1,0 +1,69 @@
+\section{Overview}
+\label{sec:overview}
+
+pyALDIC computes full-field displacement and strain from a sequence
+of grayscale images of a deforming specimen. The typical workflow,
+from left to right through the GUI, is:
+
+\begin{enumerate}
+  \item \textbf{Load images} (a folder of frames, first frame = reference).
+  \item \textbf{Choose Workflow Type} --- tracking mode, solver, and
+    reference-update policy. These choices are made \emph{before}
+    drawing a Region of Interest because they determine which frames
+    need one.
+  \item \textbf{Draw a Region of Interest} on the required frame(s).
+  \item \textbf{Set DIC parameters} --- subset size, node spacing,
+    search range, mesh refinement.
+  \item \textbf{Run the analysis.} Progress, Cancel, and console log
+    are on the right panel.
+  \item \textbf{View displacement results} live in the canvas.
+  \item \textbf{Compute strain} in the Strain Post-Processing window
+    (opens automatically when the run finishes).
+  \item \textbf{Export} numerical data, images, or animations.
+\end{enumerate}
+
+\begin{notebox}
+pyALDIC does \textbf{not} require you to pre-compute calibration,
+stereo matching, or any 3D reconstruction. It is strictly 2D DIC
+(one camera, planar specimen). If the specimen moves out of plane or
+the illumination changes significantly between frames, results will
+degrade and the GUI will warn you.
+\end{notebox}
+
+\subsection{Three-column layout}
+
+The main window has three columns:
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Left sidebar]
+    Images panel, \emph{Workflow Type} section, \emph{Region of
+    Interest} section, \emph{Parameters} section, and a collapsible
+    \emph{Advanced} section.
+  \item[Centre canvas]
+    Zoom / pan viewport showing the current frame with overlays
+    (ROI, mesh, displacement field).
+  \item[Right sidebar]
+    Run button, progress bar, field selector (disp\_u, disp\_v,
+    etc.), visualization controls (colormap, range, opacity),
+    physical units, and console log.
+\end{description}
+
+\subsection{Typical session times}
+
+On a modern laptop (8-core CPU, 16 GB RAM):
+
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Image size & Grid spacing & Time per frame \\
+  \midrule
+  $256 \times 256$  & step 8   & $\sim$ 0.2 s \\
+  $512 \times 512$  & step 8   & $\sim$ 1 s   \\
+  $1024 \times 1024$ & step 4  & $\sim$ 3 s   \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Times scale linearly with the number of mesh nodes. The
+\emph{Local DIC} solver is roughly $3\times$ faster than
+\emph{AL-DIC}.

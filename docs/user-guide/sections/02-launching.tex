@@ -1,0 +1,47 @@
+\section{Installing and launching}
+\label{sec:launching}
+
+\subsection{Installation}
+
+From PyPI:
+\begin{lstlisting}[language=bash]
+pip install al-dic
+\end{lstlisting}
+
+From source (for development):
+\begin{lstlisting}[language=bash]
+git clone https://github.com/zachtong/pyALDIC.git
+cd pyALDIC
+pip install -e ".[dev]"
+\end{lstlisting}
+
+Requires Python 3.10 or newer.
+
+\subsection{Launching the GUI}
+
+\begin{lstlisting}[language=bash]
+al-dic
+# or equivalently
+python -m al_dic
+\end{lstlisting}
+
+The window opens at a fixed 1380$\times$800 minimum size. You can
+resize it to taste; the three columns keep their proportions.
+
+\subsection{What you should see first}
+
+The first time the window opens:
+\begin{itemize}
+  \item The left image list is empty and shows a drop zone that reads
+    \emph{``Drop image folder or Browse''}.
+  \item The centre canvas shows an empty dark background.
+  \item The right sidebar shows a disabled \textbf{Run DIC Analysis}
+    button (you cannot run without images and a Region of Interest).
+\end{itemize}
+
+\begin{tipbox}
+All user-visible text uses the full phrase \emph{Region of Interest}
+instead of the DIC jargon ``ROI''. The 50-pixel Region column in the
+image list is abbreviated to ``Region'' to fit, with
+Need/Edit/Add button labels inside.
+\end{tipbox}

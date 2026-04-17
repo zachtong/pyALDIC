@@ -1,0 +1,127 @@
+\section{Strain post-processing}
+\label{sec:strain-processing}
+
+The Strain window is a separate top-level window that opens
+automatically when a Run completes. It computes strain from the
+stored displacement field, with its own parameter panel and its own
+visualization state (independent of the main window).
+
+You can also open it manually via the \textbf{Open Strain Window}
+button in the right sidebar.
+
+\subsection{Strain Parameters panel}
+
+Three editors from top to bottom:
+
+\subsubsection*{Method}
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Plane fitting (default)]
+    Weighted moving least-squares fit of a first-order polynomial to
+    the displacement field inside a virtual strain gauge (VSG).
+    Gaussian weights with the VSG radius as $\sigma$. Robust,
+    smooths local noise.
+  \item[FEM nodal]
+    Strain from shape-function derivatives of the FEM mesh. Higher
+    spatial resolution but more sensitive to per-node noise.
+\end{description}
+
+\subsubsection*{VSG size (plane fitting only)}
+
+Virtual Strain Gauge diameter in pixels. Odd integer. Default 41.
+Larger = more smoothing. The field reports radius internally as
+$(VSG - 1) / 2$.
+
+\subsubsection*{Strain field smoothing}
+
+Gaussian smoothing of the strain tensor field \emph{after}
+computation (not a displacement smoother). Dropdown with four
+presets and a warning glyph on the aggressive one:
+
+\begin{center}
+\begin{tabular}{lll}
+  \toprule
+  Preset & $\sigma$ relative to step & Behaviour \\
+  \midrule
+  Off                  & 0    & No smoothing \\
+  Light                & 0.5  & Subtle, preserves fine features \\
+  Medium               & 1.0  & Balanced (recommended for noisy data) \\
+  Strong $\blacktriangle$ & 2.0 & Aggressive, may blur real gradients \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Here ``step'' is the DIC node spacing (the value you set as
+\emph{Subset Step} in the main window). Smoothing smaller than
+$0.5 \times $ step has essentially no effect because the Gaussian
+kernel cannot reach any neighbour node; $2 \times $ step is the
+upper bound of ``useful'' smoothing.
+
+\subsubsection*{Strain type}
+
+The strain measure the output fields report:
+
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Infinitesimal (default)]
+    $\varepsilon = \frac{1}{2}(\nabla u + \nabla u^T)$. Accurate for
+    small deformation only. \emph{Not} zero under finite rigid
+    rotation --- it reports $\cos\theta - 1$ as false strain.
+  \item[Eulerian--Almansi]
+    $e = \frac{1}{2}(I - F^{-T} F^{-1})$. Reported in the current
+    (deformed) configuration.
+  \item[Green--Lagrangian]
+    $E = \frac{1}{2}(F^T F - I)$. Reported in the reference
+    configuration. \textbf{Exactly zero under rigid rotation.} Use
+    this for any experiment with rotation $>$ 2\textdegree{}.
+\end{description}
+
+\subsection{Compute Strain button}
+
+Green primary button below the parameters. Click to recompute strain
+with the current panel settings. Runs in a background thread; a
+progress bar shows per-frame progress.
+
+If you haven't changed any parameter and the strain is already
+computed, the stale warning label stays empty. If you change
+anything, a yellow \emph{Params changed --- click Compute Strain}
+hint appears.
+
+\subsection{Strain field selector}
+
+Below the parameters, a radio-style selector with all available
+fields:
+
+\begin{itemize}
+  \item \textbf{Displacement} (shared with main window):
+        \texttt{disp\_u}, \texttt{disp\_v}, \texttt{disp\_magnitude},
+        \texttt{velocity}
+  \item \textbf{Strain components}:
+        \texttt{strain\_exx}, \texttt{strain\_eyy}, \texttt{strain\_exy}
+  \item \textbf{Derived strains}:
+        \texttt{strain\_principal\_max},
+        \texttt{strain\_principal\_min},
+        \texttt{strain\_maxshear},
+        \texttt{strain\_von\_mises},
+        \texttt{strain\_rotation} (polar-decomposition rotation
+        angle in degrees)
+\end{itemize}
+
+Visualization controls (colormap, range, opacity) and physical-unit
+settings mirror the main window's but are \emph{independent}: the
+strain window remembers its own colormap and range choices per
+field.
+
+\subsection{Strain vs main window}
+
+\begin{center}
+\begin{tabular}{p{4cm}p{4cm}p{4cm}}
+  \toprule
+  & Main window & Strain window \\
+  \midrule
+  Shows & Displacement field & Strain fields (plus disp) \\
+  State  & Shared AppState & Private viz state \\
+  Export button & Export Results & Export Results (same dialog) \\
+  Frame navigator & Shared & Private \\
+  \bottomrule
+\end{tabular}
+\end{center}

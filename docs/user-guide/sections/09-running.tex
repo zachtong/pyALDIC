@@ -1,0 +1,60 @@
+\section{Running the DIC}
+\label{sec:running}
+
+\subsection{The Run button}
+
+The big blue \textbf{Run DIC Analysis} button at the top of the
+right sidebar starts the pipeline. It is disabled until:
+\begin{itemize}
+  \item At least 2 images are loaded,
+  \item Frame 1 has a non-empty Region of Interest.
+\end{itemize}
+
+If either condition fails, clicking Run (or trying to) raises a
+modal dialog telling you exactly what is missing.
+
+\subsection{Cancelling}
+
+Below Run is a single red \textbf{Cancel} button (replaces the older
+Pause + Stop pair). It is enabled while the pipeline is running.
+
+Cancelling stops the current run cleanly: already-computed frames
+are kept, no further frames are processed, and state returns to
+IDLE (not DONE, so the Export button stays disabled).
+
+\subsection{Progress display}
+
+Below the Cancel button:
+
+\begin{itemize}
+  \item Thin blue progress bar (0--100 \% of the full pipeline).
+  \item Text label with the current stage
+        (\emph{Section 3: FFT initial search},
+        \emph{Section 6: IC-GN local solve},
+        \emph{S8: Frame 5/19}, \ldots).
+  \item ELAPSED / REMAINING timestamps.
+\end{itemize}
+
+\subsection{Fatal errors}
+
+The console log (bottom of the right sidebar) collects every info,
+warning, and error message with a timestamp. \emph{Fatal} errors
+(missing images, Region of Interest too small, pipeline-side
+exceptions) also trigger a modal dialog. The dialog shows a plain-
+English summary; the full traceback stays in the console log.
+
+\begin{warnbox}
+The console can scroll off-screen if many info messages accumulate.
+Fatal errors will not be missed because of the modal dialog, but
+warnings can be. If something looks wrong, check the console log.
+\end{warnbox}
+
+\subsection{Completion}
+
+When the run finishes cleanly, the Strain Post-Processing window
+opens automatically (see section \ref{sec:strain-processing}). The
+Run button re-enables for another run; the Export button becomes
+active.
+
+If the run is cancelled or fails, Strain does not open automatically
+and Export stays disabled.

@@ -1,0 +1,84 @@
+\section{Exporting}
+\label{sec:export}
+
+Both the main window and the Strain window have an \textbf{Export
+Results} button. Both open the \emph{same} dialog. The difference is
+only which visualization preset (colormap, range, deformed toggle)
+seeds the dialog --- whichever window you opened it from.
+
+\subsection{The Export dialog}
+
+Four tabs at the top of the dialog:
+
+\subsubsection*{Data tab}
+
+Check boxes for numeric-data formats:
+\begin{itemize}
+  \item \textbf{NPZ} --- NumPy compressed archive; preferred for
+        Python downstream.
+  \item \textbf{MAT} --- MATLAB v7.3 HDF5 file.
+  \item \textbf{CSV} --- one row per node per frame; plain text,
+        large.
+\end{itemize}
+
+Plus a multi-select list of which fields to include (displacement,
+strain components, derived strains, rotation).
+
+\subsubsection*{Images tab}
+
+Per-field list with Enable / Colormap / Range / Background options
+for rendering each field as PNG / JPG / TIFF / PDF. One file per
+frame per enabled field.
+
+\begin{tipbox}
+\textbf{Include colorbar} is ON by default. Images without a
+colorbar show coloured patches but no scale, which is almost never
+useful for quantitative reports. Uncheck it only if you plan to
+composite a manually-placed colorbar in Illustrator / Inkscape.
+\end{tipbox}
+
+Adjustable settings:
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Image format]
+    png / jpg / tif / pdf. PNG is lossless and near-universal; use
+    PDF for figures you will embed in LaTeX.
+  \item[DPI] 72 / 150 / 300 / 600. 300 is print-quality.
+  \item[Background]
+    \emph{Reference frame}: all frames rendered on the reference.
+    \emph{Current frame}: each frame rendered on its deformed image.
+\end{description}
+
+\subsubsection*{Animations tab}
+
+Render an MP4 / GIF for each selected field, sweeping through
+frames. Configurable FPS (usually match the frame rate of the
+experiment). Colorbar on by default here too.
+
+\begin{warnbox}
+MP4 export requires \texttt{ffmpeg} on your system PATH. If ffmpeg is
+missing, the dialog will switch silently to GIF and log a warning.
+\end{warnbox}
+
+\subsubsection*{Report tab}
+
+Generates a multi-page PDF summarizing the run: parameters, key
+fields at mid and last frame, RMSE (if ground truth is available),
+and optional thumbnail animation.
+
+\subsection{Destination folder}
+
+At the top of the dialog. Defaults to
+\texttt{<image\_folder>/al-dic-export/<timestamp>/}. Click
+\emph{Browse} to pick a different location. Exports are written
+inside that folder with a user-supplied prefix (default
+\texttt{result}).
+
+\subsection{Running an export}
+
+Click the primary \textbf{Export} button at the bottom. Progress
+shows per-file (data) and per-frame (images / animations). The
+Cancel button stops cleanly; already-written files are kept.
+
+When the export completes, a green success message tells you how
+many files were written and their location. The dialog stays open
+so you can export more formats; click Close when done.
