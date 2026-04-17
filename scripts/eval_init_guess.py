@@ -946,6 +946,293 @@ def evaluate_all(
 
 
 # ---------------------------------------------------------------------
+# PDF report (stage D)
+# ---------------------------------------------------------------------
+
+def _render_report(
+    runs: list[ScenarioRun],
+    output_path: Path,
+) -> None:
+    """Build the final multi-page evaluation PDF."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_pdf import PdfPages
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Index: {(strategy, scenario) -> ScenarioRun}
+    idx: dict[tuple[str, str], ScenarioRun] = {
+        (r.strategy_name, r.scenario_name): r for r in runs
+    }
+    strategies = sorted({r.strategy_name for r in runs})
+    scenarios = sorted({r.scenario_name for r in runs})
+
+    # Stable ordering: original insertion order
+    strategy_order: list[str] = []
+    scenario_order: list[str] = []
+    for r in runs:
+        if r.strategy_name not in strategy_order:
+            strategy_order.append(r.strategy_name)
+        if r.scenario_name not in scenario_order:
+            scenario_order.append(r.scenario_name)
+
+    with PdfPages(str(output_path)) as pdf:
+        _page_cover(pdf, runs, strategy_order, scenario_order)
+        _page_summary_matrix(pdf, idx, strategy_order, scenario_order)
+        _page_pareto(pdf, runs)
+        _page_per_scenario_curves(pdf, idx, strategy_order, scenario_order)
+        _page_recommendation(pdf, idx, strategy_order, scenario_order)
+
+    print(f"\nReport saved to: {output_path}")
+
+
+def _page_cover(pdf, runs, strategies, scenarios) -> None:
+    import matplotlib.pyplot as plt
+    fig = plt.figure(figsize=(11, 8.5))
+    fig.text(0.5, 0.72, "IC-GN Initial-Guess Strategy Evaluation",
+             fontsize=22, ha="center", weight="bold")
+    fig.text(0.5, 0.66,
+             f"{len(strategies)} strategies \u00d7 {len(scenarios)} scenarios "
+             f"\u00d7 {N_FRAMES-1} frames each",
+             fontsize=12, ha="center", color="0.3")
+    total_time = sum(r.total_time_s for r in runs)
+    fig.text(0.5, 0.60,
+             f"Total IC-GN + init time: {total_time:.1f}s",
+             fontsize=11, ha="center", color="0.4")
+
+    body = (
+        "Goal\n"
+        "----\n"
+        "Quantify how much the choice of initial guess affects IC-GN\n"
+        "accuracy, convergence, and runtime across diverse motion\n"
+        "scenarios (constant velocity, acceleration, reversal,\n"
+        "impulse, chirp, stop-and-go, random, plus spatial\n"
+        "discontinuities).\n\n"
+        "Strategies\n"
+        "----------\n"
+        "  previous        - U_t = U_{t-1}  (current default)\n"
+        "  linear_extrap   - U_t = 2 U_{t-1} - U_{t-2}\n"
+        "  narrow_fft_R5   - per-node FFT, \u00b15 px window around\n"
+        "                    U_{t-1}, auto-expands on clipped peaks\n"
+        "  adaptive_t{N}   - 'previous' with FFT fallback when the\n"
+        "                    previous IC-GN convergence rate fell\n"
+        "                    below N%\n"
+        "  fft_every       - full FFT every frame (baseline)\n\n"
+        "All FFT paths use the pyALDIC auto-expand loop (2\u00d7 retries up\n"
+        "to image/2)."
+    )
+    fig.text(0.12, 0.50, body, fontsize=10, family="monospace",
+             va="top", linespacing=1.4)
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _page_summary_matrix(pdf, idx, strategy_order, scenario_order) -> None:
+    """Three side-by-side heatmaps: RMSE, convergence, total time."""
+    import matplotlib.pyplot as plt
+
+    n_s = len(strategy_order)
+    n_c = len(scenario_order)
+    rmse = np.full((n_c, n_s), np.nan)
+    conv = np.full((n_c, n_s), np.nan)
+    tsec = np.full((n_c, n_s), np.nan)
+    for i, sc in enumerate(scenario_order):
+        for j, st in enumerate(strategy_order):
+            r = idx.get((st, sc))
+            if r is None:
+                continue
+            rmse[i, j] = r.mean_rmse
+            conv[i, j] = r.mean_convergence
+            tsec[i, j] = r.total_time_s
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 0.4 * n_c + 2))
+    fig.suptitle("Per-(strategy, scenario) summary",
+                 fontsize=13, weight="bold")
+
+    # Short scenario labels (drop the T#_ prefix to save horizontal space)
+    sc_labels = [s for s in scenario_order]
+
+    for ax, data, title, cmap, fmt in [
+        (axes[0], rmse, "mean RMSE (px, log)", "viridis_r", "{:.2f}"),
+        (axes[1], conv * 100, "mean conv rate (%)", "viridis", "{:.0f}"),
+        (axes[2], tsec, "total time (s)", "viridis_r", "{:.2f}"),
+    ]:
+        if title.startswith("mean RMSE"):
+            plot_data = np.log10(np.maximum(data, 1e-4))
+            im = ax.imshow(plot_data, cmap=cmap, aspect="auto")
+        else:
+            im = ax.imshow(data, cmap=cmap, aspect="auto")
+        ax.set_xticks(range(n_s))
+        ax.set_xticklabels(strategy_order, rotation=45, ha="right",
+                           fontsize=7)
+        ax.set_yticks(range(n_c))
+        ax.set_yticklabels(sc_labels, fontsize=7)
+        ax.set_title(title, fontsize=10)
+        # Annotate
+        for i in range(n_c):
+            for j in range(n_s):
+                v = data[i, j]
+                if np.isfinite(v):
+                    ax.text(j, i, fmt.format(v), ha="center", va="center",
+                            fontsize=6, color="white")
+        plt.colorbar(im, ax=ax, shrink=0.7)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _page_pareto(pdf, runs) -> None:
+    """Accuracy vs speed scatter, aggregated across scenarios."""
+    import matplotlib.pyplot as plt
+    # Per strategy: median RMSE and median total_time
+    by_strat: dict[str, list[ScenarioRun]] = {}
+    for r in runs:
+        by_strat.setdefault(r.strategy_name, []).append(r)
+
+    fig, ax = plt.subplots(figsize=(9, 6))
+    colors = plt.cm.tab10(np.linspace(0, 1, len(by_strat)))
+    for (strat, rs), color in zip(by_strat.items(), colors):
+        # Filter NaN RMSE
+        rm = [r.mean_rmse for r in rs if np.isfinite(r.mean_rmse)]
+        ts = [r.total_time_s for r in rs
+              if np.isfinite(r.mean_rmse)]
+        if not rm:
+            continue
+        ax.scatter(ts, rm, label=strat, s=60, alpha=0.6, color=color)
+        med_t = float(np.median(ts))
+        med_r = float(np.median(rm))
+        ax.scatter([med_t], [med_r], s=200, marker="*",
+                   edgecolor="black", linewidth=1.2, color=color, zorder=10)
+
+    ax.set_xlabel("Total per-scenario time (init + IC-GN) [s]")
+    ax.set_ylabel("Mean RMSE on converged nodes [px]")
+    ax.set_yscale("log")
+    ax.grid(True, which="both", alpha=0.3)
+    ax.set_title("Accuracy vs. speed — dots = scenarios, \u2605 = median "
+                 "per strategy",
+                 fontsize=11, weight="bold")
+    ax.legend(fontsize=9, loc="best")
+    fig.tight_layout()
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+def _page_per_scenario_curves(pdf, idx, strategy_order, scenario_order) -> None:
+    """One page per scenario: per-frame RMSE + per-frame time for all
+    strategies."""
+    import matplotlib.pyplot as plt
+
+    colors = plt.cm.tab10(np.linspace(0, 1, len(strategy_order)))
+
+    for sc in scenario_order:
+        fig, (ax_r, ax_t) = plt.subplots(
+            2, 1, figsize=(11, 7), sharex=True,
+        )
+        fig.suptitle(f"{sc}", fontsize=12, weight="bold")
+
+        for strat, color in zip(strategy_order, colors):
+            r = idx.get((strat, sc))
+            if r is None:
+                continue
+            frames = [f.frame for f in r.frames]
+            rmse = [f.rmse_total for f in r.frames]
+            tms = [(f.init_time_s + f.icgn_time_s) * 1000
+                   for f in r.frames]
+            ax_r.plot(frames, rmse, "o-", label=strat, color=color,
+                      markersize=4, linewidth=1.2, alpha=0.8)
+            ax_t.plot(frames, tms, "o-", label=strat, color=color,
+                      markersize=4, linewidth=1.2, alpha=0.8)
+
+        ax_r.set_ylabel("per-frame RMSE [px]")
+        ax_r.set_yscale("log")
+        ax_r.grid(True, which="both", alpha=0.3)
+        ax_r.legend(fontsize=8, loc="best", ncol=2)
+        ax_t.set_xlabel("frame")
+        ax_t.set_ylabel("per-frame time [ms]")
+        ax_t.set_yscale("log")
+        ax_t.grid(True, which="both", alpha=0.3)
+
+        fig.tight_layout(rect=[0, 0, 1, 0.96])
+        pdf.savefig(fig)
+        plt.close(fig)
+
+
+def _page_recommendation(pdf, idx, strategy_order, scenario_order) -> None:
+    """Text page with an auto-derived recommendation table.
+
+    For each scenario, pick the 'best' strategy by composite score =
+    rmse / baseline_rmse + log10(time / baseline_time).
+    """
+    import matplotlib.pyplot as plt
+
+    fig = plt.figure(figsize=(11, 8.5))
+    fig.text(0.5, 0.96, "Scenario \u2192 recommended strategy",
+             fontsize=14, ha="center", weight="bold")
+
+    headers = ["Scenario", "Best strategy",
+               "RMSE (px)", "Conv %", "Time (s)", "Notes"]
+    rows: list[list[str]] = []
+
+    for sc in scenario_order:
+        # Pick the row among candidates with best composite: min RMSE
+        # subject to conv >= 90%. If nothing meets conv bar, pick min
+        # RMSE overall.
+        candidates = [
+            (st, idx.get((st, sc))) for st in strategy_order
+            if idx.get((st, sc)) is not None
+        ]
+        if not candidates:
+            rows.append([sc, "-", "-", "-", "-", "no data"])
+            continue
+
+        good = [
+            (st, r) for st, r in candidates
+            if r.mean_convergence >= 0.90 and np.isfinite(r.mean_rmse)
+        ]
+        pool = good if good else [
+            (st, r) for st, r in candidates if np.isfinite(r.mean_rmse)
+        ]
+        if not pool:
+            rows.append([sc, "-", "-", "-", "-", "all diverged"])
+            continue
+        pool.sort(key=lambda x: (x[1].mean_rmse, x[1].total_time_s))
+        st_best, r_best = pool[0]
+
+        # Note whether the best is materially faster/slower than fft_every
+        fft_r = idx.get(("fft_every", sc))
+        note = ""
+        if fft_r is not None and st_best != "fft_every":
+            tspd = fft_r.total_time_s / max(r_best.total_time_s, 1e-6)
+            if tspd >= 1.5:
+                note = f"{tspd:.1f}\u00d7 faster than fft_every"
+
+        rows.append([
+            sc,
+            st_best,
+            f"{r_best.mean_rmse:.3f}",
+            f"{r_best.mean_convergence * 100:.0f}",
+            f"{r_best.total_time_s:.2f}",
+            note,
+        ])
+
+    ax = fig.add_subplot(111)
+    ax.axis("off")
+    table = ax.table(cellText=rows, colLabels=headers,
+                     loc="center", cellLoc="left")
+    table.auto_set_font_size(False)
+    table.set_fontsize(8)
+    table.scale(1.0, 1.8)
+    for j in range(len(headers)):
+        table[0, j].set_facecolor("#d5e8f0")
+        table[0, j].set_text_props(weight="bold")
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
+# ---------------------------------------------------------------------
 # Preview mode — render each scenario as a PDF for visual sanity check
 # ---------------------------------------------------------------------
 
@@ -1114,14 +1401,12 @@ def main() -> None:
             )
         ]
         runs = evaluate_all(scenarios=subset)
-        print(f"\n[eval-fast] collected {len(runs)} runs (not yet rendered)")
+        _render_report(runs, reports_dir / "init_guess_eval_fast.pdf")
         return
 
-    # Stage D (PDF report) will slot in here in the next commit.
-    raise NotImplementedError(
-        "Full evaluation with PDF report (stage D) is not yet implemented. "
-        "Run with --preview, --smoke, or --eval-fast."
-    )
+    # Default: full evaluation across all 15 scenarios.
+    runs = evaluate_all()
+    _render_report(runs, reports_dir / "init_guess_eval.pdf")
 
 
 if __name__ == "__main__":
