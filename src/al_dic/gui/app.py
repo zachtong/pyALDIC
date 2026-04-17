@@ -140,6 +140,13 @@ class MainWindow(QMainWindow):
         self._state.roi_changed.connect(
             self._canvas_area.canvas.update_refine_overlay
         )
+        # Also refresh on frame navigation so the brush overlay hides
+        # when the user is not on frame 0 (the brush mask lives in
+        # frame-0 coordinates and would otherwise bleed through later
+        # frames).
+        self._state.current_frame_changed.connect(
+            lambda _idx: self._canvas_area.canvas.update_refine_overlay()
+        )
 
         # Clear viz caches when results change (new pipeline run)
         self._state.results_changed.connect(self._viz_ctrl.clear_all)

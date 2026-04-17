@@ -416,18 +416,23 @@ class ImageCanvas(QGraphicsView):
     def update_refine_overlay(self) -> None:
         """Refresh the cyan brush refinement overlay from state.refine_brush_mask.
 
-        The brush mask lives in frame-0 image coordinates.  When the user
-        is on a non-zero frame the overlay still paints the *frame-0*
-        coordinates, because painting is gated to frame 0 only.  Future
-        ref-frame display warping is performed by the pipeline at run
-        time, not in the GUI.
+        The brush mask lives in frame-0 image coordinates, so it only
+        makes sense to display while the user is looking at frame 0.
+        On any other frame the brush strokes would sit at geometrically
+        wrong positions (the material has moved), so we hide the
+        overlay entirely instead of painting stale coordinates over a
+        deformed frame.
         """
         # Cancel any ongoing fade and restore full visibility so the
         # freshly-committed mask is always shown at full opacity.
         self._cancel_refine_fade()
         state = AppState.instance()
         mask = state.refine_brush_mask
-        if mask is None or not mask.any():
+
+        # Hide the overlay outside frame 0 — the brush mask lives in
+        # frame-0 coordinates and bleeds through canvases that are
+        # showing later frames.
+        if state.current_frame != 0 or mask is None or not mask.any():
             self._refine_item.setPixmap(QPixmap())
             self._refine_item.setPos(0, 0)
             return
