@@ -3,10 +3,12 @@
 import sys
 import traceback
 
+from PySide6.QtGui import QAction, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
     QMainWindow,
+    QMessageBox,
     QHBoxLayout,
     QWidget,
 )
@@ -148,6 +150,86 @@ class MainWindow(QMainWindow):
         self._state.current_frame_changed.connect(
             self._drop_brush_tool_if_invalid
         )
+
+        # File menu: session save / load
+        self._build_menu_bar()
+
+    # ------------------------------------------------------------------
+    # Menu bar — session save / load
+    # ------------------------------------------------------------------
+
+    def _build_menu_bar(self) -> None:
+        """Create the File menu with session save / load actions."""
+        menu_bar = self.menuBar()
+        file_menu = menu_bar.addMenu("&File")
+
+        open_session_action = QAction("Open Session\u2026", self)
+        open_session_action.setShortcut(QKeySequence.StandardKey.Open)
+        open_session_action.triggered.connect(self._on_open_session)
+        file_menu.addAction(open_session_action)
+
+        save_session_action = QAction("Save Session\u2026", self)
+        save_session_action.setShortcut(QKeySequence.StandardKey.Save)
+        save_session_action.triggered.connect(self._on_save_session)
+        file_menu.addAction(save_session_action)
+
+        file_menu.addSeparator()
+        quit_action = QAction("Quit", self)
+        quit_action.setShortcut(QKeySequence.StandardKey.Quit)
+        quit_action.triggered.connect(self.close)
+        file_menu.addAction(quit_action)
+
+    def _on_save_session(self) -> None:
+        """Save-session dialog: write state + Regions of Interest to JSON."""
+        from al_dic.gui.session import SessionError, save_session
+
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Session",
+            "",
+            "pyALDIC Session (*.aldic.json);;All Files (*)",
+        )
+        if not path:
+            return
+        # Enforce extension so the file dialog's filter actually helps
+        if not path.endswith(".aldic.json"):
+            path = path + ".aldic.json"
+        try:
+            save_session(Path(path), self._state)
+        except SessionError as e:
+            QMessageBox.critical(self, "Save Session Failed", str(e))
+            return
+        self._state.log_message.emit(f"Session saved to {path}", "success")
+
+    def _on_open_session(self) -> None:
+        """Open-session dialog: parse JSON, then apply to AppState."""
+        from al_dic.gui.session import (
+            SessionError,
+            apply_session,
+            load_session,
+        )
+
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Session",
+            "",
+            "pyALDIC Session (*.aldic.json);;JSON (*.json);;All Files (*)",
+        )
+        if not path:
+            return
+        try:
+            session = load_session(Path(path))
+            apply_session(session, self._state, self._image_ctrl)
+        except SessionError as e:
+            QMessageBox.critical(self, "Open Session Failed", str(e))
+            return
+        self._state.log_message.emit(
+            f"Session loaded from {path} "
+            f"({len(session.per_frame_rois)} Region(s) of Interest restored)",
+            "success",
+        )
+
+    # ------------------------------------------------------------------
 
     def _init_roi_controller(self) -> None:
         """Create ROI + brush controllers matching the loaded image dimensions."""
