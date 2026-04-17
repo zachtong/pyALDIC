@@ -28,7 +28,7 @@ from al_dic.gui.widgets.field_selector import FieldSelector
 from al_dic.gui.widgets.physical_units_widget import PhysicalUnitsWidget
 
 try:
-    from al_dic.gui.icons import icon_download, icon_pause, icon_play, icon_stop
+    from al_dic.gui.icons import icon_download, icon_play, icon_stop
     _HAS_ICONS = True
 except ImportError:  # pragma: no cover
     _HAS_ICONS = False
@@ -61,24 +61,23 @@ class RightSidebar(QWidget):
         self._run_btn.clicked.connect(self._on_run)
         layout.addWidget(self._run_btn)
 
-        btn_row = QHBoxLayout()
-        self._pause_btn = QPushButton("Pause")
-        self._pause_btn.setFixedHeight(30)
-        self._pause_btn.setEnabled(False)
+        # Single "Cancel" button replaces the previous Pause + Stop pair.
+        # Pause was never a true pause (no UI state reset on resume); Stop
+        # was a hard kill. Merging them into one Cancel with a single
+        # semantics ("stop the current run cleanly") is less confusing and
+        # matches what users actually want when they press either button.
+        self._cancel_btn = QPushButton("Cancel")
+        self._cancel_btn.setProperty("class", "btn-danger")
+        self._cancel_btn.setFixedHeight(30)
+        self._cancel_btn.setEnabled(False)
+        self._cancel_btn.setToolTip(
+            "Cancel the current analysis. Already-computed frames are "
+            "kept; the run is marked as IDLE (not DONE)."
+        )
         if _HAS_ICONS:
-            self._pause_btn.setIcon(icon_pause())
-        self._pause_btn.clicked.connect(self._on_pause)
-        btn_row.addWidget(self._pause_btn)
-
-        self._stop_btn = QPushButton("Stop")
-        self._stop_btn.setProperty("class", "btn-danger")
-        self._stop_btn.setFixedHeight(30)
-        self._stop_btn.setEnabled(False)
-        if _HAS_ICONS:
-            self._stop_btn.setIcon(icon_stop())
-        self._stop_btn.clicked.connect(self._on_stop)
-        btn_row.addWidget(self._stop_btn)
-        layout.addLayout(btn_row)
+            self._cancel_btn.setIcon(icon_stop())
+        self._cancel_btn.clicked.connect(self._on_cancel)
+        layout.addWidget(self._cancel_btn)
 
         self._export_btn = QPushButton("Export Results")
         self._export_btn.setFixedHeight(30)
@@ -249,13 +248,8 @@ class RightSidebar(QWidget):
     def _on_run(self) -> None:
         self._pipeline_ctrl.start()
 
-    def _on_pause(self) -> None:
-        if self._state.run_state == RunState.RUNNING:
-            self._pipeline_ctrl.pause()
-        elif self._state.run_state == RunState.PAUSED:
-            self._pipeline_ctrl.resume()
-
-    def _on_stop(self) -> None:
+    def _on_cancel(self) -> None:
+        """Cancel the running pipeline (clean stop; partial results kept)."""
         self._pipeline_ctrl.stop()
 
     def _show_fatal_error(self, title: str, message: str) -> None:
@@ -304,10 +298,11 @@ class RightSidebar(QWidget):
         done = new_state == RunState.DONE
         idle = new_state == RunState.IDLE
 
+        # Cancel is available while the pipeline is actively doing work
+        # (RUNNING or the legacy PAUSED state). Run is available when
+        # nothing is running.
         self._run_btn.setEnabled(idle or done)
-        self._pause_btn.setEnabled(running or paused)
-        self._pause_btn.setText("Resume" if paused else "Pause")
-        self._stop_btn.setEnabled(running or paused)
+        self._cancel_btn.setEnabled(running or paused)
         self._export_btn.setEnabled(done)
 
         if running:
