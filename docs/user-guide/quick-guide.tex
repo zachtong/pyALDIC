@@ -37,13 +37,16 @@
 
 \begin{document}
 
-\twocolumn[%
+% NOTE: the outer {...} around the spanning-header content is mandatory.
+% Without it, the \\[2pt] inside is parsed as closing \twocolumn's own
+% optional argument at the first ']', cascading into 'Extra }' errors.
+\twocolumn[{%
 \begin{center}
   {\Large\bfseries\color{aldicblue} pyALDIC Quick Guide}\\[2pt]
   {\small Two-page reference. Full walkthrough: \texttt{user-guide.tex}.}
 \end{center}
 \vspace{6pt}
-]
+}]
 
 \section{Launch}
 
