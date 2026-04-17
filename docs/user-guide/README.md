@@ -1,12 +1,24 @@
 # pyALDIC User Guide
 
-LaTeX sources for the user-facing walkthrough. Compiled PDF is not
-committed (to avoid binary bloat); you build it locally.
+LaTeX sources for the user-facing walkthrough. Compiled PDFs are not
+committed (to avoid binary bloat); you build them locally.
+
+Two documents in this directory:
+
+- **`user-guide.tex`** — the full, multi-section walkthrough.
+  Produces a ~15-page PDF with detailed explanations of every panel,
+  parameter, and failure mode.
+- **`quick-guide.tex`** — a 2-page, two-column reference sheet. Same
+  content, condensed. First thing most users should read.
+
+Both documents must stay in sync. See the paired memory note for
+the update policy when user-visible features change.
 
 ## Files
 
 ```
-user-guide.tex        main document (loads preamble + all sections)
+user-guide.tex        full walkthrough (loads preamble + all sections)
+quick-guide.tex       two-page reference sheet (self-contained)
 preamble.tex          package imports, colors, fonts, callout boxes
 sections/
   01-overview.tex
@@ -35,20 +47,23 @@ Packages used: `geometry`, `fancyhdr`, `graphicx`, `xcolor`,
 From the `docs/user-guide/` directory:
 
 ```bash
-# pdflatex (two passes for TOC)
+# Full guide (two passes for TOC)
 pdflatex user-guide.tex
 pdflatex user-guide.tex
+
+# Quick two-page reference (one pass suffices — no TOC)
+pdflatex quick-guide.tex
 
 # or xelatex / lualatex — all work
 xelatex user-guide.tex
 xelatex user-guide.tex
 
-# latexmk (runs whatever is needed, cleans intermediate files)
-latexmk -pdf user-guide.tex
+# latexmk handles passes + cleanup automatically
+latexmk -pdf user-guide.tex quick-guide.tex
 latexmk -c   # clean up aux files after
 ```
 
-Output: `user-guide.pdf`.
+Output: `user-guide.pdf` and `quick-guide.pdf`.
 
 ## Screenshots (TODO)
 

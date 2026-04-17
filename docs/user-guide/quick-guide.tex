@@ -1,0 +1,213 @@
+% pyALDIC Quick Guide -- two-page, two-column reference sheet.
+% Compile the same way as user-guide.tex (pdflatex / xelatex / latexmk).
+
+\documentclass[10pt,letterpaper,twocolumn]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+\usepackage[margin=0.55in,columnsep=0.3in,top=0.5in,bottom=0.5in]{geometry}
+\usepackage{xcolor}
+\definecolor{aldicblue}{RGB}{65,105,168}
+\definecolor{aldicgreen}{RGB}{34,150,94}
+\definecolor{aldicred}{RGB}{192,69,72}
+
+\usepackage[colorlinks=true,linkcolor=aldicblue,urlcolor=aldicblue]{hyperref}
+
+\usepackage{enumitem}
+\setlist{topsep=1pt,itemsep=0pt,parsep=0pt,leftmargin=*}
+
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{4pt}{1pt}
+\titlespacing*{\subsection}{0pt}{3pt}{0pt}
+\titleformat{\section}{\normalsize\bfseries\color{aldicblue}}{\thesection.}{4pt}{}
+\titleformat{\subsection}{\small\bfseries}{}{0pt}{}
+
+\usepackage{booktabs}
+\usepackage{array}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+\pagestyle{empty}
+
+\begin{document}
+
+\twocolumn[%
+\begin{center}
+  {\Large\bfseries\color{aldicblue} pyALDIC Quick Guide}\\[2pt]
+  {\small Two-page reference. Full walkthrough: \texttt{user-guide.tex}.}
+\end{center}
+\vspace{6pt}
+]
+
+\section{Launch}
+
+\texttt{al-dic} (or \texttt{python -m al\_dic}).
+
+\section{Load images}
+
+Drop an image folder onto the drop zone or click Browse. All files
+must be the same size. Frame 1 is always the reference.
+
+\section{Choose Workflow Type}
+
+This decides which frames need a Region of Interest, so do it
+\emph{before} drawing.
+
+{\small
+\begin{tabular}{@{}p{0.42\linewidth}p{0.42\linewidth}@{}}
+  \toprule
+  Experiment & Tracking + Ref Update \\
+  \midrule
+  Soft material $<$2\% strain & Accumulative \\
+  2--30\% strain, any rotation $>$5$^\circ$, impact & Incremental + Every Frame \\
+  Known quasi-static load steps & Incremental + Custom Frames \\
+  \bottomrule
+\end{tabular}
+}
+
+Solver: \textbf{AL-DIC} default (smoother, $\sim 3\times$ slower);
+\textbf{Local DIC} for quick iteration.
+
+\section{Draw Region of Interest}
+
+The blue-accent hint above the toolbar tells you which frames need
+a region. Toolbar:
+
+\begin{itemize}
+  \item \textbf{+ Add}, \textbf{Cut}, \textbf{+ Refine} (brush,
+        frame 1 only). Each opens a Polygon / Rectangle / Circle
+        menu.
+  \item \textbf{Import} / \textbf{Batch Import} -- load PNG masks.
+  \item \textbf{Save} / \textbf{Invert} / \textbf{Clear} -- per-
+        frame mask operations.
+\end{itemize}
+
+For per-frame editing, click the \textcolor{aldicred}{Need} /
+\textcolor{aldicgreen}{Edit} / Add button on a row in the image
+list.
+
+\section{Parameters}
+
+{\small
+\begin{tabular}{@{}p{0.28\linewidth}p{0.58\linewidth}@{}}
+  \toprule
+  Control & Guidance \\
+  \midrule
+  Subset Size & 41 default; larger (51--81) for noise, smaller
+                (21--31) for fine speckle. \\
+  Subset Step & 8 for 512\textsuperscript{2}, 16 for
+                1024\textsuperscript{2}. Halving step $\to$
+                $\sim 4\times$ runtime. \\
+  Search Range & 20 default; raise for large inter-frame motion.
+                 Auto-expand is on. \\
+  Refinement & Check Inner / Outer to densify mesh near hole or
+               ROI boundaries; pick a level (Light to Ultra). \\
+  \bottomrule
+\end{tabular}
+}
+
+\textbf{Advanced} section (collapsed by default) holds the initial-
+guess mode and auto-expand toggle; defaults are fine.
+
+\section{Run \& Cancel}
+
+Click the blue \textbf{Run DIC Analysis}. Progress, elapsed /
+remaining, and console log appear on the right. Red
+\textbf{Cancel} stops cleanly (partial results kept).
+
+Fatal errors raise a modal dialog; the full traceback is in the
+console log.
+
+\section{View results}
+
+On the right sidebar after a run:
+\begin{itemize}
+  \item \textbf{FIELD}: Disp U / Disp V toggle. \emph{Show on
+        deformed frame} checkbox sits here (controls WHERE, not
+        how).
+  \item \textbf{VISUALIZATION}: Colormap, auto / manual range,
+        opacity.
+  \item \textbf{PHYSICAL UNITS}: Pixel size + frame rate -- scales
+        displacement / velocity output; strain is dimensionless.
+\end{itemize}
+
+\section{Strain post-processing}
+
+A separate \textbf{Strain window} opens automatically when the run
+finishes.
+
+\begin{itemize}
+  \item \textbf{Method}: \emph{Plane fitting} (smooth, default) vs
+        \emph{FEM nodal} (higher resolution, noisier).
+  \item \textbf{VSG size}: Virtual strain gauge diameter
+        (default 41 px).
+  \item \textbf{Smoothing}: Off / Light (0.5$\times$ step) /
+        Medium (1$\times$ step) / Strong (2$\times$ step)
+        $\blacktriangle$.
+  \item \textbf{Strain type}: \textbf{Infinitesimal} (small
+        deformation only), \emph{Eulerian-Almansi},
+        \textbf{Green-Lagrangian} (\textbf{use for any rotation
+        $>$ 2$^\circ$}; it is exactly zero under rigid rotation).
+\end{itemize}
+
+Click green \textbf{Compute Strain} whenever parameters change.
+Field selector now exposes \texttt{strain\_exx},
+\texttt{strain\_eyy}, \texttt{strain\_exy}, principal strains,
+\texttt{strain\_maxshear}, \texttt{strain\_von\_mises},
+\texttt{strain\_rotation}, plus the displacement fields.
+
+\section{Export}
+
+Both windows have an \textbf{Export Results} button; they open the
+same 4-tab dialog:
+
+\begin{itemize}
+  \item \textbf{Data}: NPZ / MAT / CSV of any selected fields.
+  \item \textbf{Images}: per-field PNG / PDF per frame. Colorbar
+        ON by default.
+  \item \textbf{Animations}: MP4 / GIF. Requires \texttt{ffmpeg}
+        on PATH for MP4 (falls back to GIF otherwise).
+  \item \textbf{Report}: multi-page PDF summary of the run.
+\end{itemize}
+
+\section{Save / resume sessions}
+
+\textbf{File $\to$ Save Session} (\texttt{Ctrl+S}) writes a single
+\texttt{.aldic.json} with every Region of Interest (base64 PNG),
+all parameters, and physical units. Does NOT save pipeline results
+(re-run from Session is cheap).
+
+\textbf{File $\to$ Open Session} (\texttt{Ctrl+O}) restores
+everything. If the image folder is gone, parameters and Regions of
+Interest still load; re-drop the images manually.
+
+\section{Troubleshooting quick table}
+
+{\small
+\begin{tabular}{@{}p{0.42\linewidth}p{0.50\linewidth}@{}}
+  \toprule
+  Symptom & Likely cause / fix \\
+  \midrule
+  Run button disabled &
+    No images or no Region of Interest on frame 1. \\
+  Crazy strain under big rotation &
+    Using Infinitesimal strain; switch to Green-Lagrangian. \\
+  FFT peaks clipped warnings &
+    Raise Search Range or keep auto-expand on. \\
+  Refine brush grayed out &
+    Brush is frame-1 only; navigate to frame 1. \\
+  Results poor near hole edges &
+    Enable \emph{Refine Inner Boundary}. \\
+  Slow run &
+    Halve Subset Step for next iteration;
+    use Local DIC for previews. \\
+  Session won't load &
+    Check console: JSON corrupt, future schema,
+    or missing image folder (warning only -- params restore). \\
+  \bottomrule
+\end{tabular}
+}
+
+\end{document}
