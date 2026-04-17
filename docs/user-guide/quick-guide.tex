@@ -48,8 +48,23 @@
 \vspace{6pt}
 }]
 
-\section{Launch}
+\section{Install \& launch}
 
+Pick one install path (all are equivalent at runtime):
+
+\begin{itemize}
+  \item \textbf{From PyPI} (easiest): \texttt{pip install al-dic}.
+  \item \textbf{From a GitHub Release wheel}: download
+        \texttt{al\_dic-*.whl} from
+        \href{https://github.com/zachtong/pyALDIC/releases}{github.com/zachtong/pyALDIC/releases}
+        and run \texttt{pip install al\_dic-*.whl}. Useful when
+        behind a firewall that blocks PyPI.
+  \item \textbf{From source} (development):
+        \texttt{git clone https://github.com/zachtong/pyALDIC.git}
+        then \texttt{pip install -e ".[dev]"} inside the clone.
+\end{itemize}
+
+Requires Python $\geq 3.10$. Launch:
 \texttt{al-dic} (or \texttt{python -m al\_dic}).
 
 \section{Load images}

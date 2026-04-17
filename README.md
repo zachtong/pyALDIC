@@ -128,19 +128,32 @@ Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
 
 ### Installation
 
+Three equivalent paths; requires Python >= 3.10.
+
+**From PyPI** (recommended):
+
 ```bash
 pip install al-dic
 ```
 
-For development (editable install with test dependencies):
+**From a GitHub Release wheel** (useful behind firewalls, or for
+installing a specific past version):
+
+1. Download `al_dic-<version>-py3-none-any.whl` from the
+   [releases page](https://github.com/zachtong/pyALDIC/releases).
+2. Install locally:
+
+```bash
+pip install ./al_dic-<version>-py3-none-any.whl
+```
+
+**From source** (editable install with test dependencies):
 
 ```bash
 git clone https://github.com/zachtong/pyALDIC.git
 cd pyALDIC
 pip install -e ".[dev]"
 ```
-
-Requires Python >= 3.10.
 
 ### Launch GUI
 

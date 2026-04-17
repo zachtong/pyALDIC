@@ -3,19 +3,50 @@
 
 \subsection{Installation}
 
-From PyPI:
+Three ways to install, ordered by convenience. Requires
+Python 3.10 or newer.
+
+\subsubsection*{Option A: From PyPI (recommended)}
+
 \begin{lstlisting}[language=bash]
 pip install al-dic
 \end{lstlisting}
 
-From source (for development):
+This pulls the latest released wheel and every runtime dependency
+in one step.
+
+\subsubsection*{Option B: From a GitHub Release wheel}
+
+Useful when you cannot reach PyPI (corporate firewall, air-gapped
+network) or when you want to install a specific past version whose
+artefacts are still attached to its release page.
+
+\begin{enumerate}
+  \item Go to \url{https://github.com/zachtong/pyALDIC/releases}.
+  \item Expand \emph{Assets} on the release you want; download the
+    \texttt{al\_dic-<version>-py3-none-any.whl} file.
+  \item Install locally:
+\begin{lstlisting}[language=bash]
+pip install ./al_dic-<version>-py3-none-any.whl
+\end{lstlisting}
+\end{enumerate}
+
+Dependencies are still fetched from PyPI at install time, so this
+method only bypasses PyPI for the \texttt{al-dic} package itself.
+
+\subsubsection*{Option C: From source (development)}
+
+Editable install that lets you modify the code and see the effect
+without re-installing.
+
 \begin{lstlisting}[language=bash]
 git clone https://github.com/zachtong/pyALDIC.git
 cd pyALDIC
 pip install -e ".[dev]"
 \end{lstlisting}
 
-Requires Python 3.10 or newer.
+The \texttt{.[dev]} extras include \texttt{pytest} and
+\texttt{pytest-xdist} for running the test suite.
 
 \subsection{Launching the GUI}
 
