@@ -70,11 +70,17 @@ class ROIToolbar(QWidget):
 
         # --- Row 1: Add / Cut dropdown buttons ---
         self._btn_add = QPushButton("+ Add  \u25b4")
-        self._btn_add.setToolTip("Add region to ROI (Polygon / Rectangle / Circle)")
+        self._btn_add.setToolTip(
+            "Add region to the Region of Interest "
+            "(Polygon / Rectangle / Circle)"
+        )
         self._btn_add.setFixedHeight(30)
 
         self._btn_cut = QPushButton("\u2702 Cut  \u25b4")
-        self._btn_cut.setToolTip("Cut region from ROI (Polygon / Rectangle / Circle)")
+        self._btn_cut.setToolTip(
+            "Cut region from the Region of Interest "
+            "(Polygon / Rectangle / Circle)"
+        )
         self._btn_cut.setFixedHeight(30)
 
         self._btn_refine = QPushButton("+ Refine  \u25b4")
@@ -136,13 +142,13 @@ class ROIToolbar(QWidget):
         action_row.addWidget(self._btn_save)
 
         self._btn_invert = QPushButton("Invert")
-        self._btn_invert.setToolTip("Invert the ROI mask")
+        self._btn_invert.setToolTip("Invert the Region of Interest mask")
         self._btn_invert.setFixedHeight(26)
         self._btn_invert.clicked.connect(lambda: self.invert_requested.emit())
         action_row.addWidget(self._btn_invert)
 
         self._btn_clear = QPushButton("Clear")
-        self._btn_clear.setToolTip("Clear all ROI masks")
+        self._btn_clear.setToolTip("Clear all Region of Interest masks")
         self._btn_clear.setFixedHeight(26)
         self._btn_clear.clicked.connect(lambda: self.clear_requested.emit())
         action_row.addWidget(self._btn_clear)

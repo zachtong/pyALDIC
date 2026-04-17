@@ -300,16 +300,18 @@ class MainWindow(QMainWindow):
         """Save the current ROI mask to a PNG file."""
         if self._roi_ctrl is None:
             self._state.log_message.emit(
-                "No ROI to save — load images first.", "warn"
+                "No Region of Interest to save — load images first.", "warn"
             )
             return
         if not self._roi_ctrl.mask.any():
-            self._state.log_message.emit("ROI mask is empty.", "warn")
+            self._state.log_message.emit(
+                "Region of Interest mask is empty.", "warn"
+            )
             return
         self._enter_roi_editing()
         path, _ = QFileDialog.getSaveFileName(
             self,
-            "Save ROI Mask",
+            "Save Region of Interest Mask",
             "roi_mask.png",
             "PNG Images (*.png);;All Files (*)",
         )
@@ -325,7 +327,8 @@ class MainWindow(QMainWindow):
         """Invert the ROI mask for the currently edited frame."""
         if self._roi_ctrl is None:
             self._state.log_message.emit(
-                "No ROI to invert — load images first.", "warn"
+                "No Region of Interest to invert — load images first.",
+                "warn"
             )
             return
         self._enter_roi_editing()
@@ -449,7 +452,8 @@ class MainWindow(QMainWindow):
 
         if count:
             state.log_message.emit(
-                f"Imported ROI for {count} frame{'s' if count > 1 else ''}",
+                f"Imported Region of Interest for {count} "
+                f"frame{'s' if count > 1 else ''}",
                 "success",
             )
             state.roi_changed.emit()

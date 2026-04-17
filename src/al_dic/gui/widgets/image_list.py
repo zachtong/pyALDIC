@@ -88,7 +88,10 @@ class ImageList(QWidget):
 
         self._tree = QTreeWidget()
         self._tree.setColumnCount(3)
-        self._tree.setHeaderLabels(["#", "Filename", "ROI"])
+        # "Region" fits the narrow 50px column better than the full
+        # "Region of Interest"; the button text inside the column
+        # ("Need"/"Edit"/"Add") gives the unambiguous context.
+        self._tree.setHeaderLabels(["#", "Filename", "Region"])
         self._tree.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
         self._tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._tree.customContextMenuRequested.connect(self._show_context_menu)
@@ -349,7 +352,8 @@ class ImageList(QWidget):
         # --- ROI batch operations (when frames are selected) ---
         if n_sel > 0:
             import_action = QAction(
-                f"Import ROI for {n_sel} frame{'s' if n_sel > 1 else ''}",
+                f"Import Region of Interest for {n_sel} "
+                f"frame{'s' if n_sel > 1 else ''}",
                 self,
             )
             import_action.triggered.connect(self._import_roi_selected)
@@ -359,9 +363,9 @@ class ImageList(QWidget):
                 1 for f in sel_frames if f in self._state.per_frame_rois
             )
             clear_label = (
-                f"Clear ROI ({n_with_roi} with ROI)"
+                f"Clear Region of Interest ({n_with_roi} with region)"
                 if n_with_roi
-                else "Clear ROI"
+                else "Clear Region of Interest"
             )
             clear_action = QAction(clear_label, self)
             clear_action.setEnabled(n_with_roi > 0)

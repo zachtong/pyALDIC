@@ -76,12 +76,14 @@ class ParamPanel(QWidget):
         self._refine_inner_cb.setChecked(state.refine_inner)
         self._refine_inner_cb.setToolTip(
             "Locally refine the mesh along internal mask boundaries\n"
-            "(holes inside the ROI). Useful for bubble / void edges."
+            "(holes inside the Region of Interest). Useful for bubble / "
+            "void edges."
         )
         self._refine_outer_cb = QCheckBox("Refine Outer Boundary")
         self._refine_outer_cb.setChecked(state.refine_outer)
         self._refine_outer_cb.setToolTip(
-            "Locally refine the mesh along the outer ROI boundary."
+            "Locally refine the mesh along the outer Region of Interest\n"
+            "boundary."
         )
         # Indent the checkboxes so they visually belong to the subset_step row
         inner_row = QHBoxLayout()
@@ -197,7 +199,7 @@ class ParamPanel(QWidget):
             "How to choose reference frames for incremental tracking"
         )
         ref_row = QHBoxLayout()
-        ref_lbl = QLabel("Ref Update")
+        ref_lbl = QLabel("Reference Update")
         ref_lbl.setFixedWidth(108)
         ref_row.addWidget(ref_lbl)
         ref_row.addWidget(self._ref_mode)
@@ -222,7 +224,7 @@ class ParamPanel(QWidget):
             "Comma-separated frame indices to use as reference frames"
         )
         self._custom_row = QHBoxLayout()
-        self._custom_lbl = QLabel("Ref Frames")
+        self._custom_lbl = QLabel("Reference Frames")
         self._custom_lbl.setFixedWidth(108)
         self._custom_row.addWidget(self._custom_lbl)
         self._custom_row.addWidget(self._custom_edit)

@@ -42,7 +42,7 @@ class BatchImportDialog(QDialog):
 
     def __init__(self, image_files: list[str], parent=None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Batch Import ROI Masks")
+        self.setWindowTitle("Batch Import Region of Interest Masks")
         self.setMinimumSize(700, 500)
 
         self._image_files = list(image_files)

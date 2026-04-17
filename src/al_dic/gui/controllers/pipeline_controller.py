@@ -69,23 +69,25 @@ def _confirm_incomplete_ref_rois(
         frames_str = f"{head}, ... ({len(display_frames)} frames total)"
 
     text = (
-        "<b>Incomplete ROI coverage in incremental mode</b><br><br>"
+        "<b>Incomplete Region of Interest coverage in incremental mode"
+        "</b><br><br>"
         f"You are running incremental mode, but {len(display_frames)} "
-        "reference frame(s) do not have their own ROI mask:<br>"
+        "reference frame(s) do not have their own Region of Interest "
+        "mask:<br>"
         f"<i>Frame {frames_str}</i><br><br>"
-        "These reference frames will <b>inherit frame 1's ROI mask</b>, "
-        "which is geometrically not strictly correct because the "
-        "material moves between frames. Results near the ROI boundary "
-        "may be inaccurate.<br><br>"
-        "For best accuracy, define a per-frame ROI mask for each "
-        "reference frame.<br><br>"
+        "These reference frames will <b>inherit frame 1's Region of "
+        "Interest mask</b>, which is geometrically not strictly correct "
+        "because the material moves between frames. Results near the "
+        "Region of Interest boundary may be inaccurate.<br><br>"
+        "For best accuracy, define a per-frame Region of Interest mask "
+        "for each reference frame.<br><br>"
         "<b>Continue with the inherited masks?</b>"
     )
 
     parent = QApplication.activeWindow()
     button = QMessageBox.question(
         parent,
-        "Incomplete ROI Coverage",
+        "Incomplete Region of Interest Coverage",
         text,
         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         QMessageBox.StandardButton.No,
@@ -315,10 +317,11 @@ class PipelineController:
             if roi_width < min_dim or roi_height < min_dim:
                 self._fatal(
                     "Region of Interest too small",
-                    f"The ROI is {roi_width}\u00d7{roi_height} px, but the "
-                    f"current Subset Step ({state.subset_step}) requires at "
-                    f"least {min_dim}\u00d7{min_dim} px. Either enlarge the "
-                    f"ROI or reduce Subset Step."
+                    f"The Region of Interest is "
+                    f"{roi_width}\u00d7{roi_height} px, but the current "
+                    f"Subset Step ({state.subset_step}) requires at least "
+                    f"{min_dim}\u00d7{min_dim} px. Either enlarge the "
+                    f"Region of Interest or reduce Subset Step."
                 )
                 return
 
@@ -392,9 +395,9 @@ class PipelineController:
                 )
             ):
                 state.log_message.emit(
-                    "Run cancelled: define per-frame ROIs for the "
-                    "missing reference frames or accept the inherited "
-                    "frame-1 mask in the next run.",
+                    "Run cancelled: define per-frame Regions of Interest "
+                    "for the missing reference frames or accept the "
+                    "inherited frame-1 mask in the next run.",
                     "warn",
                 )
                 return

@@ -717,7 +717,8 @@ class ImageCanvas(QGraphicsView):
         if self._roi_ctrl is None:
             self._cancel_drawing()
             AppState.instance().log_message.emit(
-                "Load images first before drawing ROI.", "warn"
+                "Load images first before drawing a Region of Interest.",
+                "warn"
             )
             return
 
@@ -745,7 +746,8 @@ class ImageCanvas(QGraphicsView):
             self._cancel_drawing()
             if self._roi_ctrl is None:
                 AppState.instance().log_message.emit(
-                    "Load images first before drawing ROI.", "warn"
+                    "Load images first before drawing a Region of Interest.",
+                "warn"
                 )
             return
         pts = self._draw_state.get("points", [])
@@ -1023,7 +1025,9 @@ class CanvasArea(QWidget):
     def set_roi_editing_banner(self, frame: int | None) -> None:
         """Show or hide the ROI editing banner for the given frame."""
         if frame is not None:
-            self._roi_banner.setText(f"EDITING ROI FOR FRAME {frame:02d}")
+            self._roi_banner.setText(
+                f"EDITING REGION OF INTEREST FOR FRAME {frame:02d}"
+            )
             self._roi_banner.setVisible(True)
         else:
             self._roi_banner.setVisible(False)
