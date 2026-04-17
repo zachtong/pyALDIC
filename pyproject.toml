@@ -67,6 +67,24 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/al_dic"]
 
+# Explicit allowlist for sdist contents. Hatchling's default behaviour
+# is "everything not gitignored", which swept in local presentation
+# files (173 MB of .pptx assets) and pushed the sdist well over PyPI's
+# 100 MB per-file cap. The list below keeps the sdist to the minimum a
+# downstream consumer actually needs to install and run tests.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/pyproject.toml",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/CONTRIBUTING.md",
+    "/CODE_OF_CONDUCT.md",
+    "/.github/workflows",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"

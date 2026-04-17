@@ -19,6 +19,14 @@ scripts/
 docs/plans/
 docs/CODEMAPS/
 
+# Local personal files (not for distribution)
+presentation/
+*.pptx
+.coverage
+dist/
+build/
+*.egg-info/
+
 # MATLAB legacy code
 matlab-legacy/
 *.mexw64
