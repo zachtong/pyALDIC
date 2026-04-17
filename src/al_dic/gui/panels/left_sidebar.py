@@ -261,6 +261,13 @@ class LeftSidebar(QWidget):
         # Connect state changes to update badge
         self._state.images_changed.connect(self._update_badge)
 
+        # Gate Refine brush to frame 1 only (material points warp forward
+        # from frame 0, so brushing on later frames is misleading).
+        self._state.current_frame_changed.connect(
+            self._on_current_frame_changed
+        )
+        self._on_current_frame_changed(self._state.current_frame)
+
     @property
     def roi_toolbar(self) -> ROIToolbar:
         """Access the ROI toolbar widget."""
@@ -270,3 +277,7 @@ class LeftSidebar(QWidget):
         """Update the IMAGES section badge with current count."""
         count = len(self._state.image_files)
         self._images_header.set_badge(str(count) if count > 0 else "")
+
+    def _on_current_frame_changed(self, frame: int) -> None:
+        """Gate Refine brush to frame 1 (index 0)."""
+        self._roi_toolbar.set_refine_brush_enabled(frame == 0)

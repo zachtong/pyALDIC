@@ -78,10 +78,18 @@ class ROIToolbar(QWidget):
         self._btn_cut.setFixedHeight(30)
 
         self._btn_refine = QPushButton("+ Refine  \u25b4")
-        self._btn_refine.setToolTip(
+        # The enabled tooltip is also the default; when the button is
+        # disabled (non-frame-0) we swap in a short explanation instead.
+        self._refine_enabled_tooltip = (
             "Paint extra mesh-refinement zones with a brush\n"
             "(only on frame 1 — material points auto-warped to later frames)"
         )
+        self._refine_disabled_tooltip = (
+            "Refine brush is only available on frame 1. Switch to frame 1 "
+            "to paint refinement zones; they are automatically warped to "
+            "later frames."
+        )
+        self._btn_refine.setToolTip(self._refine_enabled_tooltip)
         self._btn_refine.setFixedHeight(30)
 
         layout.addWidget(self._btn_add, 0, 0)
@@ -300,6 +308,20 @@ class ROIToolbar(QWidget):
             self._btn_refine.setStyleSheet(
                 self._make_active_style(color, "#001417")
             )
+
+    def set_refine_brush_enabled(self, enabled: bool) -> None:
+        """Enable or disable the Refine brush button.
+
+        Refine strokes are warped forward from frame 1; painting on any
+        other frame produces visually surprising results (strokes in the
+        deformed coordinate system rather than the reference one), so
+        the button is gated to frame 1.
+        """
+        self._btn_refine.setEnabled(enabled)
+        self._btn_refine.setToolTip(
+            self._refine_enabled_tooltip if enabled
+            else self._refine_disabled_tooltip
+        )
 
     def _on_import(self) -> None:
         """Open file dialog and emit import signal with selected path."""

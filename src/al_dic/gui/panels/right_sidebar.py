@@ -134,10 +134,9 @@ class RightSidebar(QWidget):
         self._field_selector = FieldSelector()
         layout.addWidget(self._field_selector)
 
-        # --- Visualization section ---
-        self._add_section_label(layout, "VISUALIZATION")
-
-        # Deformed frame toggle (above colormap for logical grouping)
+        # Deformed vs reference frame toggle.
+        # This controls WHERE the field is plotted (geometry, not styling),
+        # so it lives in FIELD rather than VISUALIZATION.
         self._deformed_cb = QCheckBox("Show on deformed frame")
         self._deformed_cb.setChecked(True)
         self._deformed_cb.setToolTip(
@@ -146,6 +145,9 @@ class RightSidebar(QWidget):
         )
         self._deformed_cb.stateChanged.connect(self._on_deformed_toggled)
         layout.addWidget(self._deformed_cb)
+
+        # --- Visualization section ---
+        self._add_section_label(layout, "VISUALIZATION")
 
         # Colormap selector
         cmap_row = QHBoxLayout()

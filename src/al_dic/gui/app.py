@@ -7,7 +7,6 @@ from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
     QMainWindow,
-    QMessageBox,
     QHBoxLayout,
     QWidget,
 )
@@ -471,20 +470,17 @@ class MainWindow(QMainWindow):
         self._strain_window.activateWindow()
 
     def _on_run_state_changed(self, new_state) -> None:
-        """When a pipeline run completes, offer to open the strain window."""
+        """Auto-open the strain post-processing window when a run completes.
+
+        Previously this prompted the user with a Yes/No dialog, which added
+        an extra click for an almost-always-yes answer. The strain window is
+        non-modal and the user can close it immediately if they only need
+        displacement, so auto-opening is strictly less friction.
+        """
         from al_dic.gui.app_state import RunState
         if new_state != RunState.DONE or self._state.results is None:
             return
-        reply = QMessageBox.question(
-            self,
-            "Displacement Analysis Complete",
-            "Displacement computation finished.\n\n"
-            "Would you like to open the Strain Post-Processing Window?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No,
-        )
-        if reply == QMessageBox.StandardButton.Yes:
-            self._on_open_strain_window()
+        self._on_open_strain_window()
 
     def closeEvent(self, event) -> None:
         """Stop and join any running pipeline worker before closing.
