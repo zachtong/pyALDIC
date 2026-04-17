@@ -49,6 +49,11 @@ class TestExportConfig:
         assert cfg.image_format == "png"
         assert cfg.anim_format == "mp4"
         assert cfg.export_report is False
+        # Colorbar default must stay ON — otherwise exported images
+        # show field colours but no scale, which is useless for
+        # quantitative interpretation.
+        assert cfg.img_include_colorbar is True
+        assert cfg.anim_include_colorbar is True
 
     def test_custom_values(self):
         cfg = ExportConfig(

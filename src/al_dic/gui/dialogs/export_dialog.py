@@ -160,8 +160,11 @@ class ExportConfig:
     report_sample_every: int = 5
 
     # Visual export settings (shared by Images + Animation)
-    img_include_colorbar: bool = False
-    anim_include_colorbar: bool = False
+    # Default ON: users almost always want a colorbar with exported
+    # images / animations so the field values are actually readable.
+    # The old default (off) forced them to toggle it every time.
+    img_include_colorbar: bool = True
+    anim_include_colorbar: bool = True
     use_physical_units: bool = False
     pixel_size: float = 1.0
     pixel_unit: str = "mm"
@@ -740,7 +743,7 @@ class ExportDialog(QDialog):
         img_form.addRow("DPI", dpi_row)
 
         self._img_colorbar_check = QCheckBox("Include colorbar")
-        self._img_colorbar_check.setChecked(False)
+        self._img_colorbar_check.setChecked(True)
         self._img_colorbar_check.setToolTip(
             "Append a vertical colorbar strip to the right of each image.\n"
             "Tick labels update per frame when Auto range is enabled."
@@ -845,7 +848,7 @@ class ExportDialog(QDialog):
         anim_form.addRow("FPS", fps_row)
 
         self._anim_colorbar_check = QCheckBox("Include colorbar")
-        self._anim_colorbar_check.setChecked(False)
+        self._anim_colorbar_check.setChecked(True)
         self._anim_colorbar_check.setToolTip(
             "Append a vertical colorbar strip to the right of each frame.\n"
             "Tick labels update per frame when Auto range is enabled."
