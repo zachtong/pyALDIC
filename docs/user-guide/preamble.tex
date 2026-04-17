@@ -8,6 +8,16 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 
+% amssymb provides \blacktriangle and \blacktriangledown used in
+% sections/05-region-of-interest.tex for the dropdown-button glyph.
+\usepackage{amssymb}
+
+% textcomp provides \textdegree and \textmu (used in workflow-type,
+% viewing-results, strain-processing, troubleshooting). Modern LaTeX
+% bundles these with the kernel, but explicit load keeps the guide
+% compilable on older distributions (TeX Live < 2020).
+\usepackage{textcomp}
+
 % ---------------------------------------------------------------- layout
 \usepackage[margin=1in,headheight=14pt]{geometry}
 \usepackage{fancyhdr}
