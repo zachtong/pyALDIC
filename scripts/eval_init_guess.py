@@ -799,6 +799,153 @@ def build_strategies(
 
 
 # ---------------------------------------------------------------------
+# Evaluation loop (stage C)
+# ---------------------------------------------------------------------
+
+@dataclass
+class ScenarioRun:
+    """All per-frame records for one (strategy, scenario) pair."""
+
+    strategy_name: str
+    scenario_name: str
+    frames: list[FrameRecord]
+
+    @property
+    def mean_rmse(self) -> float:
+        vals = [
+            f.rmse_total for f in self.frames
+            if np.isfinite(f.rmse_total)
+        ]
+        return float(np.mean(vals)) if vals else float("nan")
+
+    @property
+    def mean_convergence(self) -> float:
+        return float(np.mean([f.convergence_rate for f in self.frames]))
+
+    @property
+    def total_time_s(self) -> float:
+        return float(sum(f.init_time_s + f.icgn_time_s for f in self.frames))
+
+
+def _eval_single(
+    strategy: InitGuessStrategy,
+    scenario: Scenario,
+    ref: NDArray,
+    images: list[NDArray],
+    gt_fields: list[tuple[NDArray, NDArray]],
+    para,
+    coords: NDArray,
+) -> ScenarioRun:
+    """Run one strategy on one scenario. Returns all frame outcomes."""
+    records: list[FrameRecord] = []
+
+    # Evaluate ground-truth U at node centers once per frame.
+    yi = np.clip(coords[:, 1].astype(int), 0, IMG_H - 1)
+    xi = np.clip(coords[:, 0].astype(int), 0, IMG_W - 1)
+
+    for t in range(1, N_FRAMES):
+        U0, meta = strategy.initial_guess(t, ref, images[t], coords, para)
+        U_sol, conv_iter, icgn_s = _run_icgn(
+            ref, images[t], coords, U0, para,
+        )
+        rate = _convergence_rate(conv_iter, ICGN_MAX_ITER)
+
+        # RMSE against ground truth (on converged nodes)
+        gt_u, gt_v = gt_fields[t]
+        ref_u = gt_u[yi, xi]
+        ref_v = gt_v[yi, xi]
+        err_u = U_sol[0::2] - ref_u
+        err_v = U_sol[1::2] - ref_v
+        ok = (conv_iter > 0) & (conv_iter < ICGN_MAX_ITER)
+        if ok.any():
+            rmse_u = float(np.sqrt(np.mean(err_u[ok] ** 2)))
+            rmse_v = float(np.sqrt(np.mean(err_v[ok] ** 2)))
+            rmse_total = float(np.sqrt(np.mean(
+                err_u[ok] ** 2 + err_v[ok] ** 2
+            )))
+            mean_iter = float(conv_iter[ok].mean())
+        else:
+            rmse_u = rmse_v = rmse_total = float("nan")
+            mean_iter = float("nan")
+
+        records.append(FrameRecord(
+            frame=t,
+            init_time_s=meta.get("init_time_s", 0.0),
+            icgn_time_s=icgn_s,
+            convergence_rate=rate,
+            mean_iter=mean_iter,
+            rmse_u=rmse_u,
+            rmse_v=rmse_v,
+            rmse_total=rmse_total,
+            fft_retries=int(meta.get("fft_retries", 0)),
+            mode_used=str(meta.get("mode", "?")),
+        ))
+        strategy.record_solved(t, U_sol, conv_iter, ICGN_MAX_ITER)
+
+    return ScenarioRun(
+        strategy_name=strategy.name,
+        scenario_name=scenario.name,
+        frames=records,
+    )
+
+
+def evaluate_all(
+    strategies: list[InitGuessStrategy] | None = None,
+    scenarios: list[Scenario] | None = None,
+    progress: bool = True,
+) -> list[ScenarioRun]:
+    """Run every strategy x scenario combination.
+
+    Returns a flat list of :class:`ScenarioRun`. Note: each (strategy,
+    scenario) pair gets a *fresh* strategy instance — otherwise the
+    strategy state from run N leaks into run N+1.
+    """
+    import time as _time
+
+    scenarios = scenarios if scenarios is not None else SCENARIOS
+    if strategies is None:
+        # Defer call so the factory produces one fresh instance per run
+        build = build_strategies
+    else:
+        build = lambda: strategies   # type: ignore[misc]
+
+    ref = _make_reference_image()
+    para = _build_dic_para()
+    coords = _node_coordinates(para)
+
+    runs: list[ScenarioRun] = []
+    n_scenarios = len(scenarios)
+    n_strategies = len(build())
+    total = n_scenarios * n_strategies
+    done = 0
+    t0 = _time.perf_counter()
+
+    for scenario in scenarios:
+        if progress:
+            print(f"\n[scenario] {scenario.name}", flush=True)
+        images, gt_fields = generate_scenario_frames(scenario, ref)
+        # Fresh strategy instances for this scenario — critical.
+        for strategy in build():
+            done += 1
+            if progress:
+                print(f"  ({done}/{total}) {strategy.name}...", end="", flush=True)
+            run = _eval_single(
+                strategy, scenario, ref, images, gt_fields, para, coords,
+            )
+            runs.append(run)
+            if progress:
+                print(f" conv={run.mean_convergence*100:.0f}%, "
+                      f"rmse={run.mean_rmse:.3f} px, "
+                      f"total={run.total_time_s:.2f}s",
+                      flush=True)
+
+    if progress:
+        elapsed = _time.perf_counter() - t0
+        print(f"\n[done] {total} runs in {elapsed:.1f}s")
+    return runs
+
+
+# ---------------------------------------------------------------------
 # Preview mode — render each scenario as a PDF for visual sanity check
 # ---------------------------------------------------------------------
 
@@ -939,6 +1086,12 @@ def main() -> None:
         help="Run a minimal end-to-end integration check (one strategy "
              "x one scenario, 3 frames).",
     )
+    parser.add_argument(
+        "--eval-fast", action="store_true",
+        help="Run the full evaluation loop on a subset of scenarios to "
+             "verify timing / convergence without committing to the full "
+             "15-scenario run.",
+    )
     args = parser.parse_args()
 
     reports_dir = BASE / "reports"
@@ -951,11 +1104,23 @@ def main() -> None:
         _smoke()
         return
 
-    # Stages C, D will slot in here in subsequent commits.
+    if args.eval_fast:
+        subset = [
+            s for s in SCENARIOS
+            if s.name in (
+                "T2_constant_velocity+S_uniform",
+                "T5_step_impulse+S_uniform",
+                "T2_constant_velocity+S_crack",
+            )
+        ]
+        runs = evaluate_all(scenarios=subset)
+        print(f"\n[eval-fast] collected {len(runs)} runs (not yet rendered)")
+        return
+
+    # Stage D (PDF report) will slot in here in the next commit.
     raise NotImplementedError(
-        "Full evaluation (stages C-D) is not yet implemented. "
-        "Run with --preview for scenario rendering or --smoke for an "
-        "integration check."
+        "Full evaluation with PDF report (stage D) is not yet implemented. "
+        "Run with --preview, --smoke, or --eval-fast."
     )
 
 
