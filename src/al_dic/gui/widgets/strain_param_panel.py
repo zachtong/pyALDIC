@@ -5,8 +5,8 @@ Exposes:
 * ``method_to_compute_strain`` (2 = plane fitting, 3 = FEM nodal)
 * ``strain_plane_fit_rad`` (px) -- derived from VSG size; only enabled for
   plane fitting method
-* Post-gradient strain smoothing (checkbox) -> ``strain_smoothness`` preset
-  (smooths the gradient field F_raw, NOT the displacement field U)
+* Strain field smoothing dropdown -> ``strain_smoothness`` preset
+  (smooths the strain tensor field after computation; "Off" disables it)
 * ``strain_type`` (0 = infinitesimal, 1 = Eulerian, 2 = Green-Lagrangian)
 
 VSG size (Virtual Strain Gauge diameter in pixels) replaces the raw
@@ -21,7 +21,6 @@ from __future__ import annotations
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QFormLayout,
     QSpinBox,
@@ -29,16 +28,22 @@ from PySide6.QtWidgets import (
 )
 
 
-# Smoothness presets for pre-smooth dropdown.
+# Smoothness presets for the strain-field smoothing dropdown.
 # Each value is passed directly to StrainController as strain_smoothness.
-# At step=16 px: factor = 500 * smoothness, sigma = spacing * factor
-#   Light  : factor~0.25, sigma~4 px
-#   Medium : factor~1.0,  sigma~16 px (one mesh step)
-#   Strong : factor~4.0,  sigma~64 px
+# Internal scaling: factor = 500 * smoothness, sigma = node_local_spacing * factor
+#
+# Design rationale (sigma/step ratio determines effective smoothing):
+#   Off            : no smoothing
+#   Light (0.5x)   : nearest neighbors contribute ~38% of value
+#   Medium (1x)    : nearest neighbors contribute ~84% (recommended)
+#   Strong (2x)    : nearest neighbors contribute ~96% (may blur real gradients)
+# Below sigma/step = 0.25 the Gaussian is too narrow to reach any neighbor
+# (neighbor weight ~0.03%), so smoothing effectively does nothing.
 _SMOOTH_PRESETS: tuple[tuple[str, float], ...] = (
-    ("Light  (σ ≈ 4 px)",  5e-4),
-    ("Medium (σ ≈ 1 step)", 2e-3),
-    ("Strong (σ ≈ 4 steps)", 8e-3),
+    ("Off",                       0.0),
+    ("Light (\u03c3 = 0.5 \u00d7 step)",    1e-3),
+    ("Medium (\u03c3 = 1 \u00d7 step)",     2e-3),
+    ("Strong (\u03c3 = 2 \u00d7 step) \u26a0", 4e-3),
 )
 
 # Default VSG size in pixels (must be odd).
@@ -47,7 +52,7 @@ _DEFAULT_VSG_PX = 41
 
 
 class StrainParamPanel(QWidget):
-    """Compose method / VSG / pre-smooth / type editors with a dirty flag."""
+    """Compose method / VSG / smoothing / type editors with a dirty flag."""
 
     params_dirty = Signal()
 
@@ -75,20 +80,22 @@ class StrainParamPanel(QWidget):
         self._vsg_spin.setValue(_DEFAULT_VSG_PX)
         layout.addRow("VSG size", self._vsg_spin)
 
-        # --- Post-gradient strain smoothing ---
-        # Applies Gaussian smoothing to the computed gradient field F_raw,
-        # NOT to the displacement field U.  Equivalent to smoothing the
-        # strain field after differentiation.
-        self._presmooth_check = QCheckBox("Smooth strain field")
-        self._presmooth_check.setChecked(False)
-        layout.addRow("Smoothing", self._presmooth_check)
-
+        # --- Strain field smoothing ---
+        # Applies Gaussian smoothing to the computed strain tensor field
+        # after differentiation (not to the displacement field).
+        # Kernel width scales with local mesh spacing.
         self._smooth_combo = QComboBox()
         for label, _ in _SMOOTH_PRESETS:
             self._smooth_combo.addItem(label)
-        self._smooth_combo.setCurrentIndex(0)
-        self._smooth_combo.setEnabled(False)
-        layout.addRow("", self._smooth_combo)
+        self._smooth_combo.setCurrentIndex(0)   # default: Off
+        self._smooth_combo.setToolTip(
+            "Gaussian smoothing of the strain field after computation.\n"
+            "\u03c3 is the Gaussian kernel width; 'step' = DIC node spacing.\n"
+            "  Light  (0.5 \u00d7 step):  subtle, preserves fine features.\n"
+            "  Medium (1 \u00d7 step):    balanced, recommended for noisy data.\n"
+            "  Strong (2 \u00d7 step) \u26a0:  aggressive, may blur real gradients."
+        )
+        layout.addRow("Strain field smoothing", self._smooth_combo)
 
         # --- Strain type ---
         self._type_combo = QComboBox()
@@ -105,13 +112,9 @@ class StrainParamPanel(QWidget):
         self._method_combo.currentIndexChanged.connect(self._on_method_changed)
         self._on_method_changed(self._method_combo.currentIndex())  # init state
 
-        # Wire pre-smooth toggle
-        self._presmooth_check.toggled.connect(self._on_presmooth_toggled)
-
         # Wire dirty propagation
         self._method_combo.currentIndexChanged.connect(self._mark_dirty)
         self._vsg_spin.valueChanged.connect(self._on_vsg_value_changed)
-        self._presmooth_check.toggled.connect(self._mark_dirty)
         self._smooth_combo.currentIndexChanged.connect(self._mark_dirty)
         self._type_combo.currentIndexChanged.connect(self._mark_dirty)
 
@@ -148,8 +151,6 @@ class StrainParamPanel(QWidget):
     # ------------------------------------------------------------------
 
     def _resolve_smoothness(self) -> float:
-        if not self._presmooth_check.isChecked():
-            return 0.0
         return _SMOOTH_PRESETS[self._smooth_combo.currentIndex()][1]
 
     def _on_vsg_value_changed(self, value: int) -> None:
@@ -164,9 +165,6 @@ class StrainParamPanel(QWidget):
         """Show / enable VSG size only for plane fitting (method 2)."""
         code = self._method_codes[index]
         self._vsg_spin.setEnabled(code == 2)
-
-    def _on_presmooth_toggled(self, checked: bool) -> None:
-        self._smooth_combo.setEnabled(checked)
 
     def _mark_dirty(self, *_args: object) -> None:
         self._dirty = True

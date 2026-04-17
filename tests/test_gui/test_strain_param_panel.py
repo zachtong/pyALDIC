@@ -73,35 +73,32 @@ def test_changing_strain_type_updates_override(panel):
     assert panel.get_override()["strain_type"] == 2
 
 
-def test_presmooth_unchecked_gives_zero_smoothness(panel):
-    assert panel._presmooth_check.isChecked() is False
+def test_smoothing_default_is_off(panel):
+    """Default selection is 'Off' (index 0), yielding zero smoothness."""
+    assert panel._smooth_combo.currentIndex() == 0
+    assert panel._smooth_combo.currentText() == "Off"
     assert panel.get_override()["strain_smoothness"] == 0.0
 
 
-def test_presmooth_checked_gives_nonzero_smoothness(panel):
-    panel._presmooth_check.setChecked(True)
-    s = panel.get_override()["strain_smoothness"]
-    assert s > 0.0
+def test_non_off_preset_gives_nonzero_smoothness(panel):
+    """Any preset other than 'Off' yields a positive smoothness value."""
+    for i in range(1, panel._smooth_combo.count()):
+        panel._smooth_combo.setCurrentIndex(i)
+        assert panel.get_override()["strain_smoothness"] > 0.0
 
 
-def test_presmooth_strength_combo_updates_smoothness(panel):
-    """Each preset in the dropdown maps to a distinct smoothness value."""
-    panel._presmooth_check.setChecked(True)
+def test_all_presets_are_distinct(panel):
+    """Each preset maps to a distinct smoothness value."""
     seen = set()
     for i in range(panel._smooth_combo.count()):
         panel._smooth_combo.setCurrentIndex(i)
-        val = panel.get_override()["strain_smoothness"]
-        assert val > 0.0
-        seen.add(val)
+        seen.add(panel.get_override()["strain_smoothness"])
     assert len(seen) == len(_SMOOTH_PRESETS), "All presets should be distinct"
 
 
-def test_presmooth_combo_hidden_when_unchecked(panel):
-    assert panel._smooth_combo.isEnabled() is False
-    panel._presmooth_check.setChecked(True)
+def test_smooth_combo_always_enabled(panel):
+    """Smoothing combo has no gating checkbox; always interactive."""
     assert panel._smooth_combo.isEnabled() is True
-    panel._presmooth_check.setChecked(False)
-    assert panel._smooth_combo.isEnabled() is False
 
 
 def test_initially_clean(panel):

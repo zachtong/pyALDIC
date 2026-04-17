@@ -20,7 +20,7 @@ UX design:
 
 Entry points:
   - MainWindow "Export Results" button  (right_sidebar._on_export)
-  - StrainWindow "Export Strain" button (strain_window._on_export_strain)
+  - StrainWindow "Export Results" button (strain_window._on_export_strain)
 """
 
 from __future__ import annotations

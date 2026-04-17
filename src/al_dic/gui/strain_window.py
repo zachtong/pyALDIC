@@ -220,7 +220,7 @@ class StrainWindow(QMainWindow):
         self._compute_btn.clicked.connect(self._on_compute_clicked)
         right.addWidget(self._compute_btn)
 
-        self._export_strain_btn = QPushButton("Export Strain")
+        self._export_strain_btn = QPushButton("Export Results")
         self._export_strain_btn.setFixedHeight(30)
         self._export_strain_btn.setToolTip(
             "Export displacement and strain results to NPZ / MAT / CSV / PNG"
