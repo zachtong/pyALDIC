@@ -32,7 +32,9 @@ from al_dic.gui.widgets.image_list import ImageList
 from al_dic.gui.widgets.init_guess_widget import InitGuessWidget
 from al_dic.gui.widgets.mesh_appearance_widget import MeshAppearanceWidget
 from al_dic.gui.widgets.param_panel import ParamPanel
+from al_dic.gui.widgets.roi_hint import ROIHint
 from al_dic.gui.widgets.roi_toolbar import ROIToolbar
+from al_dic.gui.widgets.workflow_type_panel import WorkflowTypePanel
 
 
 class _SectionHeader(QWidget):
@@ -235,7 +237,22 @@ class LeftSidebar(QWidget):
         settings_layout.setContentsMargins(0, 0, 0, 0)
         settings_layout.setSpacing(0)
 
+        # Workflow Type comes BEFORE Region of Interest because the tracking
+        # mode and reference-update policy determine which frames need a
+        # Region of Interest. Picking that first avoids drawing regions on
+        # the wrong frames.
+        self._workflow_section = CollapsibleSection(
+            "WORKFLOW TYPE", expanded=True,
+        )
+        self._workflow_panel = WorkflowTypePanel()
+        self._workflow_section.add_widget(self._workflow_panel)
+        settings_layout.addWidget(self._workflow_section)
+
         self._roi_section = CollapsibleSection("REGION OF INTEREST", expanded=True)
+        # Dynamic hint: lives above the toolbar and updates whenever the
+        # workflow-type panel changes tracking mode / ref-update policy.
+        self._roi_hint = ROIHint()
+        self._roi_section.add_widget(self._roi_hint)
         self._roi_toolbar = ROIToolbar()
         self._roi_section.add_widget(self._roi_toolbar)
         settings_layout.addWidget(self._roi_section)
