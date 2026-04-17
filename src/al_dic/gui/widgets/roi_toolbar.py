@@ -275,10 +275,17 @@ class ROIToolbar(QWidget):
     # states so that Qt never recalculates sizeHint on style switches.
     _GEOM = "border-radius: 4px; padding: 2px 4px; margin: 0px;"
 
+    # The :disabled rule is critical — without it, our custom QPushButton
+    # selector shadows Qt's default gray-out, leaving disabled buttons
+    # indistinguishable from enabled ones. Refine-brush gating relies
+    # on this disabled appearance to signal "switch to frame 1".
     _BASE_STYLE = (
         f"QPushButton {{ background: {COLORS.BG_INPUT}; "
         f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
-        f"{_GEOM} }}"
+        f"{_GEOM} }} "
+        f"QPushButton:disabled {{ background: {COLORS.BG_DARKEST}; "
+        f"color: {COLORS.TEXT_MUTED}; "
+        f"border: 1px dashed {COLORS.TEXT_MUTED}; }}"
     )
 
     def _make_active_style(self, bg: str, fg: str = "#ffffff") -> str:
