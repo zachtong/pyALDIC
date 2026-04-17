@@ -74,6 +74,7 @@ class _CapturingWorker:
         self.progress = self._DummySignal()
         self.log = self._DummySignal()
         self.finished_result = self._DummySignal()
+        self.fatal_error = self._DummySignal()
         self.started = False
         type(self).instances.append(self)
 

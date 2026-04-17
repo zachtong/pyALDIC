@@ -99,6 +99,7 @@ class PipelineWorker(QThread):
     progress = Signal(float, str)       # (fraction, message)
     log = Signal(str, str)              # (message, level)
     finished_result = Signal(object)    # PipelineResult or None on error
+    fatal_error = Signal(str, str)      # (title, message) — modal-worthy
 
     def __init__(
         self,
@@ -155,12 +156,22 @@ class PipelineWorker(QThread):
                 self.log.emit(f"RuntimeError: {e}", "error")
                 self.log.emit(tb, "error")
                 print(tb, flush=True)
+                self.fatal_error.emit(
+                    "DIC analysis failed",
+                    f"The pipeline raised a runtime error:\n\n{e}\n\n"
+                    "See the console log for the full traceback.",
+                )
             self.finished_result.emit(None)
         except Exception as e:
             tb = traceback.format_exc()
             self.log.emit(f"Error: {type(e).__name__}: {e}", "error")
             self.log.emit(tb, "error")
             print(tb, flush=True)
+            self.fatal_error.emit(
+                "DIC analysis failed",
+                f"{type(e).__name__}: {e}\n\n"
+                "See the console log for the full traceback.",
+            )
             self.finished_result.emit(None)
 
     def _on_progress(self, fraction: float, message: str) -> None:
@@ -190,6 +201,17 @@ class PipelineController:
         self._worker: PipelineWorker | None = None
         self._start_time: float = 0.0
 
+    def _fatal(self, title: str, message: str, detail: str = "") -> None:
+        """Log and raise a modal-worthy error.
+
+        The message must be user-facing (no tracebacks). ``detail`` is an
+        optional extra line sent only to the console log.
+        """
+        self._state.log_message.emit(message, "error")
+        if detail:
+            self._state.log_message.emit(detail, "error")
+        self._state.fatal_error.emit(title, message)
+
     def start(self) -> None:
         """Build config from AppState and launch worker."""
         state = self._state
@@ -211,10 +233,18 @@ class PipelineController:
             self._worker = None
 
         if len(state.image_files) < 2:
-            state.log_message.emit("Need at least 2 images.", "error")
+            self._fatal(
+                "Cannot start analysis",
+                "Need at least 2 images. Drop an image folder into the "
+                "Images panel before running DIC."
+            )
             return
         if state.roi_mask is None:
-            state.log_message.emit("Define a Region of Interest first.", "error")
+            self._fatal(
+                "Cannot start analysis",
+                "Define a Region of Interest first. Use the Region of "
+                "Interest toolbar to draw or import one for frame 1."
+            )
             return
 
         try:
@@ -256,8 +286,10 @@ class PipelineController:
             # Validate frame 0 ROI exists
             roi_mask_0 = state.per_frame_rois.get(0)
             if roi_mask_0 is None:
-                state.log_message.emit(
-                    "Define a Region of Interest first.", "error"
+                self._fatal(
+                    "Cannot start analysis",
+                    "Frame 1 has no Region of Interest. Draw one on the "
+                    "first frame before running DIC."
                 )
                 return
 
@@ -265,8 +297,10 @@ class PipelineController:
             roi_mask = roi_mask_0
             rows, cols = np.where(roi_mask)
             if len(rows) == 0:
-                state.log_message.emit(
-                    "ROI mask is empty — no pixels selected.", "error"
+                self._fatal(
+                    "Cannot start analysis",
+                    "The Region of Interest for frame 1 is empty "
+                    "(no pixels selected). Redraw it or Clear + retry."
                 )
                 return
             roi_range = GridxyROIRange(
@@ -279,12 +313,12 @@ class PipelineController:
             roi_height = roi_range.gridy[1] - roi_range.gridy[0]
             min_dim = 2 * state.subset_step
             if roi_width < min_dim or roi_height < min_dim:
-                state.log_message.emit(
-                    f"ROI too small ({roi_width}\u00d7{roi_height} px). "
-                    f"Need at least {min_dim}\u00d7{min_dim} px "
-                    f"for step={state.subset_step}. "
-                    f"Enlarge ROI or reduce step size.",
-                    "error",
+                self._fatal(
+                    "Region of Interest too small",
+                    f"The ROI is {roi_width}\u00d7{roi_height} px, but the "
+                    f"current Subset Step ({state.subset_step}) requires at "
+                    f"least {min_dim}\u00d7{min_dim} px. Either enlarge the "
+                    f"ROI or reduce Subset Step."
                 )
                 return
 
@@ -444,6 +478,7 @@ class PipelineController:
             self._worker.log.connect(
                 lambda msg, lvl: state.log_message.emit(msg, lvl)
             )
+            self._worker.fatal_error.connect(state.fatal_error)
             self._worker.finished_result.connect(self._on_finished)
 
             # Reset progress from any previous run
@@ -456,8 +491,12 @@ class PipelineController:
 
         except Exception as e:
             tb = traceback.format_exc()
-            state.log_message.emit(f"Failed to start: {e}", "error")
-            state.log_message.emit(tb, "error")
+            self._fatal(
+                "Failed to start analysis",
+                f"{type(e).__name__}: {e}\n\n"
+                "See the console log for the full traceback.",
+                detail=tb,
+            )
             print(tb, flush=True)
 
     def stop(self) -> None:
@@ -498,9 +537,11 @@ class PipelineController:
                 self._state.set_run_state(RunState.IDLE)
         except Exception as e:
             tb = traceback.format_exc()
-            self._state.log_message.emit(
-                f"Error processing results: {e}", "error"
+            self._fatal(
+                "Failed to process results",
+                f"{type(e).__name__}: {e}\n\n"
+                "See the console log for the full traceback.",
+                detail=tb,
             )
-            self._state.log_message.emit(tb, "error")
             print(tb, flush=True)
             self._state.set_run_state(RunState.IDLE)

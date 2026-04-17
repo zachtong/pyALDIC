@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QProgressBar,
     QPushButton,
     QSlider,
@@ -213,6 +214,8 @@ class RightSidebar(QWidget):
         self._state.run_state_changed.connect(self._on_run_state)
         self._state.progress_updated.connect(self._on_progress)
         self._state.log_message.connect(self._console.append_log)
+        # Fatal errors from the pipeline: log + modal dialog
+        self._state.fatal_error.connect(self._show_fatal_error)
 
         # Timer for elapsed display
         self._timer = QTimer()
@@ -252,6 +255,15 @@ class RightSidebar(QWidget):
 
     def _on_stop(self) -> None:
         self._pipeline_ctrl.stop()
+
+    def _show_fatal_error(self, title: str, message: str) -> None:
+        """Show a modal dialog for pipeline errors that the user must see.
+
+        The console log already has the full error (including tracebacks);
+        this modal ensures the user cannot miss critical failures that
+        happened below the fold.
+        """
+        QMessageBox.critical(self, title, message)
 
     def _on_export(self) -> None:
         if self._state.results is None:

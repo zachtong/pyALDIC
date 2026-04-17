@@ -55,6 +55,11 @@ class AppState(QObject):
     results_changed = Signal()
     display_changed = Signal()
     log_message = Signal(str, str)  # (message, level)
+    # Fatal errors that should be surfaced as a modal dialog in addition to
+    # being written to the console log. Emitted as (title, message) where
+    # message is user-facing (plain English, no tracebacks). Stack traces
+    # should still go through log_message with level "error".
+    fatal_error = Signal(str, str)
     physical_units_changed = Signal()
 
     def __init__(self) -> None:
