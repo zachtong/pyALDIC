@@ -48,6 +48,27 @@ class ParamPanel(QWidget):
         )
         self._subset_step.currentTextChanged.connect(self._on_subset_step_changed)
 
+        # --- Search Range (maximum detectable per-frame displacement) ---
+        # Maps to DICPara.size_of_fft_search_region. Fundamental DIC parameter;
+        # promoted from the ADVANCED collapsible so it is visible by default.
+        self._search_range = self._add_spinbox(
+            layout,
+            "Search Range",
+            state.search_range,
+            minimum=4,
+            maximum=512,
+            step=2,
+            tooltip=(
+                "Maximum per-frame displacement the FFT search can detect "
+                "(pixels).\n"
+                "Set comfortably larger than the expected inter-frame motion.\n"
+                "For large rotations in incremental mode, this must cover\n"
+                "  radius \u00d7 sin(per-step angle)."
+            ),
+        )
+        self._search_range.setSuffix(" px")
+        self._search_range.valueChanged.connect(self._on_search_range_changed)
+
         # --- Mesh Refinement (inner / outer boundary) ---
         # Two independent toggles + a single level selector that controls how
         # aggressively the mesh is refined near the active criteria.
@@ -225,7 +246,7 @@ class ParamPanel(QWidget):
 
         # Prevent mouse wheel from changing values when widget is unfocused
         for widget in [
-            self._subset_size, self._subset_step,
+            self._subset_size, self._subset_step, self._search_range,
             self._tracking_mode, self._solver, self._admm_iter_spin,
             self._ref_mode, self._interval_spin,
             self._refine_level,
@@ -315,6 +336,12 @@ class ParamPanel(QWidget):
         # subset_step affects both the integer constraint and the min-size
         # readout — rebuild dropdown.
         self._update_refinement_ui()
+
+    def _on_search_range_changed(self, value: int) -> None:
+        """Update search_range in state (mirrors InitGuessWidget pattern)."""
+        state = AppState.instance()
+        state.search_range = value
+        state.params_changed.emit()
 
     def _on_refine_inner_toggled(self, on: bool) -> None:
         AppState.instance().set_refine_inner(on)

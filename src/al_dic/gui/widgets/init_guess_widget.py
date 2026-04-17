@@ -6,9 +6,12 @@ Controls:
         * FFT when reference frame updates (incremental mode default)
         * FFT every frame
         * FFT every-N-frames (with spinbox for N)
-    - FFT search radius spinbox (maps to size_of_fft_search_region)
     - Auto-expand checkbox: let the pipeline widen the search region
       automatically when FFT peaks are clipped.
+
+Note: the FFT search radius (``state.search_range``) is now edited in
+the main ParamPanel as "Search Range" since it is a fundamental DIC
+parameter, not an initial-guess tuning knob.
 
 Auto-selection on tracking mode change:
     accumulative  -> "previous"
@@ -97,25 +100,9 @@ class InitGuessWidget(QWidget):
         reset_row.addStretch()
         layout.addLayout(reset_row)
 
-        # --- FFT Search Radius ---
-        radius_row = QHBoxLayout()
-        radius_row.setSpacing(6)
-        radius_lbl = QLabel("Search Radius")
-        radius_lbl.setFixedWidth(100)
-        radius_lbl.setToolTip(
-            "Maximum displacement the FFT search can detect (pixels).  "
-            "Increase for large inter-frame motion."
-        )
-        radius_row.addWidget(radius_lbl)
-        self._radius_spin = QSpinBox()
-        self._radius_spin.setRange(4, 512)
-        self._radius_spin.setValue(self._state.search_range)
-        self._radius_spin.setSuffix(" px")
-        self._radius_spin.setToolTip(
-            "Maximum displacement the FFT search can detect (pixels)."
-        )
-        radius_row.addWidget(self._radius_spin)
-        layout.addLayout(radius_row)
+        # NOTE: "Search Radius" (``state.search_range``) was previously edited
+        # here. It has been moved to the main ParamPanel as "Search Range"
+        # so users can find it without expanding the ADVANCED section.
 
         # --- Auto-expand checkbox ---
         self._auto_expand_cb = QCheckBox("Auto-expand search on clipped peaks")
@@ -131,7 +118,7 @@ class InitGuessWidget(QWidget):
         self._sync_from_state()
 
         # --- Prevent scroll-wheel from changing unfocused spinboxes ---
-        for w in (self._reset_spin, self._radius_spin):
+        for w in (self._reset_spin,):
             w.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             w.installEventFilter(self)
 
@@ -141,7 +128,6 @@ class InitGuessWidget(QWidget):
         self._rb_fft_every.toggled.connect(self._on_mode_changed)
         self._rb_reset_n.toggled.connect(self._on_mode_changed)
         self._reset_spin.valueChanged.connect(self._on_interval_changed)
-        self._radius_spin.valueChanged.connect(self._on_radius_changed)
         self._auto_expand_cb.stateChanged.connect(self._on_auto_expand_changed)
 
         # Listen for external state changes (e.g. tracking mode auto-switch)
@@ -160,7 +146,6 @@ class InitGuessWidget(QWidget):
         self._rb_reset_n.setChecked(mode == "fft_reset_n")
         self._reset_spin.setValue(self._state.fft_reset_interval)
         self._reset_spin.setEnabled(mode == "fft_reset_n")
-        self._radius_spin.setValue(self._state.search_range)
         self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
         self._building = False
 
@@ -192,12 +177,6 @@ class InitGuessWidget(QWidget):
         if self._building:
             return
         self._state.fft_reset_interval = value
-        self._state.params_changed.emit()
-
-    def _on_radius_changed(self, value: int) -> None:
-        if self._building:
-            return
-        self._state.search_range = value
         self._state.params_changed.emit()
 
     def _on_auto_expand_changed(self, _: int) -> None:
