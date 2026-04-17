@@ -631,7 +631,13 @@ class FrameRecord:
     icgn_time_s: float
     convergence_rate: float
     mean_iter: float
-    rmse_u: float   # px, on converged nodes
+    # RMSE on the INITIAL guess U0 (pre-IC-GN), averaged over all
+    # nodes. Isolates the quality of the init strategy itself.
+    rmse_init: float
+    # RMSE on the IC-GN output U_sol, averaged over only those nodes
+    # that converged cleanly. This is what end-user accuracy depends
+    # on; rmse_init - rmse_total is the "IC-GN refinement delta".
+    rmse_u: float
     rmse_v: float
     rmse_total: float
     fft_retries: int
@@ -819,6 +825,15 @@ class ScenarioRun:
         return float(np.mean(vals)) if vals else float("nan")
 
     @property
+    def mean_rmse_init(self) -> float:
+        """Mean RMSE of the init guess itself (before IC-GN)."""
+        vals = [
+            f.rmse_init for f in self.frames
+            if np.isfinite(f.rmse_init)
+        ]
+        return float(np.mean(vals)) if vals else float("nan")
+
+    @property
     def mean_convergence(self) -> float:
         return float(np.mean([f.convergence_rate for f in self.frames]))
 
@@ -845,15 +860,29 @@ def _eval_single(
 
     for t in range(1, N_FRAMES):
         U0, meta = strategy.initial_guess(t, ref, images[t], coords, para)
+
+        # --- Init-guess quality (pre-IC-GN) ---
+        # Averaged over ALL nodes because every node received an init.
+        gt_u, gt_v = gt_fields[t]
+        ref_u = gt_u[yi, xi]
+        ref_v = gt_v[yi, xi]
+        err_u_init = U0[0::2] - ref_u
+        err_v_init = U0[1::2] - ref_v
+        finite = np.isfinite(err_u_init) & np.isfinite(err_v_init)
+        if finite.any():
+            rmse_init = float(np.sqrt(np.mean(
+                err_u_init[finite] ** 2 + err_v_init[finite] ** 2
+            )))
+        else:
+            rmse_init = float("nan")
+
+        # --- IC-GN solve ---
         U_sol, conv_iter, icgn_s = _run_icgn(
             ref, images[t], coords, U0, para,
         )
         rate = _convergence_rate(conv_iter, ICGN_MAX_ITER)
 
-        # RMSE against ground truth (on converged nodes)
-        gt_u, gt_v = gt_fields[t]
-        ref_u = gt_u[yi, xi]
-        ref_v = gt_v[yi, xi]
+        # --- Output quality (post-IC-GN, converged nodes only) ---
         err_u = U_sol[0::2] - ref_u
         err_v = U_sol[1::2] - ref_v
         ok = (conv_iter > 0) & (conv_iter < ICGN_MAX_ITER)
@@ -874,6 +903,7 @@ def _eval_single(
             icgn_time_s=icgn_s,
             convergence_rate=rate,
             mean_iter=mean_iter,
+            rmse_init=rmse_init,
             rmse_u=rmse_u,
             rmse_v=rmse_v,
             rmse_total=rmse_total,
@@ -981,6 +1011,7 @@ def _render_report(
     with PdfPages(str(output_path)) as pdf:
         _page_cover(pdf, runs, strategy_order, scenario_order)
         _page_summary_matrix(pdf, idx, strategy_order, scenario_order)
+        _page_init_vs_solved(pdf, runs)
         _page_pareto(pdf, runs)
         _page_per_scenario_curves(pdf, idx, strategy_order, scenario_order)
         _page_recommendation(pdf, idx, strategy_order, scenario_order)
@@ -1084,6 +1115,58 @@ def _page_summary_matrix(pdf, idx, strategy_order, scenario_order) -> None:
     plt.close(fig)
 
 
+def _page_init_vs_solved(pdf, runs) -> None:
+    """Init-guess RMSE vs IC-GN output RMSE per (strategy, scenario).
+
+    Exposes three regimes:
+      - diagonal  : IC-GN left init untouched (probably already solved)
+      - below y=x : IC-GN refined the init (expected healthy case)
+      - above y=x : IC-GN diverged from init (pathological — IC-GN
+                    walked away from a good starting point)
+    """
+    import matplotlib.pyplot as plt
+
+    by_strat: dict[str, list[ScenarioRun]] = {}
+    for r in runs:
+        by_strat.setdefault(r.strategy_name, []).append(r)
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+    colors = plt.cm.tab10(np.linspace(0, 1, len(by_strat)))
+    for (strat, rs), color in zip(by_strat.items(), colors):
+        xs, ys = [], []
+        for r in rs:
+            xi_val = r.mean_rmse_init
+            yi_val = r.mean_rmse
+            if np.isfinite(xi_val) and np.isfinite(yi_val):
+                xs.append(xi_val)
+                ys.append(yi_val)
+        if xs:
+            ax.scatter(xs, ys, label=strat, s=60, alpha=0.65, color=color)
+
+    # y = x reference
+    lim = [1e-4, 20]
+    ax.plot(lim, lim, "k--", alpha=0.3, linewidth=1,
+            label="y = x (no IC-GN change)")
+
+    ax.set_xlabel("Init guess RMSE (pre-IC-GN, all nodes) [px]")
+    ax.set_ylabel("IC-GN output RMSE (post-IC-GN, converged) [px]")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlim(lim)
+    ax.set_ylim(lim)
+    ax.grid(True, which="both", alpha=0.3)
+    ax.set_title(
+        "Init quality vs IC-GN output\n"
+        "points below y=x: IC-GN refined init.  "
+        "points above y=x: IC-GN diverged.",
+        fontsize=11, weight="bold",
+    )
+    ax.legend(fontsize=8, loc="lower right")
+    fig.tight_layout()
+    pdf.savefig(fig)
+    plt.close(fig)
+
+
 def _page_pareto(pdf, runs) -> None:
     """Accuracy vs speed scatter, aggregated across scenarios."""
     import matplotlib.pyplot as plt
@@ -1128,8 +1211,8 @@ def _page_per_scenario_curves(pdf, idx, strategy_order, scenario_order) -> None:
     colors = plt.cm.tab10(np.linspace(0, 1, len(strategy_order)))
 
     for sc in scenario_order:
-        fig, (ax_r, ax_t) = plt.subplots(
-            2, 1, figsize=(11, 7), sharex=True,
+        fig, (ax_init, ax_r, ax_t) = plt.subplots(
+            3, 1, figsize=(11, 9), sharex=True,
         )
         fig.suptitle(f"{sc}", fontsize=12, weight="bold")
 
@@ -1138,18 +1221,30 @@ def _page_per_scenario_curves(pdf, idx, strategy_order, scenario_order) -> None:
             if r is None:
                 continue
             frames = [f.frame for f in r.frames]
+            rmse_init = [f.rmse_init for f in r.frames]
             rmse = [f.rmse_total for f in r.frames]
             tms = [(f.init_time_s + f.icgn_time_s) * 1000
                    for f in r.frames]
+            ax_init.plot(frames, rmse_init, "o-", label=strat, color=color,
+                         markersize=4, linewidth=1.2, alpha=0.8)
             ax_r.plot(frames, rmse, "o-", label=strat, color=color,
                       markersize=4, linewidth=1.2, alpha=0.8)
             ax_t.plot(frames, tms, "o-", label=strat, color=color,
                       markersize=4, linewidth=1.2, alpha=0.8)
 
-        ax_r.set_ylabel("per-frame RMSE [px]")
+        ax_init.set_ylabel("init RMSE [px]\n(pre IC-GN, all nodes)")
+        ax_init.set_yscale("log")
+        ax_init.grid(True, which="both", alpha=0.3)
+        ax_init.set_title(
+            "Init guess error  —  IC-GN output error  —  per-frame cost",
+            fontsize=9,
+        )
+        ax_init.legend(fontsize=7, loc="best", ncol=3)
+
+        ax_r.set_ylabel("solved RMSE [px]\n(post IC-GN, converged)")
         ax_r.set_yscale("log")
         ax_r.grid(True, which="both", alpha=0.3)
-        ax_r.legend(fontsize=8, loc="best", ncol=2)
+
         ax_t.set_xlabel("frame")
         ax_t.set_ylabel("per-frame time [ms]")
         ax_t.set_yscale("log")
