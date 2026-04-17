@@ -15,9 +15,11 @@ reports/
 # Development scripts (benchmarks, reports, profiling)
 scripts/
 
-# Development plan docs are local-only; docs/user-guide/ is versioned.
+# Development plan docs + user-guide LaTeX sources are local-only.
+# Only the compiled PDFs at docs/pyALDIC_v*.pdf are versioned.
 docs/plans/
 docs/CODEMAPS/
+docs/user-guide/
 
 # Local personal files (not for distribution)
 presentation/
