@@ -676,6 +676,13 @@ def run_aldic(
     # subpb1_cache[ref_idx] = precomputed subpb1 data (depends on ref image)
     subpb1_precompute_cache: dict[int, object] = {}
 
+    # Cross-frame FFT search-radius memo: once auto-expand grows the
+    # search radius to cover a frame's actual displacement, subsequent
+    # frames on the SAME reference reuse that radius as their starting
+    # point instead of restarting from para.size_of_fft_search_region
+    # and rediscovering the expansion every frame. Cleared per-ref.
+    fft_search_learned: dict[int, int] = {}
+
     # Track which ref_idx was used for beta tuning
     beta_tuned_for_ref: int | None = None
     beta_val: float = 0.0
@@ -805,6 +812,17 @@ def run_aldic(
             x0, y0 = build_grid_for_roi(para, img_h_sp, img_w_sp)
 
         if need_fft and not use_seed_prop:
+            # Start FFT from the last search radius that successfully
+            # covered this reference's displacement (if any). This
+            # shortcut matters for accumulative / incremental-with-
+            # stable-ref segments where the per-frame displacement
+            # grows monotonically: once frame N needed search=80,
+            # frame N+1 is very likely to need >= 80 too, so
+            # restarting from 20 and climbing 20 -> 40 -> 80 again
+            # is pure waste.
+            learned = fft_search_learned.get(ref_idx)
+            if learned is not None and learned != para.size_of_fft_search_region:
+                para = replace(para, size_of_fft_search_region=learned)
             # FFT integer search for initial guess.
             # Use raw (unmasked) images for both ref and deformed:
             # benchmarked 3 strategies on bubble 30→150→30 (25 frames,
@@ -869,6 +887,15 @@ def run_aldic(
                     current_search = new_search
                     if new_search >= max_search_cap:
                         break
+                # Remember the final radius for this reference so the
+                # next frame on the same ref doesn't re-climb from the
+                # user's configured floor.
+                fft_search_learned[ref_idx] = current_search
+            elif not use_pyramid:
+                # auto_expand disabled: still remember whatever the
+                # initial call used, so a user who toggles auto_expand
+                # mid-run doesn't lose the info on the following frame.
+                fft_search_learned[ref_idx] = para.size_of_fft_search_region
 
             current_U0 = init_disp(
                 u_grid, v_grid, fft_info["cc_max"], x0, y0,
