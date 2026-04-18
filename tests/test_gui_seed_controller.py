@@ -74,7 +74,10 @@ class TestSeedControllerMutation:
         s = state.seeds[0]
         assert s.region_id == 0
         assert s.is_warped is False
-        assert s.xy_canvas == (60.0, 60.0)
+        # xy_canvas is the snapped node position, not the click position,
+        # so the seed marker renders exactly on the mesh node.
+        assert abs(s.xy_canvas[0] - 60.0) <= 4  # within subset_step
+        assert abs(s.xy_canvas[1] - 60.0) <= 4
         # node_idx should be the nearest mesh node — not necessarily 0
         assert s.node_idx >= 0
 
@@ -114,7 +117,11 @@ class TestSeedControllerMutation:
         ctrl.add_seed_at_xy(95.0, 95.0)
         assert ctrl.remove_seed_near(34.0, 34.0, radius=10.0) is True
         assert len(state.seeds) == 1
-        assert state.seeds[0].xy_canvas == (95.0, 95.0)
+        remaining_xy = state.seeds[0].xy_canvas
+        # After fix B, xy_canvas is the snapped node position, not the
+        # original click, so 95.0 may round to the nearest grid node.
+        assert abs(remaining_xy[0] - 95.0) <= 4
+        assert abs(remaining_xy[1] - 95.0) <= 4
 
     def test_remove_seed_out_of_range(self, qapp):
         state = AppState.instance()
@@ -226,7 +233,11 @@ class TestSeedControllerReSnap:
 
         # Seed in Region A (xy=(35,35)) is now outside any mask pixel -> dropped
         assert len(state.seeds) == 1
-        assert state.seeds[0].xy_canvas == (95.0, 95.0)
+        # xy_canvas stores the snapped node position (Fix B), which may
+        # differ from the original click by up to subset_step.
+        remaining_xy = state.seeds[0].xy_canvas
+        assert abs(remaining_xy[0] - 95.0) <= 4
+        assert abs(remaining_xy[1] - 95.0) <= 4
 
     def test_new_region_remains_unseeded(self, qapp):
         state = AppState.instance()

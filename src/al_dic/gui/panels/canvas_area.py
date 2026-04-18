@@ -258,6 +258,7 @@ class ImageCanvas(QGraphicsView):
         # Seed (Starting Points) tool state
         self._seed_ctrl = None
         self._seed_preview_item = None  # QGraphicsEllipseItem for hover snap
+        self._seed_preview_box = None   # QGraphicsRectItem showing subset
 
         # Pan state (middle-button or left-button when tool == "pan")
         self._panning = False
@@ -375,22 +376,64 @@ class ImageCanvas(QGraphicsView):
         if self._seed_preview_item is not None:
             self._scene.removeItem(self._seed_preview_item)
             self._seed_preview_item = None
+        if getattr(self, "_seed_preview_box", None) is not None:
+            self._scene.removeItem(self._seed_preview_box)
+            self._seed_preview_box = None
 
     def _update_seed_preview(self, x: float, y: float) -> None:
-        """Place or move the hover-snap circle at (x, y) in scene coords."""
-        from PySide6.QtWidgets import QGraphicsEllipseItem
+        """Place the hover-snap indicators at node (x, y) in scene coords.
 
-        r = 6.0
+        Two items:
+          - A small filled circle on the node itself (viewport-fixed size
+            so it stays legible at any zoom).
+          - A hollow square with side = subset_size + 1 (pixel units),
+            showing what IC-GN's correlation window will sample. Matches
+            the 'Show Subset' overlay's semantics without forcing that
+            toolbar toggle on.
+        """
+        from PySide6.QtWidgets import QGraphicsEllipseItem, QGraphicsRectItem
+
+        zoom = self.transform().m11() or 1.0
+
+        # --- Node circle (viewport-fixed ~6 px) ---
+        r_view = 6.0
+        r = r_view / zoom
         if self._seed_preview_item is None:
             item = QGraphicsEllipseItem(-r, -r, 2 * r, 2 * r)
             pen = QPen(QColor(COLORS.ACCENT))
-            pen.setWidthF(1.5)
+            pen.setWidthF(1.5 / zoom)
             item.setPen(pen)
-            item.setBrush(QBrush(QColor(99, 102, 241, 80)))  # ACCENT semi-alpha
+            item.setBrush(QBrush(QColor(99, 102, 241, 80)))
             item.setZValue(50)
             self._scene.addItem(item)
             self._seed_preview_item = item
+        else:
+            self._seed_preview_item.setRect(-r, -r, 2 * r, 2 * r)
+            pen = self._seed_preview_item.pen()
+            pen.setWidthF(1.5 / zoom)
+            self._seed_preview_item.setPen(pen)
         self._seed_preview_item.setPos(x, y)
+
+        # --- Subset-window box (scene-size = subset_size + 1 px) ---
+        from al_dic.gui.app_state import AppState
+        winsize = AppState.instance().subset_size
+        half = winsize / 2.0
+        if getattr(self, "_seed_preview_box", None) is None:
+            box = QGraphicsRectItem(-half, -half, winsize + 1, winsize + 1)
+            pen = QPen(QColor(COLORS.ACCENT))
+            pen.setWidthF(1.0 / zoom)
+            pen.setStyle(Qt.PenStyle.DashLine)
+            box.setPen(pen)
+            box.setBrush(Qt.BrushStyle.NoBrush)
+            box.setZValue(49)
+            self._scene.addItem(box)
+            self._seed_preview_box = box
+        else:
+            self._seed_preview_box.setRect(-half, -half, winsize + 1, winsize + 1)
+            box_pen = self._seed_preview_box.pen()
+            box_pen.setWidthF(1.0 / zoom)
+            self._seed_preview_box.setPen(box_pen)
+        self._seed_preview_box.setPos(x, y)
 
     def set_drawing_mode(self, mode: str) -> None:
         """Set drawing mode: 'add' or 'cut'."""

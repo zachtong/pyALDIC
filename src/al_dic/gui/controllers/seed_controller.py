@@ -100,12 +100,17 @@ class SeedController(QObject):
         if region_id < 0:
             return False
 
+        # xy_canvas stores the snapped node position, not the raw click,
+        # so (a) the seed marker renders exactly on the node and (b) the
+        # re-snap logic has a clean, ambiguity-free anchor to re-match
+        # against after mesh changes.
+        node_xy = (float(coords[nearest, 0]), float(coords[nearest, 1]))
         self._state.seeds.append(
             SeedRecord(
                 node_idx=nearest,
                 region_id=region_id,
                 is_warped=False,
-                xy_canvas=(float(x), float(y)),
+                xy_canvas=node_xy,
             ),
         )
         self._state.seeds_changed.emit()
@@ -215,26 +220,32 @@ class SeedController(QObject):
         winsize: int,
         search_radius: int,
         stride: int = 3,
+        only_unseeded_regions: bool = False,
     ) -> int:
-        """Clear any existing seeds and place one per region at the node
-        whose single-point NCC is highest among a stride-subsampled scan.
+        """Place one seed per region at the interior node with highest NCC.
 
-        Mirrors ``SeedPropagationStrategy`` in scripts/eval_init_guess.py
-        so the GUI 'Auto-place' outcome matches the benchmark framework's
-        auto-placement.
+        Uses two biases to avoid the "seed at a mask corner" failure mode
+        observed in practice:
+          1. **Interior preference** — a node whose mesh adjacency lies
+             entirely within the same region (no neighbour on the mask
+             boundary) is strictly preferred. Boundary nodes are only
+             considered if the region has no interior candidates.
+          2. **Highest-NCC** tie-breaker among the preferred set, same
+             as before.
 
         Args:
-            ref_img: Reference frame (H, W) float64.
-            def_img: Any deformed frame (H, W) float64 — first deformed
-                frame of the sequence is a reasonable default.
-            winsize: Template window size (should match para.subset_size).
+            ref_img: Reference frame.
+            def_img: Deformed frame for the NCC.
+            winsize: Template window (= subset_size).
             search_radius: Single-point NCC half-width.
-            stride: Every Nth node per region is evaluated. Trade
-                off speed vs placement quality.
+            stride: Evaluate every Nth node per region.
+            only_unseeded_regions: If True, leave regions that already
+                contain a seed untouched and only fill regions that
+                have no seed yet. Used by the ROI-ready auto-placer so
+                multi-region edits progressively fill in.
 
         Returns:
-            Number of seeds successfully placed (0 if no regions or
-            every region's candidates failed bounds check).
+            Number of seeds newly placed this call.
         """
         from al_dic.solver.seed_propagation import seed_single_point_fft
 
@@ -242,28 +253,57 @@ class SeedController(QObject):
         if self._preview_mesh is None or self._region_map is None:
             return 0
 
-        # Replace existing seeds — the button's semantics are 'auto-fill',
-        # not 'append'. Users can still right-click to remove after.
-        self._state.seeds.clear()
+        if not only_unseeded_regions:
+            # Manual-button path: the user asked for a full re-auto-place.
+            if self._state.seeds:
+                self._state.seeds.clear()
+
+        existing = {s.region_id for s in self._state.seeds}
+
+        # Build an 'interior' mask where a full subset window fits inside
+        # the ROI. A node that lives on top of an interior pixel has
+        # every sample in its winsize x winsize template covered by the
+        # mask -- no edge artifacts from mask-cut pixels. Nodes on the
+        # mask boundary usually cause IC-GN divergence and auto-place
+        # should avoid them.
+        from scipy.ndimage import binary_erosion
+        mask = self._state.per_frame_rois.get(0)
+        if mask is None:
+            return 0
+        half_w = max(1, winsize // 2)
+        struct = np.ones((2 * half_w + 1, 2 * half_w + 1), dtype=bool)
+        interior_mask = binary_erosion(mask, structure=struct)
+        h, w = interior_mask.shape
 
         coords = self._preview_mesh.coordinates_fem
         placed = 0
         for region_id, nodes in enumerate(
             self._region_map.region_node_lists,
         ):
+            if only_unseeded_regions and region_id in existing:
+                continue
+            interior: list[int] = []
+            for node_idx in nodes:
+                n_idx = int(node_idx)
+                nx = int(np.clip(round(coords[n_idx, 0]), 0, w - 1))
+                ny = int(np.clip(round(coords[n_idx, 1]), 0, h - 1))
+                if interior_mask[ny, nx]:
+                    interior.append(n_idx)
+            candidates = interior if interior else [int(n) for n in nodes]
+            candidates = candidates[::stride] if stride > 1 else candidates
+
             best_node = -1
             best_ncc = -1.0
             best_xy: tuple[float, float] | None = None
-            for node_idx in nodes[::stride]:
-                node_idx_i = int(node_idx)
-                nx = float(coords[node_idx_i, 0])
-                ny = float(coords[node_idx_i, 1])
+            for node_idx in candidates:
+                nx = float(coords[node_idx, 0])
+                ny = float(coords[node_idx, 1])
                 r = seed_single_point_fft(
                     ref_img, def_img, (nx, ny), winsize, search_radius,
                 )
                 if r.valid and r.ncc_peak > best_ncc:
                     best_ncc = r.ncc_peak
-                    best_node = node_idx_i
+                    best_node = node_idx
                     best_xy = (nx, ny)
             if best_node < 0 or best_xy is None:
                 continue
@@ -278,7 +318,7 @@ class SeedController(QObject):
             )
             placed += 1
 
-        if placed > 0 or self._state.seeds != []:
+        if placed > 0:
             self._state.seeds_changed.emit()
         return placed
 
