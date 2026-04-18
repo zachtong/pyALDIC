@@ -110,7 +110,9 @@ class ImageList(QWidget):
         header = self._tree.header()
         header.setMinimumSectionSize(10)
         header.resizeSection(_COL_FRAME, 32)
-        header.resizeSection(_COL_ROI, 50)
+        # Region column only holds short button labels (Add / Edit / Need),
+        # so give more horizontal space to the Filename (stretch) column.
+        header.resizeSection(_COL_ROI, 44)
         header.setSectionResizeMode(_COL_FRAME, QHeaderView.ResizeMode.Fixed)
         header.setSectionResizeMode(_COL_FILENAME, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(_COL_ROI, QHeaderView.ResizeMode.Fixed)

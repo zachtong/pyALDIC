@@ -127,6 +127,11 @@ class MainWindow(QMainWindow):
         init_guess.request_auto_place_seeds.connect(
             self._on_request_auto_place_seeds,
         )
+        # Any init-method action jumps the canvas back to frame-0 ROI
+        # editing so the user sees a consistent 'setup' view.
+        init_guess.init_mode_user_changed.connect(
+            self._enter_frame0_setup_view,
+        )
         self._right_sidebar.set_seed_controller(self._seed_ctrl)
         # Sync the 'Place Starting Points' button state with the canvas
         # tool: pressed + label changed while the tool is 'seed',
@@ -371,6 +376,28 @@ class MainWindow(QMainWindow):
         canvas.set_tool("select")
         canvas.drawing_finished.emit()
 
+    def _enter_frame0_setup_view(self) -> None:
+        """Jump the canvas to frame 0 + ROI editing (= Edit button).
+
+        Invoked for any 'setup' action: init-guess method change,
+        Place Starting Points, Auto-place. Makes the sidebar action
+        and the canvas stay in sync without the user having to
+        remember to click Edit on frame 0 first.
+        """
+        state = self._state
+        if not state.image_files:
+            return
+        # Jump to frame 0 so the user sees the reference frame on
+        # which ROI + seeds live.
+        if state.current_frame != 0:
+            state.set_current_frame(0)
+        # Load the frame-0 ROI buffer and flip roi_editing = True —
+        # mirrors the _on_draw_requested path without toggling a
+        # specific drawing tool (rect/polygon/etc).
+        self._load_roi_buffer_for_current_frame()
+        if not state.roi_editing:
+            self._enter_roi_editing()
+
     def _on_request_place_seeds(self) -> None:
         """User clicked 'Place Starting Points' in the init-guess panel."""
         canvas = self._canvas_area.canvas
@@ -378,14 +405,8 @@ class MainWindow(QMainWindow):
             # Toggle off — return to pan
             canvas.set_tool("pan")
             return
-        # Entering seed placement: also flip state.roi_editing=True so
-        # the seed region overlay + markers render (they hide during
-        # result viewing). Users reported placing in result-view mode
-        # appeared to do nothing because the markers were hidden.
-        state = self._state
-        if state.results is not None and not state.roi_editing:
-            state.roi_editing = True
-            state.display_changed.emit()
+        # Take user to frame 0 editing for a consistent setup view.
+        self._enter_frame0_setup_view()
         canvas.set_tool("seed")
 
     def _on_canvas_tool_changed_for_button(self, tool: str) -> None:
@@ -463,6 +484,9 @@ class MainWindow(QMainWindow):
             search_radius=state.search_range,
             only_unseeded_regions=True,
         )
+        # Show the setup view regardless of whether anything was placed —
+        # gives the user consistent feedback about what the action did.
+        self._enter_frame0_setup_view()
         if placed == 0:
             state.log_message.emit(
                 "Auto-place: every region already has a Starting Point.",

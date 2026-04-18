@@ -1181,6 +1181,11 @@ class CanvasArea(QWidget):
         # --- Mesh overlay (child of canvas viewport, same pattern as colorbar) ---
         self._mesh_overlay = MeshOverlay(self._canvas.viewport())
 
+        # --- Seed legend overlay (top-right corner, visible only in
+        # seed_propagation mode during setup/editing).
+        from al_dic.gui.widgets.seed_legend_overlay import SeedLegendOverlay
+        self._seed_legend = SeedLegendOverlay(self._canvas.viewport())
+
         # The viewport can resize independently of CanvasArea (e.g. when
         # scrollbars appear/disappear on zoom).  Watch its resize events so
         # we can keep both overlays sized to the actual viewport rect.
@@ -1238,6 +1243,12 @@ class CanvasArea(QWidget):
         rect = (0, 0, vp.width(), vp.height())
         self._colorbar.setGeometry(*rect)
         self._mesh_overlay.setGeometry(*rect)
+        # Legend is a small top-right pinned widget, not a full-viewport
+        # layer; reposition but don't resize.
+        if self._seed_legend.isVisible():
+            self._seed_legend.move(
+                vp.width() - self._seed_legend.width() - 10, 10,
+            )
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         """Reposition overlays to fill the canvas viewport."""
@@ -1273,10 +1284,37 @@ class CanvasArea(QWidget):
         # seed overlay re-show when the user hits 'Edit ROI' after a
         # completed run.
         self._state.display_changed.connect(self._refresh_seed_visuals)
+        # Auto-exit seed-placement tool when the canvas 'context'
+        # changes out from under the user — a frame switch, an
+        # init-mode switch, or entering another panel. Without this
+        # the 'Placing... (click to exit)' state can linger invisibly
+        # when the user navigates away.
+        self._state.current_frame_changed.connect(
+            self._cancel_seed_tool_on_context_change,
+        )
+        self._state.params_changed.connect(
+            self._cancel_seed_tool_if_not_seed_mode,
+        )
+        self._state.results_changed.connect(
+            self._cancel_seed_tool_on_context_change,
+        )
         self._canvas.view_changed.connect(
             self._canvas.refresh_seed_marker_sizes,
         )
         self._refresh_seed_visuals()
+
+    def _cancel_seed_tool_on_context_change(self, *_args) -> None:
+        """Drop seed tool -> pan when canvas context shifts."""
+        if self._canvas._current_tool == "seed":
+            self._canvas.set_tool("pan")
+
+    def _cancel_seed_tool_if_not_seed_mode(self) -> None:
+        """Drop seed tool when init_guess_mode is no longer seed."""
+        if (
+            self._canvas._current_tool == "seed"
+            and self._state.init_guess_mode != "seed_propagation"
+        ):
+            self._canvas.set_tool("pan")
 
     def _refresh_seed_visuals(self) -> None:
         """Redraw region overlay + seed markers from current state.
@@ -1297,12 +1335,19 @@ class CanvasArea(QWidget):
         if not show:
             self._canvas.hide_seed_region_overlay()
             self._canvas.set_seed_markers([])
+            self._seed_legend.setVisible(False)
             return
         label_img = self._seed_ctrl.region_label_image()
         status = self._seed_ctrl.regions_status()
         region_seeded = {i: has for i, has, _ in status}
         self._canvas.update_seed_region_overlay(label_img, region_seeded)
         self._canvas.set_seed_markers(self._state.seeds)
+        # Pin legend to top-right of canvas viewport with a small margin.
+        vp = self._canvas.viewport()
+        vp_w = vp.width()
+        self._seed_legend.move(vp_w - self._seed_legend.width() - 10, 10)
+        self._seed_legend.setVisible(True)
+        self._seed_legend.raise_()
 
     def _on_canvas_tool_changed(self, tool: str) -> None:
         self._seed_banner.setVisible(tool == "seed")

@@ -54,6 +54,11 @@ class InitGuessWidget(QWidget):
     request_place_seeds = Signal()
     # Emitted when the user clicks "Auto-place".
     request_auto_place_seeds = Signal()
+    # Emitted whenever the user changes the init-guess method via the UI
+    # (radio toggle or FFT submode). App.py uses this to jump to frame 0
+    # ROI editing so the user always sees a consistent 'setup' view
+    # after any init-method action.
+    init_mode_user_changed = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -285,6 +290,7 @@ class InitGuessWidget(QWidget):
             self._state.init_guess_mode = "previous"
         self._sync_from_state()
         self._state.params_changed.emit()
+        self.init_mode_user_changed.emit()
 
     def _on_fft_submode_changed(self) -> None:
         if self._building:
@@ -302,6 +308,7 @@ class InitGuessWidget(QWidget):
                 self._state.fft_reset_interval = n
         self._sync_from_state()
         self._state.params_changed.emit()
+        self.init_mode_user_changed.emit()
 
     def _on_fft_n_changed(self, value: int) -> None:
         if self._building:
