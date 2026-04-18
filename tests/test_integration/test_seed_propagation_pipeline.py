@@ -11,7 +11,7 @@ import pytest
 from dataclasses import replace
 from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
-from al_dic.core.data_structures import DICPara, GridxyROIRange
+from al_dic.core.data_structures import DICPara, FrameSchedule, GridxyROIRange
 from al_dic.core.pipeline import run_aldic
 from al_dic.solver.seed_propagation import Seed, SeedSet
 
@@ -113,3 +113,69 @@ class TestSeedPropagationSingleRef:
         masks = [np.ones((h, w)), np.ones((h, w))]
         with pytest.raises(ValueError, match="seed_set"):
             run_aldic(para, [ref, deformed], masks, compute_strain=False)
+
+
+class TestSeedPropagationRefSwitch:
+    """C10b: ref switch triggers seed warp; pipeline keeps running."""
+
+    def test_ref_switch_auto_warps_seeds(self):
+        """4-frame sequence with from_every_n(2) → ref switches at frame 3.
+
+        Images constructed as uniform shifts of Image 0:
+          Image 0 = base speckle
+          Image 1 = Image 0 + 1*(dx, dy)
+          Image 2 = Image 0 + 2*(dx, dy)
+          Image 3 = Image 0 + 3*(dx, dy)
+
+        Schedule: refs = (0, 0, 2). At frame 3 the ref switches from
+        Image 0 to Image 2; seeds placed on Image 0's mesh must be
+        warped to Image 2's mesh. Frame 3 should recover displacement
+        (dx, dy) — the Image 2 -> Image 3 motion.
+        """
+        h, w = 192, 192
+        dx, dy = 1.2, 0.5
+        ref0 = _speckle(h, w, seed=11)
+        images = [ref0]
+        for k in (1, 2, 3):
+            images.append(
+                ndimage_shift(
+                    ref0, [k * dy, k * dx], order=3, mode="reflect",
+                ),
+            )
+        masks = [np.ones((h, w)) for _ in images]
+
+        # Probe run to discover node_idx near image center
+        probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
+        probe_result = run_aldic(
+            probe_para, images[:2], masks[:2], compute_strain=False,
+        )
+        coords = probe_result.dic_mesh.coordinates_fem
+        center = np.array([w / 2, h / 2])
+        seed_idx = int(np.argmin(np.linalg.norm(coords - center, axis=1)))
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=seed_idx, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        schedule = FrameSchedule.from_every_n(2, n_frames=4)
+        # ref_indices should be (0, 0, 2) — verify the schedule actually
+        # triggers a ref change, otherwise the test is not exercising warp.
+        assert schedule.ref_indices == (0, 0, 2)
+
+        para = _make_para(
+            h, w, seed_set=seed_set,
+            frame_schedule=schedule,
+            reference_mode="incremental",  # frame_schedule overrides
+        )
+        result = run_aldic(
+            para, images, masks, compute_strain=False,
+        )
+
+        assert result.result_disp[2] is not None, "Frame 3 after ref switch failed"
+        U3 = result.result_disp[2].U
+        # U3 is the displacement from Image 2 -> Image 3 (after ref switch)
+        # Expected ≈ (dx, dy) uniformly
+        u_med = np.nanmedian(U3[0::2])
+        v_med = np.nanmedian(U3[1::2])
+        np.testing.assert_allclose(u_med, dx, atol=0.35)
+        np.testing.assert_allclose(v_med, dy, atol=0.35)
