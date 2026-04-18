@@ -365,6 +365,131 @@ def _solve_single_node(
     return U_sub[0], F_sub[0], int(conv_sub[0])
 
 
+def warp_seeds_to_new_ref(
+    old_seed_set: SeedSet,
+    old_coordinates_fem: NDArray[np.float64],
+    old_U_2d: NDArray[np.float64],
+    new_coordinates_fem: NDArray[np.float64],
+    new_region_map: NodeRegionMap,
+    max_snap_distance: float | None = None,
+) -> SeedSet:
+    """Warp each seed from old reference frame to new reference frame.
+
+    When a ref switch happens (accumulative single-ref → new ref at frame
+    M, or custom FrameSchedule), the new reference is the deformed state
+    of the old reference at some frame M. Each old seed's material point
+    moves by U_old[seed.node_idx], so in the new reference's coordinate
+    system the same material point sits at old_xy + U_old.
+
+    Steps per seed:
+      1. Get x_old = old_coordinates_fem[seed.node_idx].
+      2. Get u_old = old_U_2d[seed.node_idx]. NaN → SeedWarpFailure
+         (means the seed became a bad_point last frame; that frame
+         should already have raised SeedQualityError).
+      3. x_new = x_old + u_old.
+      4. Nearest new node: argmin Euclidean distance in new_coordinates_fem.
+      5. If max_snap_distance is given and best distance exceeds it:
+         SeedWarpFailure (material point moved outside the new ROI).
+      6. Look up region_id from new_region_map; not found → SeedWarpFailure.
+      7. Build new Seed(node_idx=nearest, region_id, user_hint_uv=None).
+
+    Multiple old seeds may collapse to the same new node (two close
+    seeds, small mesh). Duplicates are removed — first occurrence wins
+    — so the resulting SeedSet has unique node_idx values.
+
+    Args:
+        old_seed_set: Seeds in the old ref's coordinate and node system.
+        old_coordinates_fem: (n_old, 2) old mesh node coords.
+        old_U_2d: (n_old, 2) converged displacements at old mesh nodes
+            (should be NaN-free if SeedQualityError is enforced).
+        new_coordinates_fem: (n_new, 2) new mesh node coords.
+        new_region_map: NodeRegionMap for the new ref's mask.
+        max_snap_distance: Optional cap on the distance between warped
+            position and nearest new node. Default None (no cap).
+
+    Returns:
+        A new SeedSet with warped seeds; thresholds preserved.
+
+    Raises:
+        SeedWarpFailure: any seed fails to warp cleanly.
+    """
+    if old_coordinates_fem.shape[0] != old_U_2d.shape[0]:
+        raise ValueError(
+            f"old_coordinates_fem ({old_coordinates_fem.shape[0]} nodes) "
+            f"and old_U_2d ({old_U_2d.shape[0]} rows) must match."
+        )
+
+    # Node -> region lookup in new mesh
+    n_new = new_coordinates_fem.shape[0]
+    new_node_to_region = np.full(n_new, -1, dtype=np.int64)
+    for region_idx, nodes in enumerate(new_region_map.region_node_lists):
+        new_node_to_region[nodes] = region_idx
+
+    new_seeds: list[Seed] = []
+    seen_node_indices: set[int] = set()
+
+    for seed in old_seed_set.seeds:
+        if seed.node_idx >= old_coordinates_fem.shape[0]:
+            raise SeedWarpFailure(
+                f"Old seed node_idx {seed.node_idx} out of range "
+                f"for old mesh with {old_coordinates_fem.shape[0]} nodes."
+            )
+        x_old = old_coordinates_fem[seed.node_idx]
+        u_old = old_U_2d[seed.node_idx]
+        if np.any(np.isnan(u_old)):
+            raise SeedWarpFailure(
+                f"Seed at old node {seed.node_idx} has NaN displacement — "
+                f"the producing frame's SeedQualityError gate was bypassed "
+                f"or the seed was silently IDW-filled. Cannot warp."
+            )
+
+        x_new = x_old + u_old
+        dists = np.linalg.norm(new_coordinates_fem - x_new, axis=1)
+        nearest = int(np.argmin(dists))
+        best_dist = float(dists[nearest])
+
+        if max_snap_distance is not None and best_dist > max_snap_distance:
+            raise SeedWarpFailure(
+                f"Seed at old node {seed.node_idx} warped to "
+                f"{tuple(x_new)}; nearest new node is {best_dist:.2f} px "
+                f"away, exceeding max_snap_distance={max_snap_distance:.2f}. "
+                f"Material point likely moved outside the new ROI."
+            )
+
+        new_region = int(new_node_to_region[nearest])
+        if new_region < 0:
+            raise SeedWarpFailure(
+                f"Seed at old node {seed.node_idx} warped to "
+                f"nearest new node {nearest} which is not in any tracked "
+                f"region of the new mesh. Adjust the new ROI or seed."
+            )
+
+        if nearest in seen_node_indices:
+            # Silent dedupe — two old seeds collapsed to same new node
+            continue
+        seen_node_indices.add(nearest)
+
+        new_seeds.append(
+            Seed(
+                node_idx=nearest,
+                region_id=new_region,
+                user_hint_uv=None,
+            ),
+        )
+
+    if not new_seeds:
+        raise SeedWarpFailure(
+            "All seeds failed to warp to the new reference; no usable "
+            "seeds remain. Re-place seeds manually in the new mesh."
+        )
+
+    return SeedSet(
+        seeds=tuple(new_seeds),
+        ncc_threshold=old_seed_set.ncc_threshold,
+        max_bfs_depth=old_seed_set.max_bfs_depth,
+    )
+
+
 def _validate_multi_region_seeds(
     seed_set: SeedSet,
     node_region_map: NodeRegionMap,
