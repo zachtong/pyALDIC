@@ -1265,6 +1265,11 @@ class CanvasArea(QWidget):
         self._state.roi_changed.connect(self._refresh_seed_visuals)
         self._state.params_changed.connect(self._refresh_seed_visuals)
         self._state.results_changed.connect(self._refresh_seed_visuals)
+        # display_changed fires when state.roi_editing toggles (see
+        # app.py's _enter_roi_editing path). Subscribing here lets the
+        # seed overlay re-show when the user hits 'Edit ROI' after a
+        # completed run.
+        self._state.display_changed.connect(self._refresh_seed_visuals)
         self._canvas.view_changed.connect(
             self._canvas.refresh_seed_marker_sizes,
         )
@@ -1273,15 +1278,20 @@ class CanvasArea(QWidget):
     def _refresh_seed_visuals(self) -> None:
         """Redraw region overlay + seed markers from current state.
 
-        Bug 1 fix: hide the yellow/green region overlay and seed markers
-        while results are being viewed — same behavior as the blue ROI
-        translucent overlay, so the computed displacement field isn't
-        obscured. Becomes visible again when the user goes back to ROI
-        editing or starts a new run.
+        Visible during SETUP (no results yet, OR user re-entered ROI
+        editing after a run), hidden while the user is VIEWING results
+        so the displacement field isn't obscured. This mirrors the
+        blue ROI overlay's visibility rule.
         """
         is_seed_mode = self._state.init_guess_mode == "seed_propagation"
         viewing_results = self._state.results is not None
-        if not is_seed_mode or self._seed_ctrl is None or viewing_results:
+        roi_editing = getattr(self._state, "roi_editing", False)
+        show = (
+            is_seed_mode
+            and self._seed_ctrl is not None
+            and (not viewing_results or roi_editing)
+        )
+        if not show:
             self._canvas.hide_seed_region_overlay()
             self._canvas.set_seed_markers([])
             return
@@ -1725,13 +1735,22 @@ class CanvasArea(QWidget):
         h, w = roi_mask.shape
         half_w = state.subset_size // 2
 
-        # Match actual DIC padding (integer_search.py): only `half_w` is
-        # required for the IC-GN subset to fit.  Edge nodes too close to
-        # the border for NCC search are NaN'd then inpainted; partial-edge
-        # subsets are handled by the masked-subset code path.
-        pad = half_w
-        min_x, max_x = pad, w - 1 - pad
-        min_y, max_y = pad, h - 1 - pad
+        # Match the grid the pipeline_controller will build: its ROI
+        # range is the ROI-mask BOUNDING BOX, and x0/y0 are anchored
+        # there, not at the image edge. Using the image edge as the
+        # origin (as the previous code did) shifts every node by a
+        # few pixels relative to where seeds get snapped — visible as
+        # a persistent offset between the mesh overlay and seed
+        # markers during ROI editing (Bug B).
+        rows, cols = np.where(roi_mask)
+        if rows.size == 0:
+            self._mesh_overlay.set_mesh(None, None)
+            self._mesh_overlay.setVisible(False)
+            return
+        min_x = max(int(cols.min()), half_w)
+        max_x = min(int(cols.max()), w - 1 - half_w)
+        min_y = max(int(rows.min()), half_w)
+        max_y = min(int(rows.max()), h - 1 - half_w)
         if max_x <= min_x or max_y <= min_y:
             self._mesh_overlay.set_mesh(None, None)
             self._mesh_overlay.setVisible(False)
