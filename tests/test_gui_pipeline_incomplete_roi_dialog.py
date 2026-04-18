@@ -119,6 +119,10 @@ def _setup_state(
     state.search_range = 10
     state.tracking_mode = tracking_mode
     state.inc_ref_mode = inc_ref_mode
+    # Incomplete-ROI-dialog tests exercise ROI coverage checks, not the
+    # seed path. Override the default mode (now seed_propagation) so
+    # the pipeline reaches its ROI-coverage gate before the seed gate.
+    state.init_guess_mode = "previous"
     h, w = shape
     mask = np.zeros(shape, dtype=bool)
     mask[h // 4 : 3 * h // 4, w // 4 : 3 * w // 4] = True

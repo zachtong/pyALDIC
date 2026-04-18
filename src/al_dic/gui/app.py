@@ -128,6 +128,14 @@ class MainWindow(QMainWindow):
             self._on_request_auto_place_seeds,
         )
         self._right_sidebar.set_seed_controller(self._seed_ctrl)
+        # Auto-place Starting Points when the prerequisites are all met
+        # (seed_propagation mode, >= 2 images, an ROI with regions, and
+        # no user-placed seeds yet). Keeps the default mode usable
+        # without forcing every user to learn the Place / Auto-place
+        # workflow before they can click Run.
+        self._state.roi_changed.connect(self._maybe_auto_place_seeds)
+        self._state.params_changed.connect(self._maybe_auto_place_seeds)
+        self._state.images_changed.connect(self._maybe_auto_place_seeds)
 
         # Per-frame ROI editing from image list
         self._left_sidebar._image_list.roi_edit_requested.connect(
@@ -365,6 +373,48 @@ class MainWindow(QMainWindow):
             canvas.set_tool("pan")
         else:
             canvas.set_tool("seed")
+
+    def _maybe_auto_place_seeds(self) -> None:
+        """Auto-place Starting Points when prerequisites are met.
+
+        Fires on roi_changed / params_changed / images_changed. Acts
+        only when:
+          - init_guess_mode == 'seed_propagation'
+          - no seeds are currently placed (don't clobber manual picks)
+          - at least 2 images are loaded
+          - the SeedController's preview mesh has at least one region
+            under the current ROI mask
+
+        Silently skipped otherwise. Errors during image read or
+        single-point NCC do not raise — auto-place is a convenience,
+        the manual button remains available for recovery.
+        """
+        state = self._state
+        if state.init_guess_mode != "seed_propagation":
+            return
+        if state.seeds:
+            return
+        if len(state.image_files) < 2:
+            return
+        status = self._seed_ctrl.regions_status()
+        if not status:
+            return  # no mesh / no regions yet
+        try:
+            ref_img = self._image_ctrl.read_image(0)
+            def_img = self._image_ctrl.read_image(1)
+        except Exception:
+            return
+        try:
+            self._seed_ctrl.auto_place_seeds(
+                ref_img, def_img,
+                winsize=state.subset_size,
+                search_radius=state.search_range,
+            )
+        except Exception:
+            # Auto-place is best-effort; user can still use the button
+            # or place manually. Don't spam fatal_error for a silent
+            # convenience feature.
+            return
 
     def _on_request_auto_place_seeds(self) -> None:
         """User clicked 'Auto-place' in the init-guess seed sub-panel."""

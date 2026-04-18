@@ -49,6 +49,8 @@ def _make_state_with_brush(tmp_path: Path) -> AppState:
     state.subset_step = 8
     state.search_range = 8
     state.tracking_mode = "accumulative"
+    # Test exercises brush-refinement wiring, not seed path.
+    state.init_guess_mode = "previous"
     # Brush mask painted in frame 0 coordinates
     brush = np.zeros((64, 64), dtype=bool)
     brush[20:30, 20:30] = True

@@ -652,6 +652,9 @@ class TestRunButtonClearsStaleResults:
         # Pretend tracking mode is accumulative so we don't hit the
         # incomplete-ROI confirmation dialog.
         state.tracking_mode = "accumulative"
+        # Opt out of the seed-propagation default so start() doesn't
+        # bail on 'no seeds placed' before we reach the worker launch.
+        state.init_guess_mode = "previous"
 
         win._pipeline_ctrl.start()
 

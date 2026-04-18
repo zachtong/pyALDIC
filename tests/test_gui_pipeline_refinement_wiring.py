@@ -101,6 +101,10 @@ def _setup_state_for_run(state: AppState, shape: tuple[int, int]) -> None:
     state.subset_step = 16
     state.search_range = 10
     state.tracking_mode = "accumulative"
+    # These refinement-wiring tests exercise the non-seed init path;
+    # override the default (now seed_propagation) explicitly so the
+    # pipeline doesn't bail out on 'no seeds' before the worker runs.
+    state.init_guess_mode = "previous"
     # Build a centered rectangular ROI big enough to satisfy
     # 2*subset_step minimum-size guard (=32 px).
     h, w = shape
