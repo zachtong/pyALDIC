@@ -588,19 +588,24 @@ def run_aldic(
     img_h, img_w = images[0].shape
     para = replace(para, gridxy_roi_range=clamped_roi, img_size=(img_h, img_w))
 
-    # Auto-scale FFT search region
-    img_min_dim = min(img_h, img_w)
-    max_safe = max(10, img_min_dim // 4 - para.winsize)
-    if para.size_of_fft_search_region > max_safe:
-        old_val = para.size_of_fft_search_region
-        new_val = max(10, max_safe)
-        para = replace(para, size_of_fft_search_region=new_val)
-        msg = (
-            f"Auto-scaled FFT search region: {old_val} -> {new_val} "
-            f"(image {img_h}x{img_w})"
-        )
-        warnings.warn(msg, stacklevel=2)
-        progress(0.0, msg)
+    # Auto-scale FFT search region. Constraint is FFT-grid-specific:
+    # the batch NCC kernel needs (2*search + winsize) <= image_dim / 2.
+    # Seed propagation uses per-seed single-point NCC whose bound is
+    # per-seed (based on seed position vs image edge), not a global
+    # image-fraction limit, so skip this clamp for that mode.
+    if para.init_guess_mode != "seed_propagation":
+        img_min_dim = min(img_h, img_w)
+        max_safe = max(10, img_min_dim // 4 - para.winsize)
+        if para.size_of_fft_search_region > max_safe:
+            old_val = para.size_of_fft_search_region
+            new_val = max(10, max_safe)
+            para = replace(para, size_of_fft_search_region=new_val)
+            msg = (
+                f"Auto-scaled FFT search region: {old_val} -> {new_val} "
+                f"(image {img_h}x{img_w})"
+            )
+            warnings.warn(msg, stacklevel=2)
+            progress(0.0, msg)
 
     n_frames = len(img_normalized)
     result_disp: list[FrameResult | None] = [None] * (n_frames - 1)
