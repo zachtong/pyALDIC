@@ -646,6 +646,12 @@ class TestRunButtonClearsStaleResults:
             progress = _Sig()
             log = _Sig()
             finished_result = _Sig()
+            # PipelineController.start() wires fatal_error through to
+            # state.fatal_error. Missing this attribute raised
+            # AttributeError ('_FakeWorker has no attribute fatal_error')
+            # during the monkey-patched run, triggering a modal dialog
+            # on the user's desktop every regression pass.
+            fatal_error = _Sig()
 
         monkeypatch.setattr(pc_mod, "PipelineWorker", _FakeWorker)
 

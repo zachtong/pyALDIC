@@ -611,7 +611,13 @@ class PipelineController:
             self._worker.log.connect(
                 lambda msg, lvl: state.log_message.emit(msg, lvl)
             )
-            self._worker.fatal_error.connect(state.fatal_error)
+            # Defensive: some test stubs omit fatal_error. hasattr
+            # keeps the pipeline bootable when a stub is incomplete
+            # rather than triggering the very dialog that reports
+            # 'worker has no attribute fatal_error' on the user's
+            # desktop during regression runs.
+            if hasattr(self._worker, "fatal_error"):
+                self._worker.fatal_error.connect(state.fatal_error)
             self._worker.finished_result.connect(self._on_finished)
 
             # Reset progress from any previous run
