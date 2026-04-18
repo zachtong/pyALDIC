@@ -8,6 +8,7 @@ from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
 from al_dic.core.data_structures import DICPara, ImageGradients
 from al_dic.solver.local_icgn import local_icgn_precompute
+from al_dic.utils.region_analysis import NodeRegionMap, precompute_node_regions
 from al_dic.solver.seed_propagation import (
     MissingSeedForRegion,
     PropagationResult,
@@ -303,3 +304,149 @@ class TestPropagateFromSeeds:
         assert result.n_seeds == 2
         # Two seed bootstraps + BFS layers
         assert result.n_solve_calls == 2 + result.max_bfs_depth_reached
+
+
+class TestMultiRegionDispatch:
+    """C7: multi-region seed validation."""
+
+    @staticmethod
+    def _make_two_region_case(shift_x=1.0, shift_y=0.5):
+        """Build a case with two disconnected node groups + two mask regions.
+
+        Region A: nodes placed in upper-left patch; one Q4 element.
+        Region B: nodes placed in lower-right patch; one Q4 element.
+        The two elements share no node → adjacency has no cross-region edge.
+        The image mask has two disjoint rectangles, so NodeRegionMap
+        reports n_regions == 2.
+        """
+        size = 192
+        ref = _speckle(size=size, seed=42)
+        deformed = ndimage_shift(
+            ref, [shift_y, shift_x], order=3, mode="reflect",
+        )
+
+        # Two separate Q4 element groups, no shared nodes
+        # Region A at (40-80, 40-80), Region B at (120-160, 120-160)
+        coords = np.array([
+            [40.0, 40.0], [80.0, 40.0], [80.0, 80.0], [40.0, 80.0],  # A: 0-3
+            [120.0, 120.0], [160.0, 120.0], [160.0, 160.0], [120.0, 160.0],  # B: 4-7
+        ], dtype=np.float64)
+        elems = np.array([
+            [0, 1, 2, 3, -1, -1, -1, -1],
+            [4, 5, 6, 7, -1, -1, -1, -1],
+        ], dtype=np.int64)
+        adj = build_node_adjacency(elems, n_nodes=8)
+
+        # Mask with two disjoint rectangles matching node locations
+        mask = np.zeros_like(ref)
+        mask[30:90, 30:90] = 1.0  # region containing nodes 0-3
+        mask[110:170, 110:170] = 1.0  # region containing nodes 4-7
+
+        df_dx = np.zeros_like(ref)
+        df_dy = np.zeros_like(ref)
+        df_dx[:, 1:-1] = (ref[:, 2:] - ref[:, :-2]) / 2.0
+        df_dy[1:-1, :] = (ref[2:, :] - ref[:-2, :]) / 2.0
+        Df = ImageGradients(
+            df_dx=df_dx, df_dy=df_dy, img_ref_mask=mask, img_size=ref.shape,
+        )
+        para = DICPara(winsize=16, icgn_max_iter=50)
+        ctx = local_icgn_precompute(coords, Df, ref, para)
+
+        region_map = precompute_node_regions(
+            coords, mask, ref.shape, min_area=20,
+        )
+        return ref, deformed, ctx, adj, region_map
+
+    def test_two_regions_detected(self):
+        """Sanity: NodeRegionMap correctly splits the two disjoint groups."""
+        _, _, _, _, region_map = self._make_two_region_case()
+        assert region_map.n_regions == 2
+        # Nodes 0-3 in one region, 4-7 in the other
+        region_ids = set()
+        for nodes in region_map.region_node_lists:
+            region_ids.add(tuple(sorted(nodes.tolist())))
+        assert (0, 1, 2, 3) in region_ids
+        assert (4, 5, 6, 7) in region_ids
+
+    def test_missing_seed_for_region_raises(self):
+        """One seed for a two-region mesh → MissingSeedForRegion."""
+        ref, deformed, ctx, adj, region_map = self._make_two_region_case()
+
+        # Figure out which region node 0 belongs to
+        node0_region = next(
+            i for i, nodes in enumerate(region_map.region_node_lists)
+            if 0 in nodes.tolist()
+        )
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=node0_region),),
+            ncc_threshold=0.3,
+        )
+
+        with pytest.raises(MissingSeedForRegion) as exc_info:
+            propagate_from_seeds(
+                ctx, seed_set, adj, ref, deformed,
+                search_radius=10, tol=1e-4,
+                node_region_map=region_map,
+            )
+        assert "no seed" in str(exc_info.value).lower()
+
+    def test_seed_region_id_mismatch_raises(self):
+        """Seed declares wrong region_id → SeedPropagationError."""
+        ref, deformed, ctx, adj, region_map = self._make_two_region_case()
+
+        node0_region = next(
+            i for i, nodes in enumerate(region_map.region_node_lists)
+            if 0 in nodes.tolist()
+        )
+        # Declare the OPPOSITE region_id
+        wrong_region = 1 - node0_region
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=wrong_region),),
+            ncc_threshold=0.3,
+        )
+
+        with pytest.raises(SeedPropagationError) as exc_info:
+            propagate_from_seeds(
+                ctx, seed_set, adj, ref, deformed,
+                search_radius=10, tol=1e-4,
+                node_region_map=region_map,
+            )
+        assert "region_id" in str(exc_info.value)
+
+    def test_both_regions_seeded_all_solved(self):
+        """Two regions, both seeded → all 8 nodes converge."""
+        ref, deformed, ctx, adj, region_map = self._make_two_region_case()
+
+        # Map each region to one of its nodes
+        seeds = []
+        for region_idx, nodes in enumerate(region_map.region_node_lists):
+            seeds.append(
+                Seed(node_idx=int(nodes[0]), region_id=region_idx),
+            )
+
+        seed_set = SeedSet(seeds=tuple(seeds), ncc_threshold=0.3)
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=10, tol=1e-4,
+            node_region_map=region_map,
+        )
+        assert result.n_seeds == 2
+        assert len(result.unsolved_nodes) == 0
+
+    def test_no_region_map_skips_validation(self):
+        """Backward compat: node_region_map=None skips multi-region checks."""
+        ref, deformed, ctx, adj, _ = self._make_two_region_case()
+
+        # Only seed region A; no region map → no validation error
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=10, tol=1e-4,
+            node_region_map=None,
+        )
+        # Region A (nodes 0-3) solved; Region B (nodes 4-7) stays unsolved
+        # because BFS can't reach it without a seed or edge
+        assert set(result.unsolved_nodes.tolist()) == {4, 5, 6, 7}

@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
+from ..utils.region_analysis import NodeRegionMap
 from .local_icgn import LocalICGNContext, local_icgn_solve_subset
 
 
@@ -343,6 +344,55 @@ def _solve_single_node(
     return U_sub[0], F_sub[0], int(conv_sub[0])
 
 
+def _validate_multi_region_seeds(
+    seed_set: SeedSet,
+    node_region_map: NodeRegionMap,
+    n_nodes: int,
+) -> None:
+    """Enforce one-seed-per-region and seed.region_id consistency.
+
+    Two checks, both fatal:
+      1. Every region in node_region_map has at least one seed.
+         BFS cannot cross region boundaries (adjacency only contains
+         edges within an element; cracks/holes break elements), so
+         a region without a seed will never be solved.
+      2. Each seed's declared region_id matches the actual region of
+         its node as mapped by node_region_map. A mismatch would
+         propagate using the wrong region's neighbours.
+    """
+    # Build node -> region_id lookup from NodeRegionMap
+    node_to_region = np.full(n_nodes, -1, dtype=np.int64)
+    for region_idx, node_list in enumerate(node_region_map.region_node_lists):
+        node_to_region[node_list] = region_idx
+
+    # Which regions have at least one seed?
+    seeded_regions: set[int] = set()
+    for seed in seed_set.seeds:
+        actual_region = int(node_to_region[seed.node_idx])
+        if actual_region < 0:
+            raise MissingSeedForRegion(
+                f"Seed at node {seed.node_idx} lies outside any tracked "
+                f"region (mask hole or below min_area). Move the seed "
+                f"to a node inside a valid region."
+            )
+        if actual_region != seed.region_id:
+            raise SeedPropagationError(
+                f"Seed at node {seed.node_idx}: declared region_id="
+                f"{seed.region_id} but node actually belongs to region "
+                f"{actual_region}. Re-resolve seeds against the current "
+                f"NodeRegionMap."
+            )
+        seeded_regions.add(actual_region)
+
+    missing = set(range(node_region_map.n_regions)) - seeded_regions
+    if missing:
+        raise MissingSeedForRegion(
+            f"{len(missing)} region(s) have no seed: indices {sorted(missing)}. "
+            f"Each connected region needs at least one seed — BFS cannot "
+            f"cross region boundaries."
+        )
+
+
 def propagate_from_seeds(
     ctx: LocalICGNContext,
     seed_set: SeedSet,
@@ -351,6 +401,7 @@ def propagate_from_seeds(
     g_img: NDArray[np.float64],
     search_radius: int,
     tol: float,
+    node_region_map: NodeRegionMap | None = None,
 ) -> PropagationResult:
     """Eager first-converged BFS from seeds, with F-aware init per layer.
 
@@ -372,6 +423,10 @@ def propagate_from_seeds(
         search_radius: Initial single-point NCC search radius for seeds.
             Auto-expands on clipped peaks.
         tol: IC-GN convergence tolerance (same as local_icgn).
+        node_region_map: Optional connected-component map. When provided,
+            every region must have at least one seed (BFS cannot cross
+            region boundaries), and each seed's declared region_id must
+            match its node's actual region. See _validate_multi_region_seeds.
 
     Returns:
         PropagationResult. Unsolved nodes carry NaN in U_2d and whatever
@@ -380,11 +435,17 @@ def propagate_from_seeds(
     Raises:
         SeedNCCBelowThreshold: A seed's bootstrap NCC < threshold.
         SeedICGNDiverged: A seed's own IC-GN solve failed to converge.
-        SeedPropagationError: Seed FFT window out of image bounds.
+        MissingSeedForRegion: A region has no seed, or a seed's region_id
+            disagrees with node_region_map.
+        SeedPropagationError: Seed FFT window out of image bounds, or
+            seed lies outside any tracked region.
     """
     n = ctx.n_nodes
     max_iter = ctx.max_iter
     winsize = ctx.winsize
+
+    if node_region_map is not None:
+        _validate_multi_region_seeds(seed_set, node_region_map, n)
 
     U_2d = np.full((n, 2), np.nan, dtype=np.float64)
     F_2d = np.zeros((n, 4), dtype=np.float64)
