@@ -5,7 +5,12 @@ import pytest
 from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
 from al_dic.core.data_structures import DICPara, ImageGradients
-from al_dic.solver.local_icgn import local_icgn
+from al_dic.solver.local_icgn import (
+    local_icgn,
+    local_icgn_postprocess,
+    local_icgn_precompute,
+    local_icgn_solve_subset,
+)
 
 
 def _make_speckle_pair(size=128, shift_x=0.0, shift_y=0.0):
@@ -131,3 +136,86 @@ class TestLocalICGN:
 
         assert not np.any(np.isnan(U))
         assert not np.any(np.isnan(F))
+
+
+class TestLocalICGNComposition:
+    """Verify that precompute+solve_subset+postprocess matches monolithic
+    local_icgn() exactly. Required by the seed-propagation BFS, which
+    builds ctx once and calls solve_subset per layer.
+    """
+
+    @staticmethod
+    def _make_case(n_grid=4, shift_x=0.8, shift_y=0.4):
+        img_ref, img_def, Df = _make_speckle_pair(shift_x=shift_x, shift_y=shift_y)
+        xs = np.linspace(32, 96, n_grid)
+        ys = np.linspace(32, 96, n_grid)
+        coords = np.array([[x, y] for y in ys for x in xs], dtype=np.float64)
+        n = coords.shape[0]
+        U0 = np.full(2 * n, 0.5, dtype=np.float64)
+        para = DICPara(winsize=20, icgn_max_iter=50)
+        return img_ref, img_def, Df, coords, U0, para
+
+    def test_full_mesh_parity(self):
+        """Composed full-mesh call must bit-match monolithic local_icgn."""
+        img_ref, img_def, Df, coords, U0, para = self._make_case()
+
+        U_ref, F_ref, _, conv_ref, bad_ref, hole_ref = local_icgn(
+            U0, coords, Df, img_ref, img_def, para, tol=1e-4,
+        )
+
+        ctx = local_icgn_precompute(coords, Df, img_ref, para)
+        U0_2d = U0.reshape(-1, 2)
+        U_2d, F_2d, conv_iter = local_icgn_solve_subset(
+            ctx, None, U0_2d, img_def, tol=1e-4,
+        )
+        U_c, F_c, _, conv_c, bad_c, hole_c = local_icgn_postprocess(
+            ctx, U_2d, F_2d, conv_iter,
+        )
+
+        np.testing.assert_array_equal(U_c, U_ref)
+        np.testing.assert_array_equal(F_c, F_ref)
+        np.testing.assert_array_equal(conv_c, conv_ref)
+        np.testing.assert_array_equal(hole_c, hole_ref)
+        assert bad_c == bad_ref
+
+    def test_split_subset_parity(self):
+        """Two half-subset solves must produce the same full-mesh result."""
+        img_ref, img_def, Df, coords, U0, para = self._make_case()
+
+        U_ref, F_ref, _, conv_ref, bad_ref, hole_ref = local_icgn(
+            U0, coords, Df, img_ref, img_def, para, tol=1e-4,
+        )
+
+        ctx = local_icgn_precompute(coords, Df, img_ref, para)
+        n = ctx.n_nodes
+        half = n // 2
+        idx_a = np.arange(half, dtype=np.int64)
+        idx_b = np.arange(half, n, dtype=np.int64)
+        U0_2d = U0.reshape(-1, 2)
+
+        U_2d_full = np.zeros((n, 2), dtype=np.float64)
+        F_2d_full = np.zeros((n, 4), dtype=np.float64)
+        conv_full = np.zeros(n, dtype=np.int64)
+
+        U_a, F_a, conv_a = local_icgn_solve_subset(
+            ctx, idx_a, U0_2d[idx_a], img_def, tol=1e-4,
+        )
+        U_b, F_b, conv_b = local_icgn_solve_subset(
+            ctx, idx_b, U0_2d[idx_b], img_def, tol=1e-4,
+        )
+        U_2d_full[idx_a] = U_a
+        U_2d_full[idx_b] = U_b
+        F_2d_full[idx_a] = F_a
+        F_2d_full[idx_b] = F_b
+        conv_full[idx_a] = conv_a
+        conv_full[idx_b] = conv_b
+
+        U_c, F_c, _, conv_c, bad_c, hole_c = local_icgn_postprocess(
+            ctx, U_2d_full, F_2d_full, conv_full,
+        )
+
+        np.testing.assert_array_equal(U_c, U_ref)
+        np.testing.assert_array_equal(F_c, F_ref)
+        np.testing.assert_array_equal(conv_c, conv_ref)
+        np.testing.assert_array_equal(hole_c, hole_ref)
+        assert bad_c == bad_ref
