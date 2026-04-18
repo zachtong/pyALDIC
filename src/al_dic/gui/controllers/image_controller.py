@@ -138,6 +138,19 @@ class ImageController:
         self._cache_rgb: dict[int, NDArray[np.uint8]] = {}
         self._natural_sort: bool = False
         self._raw_files: list[str] = []  # unsorted file list
+        # Invalidate caches whenever the image file list changes. Each
+        # ImageController instance (MainWindow + StrainWindow each own
+        # one) caches by integer index, so if the underlying files
+        # change without clearing, index 0 could still serve the
+        # previous sequence's frame 0. MainWindow's controller clears
+        # on load_folder() explicitly; StrainWindow's controller
+        # only saw the new files via state.image_files, and without
+        # this hook would keep serving stale frames.
+        state.images_changed.connect(self._on_images_changed)
+
+    def _on_images_changed(self) -> None:
+        self._cache.clear()
+        self._cache_rgb.clear()
 
     @property
     def natural_sort(self) -> bool:

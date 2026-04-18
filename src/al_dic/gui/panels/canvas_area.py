@@ -395,8 +395,10 @@ class ImageCanvas(QGraphicsView):
 
         zoom = self.transform().m11() or 1.0
 
-        # --- Node circle (viewport-fixed ~6 px) ---
-        r_view = 6.0
+        # --- Node circle (viewport-fixed ~3.5 px: tight enough that the
+        # center is unambiguously ON the node, not 'near' it — earlier
+        # 6-px version was mistaken for 'element center' snapping). ---
+        r_view = 3.5
         r = r_view / zoom
         if self._seed_preview_item is None:
             item = QGraphicsEllipseItem(-r, -r, 2 * r, 2 * r)
@@ -1262,15 +1264,24 @@ class CanvasArea(QWidget):
         self._state.seeds_changed.connect(self._refresh_seed_visuals)
         self._state.roi_changed.connect(self._refresh_seed_visuals)
         self._state.params_changed.connect(self._refresh_seed_visuals)
+        self._state.results_changed.connect(self._refresh_seed_visuals)
         self._canvas.view_changed.connect(
             self._canvas.refresh_seed_marker_sizes,
         )
         self._refresh_seed_visuals()
 
     def _refresh_seed_visuals(self) -> None:
-        """Redraw region overlay + seed markers from current state."""
+        """Redraw region overlay + seed markers from current state.
+
+        Bug 1 fix: hide the yellow/green region overlay and seed markers
+        while results are being viewed — same behavior as the blue ROI
+        translucent overlay, so the computed displacement field isn't
+        obscured. Becomes visible again when the user goes back to ROI
+        editing or starts a new run.
+        """
         is_seed_mode = self._state.init_guess_mode == "seed_propagation"
-        if not is_seed_mode or self._seed_ctrl is None:
+        viewing_results = self._state.results is not None
+        if not is_seed_mode or self._seed_ctrl is None or viewing_results:
             self._canvas.hide_seed_region_overlay()
             self._canvas.set_seed_markers([])
             return

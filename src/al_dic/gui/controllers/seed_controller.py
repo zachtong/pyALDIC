@@ -389,8 +389,15 @@ class SeedController(QObject):
         if not self._state.seeds:
             return
         if self._preview_mesh is None or self._node_to_region is None:
-            # Mesh can't be built (mask was cleared) — leave seeds as-is.
-            # They'll re-snap next time params change and a mesh exists.
+            # Mesh can't be built (ROI cleared or mask removed). Seeds
+            # reference node indices in that now-gone mesh; hanging on
+            # to them would keep stale markers on the canvas and leave
+            # the seed sub-panel's progress counter wrong. Clear them —
+            # if the user redraws a similar ROI the auto-placer will
+            # repopulate.
+            if self._state.seeds:
+                self._state.seeds.clear()
+                self._state.seeds_changed.emit()
             return
 
         coords = self._preview_mesh.coordinates_fem
