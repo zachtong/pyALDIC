@@ -223,43 +223,76 @@ def seed_single_point_fft(
 
     h, w = f_img.shape
 
-    # Reference template window
+    # Reference template window — must fit exactly in f_img
     tpl_lo_x = sx - half_w
     tpl_hi_x = sx + half_w + 1
     tpl_lo_y = sy - half_w
     tpl_hi_y = sy + half_w + 1
+    if tpl_lo_x < 0 or tpl_hi_x > w or tpl_lo_y < 0 or tpl_hi_y > h:
+        return SeedFFTResult(
+            valid=False, du=0, dv=0, ncc_peak=float("nan"), peak_clipped=False,
+        )
 
-    # Search window on deformed image, centered at seed + hint
+    # Search window on deformed image, centered at (seed + hint) with
+    # symmetric half-width = search_radius, then CLAMPED to image bounds.
+    # Clamping keeps the NCC alive when the symmetric search would leave
+    # the image — we just search whatever range is available on each
+    # side (asymmetric) rather than returning invalid. Peak-clipped
+    # detection distinguishes 'true peak outside search range' from
+    # 'clamped by image edge' so auto-expand only triggers on the former.
     search_cx = sx + hu
     search_cy = sy + hv
-    search_lo_x = search_cx - half_w - search_radius
-    search_hi_x = search_cx + half_w + search_radius + 1
-    search_lo_y = search_cy - half_w - search_radius
-    search_hi_y = search_cy + half_w + search_radius + 1
+    half_span = half_w + search_radius
+    asked_lo_x = search_cx - half_span
+    asked_hi_x = search_cx + half_span + 1
+    asked_lo_y = search_cy - half_span
+    asked_hi_y = search_cy + half_span + 1
+    search_lo_x = max(0, asked_lo_x)
+    search_hi_x = min(w, asked_hi_x)
+    search_lo_y = max(0, asked_lo_y)
+    search_hi_y = min(h, asked_hi_y)
 
+    # Search window must still be at least as large as the template on
+    # both axes — otherwise matchTemplate has nothing to correlate.
+    tpl_w = tpl_hi_x - tpl_lo_x
+    tpl_h = tpl_hi_y - tpl_lo_y
     if (
-        tpl_lo_x < 0 or tpl_hi_x > w or tpl_lo_y < 0 or tpl_hi_y > h
-        or search_lo_x < 0 or search_hi_x > w
-        or search_lo_y < 0 or search_hi_y > h
+        search_hi_x - search_lo_x < tpl_w
+        or search_hi_y - search_lo_y < tpl_h
     ):
         return SeedFFTResult(
             valid=False, du=0, dv=0, ncc_peak=float("nan"), peak_clipped=False,
         )
 
     template = f_img[tpl_lo_y:tpl_hi_y, tpl_lo_x:tpl_hi_x].astype(np.float32)
-    search_img = g_img[search_lo_y:search_hi_y, search_lo_x:search_hi_x].astype(np.float32)
+    search_img = g_img[
+        search_lo_y:search_hi_y, search_lo_x:search_hi_x
+    ].astype(np.float32)
 
     ncc_map = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, max_loc = cv2.minMaxLoc(ncc_map)
     peak_x, peak_y = int(max_loc[0]), int(max_loc[1])
 
-    du = peak_x - search_radius + hu
-    dv = peak_y - search_radius + hv
+    # Displacement = (def position of template top-left) - (ref position)
+    du = (search_lo_x + peak_x) - tpl_lo_x
+    dv = (search_lo_y + peak_y) - tpl_lo_y
 
-    ncc_h, ncc_w = ncc_map.shape
-    peak_clipped = (
-        peak_x == 0 or peak_x == ncc_w - 1
-        or peak_y == 0 or peak_y == ncc_h - 1
+    # Peak-clipped is True only when the peak sits on an edge of the
+    # NCC map AND that edge came from the user's requested search
+    # radius (not from clamping to the image boundary). In the clamped
+    # case, no amount of auto-expand can search further on that side,
+    # so flagging as clipped would cause a useless retry.
+    #
+    #  asked_lo_x >= 0  means: no left clamp (asked bound was inside img)
+    #  asked_hi_x <= w  means: no right clamp
+    # similarly for y.
+    ncc_h_, ncc_w_ = ncc_map.shape
+    clipped_neg_x = (peak_x == 0) and (asked_lo_x >= 0)
+    clipped_pos_x = (peak_x == ncc_w_ - 1) and (asked_hi_x <= w)
+    clipped_neg_y = (peak_y == 0) and (asked_lo_y >= 0)
+    clipped_pos_y = (peak_y == ncc_h_ - 1) and (asked_hi_y <= h)
+    peak_clipped = bool(
+        clipped_neg_x or clipped_pos_x or clipped_neg_y or clipped_pos_y
     )
 
     return SeedFFTResult(
