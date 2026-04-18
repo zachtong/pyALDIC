@@ -314,12 +314,15 @@ class ImageCanvas(QGraphicsView):
             return
         h, w = label_image.shape
         rgba = np.zeros((h, w, 4), dtype=np.uint8)
-        # Yellow = WARNING, Green = SUCCESS
-        yellow = (234, 179, 8, 255)
-        green = (34, 197, 94, 255)
+        # Red = ERROR (region lacks a Starting Point, can't run).
+        # No fill = READY (matches the blue ROI overlay shown in other
+        # init-guess modes; seeded regions read as "normal ROI" and
+        # only problematic regions stand out with a warning color).
+        red = (239, 68, 68, 255)  # COLORS.ERROR-ish
         for region_id, has_seed in region_seeded.items():
-            color = green if has_seed else yellow
-            rgba[label_image == region_id] = color
+            if has_seed:
+                continue  # leave transparent → ROI overlay shows through
+            rgba[label_image == region_id] = red
         qimg = QImage(rgba.data, w, h, 4 * w, QImage.Format.Format_RGBA8888)
         self._seed_region_item.setPixmap(QPixmap.fromImage(qimg.copy()))
         self._seed_region_item.setVisible(True)
@@ -1320,11 +1323,16 @@ class CanvasArea(QWidget):
         status = self._seed_ctrl.regions_status()
         total = len(status)
         seeded = sum(1 for _, has, _ in status if has)
-        progress = (
-            f"{seeded} / {total} regions seeded"
-            if total > 0
-            else "no regions detected — load images and set a mask first"
-        )
+        unseeded = total - seeded
+        if total == 0:
+            progress = "no regions detected — load images and set a mask first"
+        elif unseeded == 0:
+            progress = f"{total} / {total} regions ready to run"
+        else:
+            progress = (
+                f"{unseeded} region(s) still need a Starting Point "
+                f"(shown in red)"
+            )
         self._seed_banner.setText(
             f"Placing Starting Points · Left-click: add · "
             f"Right-click: remove · Esc: exit · {progress}"

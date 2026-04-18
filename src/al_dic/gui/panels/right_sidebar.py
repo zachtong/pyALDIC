@@ -314,8 +314,8 @@ class RightSidebar(QWidget):
         ):
             self._run_btn.setEnabled(False)
             self._run_btn.setToolTip(
-                "Place at least one Starting Point in each highlighted region "
-                "before running (yellow = needs seed, green = ready)."
+                "Place at least one Starting Point in each red region "
+                "before running (red = needs a Starting Point)."
             )
         else:
             self._run_btn.setEnabled(base_enabled)

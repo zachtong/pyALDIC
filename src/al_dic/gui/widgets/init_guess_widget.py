@@ -134,10 +134,11 @@ class InitGuessWidget(QWidget):
         btn_row = QHBoxLayout()
         btn_row.setSpacing(4)
         self._btn_place_seeds = QPushButton("Place Starting Points")
+        self._btn_place_seeds.setCheckable(True)
         self._btn_place_seeds.setToolTip(
             "Enter placement mode on the canvas.\n"
             "Left-click inside the ROI to drop a point, right-click on a "
-            "point to remove it, Esc to exit."
+            "point to remove it, Esc or click again to exit."
         )
         btn_row.addWidget(self._btn_place_seeds, stretch=2)
         self._btn_auto_place = QPushButton("Auto-place")
@@ -223,6 +224,19 @@ class InitGuessWidget(QWidget):
         self._state.seeds_changed.connect(self._refresh_seed_progress)
         self._state.roi_changed.connect(self._refresh_seed_progress)
         self._refresh_seed_progress()
+
+    def set_seed_mode_active(self, active: bool) -> None:
+        """Reflect the canvas seed-tool state on the Place button.
+
+        Called by the top-level app when canvas.tool_changed fires.
+        Toggles the checkable button's state + label so the user has
+        a clear indicator that placement mode is engaged.
+        """
+        self._btn_place_seeds.setChecked(active)
+        if active:
+            self._btn_place_seeds.setText("Placing... (click to exit)")
+        else:
+            self._btn_place_seeds.setText("Place Starting Points")
 
     def _refresh_seed_progress(self) -> None:
         if self._seed_ctrl is None:

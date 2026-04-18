@@ -128,6 +128,12 @@ class MainWindow(QMainWindow):
             self._on_request_auto_place_seeds,
         )
         self._right_sidebar.set_seed_controller(self._seed_ctrl)
+        # Sync the 'Place Starting Points' button state with the canvas
+        # tool: pressed + label changed while the tool is 'seed',
+        # released otherwise (incl. after Esc on the canvas).
+        self._canvas_area.canvas.tool_changed.connect(
+            self._on_canvas_tool_changed_for_button,
+        )
         # Auto-place Starting Points when the prerequisites are all met
         # (seed_propagation mode, >= 2 images, an ROI with regions, and
         # no user-placed seeds yet). Keeps the default mode usable
@@ -371,8 +377,21 @@ class MainWindow(QMainWindow):
         if canvas._current_tool == "seed":
             # Toggle off — return to pan
             canvas.set_tool("pan")
-        else:
-            canvas.set_tool("seed")
+            return
+        # Entering seed placement: also flip state.roi_editing=True so
+        # the seed region overlay + markers render (they hide during
+        # result viewing). Users reported placing in result-view mode
+        # appeared to do nothing because the markers were hidden.
+        state = self._state
+        if state.results is not None and not state.roi_editing:
+            state.roi_editing = True
+            state.display_changed.emit()
+        canvas.set_tool("seed")
+
+    def _on_canvas_tool_changed_for_button(self, tool: str) -> None:
+        """Mirror canvas tool state on the 'Place Starting Points' button."""
+        init_guess = self._left_sidebar.init_guess_widget
+        init_guess.set_seed_mode_active(tool == "seed")
 
     def _maybe_auto_place_seeds(self) -> None:
         """Auto-place Starting Points in any region that doesn't have one.
@@ -442,18 +461,17 @@ class MainWindow(QMainWindow):
             ref_img, def_img,
             winsize=state.subset_size,
             search_radius=state.search_range,
+            only_unseeded_regions=True,
         )
         if placed == 0:
-            state.fatal_error.emit(
-                "Auto-place found no usable candidates",
-                "No node in any region had a valid NCC match. Common "
-                "causes: ROI too small for the subset window, or "
-                "extremely uniform texture. Place Starting Points "
-                "manually instead.",
+            state.log_message.emit(
+                "Auto-place: every region already has a Starting Point.",
+                "info",
             )
             return
         state.log_message.emit(
-            f"Auto-placed {placed} Starting Point(s).", "info",
+            f"Auto-placed {placed} Starting Point(s) in unseeded regions.",
+            "info",
         )
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:

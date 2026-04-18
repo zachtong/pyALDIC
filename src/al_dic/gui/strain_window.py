@@ -117,7 +117,11 @@ class StrainWindow(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Strain Post-Processing")
-        self.resize(1200, 760)
+        # Default size chosen for a roughly square canvas area: 320 px
+        # right panel + ~1000 px canvas width, with ~880 px canvas
+        # height. Matches the common square-ish DIC image aspect
+        # without letterboxing.
+        self.resize(1340, 960)
 
         self._state = state
         self._strain_ctrl = StrainController(state)

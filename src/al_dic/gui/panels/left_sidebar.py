@@ -201,6 +201,20 @@ class LeftSidebar(QWidget):
         self._image_list.setMaximumHeight(240)
         layout.addWidget(self._image_list)
 
+        # Visual divider between IMAGES and the settings sections below.
+        # Without this the two regions blend, making the sidebar look
+        # like one long column with no grouping.
+        _divider = QFrame()
+        _divider.setFrameShape(QFrame.Shape.HLine)
+        _divider.setFrameShadow(QFrame.Shadow.Plain)
+        _divider.setStyleSheet(
+            f"color: {COLORS.BORDER}; background: {COLORS.BORDER};"
+        )
+        _divider.setFixedHeight(1)
+        layout.addSpacing(6)
+        layout.addWidget(_divider)
+        layout.addSpacing(6)
+
         # --- Collapsible settings sections inside a QScrollArea ---
         # Putting ROI + PARAMETERS + ADVANCED in a scroll area means that
         # expanding any section grows the content inside the scroll area
