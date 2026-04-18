@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -20,6 +20,11 @@ class CollapsibleSection(QWidget):
     badge.  Content widgets are added via ``add_widget()`` or
     ``set_content_layout()``.
     """
+
+    # Emitted after this section toggles expanded/collapsed, so the
+    # sticky-headers overlay can refresh its arrow indicator and the
+    # parent scroll layout can re-measure.
+    toggled = Signal(bool)  # payload: new expanded state
 
     def __init__(
         self,
@@ -85,6 +90,16 @@ class CollapsibleSection(QWidget):
         self._expanded = not self._expanded
         self._content.setVisible(self._expanded)
         self._arrow.setText("▾" if self._expanded else "▸")
+        self.toggled.emit(self._expanded)
+
+    @property
+    def title(self) -> str:
+        return self._title
+
+    @property
+    def header_widget(self) -> QWidget:
+        """Reference to the clickable header widget (used by sticky overlay)."""
+        return self._header
 
     def set_badge(self, text: str) -> None:
         """Show or hide the badge (e.g., image count)."""
@@ -108,6 +123,9 @@ class CollapsibleSection(QWidget):
 
     def set_expanded(self, expanded: bool) -> None:
         """Programmatically expand or collapse the section."""
+        if self._expanded == expanded:
+            return
         self._expanded = expanded
         self._content.setVisible(expanded)
         self._arrow.setText("▾" if expanded else "▸")
+        self.toggled.emit(expanded)

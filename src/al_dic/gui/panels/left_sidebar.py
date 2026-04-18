@@ -309,6 +309,24 @@ class LeftSidebar(QWidget):
         self._settings_scroll.setWidget(settings_container)
         layout.addWidget(self._settings_scroll, stretch=1)
 
+        # Sticky-header overlay on the scroll viewport: keeps the
+        # currently-passing-through section title(s) pinned at the top
+        # so the user always sees where they are in the parameter
+        # outline, and can click to collapse without scrolling back.
+        from al_dic.gui.widgets.sticky_headers_overlay import (
+            StickyHeadersOverlay,
+        )
+        self._sticky_headers = StickyHeadersOverlay(
+            self._settings_scroll,
+            [
+                self._workflow_section,
+                self._init_guess_section,
+                self._roi_section,
+                self._params_section,
+                self._advanced_section,
+            ],
+        )
+
         # Connect state changes to update badge
         self._state.images_changed.connect(self._update_badge)
 
