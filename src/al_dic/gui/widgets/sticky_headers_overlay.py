@@ -38,12 +38,16 @@ class _StickyHeaderProxy(QWidget):
         self._section = section
         self.setFixedHeight(28)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        # Slightly stronger BG than content so the stack is visually
-        # distinct from scrolled-through content below.
+        # Opaque same-colour-as-header background so the proxy COMPLETELY
+        # covers the original header at the same y (no 'ghost' from the
+        # two rects leaking through each other's edges). NO border on
+        # individual proxies — the outer StickyHeadersOverlay draws a
+        # single bottom border under the whole stack, matching the
+        # appearance of the original header.
         self.setAutoFillBackground(True)
         self.setStyleSheet(
-            f"background: {COLORS.BG_CANVAS}; "
-            f"border-bottom: 1px solid {COLORS.BORDER};"
+            f"QWidget {{ background: {COLORS.BG_CANVAS}; "
+            f"border: none; }}"
         )
 
         lay = QHBoxLayout(self)
@@ -91,10 +95,14 @@ class StickyHeadersOverlay(QWidget):
         self._sections = sections
 
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        # Pass-through for areas NOT occupied by proxy rows; the
-        # proxies themselves stay clickable because they're child
-        # widgets with their own mouse tracking.
-        self.setStyleSheet("background: transparent;")
+        # Opaque background so scrolled content underneath can't bleed
+        # through tiny gaps between proxy rows. Transparent was the
+        # bug — text behind the overlay visually 'passed through'
+        # the stack.
+        self.setStyleSheet(
+            f"background: {COLORS.BG_CANVAS}; "
+            f"border-bottom: 1px solid {COLORS.BORDER};"
+        )
 
         self._layout = QVBoxLayout(self)
         self._layout.setContentsMargins(0, 0, 0, 0)
