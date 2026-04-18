@@ -977,12 +977,15 @@ def run_aldic(
                     nx_fft * ny_fft, n_mesh,
                 )
 
-        if need_fft:
+        if need_fft or use_seed_prop:
             # Apply mask: NaN for nodes in masked-out regions.
             # Note: low-coverage boundary nodes are already NaN from
             # integer_search (coverage pre-filter skips NCC for them).
             # init_disp fills those NaN from reliable neighbours, giving
             # IC-GN a smooth initial guess — no re-NaN here.
+            # Seed-propagation path also runs the mask NaN pass so
+            # out-of-mask nodes in the propagated U0 get NaN'd and
+            # filled by the downstream IDW (same semantics as FFT path).
             n_nodes = dic_mesh.coordinates_fem.shape[0]
             node_x = np.clip(
                 np.round(dic_mesh.coordinates_fem[:, 0]).astype(int), 0, img_w - 1,
@@ -996,7 +999,10 @@ def run_aldic(
                 current_U0[2 * nan_nodes] = np.nan
                 current_U0[2 * nan_nodes + 1] = np.nan
         else:
-            # Subsequent frames: try sibling reuse, then fall back to FFT
+            # Subsequent frames (FFT modes only): try sibling reuse,
+            # then fall back to FFT. Must skip this block when
+            # use_seed_prop so sibling_U doesn't clobber the
+            # seed-propagation result we just computed above.
             n_nodes = dic_mesh.coordinates_fem.shape[0]
 
             # Sibling reuse: find a completed frame with the same reference
