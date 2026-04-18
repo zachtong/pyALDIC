@@ -117,37 +117,118 @@ def local_icgn(
     t0 = time.perf_counter()
 
     ctx = local_icgn_precompute(coordinates_fem, Df, f_img, para)
-    n_nodes = ctx.n_nodes
-    max_iter = ctx.max_iter
-    pre = ctx.pre
-
-    # Reshape initial displacement to (N, 2)
     U0_2d = U0.reshape(-1, 2)
 
-    # Try Numba backend first, fall back to batch vectorized
-    U_2d, F_2d, conv_iter = _dispatch_6dof(
-        coordinates_fem, U0_2d, g_img, pre, tol, max_iter,
+    U_2d, F_2d, conv_iter = local_icgn_solve_subset(
+        ctx, None, U0_2d, g_img, tol,
     )
 
     local_time = time.perf_counter() - t0
 
-    # Assemble interleaved vectors
+    return local_icgn_postprocess(
+        ctx, U_2d, F_2d, conv_iter, solve_time_seconds=local_time,
+    )
+
+
+def _slice_pre(
+    pre: dict, node_indices: NDArray[np.int64], n_nodes: int,
+) -> dict:
+    """Return a new pre dict with per-node arrays sliced by node_indices.
+
+    Scalar and global entries (Sy, Sx, img_h, img_w) pass through unchanged.
+    Only arrays whose leading dim equals n_nodes are sliced — this protects
+    against accidentally slicing shape-compatible globals.
+    """
+    out = {}
+    for k, v in pre.items():
+        if isinstance(v, np.ndarray) and v.ndim > 0 and v.shape[0] == n_nodes:
+            out[k] = v[node_indices]
+        else:
+            out[k] = v
+    return out
+
+
+def local_icgn_solve_subset(
+    ctx: LocalICGNContext,
+    node_indices: NDArray[np.int64] | None,
+    U0_subset_2d: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    tol: float,
+) -> tuple[
+    NDArray[np.float64], NDArray[np.float64], NDArray[np.int64],
+]:
+    """Solve IC-GN for a subset of nodes (or all if node_indices is None).
+
+    Args:
+        ctx: Precomputed reference-side state from local_icgn_precompute.
+        node_indices: Indices into ctx.coordinates_fem to solve. Pass None
+            for the full mesh (fast path — avoids fancy-indexing copies).
+        U0_subset_2d: Initial displacement guess, shape
+            (len(node_indices), 2) or (ctx.n_nodes, 2) when node_indices
+            is None. Interleaved layout (u, v) per row.
+        g_img: Deformed image (H, W).
+        tol: Convergence tolerance.
+
+    Returns:
+        (U_2d, F_2d, conv_iter) for the requested subset only.
+        Caller assembles the full-mesh arrays before calling postprocess.
+    """
+    if node_indices is None:
+        coords_sub = ctx.coordinates_fem
+        pre_sub = ctx.pre
+    else:
+        coords_sub = ctx.coordinates_fem[node_indices]
+        pre_sub = _slice_pre(ctx.pre, node_indices, ctx.n_nodes)
+
+    return _dispatch_6dof(
+        coords_sub, U0_subset_2d, g_img, pre_sub, tol, ctx.max_iter,
+    )
+
+
+def local_icgn_postprocess(
+    ctx: LocalICGNContext,
+    U_2d_full: NDArray[np.float64],
+    F_2d_full: NDArray[np.float64],
+    conv_iter_full: NDArray[np.int64],
+    solve_time_seconds: float = 0.0,
+) -> tuple[
+    NDArray[np.float64],
+    NDArray[np.float64],
+    float,
+    NDArray[np.int64],
+    int,
+    NDArray[np.int64],
+]:
+    """Interleave, flag bad points, IDW-fill NaN. Full-mesh inputs required.
+
+    Args:
+        ctx: Precomputed context (for n_nodes, max_iter, coords, mark_hole).
+        U_2d_full: Full-mesh displacements (n_nodes, 2).
+        F_2d_full: Full-mesh deformation gradients (n_nodes, 4).
+        conv_iter_full: Full-mesh convergence-iteration counts (n_nodes,).
+        solve_time_seconds: Wall-clock time to report as local_time.
+
+    Returns:
+        (U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain).
+    """
+    n_nodes = ctx.n_nodes
+    max_iter = ctx.max_iter
+
     U = np.empty(2 * n_nodes, dtype=np.float64)
-    U[0::2] = U_2d[:, 0]
-    U[1::2] = U_2d[:, 1]
+    U[0::2] = U_2d_full[:, 0]
+    U[1::2] = U_2d_full[:, 1]
 
     F = np.empty(4 * n_nodes, dtype=np.float64)
-    F[0::4] = F_2d[:, 0]
-    F[1::4] = F_2d[:, 1]
-    F[2::4] = F_2d[:, 2]
-    F[3::4] = F_2d[:, 3]
+    F[0::4] = F_2d_full[:, 0]
+    F[1::4] = F_2d_full[:, 1]
+    F[2::4] = F_2d_full[:, 2]
+    F[3::4] = F_2d_full[:, 3]
 
-    mark_hole = pre["mark_hole"]
+    mark_hole = ctx.pre["mark_hole"]
     mark_hole_strain = np.where(mark_hole)[0].astype(np.int64)
 
-    # Detect bad points and fill NaN
     bad_pts, bad_pt_num = detect_bad_points(
-        conv_iter, max_iter, coordinates_fem,
+        conv_iter_full, max_iter, ctx.coordinates_fem,
         sigma_factor=1.0, min_threshold=6,
     )
 
@@ -158,10 +239,10 @@ def local_icgn(
     F[4 * bad_pts + 2] = np.nan
     F[4 * bad_pts + 3] = np.nan
 
-    U = fill_nan_idw(U, coordinates_fem, n_components=2)
-    F = fill_nan_idw(F, coordinates_fem, n_components=4)
+    U = fill_nan_idw(U, ctx.coordinates_fem, n_components=2)
+    F = fill_nan_idw(F, ctx.coordinates_fem, n_components=4)
 
-    return U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain
+    return U, F, solve_time_seconds, conv_iter_full, bad_pt_num, mark_hole_strain
 
 
 def _dispatch_6dof(coords, U0_2d, img_def, pre, tol, max_iter):
