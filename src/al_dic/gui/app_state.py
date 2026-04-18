@@ -34,6 +34,28 @@ class FieldColorState:
     colormap: str = "turbo"
 
 
+@dataclass
+class SeedRecord:
+    """One user-placed (or auto-warped) seed for seed_propagation mode.
+
+    Attributes:
+        node_idx: Index into the current preview mesh's coordinates_fem.
+            Updated by re-snap when ROI / winsize / step changes (Q3-B).
+        region_id: Connected-component region id from precompute_node_regions
+            on the current ROI mask.
+        is_warped: True iff this seed was carried over from a previous
+            reference frame via warp_seeds_to_new_ref (purple in canvas);
+            False if user placed it manually (yellow).
+        ncc_peak: Most recent bootstrap NCC value (populated after a run).
+            None before any pipeline execution.
+    """
+
+    node_idx: int
+    region_id: int
+    is_warped: bool = False
+    ncc_peak: float | None = None
+
+
 
 def _default_colormap(field_name: str) -> str:
     """Return the default colormap for a given field name."""
@@ -61,6 +83,9 @@ class AppState(QObject):
     # should still go through log_message with level "error".
     fatal_error = Signal(str, str)
     physical_units_changed = Signal()
+    # Emitted when state.seeds is mutated (add/remove/re-snap/clear).
+    # Canvas overlay subscribes to redraw the seed markers.
+    seeds_changed = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -89,9 +114,15 @@ class AppState(QObject):
         self.use_admm: bool = True       # True = AL-DIC (ADMM), False = Local DIC
         self.admm_max_iter: int = 3      # ADMM iteration count (1-10)
         # Initial guess parameters
-        self.init_guess_mode: str = "previous"   # "previous" | "fft_every" | "fft_reset_n"
+        # Modes: "previous" | "fft_ref_update" | "fft_every" | "fft_reset_n"
+        # | "seed_propagation"
+        self.init_guess_mode: str = "previous"
         self.fft_reset_interval: int = 5
         self.fft_auto_expand: bool = True
+        # Seed propagation parameters (only relevant when
+        # init_guess_mode == "seed_propagation").
+        self.seeds: list[SeedRecord] = []
+        self.seed_ncc_threshold: float = 0.70
         # Computation
         self.run_state: RunState = RunState.IDLE
         self.progress: float = 0.0

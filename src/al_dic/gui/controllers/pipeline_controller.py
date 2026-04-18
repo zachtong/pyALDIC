@@ -335,12 +335,32 @@ class PipelineController:
             winsize_min = min(8, state.subset_step)
 
             # Map GUI init_guess_mode to DICPara fields
+            seed_set_for_para = None
             if state.init_guess_mode == "fft_every":
                 dic_init_guess = "fft"
                 dic_fft_reset = 0
             elif state.init_guess_mode == "fft_reset_n":
                 dic_init_guess = "previous"
                 dic_fft_reset = max(1, state.fft_reset_interval)
+            elif state.init_guess_mode == "seed_propagation":
+                dic_init_guess = "seed_propagation"
+                dic_fft_reset = 0
+                if not state.seeds:
+                    state.fatal_error.emit(
+                        "Seed propagation requires seeds",
+                        "Place at least one seed on the canvas before running. "
+                        "Switch to 'Place Seeds' on the canvas toolbar, or "
+                        "click 'Auto-place seeds' in the seed list panel.",
+                    )
+                    return
+                from al_dic.solver.seed_propagation import Seed, SeedSet
+                seed_set_for_para = SeedSet(
+                    seeds=tuple(
+                        Seed(node_idx=s.node_idx, region_id=s.region_id)
+                        for s in state.seeds
+                    ),
+                    ncc_threshold=state.seed_ncc_threshold,
+                )
             else:  # "previous"
                 dic_init_guess = "previous"
                 dic_fft_reset = 0
@@ -358,6 +378,7 @@ class PipelineController:
                 fft_auto_expand_search=state.fft_auto_expand,
                 use_global_step=state.use_admm,
                 admm_max_iter=state.admm_max_iter,
+                seed_set=seed_set_for_para,
             )
 
             # Load all images

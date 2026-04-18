@@ -197,11 +197,14 @@ class WorkflowTypePanel(QWidget):
         mode = text.lower()
         state.set_param("tracking_mode", mode)
         self._inc_panel.setVisible(mode == "incremental")
-        # Auto-select a meaningful init-guess default for the new mode
-        if mode == "accumulative":
-            state.init_guess_mode = "previous"
-        else:
-            state.init_guess_mode = "fft_ref_update"
+        # Auto-select a meaningful init-guess default for the new mode.
+        # Do NOT clobber a user-selected seed_propagation choice — it works
+        # for both tracking modes and represents an explicit user intent.
+        if state.init_guess_mode != "seed_propagation":
+            if mode == "accumulative":
+                state.init_guess_mode = "previous"
+            else:
+                state.init_guess_mode = "fft_ref_update"
         state.params_changed.emit()
 
     def _on_ref_mode_changed(self, index: int) -> None:

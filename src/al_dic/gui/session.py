@@ -96,6 +96,11 @@ _PARAM_KEYS = (
     "init_guess_mode",
     "fft_reset_interval",
     "fft_auto_expand",
+    "seed_ncc_threshold",
+    # Note: state.seeds (list[SeedRecord]) is intentionally NOT persisted.
+    # Seeds reference mesh node indices which are tied to ROI/winsize/step;
+    # round-tripping through a session with different mesh params would yield
+    # invalid indices. Users re-place seeds after loading a session.
     "refine_inner",
     "refine_outer",
     "refinement_level",

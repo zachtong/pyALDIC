@@ -100,6 +100,20 @@ class InitGuessWidget(QWidget):
         reset_row.addStretch()
         layout.addLayout(reset_row)
 
+        # --- Mode: seed propagation ---
+        self._rb_seed_prop = QRadioButton(
+            "Seed propagation (large displacement / cracks)"
+        )
+        self._rb_seed_prop.setToolTip(
+            "Place a few seed nodes manually; pyALDIC bootstraps each seed "
+            "with single-point NCC, then propagates the displacement field "
+            "across mesh neighbours via F-aware BFS.\n\n"
+            "Best for: large inter-frame displacement (>50 px), discontinuous "
+            "fields (cracks, shear bands).  Click 'Place Seeds' on the canvas "
+            "to start.  At least one seed per connected mask region required."
+        )
+        layout.addWidget(self._rb_seed_prop)
+
         # NOTE: "Search Radius" (``state.search_range``) was previously edited
         # here. It has been moved to the main ParamPanel as "Search Range"
         # so users can find it without expanding the ADVANCED section.
@@ -127,6 +141,7 @@ class InitGuessWidget(QWidget):
         self._rb_fft_ref_update.toggled.connect(self._on_mode_changed)
         self._rb_fft_every.toggled.connect(self._on_mode_changed)
         self._rb_reset_n.toggled.connect(self._on_mode_changed)
+        self._rb_seed_prop.toggled.connect(self._on_mode_changed)
         self._reset_spin.valueChanged.connect(self._on_interval_changed)
         self._auto_expand_cb.stateChanged.connect(self._on_auto_expand_changed)
 
@@ -144,6 +159,7 @@ class InitGuessWidget(QWidget):
         self._rb_fft_ref_update.setChecked(mode == "fft_ref_update")
         self._rb_fft_every.setChecked(mode == "fft_every")
         self._rb_reset_n.setChecked(mode == "fft_reset_n")
+        self._rb_seed_prop.setChecked(mode == "seed_propagation")
         self._reset_spin.setValue(self._state.fft_reset_interval)
         self._reset_spin.setEnabled(mode == "fft_reset_n")
         self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
@@ -167,6 +183,8 @@ class InitGuessWidget(QWidget):
             mode = "fft_ref_update"
         elif self._rb_fft_every.isChecked():
             mode = "fft_every"
+        elif self._rb_seed_prop.isChecked():
+            mode = "seed_propagation"
         else:
             mode = "fft_reset_n"
         self._reset_spin.setEnabled(mode == "fft_reset_n")
