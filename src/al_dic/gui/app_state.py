@@ -40,7 +40,8 @@ class SeedRecord:
 
     Attributes:
         node_idx: Index into the current preview mesh's coordinates_fem.
-            Updated by re-snap when ROI / winsize / step changes (Q3-B).
+            Updated by SeedController.re_snap_seeds() when ROI / winsize /
+            step changes (Q3-B in the Phase 5 plan).
         region_id: Connected-component region id from precompute_node_regions
             on the current ROI mask.
         is_warped: True iff this seed was carried over from a previous
@@ -48,12 +49,17 @@ class SeedRecord:
             False if user placed it manually (yellow).
         ncc_peak: Most recent bootstrap NCC value (populated after a run).
             None before any pipeline execution.
+        xy_canvas: Image-pixel (x, y) where the user originally clicked.
+            Source of truth for re-snap: when the mesh changes, find the
+            new nearest node to xy_canvas and update node_idx. None for
+            seeds added programmatically (e.g., from Python REPL).
     """
 
     node_idx: int
     region_id: int
     is_warped: bool = False
     ncc_peak: float | None = None
+    xy_canvas: tuple[float, float] | None = None
 
 
 
