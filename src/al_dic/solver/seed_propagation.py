@@ -283,10 +283,20 @@ def _bootstrap_seed_fft(
 ) -> SeedFFTResult:
     """Auto-expanding wrapper around seed_single_point_fft.
 
-    Grows the search radius by 2x each retry if the peak is clipped,
-    up to ``max_retries`` or the image half-size cap. If the final
-    NCC is below ``ncc_threshold`` or the window leaves the image,
-    raises a typed exception instead of silently degrading.
+    Expands the search radius by 2x each retry while the result looks
+    unreliable, up to ``max_retries`` or the image half-size cap.
+    'Unreliable' means either:
+      - the NCC peak hit the search-window boundary (``peak_clipped``),
+        the classic "true displacement exceeds search range" signal; OR
+      - the NCC peak value is below ``ncc_threshold``. A low peak inside
+        the window usually means the true peak lies outside — argmax
+        then selects a noise-level local maximum that happens not to
+        touch the window edge, so ``peak_clipped`` alone misses this
+        case. Expanding lets us find the real peak before raising.
+
+    If the window leaves the image before we converge, or if NCC
+    remains below threshold after the final expansion, raises a
+    typed exception.
     """
     h, w = f_img.shape
     max_radius = min(h, w) // 2
@@ -299,7 +309,7 @@ def _bootstrap_seed_fft(
         )
         if not result.valid:
             break
-        if not result.peak_clipped:
+        if not result.peak_clipped and result.ncc_peak >= ncc_threshold:
             break
         new_radius = min(max_radius, current * 2)
         if new_radius == current:
