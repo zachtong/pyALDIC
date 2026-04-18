@@ -289,6 +289,80 @@ class TestSeedControllerReSnap:
             assert s.ncc_peak is not None
             assert s.ncc_peak > 0.9  # zero-disp speckle → near-perfect NCC
 
+    def test_auto_place_prefers_interior_over_corner(self, qapp):
+        """Tier-2 edge-distance filter should push seed inward, not to
+        a corner, even when corner NCC is equally high on zero-disp
+        speckle.
+        """
+        state = AppState.instance()
+        # One large region so many candidates exist.
+        mask = np.zeros((128, 128), dtype=bool)
+        mask[20:108, 20:108] = True  # 88x88 region
+        state.per_frame_rois[0] = mask
+        state.subset_size = 16
+        state.subset_step = 4
+
+        rng = np.random.RandomState(7)
+        ref = rng.rand(128, 128).astype(np.float64)
+        from scipy.ndimage import gaussian_filter
+        ref = gaussian_filter(ref, sigma=2.0)
+        def_img = ref.copy()
+
+        ctrl = SeedController()
+        ctrl.auto_place_seeds(
+            ref, def_img,
+            winsize=state.subset_size,
+            search_radius=8,
+            stride=1,  # evaluate every node
+        )
+        assert len(state.seeds) == 1
+        seed = state.seeds[0]
+        # Seed should be well inside the region, not at a corner.
+        # Mask interior spans [20, 107]; a non-corner seed means
+        # both x and y are at least ~20 px away from any edge.
+        x, y = seed.xy_canvas
+        dist_to_edge = min(x - 20, 108 - x, y - 20, 108 - y)
+        assert dist_to_edge >= 18, (
+            f"Seed at ({x}, {y}) too close to region boundary "
+            f"(dist_to_edge={dist_to_edge})"
+        )
+
+    def test_auto_place_warn_emitted_on_fallback(self, qapp):
+        """When no candidate meets HIGH_QUALITY_NCC but some beat the
+        absolute threshold, a warning is logged and the best-of-the-worst
+        is placed.
+        """
+        state = AppState.instance()
+        _set_one_region_mask(state)
+
+        rng = np.random.RandomState(0)
+        ref = rng.rand(128, 128).astype(np.float64)
+        # Deformed image unrelated to ref → NCC will be low across the
+        # board, below 0.85 high-quality bar but possibly above 0.70 for
+        # a handful of candidates. Lower the floor to be sure.
+        state.seed_ncc_threshold = -1.0  # everything passes tier 1b
+        def_img = rng.rand(128, 128).astype(np.float64)
+
+        ctrl = SeedController()
+        warns: list[str] = []
+        state.log_message.connect(
+            lambda msg, lvl: warns.append((msg, lvl)),
+        )
+        ctrl.auto_place_seeds(
+            ref, def_img,
+            winsize=state.subset_size,
+            search_radius=8,
+            stride=2,
+        )
+        # Either placed something with a warning OR placed nothing at all.
+        # Both are legal outcomes on pure-noise mismatch. We only verify
+        # that IF a seed was placed, a warning was emitted about quality.
+        if state.seeds:
+            warn_msgs = [m for m, l in warns if l == "warn"]
+            assert any("high-quality" in m for m in warn_msgs), (
+                f"No quality warning in {warn_msgs}"
+            )
+
     def test_unrelated_param_change_does_not_rebuild(self, qapp):
         """Changing a non-mesh param (e.g. tracking_mode) shouldn't re-snap."""
         state = AppState.instance()

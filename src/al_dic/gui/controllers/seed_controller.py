@@ -26,6 +26,37 @@ from al_dic.solver.seed_prop_pipeline import build_grid_for_roi
 from al_dic.utils.region_analysis import NodeRegionMap, precompute_node_regions
 
 
+def _bfs_max_depth(
+    start: int,
+    allowed: set[int],
+    adjacency: list[set[int]],
+) -> int:
+    """BFS from ``start``, staying within ``allowed`` nodes, return max
+    layer reached.
+
+    Used by ``auto_place_seeds``' Tier 3 to choose the seed node whose
+    propagation tree has the smallest worst-case depth — fewer layer-
+    sync batches + shorter F-aware extrapolation chains.
+    """
+    if start not in allowed:
+        return 0
+    visited = {start}
+    frontier = {start}
+    depth = 0
+    while frontier:
+        nxt: set[int] = set()
+        for node in frontier:
+            for nb in adjacency[node]:
+                if nb in allowed and nb not in visited:
+                    visited.add(nb)
+                    nxt.add(nb)
+        if not nxt:
+            break
+        depth += 1
+        frontier = nxt
+    return depth
+
+
 @dataclass(frozen=True)
 class _MeshCacheKey:
     """Tuple detector for preview-mesh cache invalidation."""
@@ -213,6 +244,15 @@ class SeedController(QObject):
             return False
         return all(has for _, has, _ in status)
 
+    # Strict NCC bar for "this is clearly a good match" during auto-place.
+    # Deliberately higher than state.seed_ncc_threshold (the hard
+    # accept/reject floor, default 0.70) so auto-place prefers
+    # high-confidence candidates when any exist in a region, and only
+    # falls back to the weaker floor when NONE pass the strict bar.
+    _HIGH_QUALITY_NCC: float = 0.85
+    # Percentage of edge-distance top performers to keep in Tier 2.
+    _EDGE_DIST_TOP_PCT: float = 0.30
+
     def auto_place_seeds(
         self,
         ref_img: NDArray[np.float64],
@@ -222,98 +262,163 @@ class SeedController(QObject):
         stride: int = 3,
         only_unseeded_regions: bool = False,
     ) -> int:
-        """Place one seed per region at the interior node with highest NCC.
+        """Place one seed per region using a three-tier selection.
 
-        Uses two biases to avoid the "seed at a mask corner" failure mode
-        observed in practice:
-          1. **Interior preference** — a node whose mesh adjacency lies
-             entirely within the same region (no neighbour on the mask
-             boundary) is strictly preferred. Boundary nodes are only
-             considered if the region has no interior candidates.
-          2. **Highest-NCC** tie-breaker among the preferred set, same
-             as before.
+        Pure max-NCC auto-placement over-picks nodes at region corners
+        whenever the whole region has similar texture. Three filters
+        applied in order produce a more robust choice:
+
+          Tier 1 — Quality: keep nodes with single-point NCC
+                   >= _HIGH_QUALITY_NCC (0.85). If none qualify, relax
+                   to the user-set state.seed_ncc_threshold (default
+                   0.70) and LOG a warning. If still none qualify,
+                   skip this region (the downstream bootstrap will
+                   raise a tailored error when the pipeline runs).
+
+          Tier 2 — Edge distance: of the Tier-1 survivors, keep the
+                   top _EDGE_DIST_TOP_PCT (30%) by distance to the
+                   nearest mask-boundary pixel (scipy EDT). Pushes the
+                   seed away from risky boundary regions.
+
+          Tier 3 — BFS topology: rank the remaining candidates by
+                   the maximum BFS depth they would produce when used
+                   as a seed within this region. Lower is better
+                   (fewer propagation layers -> faster + shorter
+                   F-aware extrapolation chains -> less error
+                   accumulation on non-uniform fields). NCC is the
+                   tiebreaker.
 
         Args:
-            ref_img: Reference frame.
-            def_img: Deformed frame for the NCC.
-            winsize: Template window (= subset_size).
-            search_radius: Single-point NCC half-width.
-            stride: Evaluate every Nth node per region.
-            only_unseeded_regions: If True, leave regions that already
-                contain a seed untouched and only fill regions that
-                have no seed yet. Used by the ROI-ready auto-placer so
-                multi-region edits progressively fill in.
+            ref_img / def_img: image pair for the NCC evaluation.
+            winsize: template window (= subset_size).
+            search_radius: single-point NCC half-width.
+            stride: evaluate every Nth interior node (perf knob).
+            only_unseeded_regions: if True, leave regions that
+                already contain a seed untouched.
 
         Returns:
             Number of seeds newly placed this call.
         """
-        from al_dic.solver.seed_propagation import seed_single_point_fft
+        from al_dic.solver.seed_propagation import (
+            build_node_adjacency,
+            seed_single_point_fft,
+        )
+        from scipy.ndimage import binary_erosion, distance_transform_edt
 
         self._ensure_preview_mesh()
         if self._preview_mesh is None or self._region_map is None:
             return 0
 
         if not only_unseeded_regions:
-            # Manual-button path: the user asked for a full re-auto-place.
             if self._state.seeds:
                 self._state.seeds.clear()
 
         existing = {s.region_id for s in self._state.seeds}
-
-        # Build an 'interior' mask where a full subset window fits inside
-        # the ROI. A node that lives on top of an interior pixel has
-        # every sample in its winsize x winsize template covered by the
-        # mask -- no edge artifacts from mask-cut pixels. Nodes on the
-        # mask boundary usually cause IC-GN divergence and auto-place
-        # should avoid them.
-        from scipy.ndimage import binary_erosion
         mask = self._state.per_frame_rois.get(0)
         if mask is None:
             return 0
+
+        # --- Precompute masks / distance-transform / adjacency ---
         half_w = max(1, winsize // 2)
         struct = np.ones((2 * half_w + 1, 2 * half_w + 1), dtype=bool)
         interior_mask = binary_erosion(mask, structure=struct)
         h, w = interior_mask.shape
+        # EDT of the mask: per-pixel distance to the nearest
+        # outside-mask pixel. Higher = deeper into the region.
+        edge_dist = distance_transform_edt(mask)
+        adjacency = build_node_adjacency(
+            self._preview_mesh.elements_fem,
+            self._preview_mesh.coordinates_fem.shape[0],
+        )
 
         coords = self._preview_mesh.coordinates_fem
         placed = 0
+        floor_ncc = float(
+            self._state.seed_ncc_threshold
+        )  # typically 0.70
+
         for region_id, nodes in enumerate(
             self._region_map.region_node_lists,
         ):
             if only_unseeded_regions and region_id in existing:
                 continue
+
+            # Interior pre-filter: prefer nodes whose full subset
+            # window fits in the mask. Fall back to all nodes when a
+            # tiny region has no strict-interior candidates.
             interior: list[int] = []
             for node_idx in nodes:
                 n_idx = int(node_idx)
-                nx = int(np.clip(round(coords[n_idx, 0]), 0, w - 1))
-                ny = int(np.clip(round(coords[n_idx, 1]), 0, h - 1))
-                if interior_mask[ny, nx]:
+                nx_i = int(np.clip(round(coords[n_idx, 0]), 0, w - 1))
+                ny_i = int(np.clip(round(coords[n_idx, 1]), 0, h - 1))
+                if interior_mask[ny_i, nx_i]:
                     interior.append(n_idx)
             candidates = interior if interior else [int(n) for n in nodes]
             candidates = candidates[::stride] if stride > 1 else candidates
+            if not candidates:
+                continue
 
-            best_node = -1
-            best_ncc = -1.0
-            best_xy: tuple[float, float] | None = None
-            for node_idx in candidates:
-                nx = float(coords[node_idx, 0])
-                ny = float(coords[node_idx, 1])
+            # Evaluate NCC + edge distance for every candidate.
+            cand_data: list[dict] = []
+            for n_idx in candidates:
+                nx = float(coords[n_idx, 0])
+                ny = float(coords[n_idx, 1])
                 r = seed_single_point_fft(
                     ref_img, def_img, (nx, ny), winsize, search_radius,
                 )
-                if r.valid and r.ncc_peak > best_ncc:
-                    best_ncc = r.ncc_peak
-                    best_node = node_idx
-                    best_xy = (nx, ny)
-            if best_node < 0 or best_xy is None:
+                if not r.valid:
+                    continue
+                xi = int(np.clip(round(nx), 0, w - 1))
+                yi = int(np.clip(round(ny), 0, h - 1))
+                cand_data.append({
+                    "node": n_idx,
+                    "xy": (nx, ny),
+                    "ncc": float(r.ncc_peak),
+                    "edge_dist": float(edge_dist[yi, xi]),
+                })
+            if not cand_data:
                 continue
+
+            # --- Tier 1: quality ---
+            tier1 = [c for c in cand_data if c["ncc"] >= self._HIGH_QUALITY_NCC]
+            if not tier1:
+                tier1 = [c for c in cand_data if c["ncc"] >= floor_ncc]
+                if not tier1:
+                    # All candidates below absolute floor — skip.
+                    # Pipeline bootstrap will raise with a proper
+                    # dialog when the user tries to run.
+                    continue
+                best_ncc_here = max(c["ncc"] for c in tier1)
+                self._state.log_message.emit(
+                    f"Auto-place region {region_id}: no high-quality "
+                    f"candidate (NCC >= {self._HIGH_QUALITY_NCC}); "
+                    f"using best available NCC={best_ncc_here:.3f}. "
+                    f"Consider using a more textured ROI.",
+                    "warn",
+                )
+
+            # --- Tier 2: edge distance ---
+            tier1.sort(key=lambda c: -c["edge_dist"])
+            keep_n = max(3, int(round(len(tier1) * self._EDGE_DIST_TOP_PCT)))
+            tier2 = tier1[:keep_n]
+
+            # --- Tier 3: BFS max depth within the region ---
+            region_node_set = set(int(n) for n in nodes)
+            for c in tier2:
+                c["max_depth"] = _bfs_max_depth(
+                    c["node"], region_node_set, adjacency,
+                )
+            # Lower depth first; NCC as tiebreaker (higher = earlier).
+            tier2.sort(key=lambda c: (c["max_depth"], -c["ncc"]))
+            best = tier2[0]
+
             self._state.seeds.append(
                 SeedRecord(
-                    node_idx=best_node,
+                    node_idx=int(best["node"]),
                     region_id=region_id,
                     is_warped=False,
-                    ncc_peak=float(best_ncc),
-                    xy_canvas=best_xy,
+                    ncc_peak=best["ncc"],
+                    xy_canvas=best["xy"],
                 ),
             )
             placed += 1
