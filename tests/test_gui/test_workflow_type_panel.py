@@ -60,12 +60,30 @@ def test_incremental_sub_panel_visibility_follows_mode():
     assert panel._inc_panel.isHidden() is False
 
 
-def test_solver_switch_toggles_admm_sub_panel():
+def test_solver_switch_updates_state_use_admm():
+    """ADMM iteration control was moved from WorkflowTypePanel to
+    AdvancedTuningWidget (ADVANCED section). The panel now only
+    flips state.use_admm — the downstream widget watches that state
+    to enable/disable its ADMM spinbox.
+    """
+    from al_dic.gui.app_state import AppState
+    from al_dic.gui.widgets.advanced_tuning_widget import AdvancedTuningWidget
+
+    state = AppState.instance()
     panel = WorkflowTypePanel()
+    adv = AdvancedTuningWidget()
+
     panel._solver.setCurrentText("Local DIC")
-    assert panel._admm_panel.isHidden() is True
+    assert state.use_admm is False
+    # AdvancedTuningWidget syncs on params_changed; emit manually since
+    # the panel's set_param path doesn't emit in this synthetic test.
+    state.params_changed.emit()
+    assert adv._admm_iter_spin.isEnabled() is False
+
     panel._solver.setCurrentText("AL-DIC")
-    assert panel._admm_panel.isHidden() is False
+    assert state.use_admm is True
+    state.params_changed.emit()
+    assert adv._admm_iter_spin.isEnabled() is True
 
 
 # ---------------------------------------------------------------------
