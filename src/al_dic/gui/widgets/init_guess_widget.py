@@ -20,11 +20,12 @@ Auto-selection on tracking mode change:
 
 from __future__ import annotations
 
-from PySide6.QtCore import QEvent, Qt
+from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
     QLabel,
+    QPushButton,
     QRadioButton,
     QSpinBox,
     QVBoxLayout,
@@ -38,10 +39,16 @@ from al_dic.gui.theme import COLORS
 class InitGuessWidget(QWidget):
     """Initial-guess controls wired to AppState."""
 
+    # Emitted when the user clicks "Place Starting Points" — the top-level
+    # controller forwards this to canvas.set_tool("seed") so the canvas
+    # widget doesn't need to know about this widget directly.
+    request_place_seeds = Signal()
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._state = AppState.instance()
         self._building = False
+        self._seed_ctrl = None
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 4, 0, 4)
@@ -102,17 +109,43 @@ class InitGuessWidget(QWidget):
 
         # --- Mode: seed propagation ---
         self._rb_seed_prop = QRadioButton(
-            "Seed propagation (large displacement / cracks)"
+            "Starting Points (large displacement / cracks)"
         )
         self._rb_seed_prop.setToolTip(
-            "Place a few seed nodes manually; pyALDIC bootstraps each seed "
-            "with single-point NCC, then propagates the displacement field "
-            "across mesh neighbours via F-aware BFS.\n\n"
+            "Place a few 'starting points' manually on the canvas; "
+            "pyALDIC bootstraps each with single-point NCC, then propagates "
+            "the displacement field across mesh neighbours via F-aware BFS.\n\n"
             "Best for: large inter-frame displacement (>50 px), discontinuous "
-            "fields (cracks, shear bands).  Click 'Place Seeds' on the canvas "
-            "to start.  At least one seed per connected mask region required."
+            "fields (cracks, shear bands).  At least one starting point per "
+            "connected mask region required before the pipeline can run."
         )
         layout.addWidget(self._rb_seed_prop)
+
+        # "Place Starting Points" sub-panel — visible only when this mode
+        # is selected. Contains the Place button + region-progress label.
+        self._seed_panel = QWidget()
+        seed_panel_layout = QVBoxLayout(self._seed_panel)
+        seed_panel_layout.setContentsMargins(18, 4, 0, 4)
+        seed_panel_layout.setSpacing(4)
+
+        self._btn_place_seeds = QPushButton("Place Starting Points")
+        self._btn_place_seeds.setToolTip(
+            "Enter placement mode on the canvas.\n"
+            "Left-click inside the ROI to drop a point, right-click on a "
+            "point to remove it, Esc to exit."
+        )
+        seed_panel_layout.addWidget(self._btn_place_seeds)
+
+        self._lbl_seed_progress = QLabel("0 / 0 regions seeded")
+        self._lbl_seed_progress.setStyleSheet(
+            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
+        )
+        seed_panel_layout.addWidget(self._lbl_seed_progress)
+
+        self._seed_panel.setVisible(False)
+        layout.addWidget(self._seed_panel)
+
+        self._btn_place_seeds.clicked.connect(self.request_place_seeds.emit)
 
         # NOTE: "Search Radius" (``state.search_range``) was previously edited
         # here. It has been moved to the main ParamPanel as "Search Range"
@@ -163,7 +196,26 @@ class InitGuessWidget(QWidget):
         self._reset_spin.setValue(self._state.fft_reset_interval)
         self._reset_spin.setEnabled(mode == "fft_reset_n")
         self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
+        self._seed_panel.setVisible(mode == "seed_propagation")
+        self._refresh_seed_progress()
         self._building = False
+
+    def set_seed_controller(self, ctrl) -> None:
+        """Attach the SeedController for region-progress readout."""
+        self._seed_ctrl = ctrl
+        self._state.seeds_changed.connect(self._refresh_seed_progress)
+        self._state.roi_changed.connect(self._refresh_seed_progress)
+        self._refresh_seed_progress()
+
+    def _refresh_seed_progress(self) -> None:
+        if self._seed_ctrl is None:
+            return
+        status = self._seed_ctrl.regions_status()
+        total = len(status)
+        seeded = sum(1 for _, has, _ in status if has)
+        self._lbl_seed_progress.setText(
+            f"{seeded} / {total} regions seeded"
+        )
 
     def _on_params_changed_externally(self) -> None:
         """Re-sync UI when tracking mode (or other state) changes externally."""
@@ -188,6 +240,7 @@ class InitGuessWidget(QWidget):
         else:
             mode = "fft_reset_n"
         self._reset_spin.setEnabled(mode == "fft_reset_n")
+        self._seed_panel.setVisible(mode == "seed_propagation")
         self._state.init_guess_mode = mode
         self._state.params_changed.emit()
 

@@ -174,6 +174,10 @@ class ImageCanvas(QGraphicsView):
     # Signal emitted when mouse leaves the canvas
     hover_left = Signal()
 
+    # Signal emitted when set_tool is called — passes the tool name.
+    # Used by CanvasArea to show/hide the Starting-Points mode banner.
+    tool_changed = Signal(str)
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._scene = QGraphicsScene(self)
@@ -240,6 +244,10 @@ class ImageCanvas(QGraphicsView):
         self._refine_fade_timer = QTimer(self)
         self._refine_fade_timer.timeout.connect(self._on_refine_fade)
 
+        # Seed (Starting Points) tool state
+        self._seed_ctrl = None
+        self._seed_preview_item = None  # QGraphicsEllipseItem for hover snap
+
         # Pan state (middle-button or left-button when tool == "pan")
         self._panning = False
         self._pan_start = QPointF()
@@ -250,19 +258,55 @@ class ImageCanvas(QGraphicsView):
     # ----- public API -----
 
     def set_tool(self, tool: str) -> None:
-        """Set the active tool: select, pan, rect, polygon, circle, brush."""
+        """Set the active tool.
+
+        Valid tools: select, pan, rect, polygon, circle, brush, seed.
+        """
         self._current_tool = tool
         self._cancel_drawing()
         # Reset brush stroke state whenever tool changes
         self._brush_last_pos = None
+        # Always clear the seed-preview circle when leaving seed mode
+        if tool != "seed":
+            self._clear_seed_preview()
         if tool == "pan":
             self.setCursor(Qt.CursorShape.OpenHandCursor)
         elif tool == "brush":
             self._update_brush_cursor()
         elif tool in ("rect", "polygon", "circle"):
             self.setCursor(Qt.CursorShape.CrossCursor)
+        elif tool == "seed":
+            self.setCursor(Qt.CursorShape.CrossCursor)
+            # Grab keyboard focus so Escape can exit the mode
+            self.setFocus(Qt.FocusReason.OtherFocusReason)
         else:
             self.setCursor(Qt.CursorShape.ArrowCursor)
+        self.tool_changed.emit(tool)
+
+    def set_seed_controller(self, ctrl) -> None:
+        """Attach the SeedController for Starting-Points placement."""
+        self._seed_ctrl = ctrl
+
+    def _clear_seed_preview(self) -> None:
+        if self._seed_preview_item is not None:
+            self._scene.removeItem(self._seed_preview_item)
+            self._seed_preview_item = None
+
+    def _update_seed_preview(self, x: float, y: float) -> None:
+        """Place or move the hover-snap circle at (x, y) in scene coords."""
+        from PySide6.QtWidgets import QGraphicsEllipseItem
+
+        r = 6.0
+        if self._seed_preview_item is None:
+            item = QGraphicsEllipseItem(-r, -r, 2 * r, 2 * r)
+            pen = QPen(QColor(COLORS.ACCENT))
+            pen.setWidthF(1.5)
+            item.setPen(pen)
+            item.setBrush(QBrush(QColor(99, 102, 241, 80)))  # ACCENT semi-alpha
+            item.setZValue(50)
+            self._scene.addItem(item)
+            self._seed_preview_item = item
+        self._seed_preview_item.setPos(x, y)
 
     def set_drawing_mode(self, mode: str) -> None:
         """Set drawing mode: 'add' or 'cut'."""
@@ -522,6 +566,21 @@ class ImageCanvas(QGraphicsView):
             event.accept()
             return
 
+        # Seed tool: left-click to add a Starting Point, right-click to remove.
+        if self._current_tool == "seed" and self._seed_ctrl is not None:
+            scene_pos = self.mapToScene(event.position().toPoint())
+            if event.button() == Qt.MouseButton.LeftButton:
+                self._seed_ctrl.add_seed_at_xy(scene_pos.x(), scene_pos.y())
+                event.accept()
+                return
+            if event.button() == Qt.MouseButton.RightButton:
+                step = self._seed_ctrl._state.subset_step
+                self._seed_ctrl.remove_seed_near(
+                    scene_pos.x(), scene_pos.y(), radius=float(step),
+                )
+                event.accept()
+                return
+
         # Brush sub-tool: paint a single dot at click site, prime drag state
         if (
             event.button() == Qt.MouseButton.LeftButton
@@ -589,11 +648,39 @@ class ImageCanvas(QGraphicsView):
             event.accept()
             return
 
+        # Seed tool: hover-snap preview + cursor shape feedback
+        if self._current_tool == "seed" and self._seed_ctrl is not None:
+            sp = self.mapToScene(event.position().toPoint())
+            if self._seed_ctrl.is_xy_in_mask(sp.x(), sp.y()):
+                self.setCursor(Qt.CursorShape.CrossCursor)
+                preview = self._seed_ctrl.nearest_node_preview(sp.x(), sp.y())
+                if preview is not None:
+                    _, nx, ny = preview
+                    self._update_seed_preview(nx, ny)
+                else:
+                    self._clear_seed_preview()
+            else:
+                self.setCursor(Qt.CursorShape.ForbiddenCursor)
+                self._clear_seed_preview()
+            event.accept()
+            return
+
         # Emit scene hover for mesh overlay subset window
         sp = self.mapToScene(event.position().toPoint())
         self.scene_hover.emit(sp.x(), sp.y())
 
         super().mouseMoveEvent(event)
+
+    def keyPressEvent(self, event) -> None:  # noqa: N802
+        # Escape exits the seed-placement tool, returning to pan.
+        if (
+            self._current_tool == "seed"
+            and event.key() == Qt.Key.Key_Escape
+        ):
+            self.set_tool("pan")
+            event.accept()
+            return
+        super().keyPressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:  # noqa: N802
         if self._panning and event.button() in (
@@ -940,6 +1027,18 @@ class CanvasArea(QWidget):
         )
         layout.addWidget(self._roi_banner)
 
+        # --- Starting-Points placement banner (hidden unless seed tool active) ---
+        self._seed_banner = QLabel()
+        self._seed_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._seed_banner.setFixedHeight(36)
+        self._seed_banner.setVisible(False)
+        self._seed_banner.setStyleSheet(
+            f"background: {COLORS.ACCENT}; color: #fff; "
+            f"font-size: 13px; font-weight: bold; padding: 4px;"
+        )
+        layout.addWidget(self._seed_banner)
+        self._seed_ctrl = None  # set by attach_seed_controller
+
         # --- Canvas ---
         self._canvas = ImageCanvas()
         layout.addWidget(self._canvas, stretch=1)
@@ -1026,6 +1125,42 @@ class CanvasArea(QWidget):
         if obj is self._canvas.viewport() and event.type() == QEvent.Type.Resize:
             self._sync_overlay_geometry()
         return super().eventFilter(obj, event)
+
+    def attach_seed_controller(self, ctrl) -> None:
+        """Wire the SeedController through to ImageCanvas and banner."""
+        self._seed_ctrl = ctrl
+        self._canvas.set_seed_controller(ctrl)
+        self._canvas.tool_changed.connect(self._on_canvas_tool_changed)
+        self._state.seeds_changed.connect(self._refresh_seed_banner)
+
+    def _on_canvas_tool_changed(self, tool: str) -> None:
+        self._seed_banner.setVisible(tool == "seed")
+        self._refresh_seed_banner()
+
+    def _refresh_seed_banner(self) -> None:
+        """Update the banner text with current region-seeded progress.
+
+        Always updates the label (cheap); the banner's setVisible handles
+        showing/hiding. Using isVisible() as a guard would fail in
+        headless test environments where no ancestor is shown yet.
+        """
+        if self._seed_banner.isHidden():
+            return
+        if self._seed_ctrl is None:
+            self._seed_banner.setText("Placing Starting Points")
+            return
+        status = self._seed_ctrl.regions_status()
+        total = len(status)
+        seeded = sum(1 for _, has, _ in status if has)
+        progress = (
+            f"{seeded} / {total} regions seeded"
+            if total > 0
+            else "no regions detected — load images and set a mask first"
+        )
+        self._seed_banner.setText(
+            f"Placing Starting Points · Left-click: add · "
+            f"Right-click: remove · Esc: exit · {progress}"
+        )
 
     def set_roi_editing_banner(self, frame: int | None) -> None:
         """Show or hide the ROI editing banner for the given frame."""

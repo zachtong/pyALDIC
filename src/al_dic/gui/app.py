@@ -67,6 +67,11 @@ class MainWindow(QMainWindow):
         # Separate buffer for the brush refinement mask (frame 0 only).
         self._brush_ctrl: ROIController | None = None
 
+        # Seed-propagation controller (created unconditionally; idle until
+        # the user selects init_guess_mode='seed_propagation').
+        from al_dic.gui.controllers.seed_controller import SeedController
+        self._seed_ctrl = SeedController(self)
+
         # Left sidebar — image loading + ROI toolbar
         self._left_sidebar = LeftSidebar(self._image_ctrl)
         layout.addWidget(self._left_sidebar, stretch=0)
@@ -113,6 +118,12 @@ class MainWindow(QMainWindow):
 
         # When canvas finishes drawing, deactivate toolbar highlight
         self._canvas_area.canvas.drawing_finished.connect(roi_tb.deactivate)
+
+        # Starting-Points (seed propagation) wiring
+        self._canvas_area.attach_seed_controller(self._seed_ctrl)
+        init_guess = self._left_sidebar.init_guess_widget
+        init_guess.set_seed_controller(self._seed_ctrl)
+        init_guess.request_place_seeds.connect(self._on_request_place_seeds)
 
         # Per-frame ROI editing from image list
         self._left_sidebar._image_list.roi_edit_requested.connect(
@@ -341,6 +352,15 @@ class MainWindow(QMainWindow):
             return
         canvas.set_tool("select")
         canvas.drawing_finished.emit()
+
+    def _on_request_place_seeds(self) -> None:
+        """User clicked 'Place Starting Points' in the init-guess panel."""
+        canvas = self._canvas_area.canvas
+        if canvas._current_tool == "seed":
+            # Toggle off — return to pan
+            canvas.set_tool("pan")
+        else:
+            canvas.set_tool("seed")
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:
         """Activate one-shot drawing mode on the canvas.

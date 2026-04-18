@@ -290,6 +290,11 @@ class LeftSidebar(QWidget):
         """Access the ROI toolbar widget."""
         return self._roi_toolbar
 
+    @property
+    def init_guess_widget(self) -> InitGuessWidget:
+        """Access the Initial-Guess panel (for top-level controller wiring)."""
+        return self._init_guess_widget
+
     def _update_badge(self) -> None:
         """Update the IMAGES section badge with current count."""
         count = len(self._state.image_files)
