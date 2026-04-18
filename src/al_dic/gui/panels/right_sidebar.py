@@ -45,6 +45,7 @@ class RightSidebar(QWidget):
         super().__init__(parent)
         self._pipeline_ctrl = pipeline_ctrl
         self._state = AppState.instance()
+        self._seed_ctrl = None  # set by set_seed_controller
         self.setObjectName("rightSidebar")
         self.setFixedWidth(280)
 
@@ -291,6 +292,35 @@ class RightSidebar(QWidget):
         # All exports happen inside the dialog; exec() blocks until user clicks Close.
         dlg.exec()
 
+    def set_seed_controller(self, ctrl) -> None:
+        """Attach the SeedController so Run can gate on regions_seeded."""
+        self._seed_ctrl = ctrl
+        self._state.seeds_changed.connect(self._refresh_run_button_state)
+        self._state.roi_changed.connect(self._refresh_run_button_state)
+        self._state.params_changed.connect(self._refresh_run_button_state)
+        self._refresh_run_button_state()
+
+    def _refresh_run_button_state(self) -> None:
+        """Gate Run on seed_propagation's 'all regions seeded' requirement."""
+        from al_dic.gui.app_state import RunState as _RS
+
+        run_state = self._state.run_state
+        base_enabled = run_state in (_RS.IDLE, _RS.DONE)
+
+        if (
+            self._seed_ctrl is not None
+            and self._state.init_guess_mode == "seed_propagation"
+            and not self._seed_ctrl.all_regions_seeded()
+        ):
+            self._run_btn.setEnabled(False)
+            self._run_btn.setToolTip(
+                "Place at least one Starting Point in each highlighted region "
+                "before running (yellow = needs seed, green = ready)."
+            )
+        else:
+            self._run_btn.setEnabled(base_enabled)
+            self._run_btn.setToolTip("")
+
     def _on_run_state(self, new_state: RunState) -> None:
         """Update button enabled/disabled states on run state change."""
         running = new_state == RunState.RUNNING
@@ -300,8 +330,11 @@ class RightSidebar(QWidget):
 
         # Cancel is available while the pipeline is actively doing work
         # (RUNNING or the legacy PAUSED state). Run is available when
-        # nothing is running.
+        # nothing is running.  The seed-propagation gate layers on top:
+        # _refresh_run_button_state enforces the 'all regions seeded'
+        # requirement after the base idle/done gate.
         self._run_btn.setEnabled(idle or done)
+        self._refresh_run_button_state()
         self._cancel_btn.setEnabled(running or paused)
         self._export_btn.setEnabled(done)
 

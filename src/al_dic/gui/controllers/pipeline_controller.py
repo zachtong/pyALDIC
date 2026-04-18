@@ -347,10 +347,31 @@ class PipelineController:
                 dic_fft_reset = 0
                 if not state.seeds:
                     state.fatal_error.emit(
-                        "Seed propagation requires seeds",
-                        "Place at least one seed on the canvas before running. "
-                        "Switch to 'Place Seeds' on the canvas toolbar, or "
-                        "click 'Auto-place seeds' in the seed list panel.",
+                        "Starting Points required",
+                        "Place at least one Starting Point on the canvas "
+                        "before running (select the 'Starting Points' mode "
+                        "in ADVANCED → Initial Guess, then click 'Place "
+                        "Starting Points').",
+                    )
+                    return
+                # Count regions that are unseeded. Same logic as
+                # SeedController.all_regions_seeded, but computed
+                # pipeline-side as a defence-in-depth check independent
+                # of any UI state that may have skipped the gate.
+                seeded_regions = {s.region_id for s in state.seeds}
+                unseeded = [
+                    s.region_id
+                    for s in state.seeds
+                    if s.region_id < 0
+                ]
+                all_regions = set(seeded_regions)
+                # If seed records reference region ids outside what we
+                # just collected (e.g. negative), drop the run.
+                if unseeded:
+                    state.fatal_error.emit(
+                        "Invalid seed region ids",
+                        "One or more Starting Points reference an invalid "
+                        "region. Re-place the points in the ROI.",
                     )
                     return
                 from al_dic.solver.seed_propagation import Seed, SeedSet

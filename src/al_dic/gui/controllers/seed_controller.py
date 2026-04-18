@@ -208,6 +208,44 @@ class SeedController(QObject):
             return False
         return all(has for _, has, _ in status)
 
+    def region_label_image(self) -> NDArray[np.int64] | None:
+        """Return (H, W) pixel labels aligned with ``regions_status()``.
+
+        Values:
+          -1  outside any tracked region (mask hole, or filtered-out region)
+          0..N-1  region_id matching ``regions_status``
+
+        Used by the canvas region-color overlay (P5.2c). Alignment with
+        ``regions_status`` is established by mapping each filtered region
+        back to its raw scipy-label via the first node's pixel position,
+        so the color painted for region i in the overlay is consistent
+        with the ``has_seed`` flag returned by ``regions_status``.
+        """
+        self._ensure_preview_mesh()
+        mask = self._state.per_frame_rois.get(0)
+        if mask is None or self._region_map is None or self._preview_mesh is None:
+            return None
+
+        from scipy.ndimage import label as scipy_label
+
+        struct = np.ones((3, 3), dtype=np.int32)
+        labeled, _ = scipy_label(mask, structure=struct)
+
+        h, w = labeled.shape
+        result = np.full_like(labeled, -1, dtype=np.int64)
+        coords = self._preview_mesh.coordinates_fem
+        for region_id, nodes in enumerate(self._region_map.region_node_lists):
+            if nodes.size == 0:
+                continue
+            n0 = int(nodes[0])
+            x0 = int(np.clip(round(coords[n0, 0]), 0, w - 1))
+            y0 = int(np.clip(round(coords[n0, 1]), 0, h - 1))
+            raw_label = int(labeled[y0, x0])
+            if raw_label == 0:
+                continue
+            result[labeled == raw_label] = region_id
+        return result
+
     # ------------------------------------------------------------------
     # Internal
     # ------------------------------------------------------------------

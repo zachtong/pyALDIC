@@ -124,6 +124,7 @@ class MainWindow(QMainWindow):
         init_guess = self._left_sidebar.init_guess_widget
         init_guess.set_seed_controller(self._seed_ctrl)
         init_guess.request_place_seeds.connect(self._on_request_place_seeds)
+        self._right_sidebar.set_seed_controller(self._seed_ctrl)
 
         # Per-frame ROI editing from image list
         self._left_sidebar._image_list.roi_edit_requested.connect(

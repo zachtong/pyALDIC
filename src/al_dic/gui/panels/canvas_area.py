@@ -206,6 +206,17 @@ class ImageCanvas(QGraphicsView):
         self._scene.addItem(self._refine_item)
         self._refine_item.setZValue(6)
 
+        # --- Layer 7: Starting-Points region overlay (yellow/green) ---
+        # Visible only while init_guess_mode == 'seed_propagation'.
+        # Yellow = region needs a seed, green = region has a seed.
+        self._seed_region_item = QGraphicsPixmapItem()
+        self._scene.addItem(self._seed_region_item)
+        self._seed_region_item.setZValue(7)
+        self._seed_region_item.setOpacity(0.25)
+        self._seed_region_item.setVisible(False)
+        # Seed marker graphics items, rebuilt on seeds_changed.
+        self._seed_marker_items: list = []
+
         # --- Render settings ---
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setDragMode(QGraphicsView.DragMode.NoDrag)
@@ -286,6 +297,79 @@ class ImageCanvas(QGraphicsView):
     def set_seed_controller(self, ctrl) -> None:
         """Attach the SeedController for Starting-Points placement."""
         self._seed_ctrl = ctrl
+
+    def update_seed_region_overlay(
+        self, label_image, region_seeded: dict[int, bool],
+    ) -> None:
+        """Repaint the yellow/green region overlay.
+
+        ``label_image``: (H, W) int array; -1 = outside any tracked region.
+        ``region_seeded``: map region_id -> has_seed.
+        """
+        import numpy as np
+
+        if label_image is None or not region_seeded:
+            self._seed_region_item.setVisible(False)
+            return
+        h, w = label_image.shape
+        rgba = np.zeros((h, w, 4), dtype=np.uint8)
+        # Yellow = WARNING, Green = SUCCESS
+        yellow = (234, 179, 8, 255)
+        green = (34, 197, 94, 255)
+        for region_id, has_seed in region_seeded.items():
+            color = green if has_seed else yellow
+            rgba[label_image == region_id] = color
+        qimg = QImage(rgba.data, w, h, 4 * w, QImage.Format.Format_RGBA8888)
+        self._seed_region_item.setPixmap(QPixmap.fromImage(qimg.copy()))
+        self._seed_region_item.setVisible(True)
+
+    def hide_seed_region_overlay(self) -> None:
+        self._seed_region_item.setVisible(False)
+
+    def set_seed_markers(self, seeds) -> None:
+        """Replace all seed marker graphics with current state.seeds."""
+        from PySide6.QtWidgets import QGraphicsEllipseItem
+
+        for item in self._seed_marker_items:
+            self._scene.removeItem(item)
+        self._seed_marker_items.clear()
+
+        zoom = self.transform().m11() or 1.0
+        r_view = 6.0
+        r = r_view / zoom
+        pen_w = 1.5 / zoom
+        for s in seeds:
+            xy = s.xy_canvas
+            if xy is None:
+                continue
+            # Yellow = user-placed, Purple = warped (carried across ref switch)
+            fill = (
+                QColor(168, 85, 247)
+                if getattr(s, "is_warped", False)
+                else QColor(234, 179, 8)
+            )
+            item = QGraphicsEllipseItem(-r, -r, 2 * r, 2 * r)
+            pen = QPen(QColor(0, 0, 0))
+            pen.setWidthF(pen_w)
+            item.setPen(pen)
+            item.setBrush(QBrush(fill))
+            item.setZValue(51)
+            item.setPos(xy[0], xy[1])
+            self._scene.addItem(item)
+            self._seed_marker_items.append(item)
+
+    def refresh_seed_marker_sizes(self) -> None:
+        """Rescale seed markers to maintain viewport-fixed size on zoom."""
+        if not self._seed_marker_items:
+            return
+        zoom = self.transform().m11() or 1.0
+        r = 6.0 / zoom
+        pen_w = 1.5 / zoom
+        for item in self._seed_marker_items:
+            item.setRect(-r, -r, 2 * r, 2 * r)
+            pen = item.pen()
+            pen.setWidthF(pen_w)
+            item.setPen(pen)
 
     def _clear_seed_preview(self) -> None:
         if self._seed_preview_item is not None:
@@ -1132,6 +1216,26 @@ class CanvasArea(QWidget):
         self._canvas.set_seed_controller(ctrl)
         self._canvas.tool_changed.connect(self._on_canvas_tool_changed)
         self._state.seeds_changed.connect(self._refresh_seed_banner)
+        self._state.seeds_changed.connect(self._refresh_seed_visuals)
+        self._state.roi_changed.connect(self._refresh_seed_visuals)
+        self._state.params_changed.connect(self._refresh_seed_visuals)
+        self._canvas.view_changed.connect(
+            self._canvas.refresh_seed_marker_sizes,
+        )
+        self._refresh_seed_visuals()
+
+    def _refresh_seed_visuals(self) -> None:
+        """Redraw region overlay + seed markers from current state."""
+        is_seed_mode = self._state.init_guess_mode == "seed_propagation"
+        if not is_seed_mode or self._seed_ctrl is None:
+            self._canvas.hide_seed_region_overlay()
+            self._canvas.set_seed_markers([])
+            return
+        label_img = self._seed_ctrl.region_label_image()
+        status = self._seed_ctrl.regions_status()
+        region_seeded = {i: has for i, has, _ in status}
+        self._canvas.update_seed_region_overlay(label_img, region_seeded)
+        self._canvas.set_seed_markers(self._state.seeds)
 
     def _on_canvas_tool_changed(self, tool: str) -> None:
         self._seed_banner.setVisible(tool == "seed")
