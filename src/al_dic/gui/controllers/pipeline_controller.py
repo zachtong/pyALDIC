@@ -15,6 +15,70 @@ from al_dic.core.data_structures import FrameSchedule, GridxyROIRange
 from al_dic.core.pipeline import run_aldic
 from al_dic.gui.app_state import AppState, RunState
 from al_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
+from al_dic.solver.seed_propagation import (
+    MissingSeedForRegion,
+    SeedICGNDiverged,
+    SeedNCCBelowThreshold,
+    SeedPropagationError,
+    SeedQualityError,
+    SeedWarpFailure,
+)
+
+
+# User-facing messages for each SeedPropagationError subclass. Keyed by
+# exception type so subclasses are matched exactly; the generic
+# SeedPropagationError base is the fallback for any untagged subclass
+# (e.g., 'window out of image bounds' — raised but not via a subclass).
+_SEED_ERROR_MESSAGES: dict[type, tuple[str, str]] = {
+    SeedNCCBelowThreshold: (
+        "Starting Point match quality too low",
+        "A Starting Point could not be reliably matched between the "
+        "reference and the deformed frame. This usually means the local "
+        "texture is too uniform for cross-correlation.\n\n"
+        "Suggested actions:\n"
+        "  - Move the point to a more textured area (visible speckle).\n"
+        "  - Lower the NCC threshold (currently defaults to 0.70).\n"
+        "  - Or switch back to FFT mode in ADVANCED > Initial Guess.",
+    ),
+    SeedICGNDiverged: (
+        "Starting Point local solver did not converge",
+        "A Starting Point's IC-GN iteration hit the max without "
+        "converging. Common causes: seed too close to a mask edge, "
+        "insufficient local texture, or an oversized subset window.\n\n"
+        "Suggested actions:\n"
+        "  - Move the Starting Point inward, away from mask boundaries.\n"
+        "  - Try a smaller subset size.\n"
+        "  - Or switch back to FFT mode.",
+    ),
+    SeedQualityError: (
+        "Starting Point flagged as unreliable after run",
+        "After the frame completed, a Starting Point was marked as a "
+        "statistical outlier by the bad-point detector. Because the "
+        "propagation uses this seed as a root, the whole frame's result "
+        "is suspect.\n\n"
+        "Suggested actions:\n"
+        "  - Move the Starting Point to a cleaner textured region.\n"
+        "  - Place multiple Starting Points for redundancy.",
+    ),
+    SeedWarpFailure: (
+        "Could not carry Starting Points to the new reference",
+        "When the reference frame changed, one or more Starting Points "
+        "could not be mapped to the new reference. The material point "
+        "may have moved outside the new ROI.\n\n"
+        "Suggested actions:\n"
+        "  - Place Starting Points well inside the ROI interior.\n"
+        "  - Ensure the new reference's ROI covers the warped position.",
+    ),
+    MissingSeedForRegion: (
+        "Region without a Starting Point",
+        "At least one connected mask region has no Starting Point. "
+        "The propagation cannot cross mask boundaries, so every region "
+        "needs at least one seed.\n\n"
+        "Suggested actions:\n"
+        "  - Add a Starting Point in each yellow region before running.\n"
+        "  - Or unify the mask so only one connected region exists.",
+    ),
+}
 
 
 def _build_masks(
@@ -163,6 +227,30 @@ class PipelineWorker(QThread):
                     f"The pipeline raised a runtime error:\n\n{e}\n\n"
                     "See the console log for the full traceback.",
                 )
+            self.finished_result.emit(None)
+        except SeedPropagationError as e:
+            # Starting-Points specific failure — show a tailored dialog
+            # with suggested actions before falling through to the
+            # generic error path. Exception subclass lookup matches the
+            # most specific type first; unrecognised subclasses fall
+            # back to the base-class message.
+            tb = traceback.format_exc()
+            self.log.emit(f"{type(e).__name__}: {e}", "error")
+            self.log.emit(tb, "error")
+            print(tb, flush=True)
+            title, suggestions = _SEED_ERROR_MESSAGES.get(
+                type(e),
+                (
+                    "Starting Points error",
+                    "Seed propagation raised an error.\n\n"
+                    "Suggested actions:\n"
+                    "  - Re-check Starting Point positions.\n"
+                    "  - See console log for details.",
+                ),
+            )
+            self.fatal_error.emit(
+                title, f"{suggestions}\n\nDetails: {e}",
+            )
             self.finished_result.emit(None)
         except Exception as e:
             tb = traceback.format_exc()
