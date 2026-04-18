@@ -208,6 +208,80 @@ class SeedController(QObject):
             return False
         return all(has for _, has, _ in status)
 
+    def auto_place_seeds(
+        self,
+        ref_img: NDArray[np.float64],
+        def_img: NDArray[np.float64],
+        winsize: int,
+        search_radius: int,
+        stride: int = 3,
+    ) -> int:
+        """Clear any existing seeds and place one per region at the node
+        whose single-point NCC is highest among a stride-subsampled scan.
+
+        Mirrors ``SeedPropagationStrategy`` in scripts/eval_init_guess.py
+        so the GUI 'Auto-place' outcome matches the benchmark framework's
+        auto-placement.
+
+        Args:
+            ref_img: Reference frame (H, W) float64.
+            def_img: Any deformed frame (H, W) float64 — first deformed
+                frame of the sequence is a reasonable default.
+            winsize: Template window size (should match para.subset_size).
+            search_radius: Single-point NCC half-width.
+            stride: Every Nth node per region is evaluated. Trade
+                off speed vs placement quality.
+
+        Returns:
+            Number of seeds successfully placed (0 if no regions or
+            every region's candidates failed bounds check).
+        """
+        from al_dic.solver.seed_propagation import seed_single_point_fft
+
+        self._ensure_preview_mesh()
+        if self._preview_mesh is None or self._region_map is None:
+            return 0
+
+        # Replace existing seeds — the button's semantics are 'auto-fill',
+        # not 'append'. Users can still right-click to remove after.
+        self._state.seeds.clear()
+
+        coords = self._preview_mesh.coordinates_fem
+        placed = 0
+        for region_id, nodes in enumerate(
+            self._region_map.region_node_lists,
+        ):
+            best_node = -1
+            best_ncc = -1.0
+            best_xy: tuple[float, float] | None = None
+            for node_idx in nodes[::stride]:
+                node_idx_i = int(node_idx)
+                nx = float(coords[node_idx_i, 0])
+                ny = float(coords[node_idx_i, 1])
+                r = seed_single_point_fft(
+                    ref_img, def_img, (nx, ny), winsize, search_radius,
+                )
+                if r.valid and r.ncc_peak > best_ncc:
+                    best_ncc = r.ncc_peak
+                    best_node = node_idx_i
+                    best_xy = (nx, ny)
+            if best_node < 0 or best_xy is None:
+                continue
+            self._state.seeds.append(
+                SeedRecord(
+                    node_idx=best_node,
+                    region_id=region_id,
+                    is_warped=False,
+                    ncc_peak=float(best_ncc),
+                    xy_canvas=best_xy,
+                ),
+            )
+            placed += 1
+
+        if placed > 0 or self._state.seeds != []:
+            self._state.seeds_changed.emit()
+        return placed
+
     def region_label_image(self) -> NDArray[np.int64] | None:
         """Return (H, W) pixel labels aligned with ``regions_status()``.
 

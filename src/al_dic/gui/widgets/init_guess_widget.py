@@ -43,6 +43,9 @@ class InitGuessWidget(QWidget):
     # controller forwards this to canvas.set_tool("seed") so the canvas
     # widget doesn't need to know about this widget directly.
     request_place_seeds = Signal()
+    # Emitted when the user clicks "Auto-place" — app.py handles the
+    # image fetch + SeedController.auto_place_seeds call.
+    request_auto_place_seeds = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -128,13 +131,24 @@ class InitGuessWidget(QWidget):
         seed_panel_layout.setContentsMargins(18, 4, 0, 4)
         seed_panel_layout.setSpacing(4)
 
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(4)
         self._btn_place_seeds = QPushButton("Place Starting Points")
         self._btn_place_seeds.setToolTip(
             "Enter placement mode on the canvas.\n"
             "Left-click inside the ROI to drop a point, right-click on a "
             "point to remove it, Esc to exit."
         )
-        seed_panel_layout.addWidget(self._btn_place_seeds)
+        btn_row.addWidget(self._btn_place_seeds, stretch=2)
+        self._btn_auto_place = QPushButton("Auto-place")
+        self._btn_auto_place.setToolTip(
+            "Automatically pick one Starting Point per region at the node "
+            "with the highest normalized cross-correlation.\n"
+            "Requires at least two frames loaded.  Existing Starting "
+            "Points are replaced."
+        )
+        btn_row.addWidget(self._btn_auto_place, stretch=1)
+        seed_panel_layout.addLayout(btn_row)
 
         self._lbl_seed_progress = QLabel("0 / 0 regions seeded")
         self._lbl_seed_progress.setStyleSheet(
@@ -146,6 +160,9 @@ class InitGuessWidget(QWidget):
         layout.addWidget(self._seed_panel)
 
         self._btn_place_seeds.clicked.connect(self.request_place_seeds.emit)
+        self._btn_auto_place.clicked.connect(
+            self.request_auto_place_seeds.emit,
+        )
 
         # NOTE: "Search Radius" (``state.search_range``) was previously edited
         # here. It has been moved to the main ParamPanel as "Search Range"

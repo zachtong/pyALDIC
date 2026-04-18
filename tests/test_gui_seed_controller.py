@@ -247,6 +247,37 @@ class TestSeedControllerReSnap:
         assert seeded_count == 1
         assert len(status) == 2
 
+    def test_auto_place_seeds_picks_one_per_region(self, qapp):
+        """auto_place_seeds drops existing seeds and places one per region."""
+        state = AppState.instance()
+        _set_two_region_mask(state)
+
+        # Speckle-like textured images so NCC is computable
+        rng = np.random.RandomState(123)
+        ref_img = rng.rand(128, 128).astype(np.float64)
+        from scipy.ndimage import gaussian_filter
+        ref_img = gaussian_filter(ref_img, sigma=2.0)
+        def_img = ref_img.copy()  # zero displacement
+
+        ctrl = SeedController()
+        # Existing manual seed in region A should be replaced
+        ctrl.add_seed_at_xy(35.0, 35.0)
+        assert len(state.seeds) == 1
+
+        placed = ctrl.auto_place_seeds(
+            ref_img, def_img,
+            winsize=state.subset_size,
+            search_radius=10,
+        )
+        assert placed == 2  # one per region
+        # Exactly one seed per region
+        region_ids = {s.region_id for s in state.seeds}
+        assert region_ids == {0, 1}
+        # ncc_peak populated
+        for s in state.seeds:
+            assert s.ncc_peak is not None
+            assert s.ncc_peak > 0.9  # zero-disp speckle → near-perfect NCC
+
     def test_unrelated_param_change_does_not_rebuild(self, qapp):
         """Changing a non-mesh param (e.g. tracking_mode) shouldn't re-snap."""
         state = AppState.instance()

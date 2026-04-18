@@ -124,6 +124,9 @@ class MainWindow(QMainWindow):
         init_guess = self._left_sidebar.init_guess_widget
         init_guess.set_seed_controller(self._seed_ctrl)
         init_guess.request_place_seeds.connect(self._on_request_place_seeds)
+        init_guess.request_auto_place_seeds.connect(
+            self._on_request_auto_place_seeds,
+        )
         self._right_sidebar.set_seed_controller(self._seed_ctrl)
 
         # Per-frame ROI editing from image list
@@ -362,6 +365,45 @@ class MainWindow(QMainWindow):
             canvas.set_tool("pan")
         else:
             canvas.set_tool("seed")
+
+    def _on_request_auto_place_seeds(self) -> None:
+        """User clicked 'Auto-place' in the init-guess seed sub-panel."""
+        state = self._state
+        n_images = len(state.image_files)
+        if n_images < 2:
+            state.fatal_error.emit(
+                "Auto-place needs two frames",
+                "Load at least two images before auto-placing Starting "
+                "Points — the algorithm needs the reference plus one "
+                "deformed frame to compute cross-correlations.",
+            )
+            return
+        try:
+            ref_img = self._image_ctrl.read_image(0)
+            def_img = self._image_ctrl.read_image(1)
+        except Exception as e:
+            state.fatal_error.emit(
+                "Could not read images for auto-place",
+                f"{type(e).__name__}: {e}",
+            )
+            return
+        placed = self._seed_ctrl.auto_place_seeds(
+            ref_img, def_img,
+            winsize=state.subset_size,
+            search_radius=state.search_range,
+        )
+        if placed == 0:
+            state.fatal_error.emit(
+                "Auto-place found no usable candidates",
+                "No node in any region had a valid NCC match. Common "
+                "causes: ROI too small for the subset window, or "
+                "extremely uniform texture. Place Starting Points "
+                "manually instead.",
+            )
+            return
+        state.log_message.emit(
+            f"Auto-placed {placed} Starting Point(s).", "info",
+        )
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:
         """Activate one-shot drawing mode on the canvas.
