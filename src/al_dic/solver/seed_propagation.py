@@ -20,6 +20,8 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
+from .local_icgn import LocalICGNContext, local_icgn_solve_subset
+
 
 # --- Exceptions ---------------------------------------------------------
 
@@ -244,4 +246,255 @@ def seed_single_point_fft(
         dv=dv,
         ncc_peak=float(max_val),
         peak_clipped=peak_clipped,
+    )
+
+
+def _bootstrap_seed_fft(
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    seed_xy: tuple[float, float],
+    winsize: int,
+    search_radius: int,
+    hint_uv: tuple[float, float] | None,
+    ncc_threshold: float,
+    max_retries: int = 10,
+) -> SeedFFTResult:
+    """Auto-expanding wrapper around seed_single_point_fft.
+
+    Grows the search radius by 2x each retry if the peak is clipped,
+    up to ``max_retries`` or the image half-size cap. If the final
+    NCC is below ``ncc_threshold`` or the window leaves the image,
+    raises a typed exception instead of silently degrading.
+    """
+    h, w = f_img.shape
+    max_radius = min(h, w) // 2
+    current = search_radius
+    result = None
+
+    for _ in range(max_retries):
+        result = seed_single_point_fft(
+            f_img, g_img, seed_xy, winsize, current, hint_uv,
+        )
+        if not result.valid:
+            break
+        if not result.peak_clipped:
+            break
+        new_radius = min(max_radius, current * 2)
+        if new_radius == current:
+            break
+        current = new_radius
+
+    if result is None or not result.valid:
+        raise SeedPropagationError(
+            f"Seed FFT search window out of image bounds at {seed_xy}."
+        )
+    if result.ncc_peak < ncc_threshold:
+        raise SeedNCCBelowThreshold(
+            f"Seed at {seed_xy}: NCC peak {result.ncc_peak:.3f} "
+            f"below threshold {ncc_threshold:.3f}. Try moving the seed "
+            f"to a more textured region or lowering ncc_threshold."
+        )
+    return result
+
+
+# --- F-aware BFS propagation ------------------------------------------
+
+
+@dataclass(frozen=True)
+class PropagationResult:
+    """Full-mesh outcome of propagate_from_seeds.
+
+    Attributes:
+        U_2d: (n_nodes, 2) displacements. NaN rows = unsolved.
+        F_2d: (n_nodes, 4) deformation gradients, [dudx, dvdx, dudy, dvdy].
+        conv_iter: (n_nodes,) IC-GN iteration counts; > max_iter = diverged.
+        n_seeds: Number of seeds used.
+        max_bfs_depth_reached: Deepest BFS layer processed.
+        seed_ncc_min: Lowest bootstrap NCC across all seeds (sanity metric).
+        n_solve_calls: Count of local_icgn_solve_subset invocations
+            (seed bootstraps + BFS layers). For profiling.
+        unsolved_nodes: Indices of nodes that never converged.
+    """
+
+    U_2d: NDArray[np.float64]
+    F_2d: NDArray[np.float64]
+    conv_iter: NDArray[np.int64]
+    n_seeds: int
+    max_bfs_depth_reached: int
+    seed_ncc_min: float
+    n_solve_calls: int
+    unsolved_nodes: NDArray[np.int64]
+
+
+def _solve_single_node(
+    ctx: LocalICGNContext,
+    node_idx: int,
+    u0: float,
+    v0: float,
+    g_img: NDArray[np.float64],
+    tol: float,
+) -> tuple[NDArray[np.float64], NDArray[np.float64], int]:
+    """Run IC-GN on one node. Returns (U (2,), F (4,), conv_iter)."""
+    idx = np.array([node_idx], dtype=np.int64)
+    u0_2d = np.array([[u0, v0]], dtype=np.float64)
+    U_sub, F_sub, conv_sub = local_icgn_solve_subset(
+        ctx, idx, u0_2d, g_img, tol,
+    )
+    return U_sub[0], F_sub[0], int(conv_sub[0])
+
+
+def propagate_from_seeds(
+    ctx: LocalICGNContext,
+    seed_set: SeedSet,
+    adjacency: list[set[int]],
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    search_radius: int,
+    tol: float,
+) -> PropagationResult:
+    """Eager first-converged BFS from seeds, with F-aware init per layer.
+
+    Per the plan's design decisions:
+      - Propagate both U and F (F comes from IC-GN for free).
+      - Hanging nodes treated symmetrically via adjacency sharing any element.
+      - Eager first-converged: each frontier node uses the first already-
+        solved neighbour found as its propagation parent.
+      - No weighted multi-neighbour fusion.
+      - Layer-sync BFS: whole frontier batched per local_icgn_solve_subset
+        call, exposing Numba prange parallelism.
+
+    Args:
+        ctx: Precomputed reference-side state for the full mesh.
+        seed_set: Seeds + thresholds (ncc_threshold, max_bfs_depth).
+        adjacency: Output of build_node_adjacency for the same mesh.
+        f_img: Reference image.
+        g_img: Deformed image.
+        search_radius: Initial single-point NCC search radius for seeds.
+            Auto-expands on clipped peaks.
+        tol: IC-GN convergence tolerance (same as local_icgn).
+
+    Returns:
+        PropagationResult. Unsolved nodes carry NaN in U_2d and whatever
+        diverged IC-GN wrote in F_2d; caller's postprocess handles NaN.
+
+    Raises:
+        SeedNCCBelowThreshold: A seed's bootstrap NCC < threshold.
+        SeedICGNDiverged: A seed's own IC-GN solve failed to converge.
+        SeedPropagationError: Seed FFT window out of image bounds.
+    """
+    n = ctx.n_nodes
+    max_iter = ctx.max_iter
+    winsize = ctx.winsize
+
+    U_2d = np.full((n, 2), np.nan, dtype=np.float64)
+    F_2d = np.zeros((n, 4), dtype=np.float64)
+    conv_iter = np.full(n, max_iter + 2, dtype=np.int64)
+    solved = np.zeros(n, dtype=bool)
+
+    seed_ncc_min = float("inf")
+    n_solve_calls = 0
+
+    # --- Seed bootstrap: single-point NCC + IC-GN per seed --------------
+    for seed in seed_set.seeds:
+        seed_xy = (
+            float(ctx.coordinates_fem[seed.node_idx, 0]),
+            float(ctx.coordinates_fem[seed.node_idx, 1]),
+        )
+        fft_result = _bootstrap_seed_fft(
+            f_img, g_img, seed_xy, winsize, search_radius,
+            seed.user_hint_uv, seed_set.ncc_threshold,
+        )
+        seed_ncc_min = min(seed_ncc_min, fft_result.ncc_peak)
+
+        U_seed, F_seed, iter_seed = _solve_single_node(
+            ctx, seed.node_idx,
+            float(fft_result.du), float(fft_result.dv),
+            g_img, tol,
+        )
+        n_solve_calls += 1
+        if iter_seed > max_iter:
+            raise SeedICGNDiverged(
+                f"Seed at node {seed.node_idx} "
+                f"(xy={seed_xy}) IC-GN did not converge "
+                f"(iterations={iter_seed}, max={max_iter})."
+            )
+        U_2d[seed.node_idx] = U_seed
+        F_2d[seed.node_idx] = F_seed
+        conv_iter[seed.node_idx] = iter_seed
+        solved[seed.node_idx] = True
+
+    if seed_ncc_min == float("inf"):
+        seed_ncc_min = float("nan")
+
+    # --- Layer-sync BFS -----------------------------------------------
+    depth = 0
+    max_depth = (
+        seed_set.max_bfs_depth if seed_set.max_bfs_depth > 0 else n + 1
+    )
+    coords = ctx.coordinates_fem
+
+    while True:
+        frontier: list[int] = []
+        parent: list[int] = []
+        for i in range(n):
+            if solved[i]:
+                continue
+            for nb in adjacency[i]:
+                if solved[nb]:
+                    frontier.append(i)
+                    parent.append(nb)
+                    break
+
+        if not frontier:
+            break
+        if depth >= max_depth:
+            break
+
+        m = len(frontier)
+        U0_subset = np.empty((m, 2), dtype=np.float64)
+        for k in range(m):
+            i = frontier[k]
+            nb = parent[k]
+            dx = coords[i, 0] - coords[nb, 0]
+            dy = coords[i, 1] - coords[nb, 1]
+            U0_subset[k, 0] = (
+                U_2d[nb, 0] + F_2d[nb, 0] * dx + F_2d[nb, 2] * dy
+            )
+            U0_subset[k, 1] = (
+                U_2d[nb, 1] + F_2d[nb, 1] * dx + F_2d[nb, 3] * dy
+            )
+
+        idx_arr = np.asarray(frontier, dtype=np.int64)
+        U_sub, F_sub, conv_sub = local_icgn_solve_subset(
+            ctx, idx_arr, U0_subset, g_img, tol,
+        )
+        n_solve_calls += 1
+
+        solved_before = int(solved.sum())
+        for k in range(m):
+            i = frontier[k]
+            U_2d[i] = U_sub[k]
+            F_2d[i] = F_sub[k]
+            conv_iter[i] = conv_sub[k]
+            if conv_sub[k] <= max_iter:
+                solved[i] = True
+
+        # Progress check: if no node converged this layer, stop (rest
+        # of the mesh is unreachable or consistently diverges from
+        # these parents). Caller's postprocess IDW-fills NaN.
+        if int(solved.sum()) == solved_before:
+            break
+
+        depth += 1
+
+    unsolved = np.where(~solved)[0].astype(np.int64)
+    return PropagationResult(
+        U_2d=U_2d,
+        F_2d=F_2d,
+        conv_iter=conv_iter,
+        n_seeds=len(seed_set.seeds),
+        max_bfs_depth_reached=depth,
+        seed_ncc_min=seed_ncc_min,
+        n_solve_calls=n_solve_calls,
+        unsolved_nodes=unsolved,
     )

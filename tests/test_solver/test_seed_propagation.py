@@ -6,8 +6,11 @@ import numpy as np
 import pytest
 from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
+from al_dic.core.data_structures import DICPara, ImageGradients
+from al_dic.solver.local_icgn import local_icgn_precompute
 from al_dic.solver.seed_propagation import (
     MissingSeedForRegion,
+    PropagationResult,
     Seed,
     SeedFFTResult,
     SeedICGNDiverged,
@@ -15,6 +18,7 @@ from al_dic.solver.seed_propagation import (
     SeedPropagationError,
     SeedSet,
     build_node_adjacency,
+    propagate_from_seeds,
     seed_single_point_fft,
 )
 
@@ -175,3 +179,127 @@ class TestSeedSinglePointFFT:
         assert result.du == dx
         assert result.dv == dy
         assert result.peak_clipped is False
+
+
+def _make_grid_mesh(xs, ys):
+    """Build a small rectangular Q4-in-Q8-slot mesh.
+
+    Returns (coords (N, 2), elements (Ne, 8) with -1 padding, adjacency list).
+    Node ordering is row-major: (x0,y0), (x1,y0), ..., (x0,y1), ...
+    """
+    nx = len(xs)
+    ny = len(ys)
+    coords = np.array(
+        [[x, y] for y in ys for x in xs], dtype=np.float64,
+    )
+    elems = []
+    for j in range(ny - 1):
+        for i in range(nx - 1):
+            n0 = j * nx + i
+            n1 = n0 + 1
+            n2 = n1 + nx
+            n3 = n0 + nx
+            elems.append([n0, n1, n2, n3, -1, -1, -1, -1])
+    elems_arr = np.array(elems, dtype=np.int64)
+    adj = build_node_adjacency(elems_arr, n_nodes=coords.shape[0])
+    return coords, elems_arr, adj
+
+
+class TestPropagateFromSeeds:
+    @staticmethod
+    def _make_case(shift_x=1.5, shift_y=1.0, size=192):
+        ref = _speckle(size=size, seed=101)
+        deformed = ndimage_shift(
+            ref, [shift_y, shift_x], order=3, mode="reflect",
+        )
+        # 4x4 grid well inside image
+        xs = np.linspace(60, 132, 4)
+        ys = np.linspace(60, 132, 4)
+        coords, elems, adj = _make_grid_mesh(xs, ys)
+
+        df_dx = np.zeros_like(ref)
+        df_dy = np.zeros_like(ref)
+        df_dx[:, 1:-1] = (ref[:, 2:] - ref[:, :-2]) / 2.0
+        df_dy[1:-1, :] = (ref[2:, :] - ref[:-2, :]) / 2.0
+        mask = np.ones_like(ref)
+        Df = ImageGradients(
+            df_dx=df_dx, df_dy=df_dy, img_ref_mask=mask, img_size=ref.shape,
+        )
+        para = DICPara(winsize=20, icgn_max_iter=50)
+        ctx = local_icgn_precompute(coords, Df, ref, para)
+        return ref, deformed, ctx, adj, elems
+
+    def test_uniform_translation_single_seed(self):
+        shift_x, shift_y = 1.5, 1.0
+        ref, deformed, ctx, adj, _ = self._make_case(shift_x, shift_y)
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),),
+            ncc_threshold=0.5,
+        )
+
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=10, tol=1e-4,
+        )
+
+        # All 16 nodes should be solved
+        assert len(result.unsolved_nodes) == 0
+        assert result.n_seeds == 1
+        assert result.max_bfs_depth_reached >= 1
+        # Displacement should recover shift on all nodes
+        np.testing.assert_allclose(result.U_2d[:, 0], shift_x, atol=0.2)
+        np.testing.assert_allclose(result.U_2d[:, 1], shift_y, atol=0.2)
+        # Seed NCC should be high for textured speckle
+        assert result.seed_ncc_min > 0.5
+
+    def test_ncc_below_threshold_raises(self):
+        ref, _, ctx, adj, _ = self._make_case()
+        # Random noise as deformed — NCC will be low
+        rng = np.random.RandomState(0)
+        deformed = rng.rand(*ref.shape).astype(np.float64)
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=5, region_id=0),),
+            ncc_threshold=0.70,
+        )
+
+        with pytest.raises(SeedNCCBelowThreshold):
+            propagate_from_seeds(
+                ctx, seed_set, adj, ref, deformed,
+                search_radius=10, tol=1e-4,
+            )
+
+    def test_n_solve_calls_is_seeds_plus_layers(self):
+        """One bootstrap solve per seed, plus one solve per BFS layer."""
+        ref, deformed, ctx, adj, _ = self._make_case()
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=10, tol=1e-4,
+        )
+        # 1 seed solve + depth BFS-layer solves
+        assert result.n_solve_calls == 1 + result.max_bfs_depth_reached
+
+    def test_two_seeds_both_bootstrap(self):
+        """Two seeds contribute to min NCC calculation."""
+        ref, deformed, ctx, adj, _ = self._make_case()
+
+        seed_set = SeedSet(
+            seeds=(
+                Seed(node_idx=0, region_id=0),
+                Seed(node_idx=15, region_id=0),
+            ),
+            ncc_threshold=0.3,
+        )
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=10, tol=1e-4,
+        )
+        assert result.n_seeds == 2
+        # Two seed bootstraps + BFS layers
+        assert result.n_solve_calls == 2 + result.max_bfs_depth_reached
