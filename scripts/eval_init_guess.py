@@ -642,6 +642,11 @@ class FrameRecord:
     rmse_total: float
     fft_retries: int
     mode_used: str   # e.g. "previous", "fft", "linear_extrap"
+    # seed_propagation-specific metadata (defaulted for all other modes)
+    n_seeds: int = 0
+    max_bfs_depth: int = 0
+    seed_ncc_min: float = float("nan")
+    n_solve_calls: int = 0
 
 
 class InitGuessStrategy:
@@ -787,9 +792,148 @@ class AdaptiveFallbackStrategy(InitGuessStrategy):
             self._pending_retry = True
 
 
+class SeedPropagationStrategy(InitGuessStrategy):
+    """Auto-placed seeds + F-aware BFS propagation.
+
+    On the first frame: places one seed per connected region at the
+    node with the highest single-point NCC (via the 'highest-NCC per
+    region' heuristic from the Phase 5 UI plan). Auto-placement
+    samples every Nth node to keep setup cost bounded.
+
+    Each subsequent frame: runs propagate_from_seeds with the same
+    seeds (no ref switch in the eval scenarios). The returned U0 is
+    already post-IC-GN for reached nodes (propagate_from_seeds runs
+    IC-GN per BFS layer); the harness then runs IC-GN once more on
+    top — a second convergence pass that is typically a no-op.
+    """
+
+    name = "seed_propagation"
+
+    def __init__(
+        self,
+        ncc_threshold: float = 0.70,
+        ncc_sample_stride: int = 3,
+    ) -> None:
+        super().__init__()
+        self.ncc_threshold = ncc_threshold
+        self.ncc_sample_stride = ncc_sample_stride
+        self.seed_set = None
+        self.adjacency = None
+        self.region_map = None
+
+    def initial_guess(self, t, f_img, g_img, coords, para):
+        import time as _time
+
+        from al_dic.io.image_ops import compute_image_gradient
+        from al_dic.solver.local_icgn import local_icgn_precompute
+        from al_dic.solver.seed_propagation import (
+            Seed, SeedPropagationError, SeedSet,
+            build_node_adjacency, propagate_from_seeds, seed_single_point_fft,
+        )
+        from al_dic.mesh.mesh_setup import mesh_setup
+        from al_dic.utils.region_analysis import NodeRegionMap
+
+        t0 = _time.perf_counter()
+        n_nodes = coords.shape[0]
+
+        if self.seed_set is None:
+            # One-time per-run setup.
+            roi = para.gridxy_roi_range
+            half_w = para.winsize // 2
+            xs = np.arange(
+                max(roi.gridx[0], half_w),
+                min(roi.gridx[1], IMG_W - 1 - half_w) + 1,
+                para.winstepsize, dtype=np.float64,
+            )
+            ys = np.arange(
+                max(roi.gridy[0], half_w),
+                min(roi.gridy[1], IMG_H - 1 - half_w) + 1,
+                para.winstepsize, dtype=np.float64,
+            )
+            mesh = mesh_setup(xs, ys, para)
+            self.adjacency = build_node_adjacency(
+                mesh.elements_fem, n_nodes,
+            )
+            self.region_map = NodeRegionMap(
+                region_node_lists=[np.arange(n_nodes, dtype=np.int64)],
+                n_regions=1,
+            )
+
+            seeds = []
+            for region_idx, nodes in enumerate(
+                self.region_map.region_node_lists,
+            ):
+                best_node, best_ncc = -1, -1.0
+                for node_idx in nodes[::self.ncc_sample_stride]:
+                    r = seed_single_point_fft(
+                        f_img, g_img,
+                        (float(coords[node_idx, 0]), float(coords[node_idx, 1])),
+                        para.winsize,
+                        para.size_of_fft_search_region,
+                    )
+                    if r.valid and r.ncc_peak > best_ncc:
+                        best_ncc = r.ncc_peak
+                        best_node = int(node_idx)
+                if best_node < 0:
+                    raise RuntimeError(
+                        f"SeedPropagationStrategy: region {region_idx} has "
+                        f"no node with a valid single-point NCC (all windows "
+                        f"out of bounds?). Check ROI + winsize."
+                    )
+                seeds.append(
+                    Seed(node_idx=best_node, region_id=region_idx),
+                )
+            self.seed_set = SeedSet(
+                seeds=tuple(seeds),
+                ncc_threshold=self.ncc_threshold,
+            )
+
+        Df = compute_image_gradient(f_img, np.ones_like(f_img))
+        ctx = local_icgn_precompute(coords, Df, f_img, para)
+
+        try:
+            result = propagate_from_seeds(
+                ctx, self.seed_set, self.adjacency, f_img, g_img,
+                search_radius=para.size_of_fft_search_region,
+                tol=ICGN_TOL,
+                node_region_map=self.region_map,
+            )
+        except SeedPropagationError as exc:
+            # Treat algorithm-level failure as a benchmark-reportable
+            # outcome (rather than aborting the whole scenario sweep):
+            # return zero init and let the harness record low quality.
+            elapsed = _time.perf_counter() - t0
+            return np.zeros(2 * n_nodes, dtype=np.float64), {
+                "mode": f"seed_prop_error:{type(exc).__name__}",
+                "init_time_s": elapsed,
+                "fft_retries": 0,
+                "n_seeds": len(self.seed_set.seeds),
+                "max_bfs_depth": 0,
+                "seed_ncc_min": float("nan"),
+                "n_solve_calls": 0,
+            }
+
+        U0 = np.empty(2 * n_nodes, dtype=np.float64)
+        U0[0::2] = result.U_2d[:, 0]
+        U0[1::2] = result.U_2d[:, 1]
+        U0 = np.nan_to_num(U0, nan=0.0)
+
+        elapsed = _time.perf_counter() - t0
+        return U0, {
+            "mode": "seed_propagation",
+            "init_time_s": elapsed,
+            "fft_retries": 0,
+            "n_seeds": int(result.n_seeds),
+            "max_bfs_depth": int(result.max_bfs_depth_reached),
+            "seed_ncc_min": float(result.seed_ncc_min),
+            "n_solve_calls": int(result.n_solve_calls),
+        }
+
+
 def build_strategies(
     adaptive_thresholds: tuple[float, ...] = (0.75, 0.90),
     narrow_radii: tuple[int, ...] = (5,),
+    include_seed_propagation: bool = True,
 ) -> list[InitGuessStrategy]:
     """Factory returning one instance of each strategy variant."""
     strategies: list[InitGuessStrategy] = [
@@ -801,6 +945,8 @@ def build_strategies(
         strategies.append(NarrowFFTStrategy(narrow_radius=r))
     for th in adaptive_thresholds:
         strategies.append(AdaptiveFallbackStrategy(threshold=th))
+    if include_seed_propagation:
+        strategies.append(SeedPropagationStrategy())
     return strategies
 
 
@@ -909,6 +1055,10 @@ def _eval_single(
             rmse_total=rmse_total,
             fft_retries=int(meta.get("fft_retries", 0)),
             mode_used=str(meta.get("mode", "?")),
+            n_seeds=int(meta.get("n_seeds", 0)),
+            max_bfs_depth=int(meta.get("max_bfs_depth", 0)),
+            seed_ncc_min=float(meta.get("seed_ncc_min", float("nan"))),
+            n_solve_calls=int(meta.get("n_solve_calls", 0)),
         ))
         strategy.record_solved(t, U_sol, conv_iter, ICGN_MAX_ITER)
 
