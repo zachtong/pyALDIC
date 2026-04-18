@@ -56,6 +56,27 @@ class SeedICGNDiverged(SeedPropagationError):
     """
 
 
+class SeedQualityError(SeedPropagationError):
+    """A seed converged but was post-hoc flagged as a statistical outlier.
+
+    Distinct from SeedICGNDiverged: IC-GN reported convergence within
+    max_iter, but detect_bad_points (outlier check on conv_iter) flagged
+    this node as abnormal. Because the seed's F was propagated to the
+    whole BFS tree, the entire frame's result is suspect — raise rather
+    than silently IDW-filling the seed and continuing.
+    """
+
+
+class SeedWarpFailure(SeedPropagationError):
+    """Unable to warp a seed to a new reference frame's coordinate system.
+
+    Caused by the warped position landing outside any tracked region in
+    the new mesh, or by displacement at the seed being NaN (which
+    should never happen if SeedQualityError is enforced on the producing
+    frame, but guards against the case defensively).
+    """
+
+
 # --- Data structures ----------------------------------------------------
 
 

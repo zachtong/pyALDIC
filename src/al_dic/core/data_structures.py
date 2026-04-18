@@ -14,10 +14,13 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
 from numpy.typing import NDArray
+
+if TYPE_CHECKING:
+    from ..solver.seed_propagation import SeedSet
 
 
 # ---------------------------------------------------------------------------
@@ -279,7 +282,12 @@ class DICPara:
     new_fft_search: int = 1
     init_fft_search_method: int = 1
     size_of_fft_search_region: int = 20
-    init_guess_mode: Literal["auto", "fft", "previous"] = "auto"
+    init_guess_mode: Literal[
+        "auto", "fft", "previous", "seed_propagation",
+    ] = "auto"
+    # When init_guess_mode == "seed_propagation": user-placed seed set.
+    # Seeds are automatically warped to new ref coords on ref switches.
+    seed_set: SeedSet | None = None
     # Periodic FFT reset: force a fresh FFT every N frames (0 = disabled).
     # Limits warm-start error propagation in accumulative mode.
     fft_reset_interval: int = 0

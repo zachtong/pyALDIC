@@ -111,6 +111,43 @@ class TestDICPara:
             p = dicpara_default(init_guess_mode=mode)
             assert p.init_guess_mode == mode
 
+    def test_seed_propagation_requires_seed_set(self):
+        from al_dic.solver.seed_propagation import Seed, SeedSet
+        # Missing seed_set → raise
+        with pytest.raises(ValueError, match="seed_set"):
+            dicpara_default(init_guess_mode="seed_propagation")
+        # Empty seeds tuple → raise
+        with pytest.raises(ValueError, match="at least one seed"):
+            dicpara_default(
+                init_guess_mode="seed_propagation",
+                seed_set=SeedSet(seeds=()),
+            )
+        # Valid seed_set → accepted
+        p = dicpara_default(
+            init_guess_mode="seed_propagation",
+            seed_set=SeedSet(seeds=(Seed(node_idx=0, region_id=0),)),
+        )
+        assert p.init_guess_mode == "seed_propagation"
+
+    def test_seed_propagation_ncc_threshold_range(self):
+        from al_dic.solver.seed_propagation import Seed, SeedSet
+        with pytest.raises(ValueError, match="ncc_threshold"):
+            dicpara_default(
+                init_guess_mode="seed_propagation",
+                seed_set=SeedSet(
+                    seeds=(Seed(node_idx=0, region_id=0),),
+                    ncc_threshold=1.5,
+                ),
+            )
+        with pytest.raises(ValueError, match="ncc_threshold"):
+            dicpara_default(
+                init_guess_mode="seed_propagation",
+                seed_set=SeedSet(
+                    seeds=(Seed(node_idx=0, region_id=0),),
+                    ncc_threshold=-0.1,
+                ),
+            )
+
     def test_invalid_size_of_fft_search_region_zero(self):
         with pytest.raises(ValueError, match="size_of_fft_search_region"):
             dicpara_default(size_of_fft_search_region=0)

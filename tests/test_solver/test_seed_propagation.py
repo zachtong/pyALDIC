@@ -17,7 +17,9 @@ from al_dic.solver.seed_propagation import (
     SeedICGNDiverged,
     SeedNCCBelowThreshold,
     SeedPropagationError,
+    SeedQualityError,
     SeedSet,
+    SeedWarpFailure,
     build_node_adjacency,
     propagate_from_seeds,
     seed_single_point_fft,
@@ -37,6 +39,8 @@ class TestExceptions:
         assert issubclass(SeedNCCBelowThreshold, SeedPropagationError)
         assert issubclass(MissingSeedForRegion, SeedPropagationError)
         assert issubclass(SeedICGNDiverged, SeedPropagationError)
+        assert issubclass(SeedQualityError, SeedPropagationError)
+        assert issubclass(SeedWarpFailure, SeedPropagationError)
 
 
 class TestDataStructures:

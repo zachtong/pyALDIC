@@ -103,11 +103,34 @@ def validate_dicpara(p: DICPara) -> None:
         )
 
     # init_guess_mode: enum
-    if p.init_guess_mode not in ("auto", "fft", "previous"):
+    valid_init_modes = ("auto", "fft", "previous", "seed_propagation")
+    if p.init_guess_mode not in valid_init_modes:
         raise ValueError(
-            f"init_guess_mode must be 'auto', 'fft', or 'previous' "
+            f"init_guess_mode must be one of {valid_init_modes} "
             f"(got '{p.init_guess_mode}')."
         )
+
+    # seed_propagation: seed_set must be provided and non-empty.
+    # Deep seed_set validation (node_idx in range, region_id consistency)
+    # happens at run time in propagate_from_seeds — here we only check
+    # parameter shape so validate_dicpara stays free of image/mesh access.
+    if p.init_guess_mode == "seed_propagation":
+        if p.seed_set is None:
+            raise ValueError(
+                "init_guess_mode='seed_propagation' requires seed_set "
+                "to be provided (got None). Place at least one seed "
+                "per connected region."
+            )
+        if len(p.seed_set.seeds) == 0:
+            raise ValueError(
+                "init_guess_mode='seed_propagation' requires at least "
+                "one seed in seed_set.seeds (got 0)."
+            )
+        if not (0.0 <= p.seed_set.ncc_threshold <= 1.0):
+            raise ValueError(
+                f"seed_set.ncc_threshold must be in [0, 1] "
+                f"(got {p.seed_set.ncc_threshold})."
+            )
 
     # size_of_fft_search_region: positive
     if p.size_of_fft_search_region <= 0:
