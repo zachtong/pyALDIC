@@ -14,7 +14,9 @@ Design rationale lives in project memory
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import NamedTuple
 
+import cv2
 import numpy as np
 from numpy.typing import NDArray
 
@@ -132,3 +134,114 @@ def build_node_adjacency(
                 adjacency[a].add(b)
                 adjacency[b].add(a)
     return adjacency
+
+
+# --- Single-point NCC bootstrap ----------------------------------------
+
+
+class SeedFFTResult(NamedTuple):
+    """Outcome of ``seed_single_point_fft``.
+
+    Attributes:
+        valid: True iff the reference patch and search window lie fully
+            inside the image. If False, the other fields carry 0/NaN
+            sentinels.
+        du: Integer x-displacement estimate.
+        dv: Integer y-displacement estimate.
+        ncc_peak: Normalized cross-correlation peak value in [-1, 1]
+            (TM_CCOEFF_NORMED). 1.0 = perfect match.
+        peak_clipped: True iff the peak was found on the search-window
+            boundary, signalling that the true displacement may lie
+            outside ``search_radius``. Caller should expand and retry.
+    """
+
+    valid: bool
+    du: int
+    dv: int
+    ncc_peak: float
+    peak_clipped: bool
+
+
+def seed_single_point_fft(
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    seed_xy: tuple[float, float],
+    winsize: int,
+    search_radius: int,
+    hint_uv: tuple[float, float] | None = None,
+) -> SeedFFTResult:
+    """Normalized cross-correlation at one seed with a given search radius.
+
+    Far cheaper than the full-grid FFT: single reference patch, single
+    search window, cost scales linearly in ``search_radius`` rather than
+    quadratically with the full grid. At search=120 on a 512x512 image
+    this costs ~3 ms vs ~1.5 s for the full grid.
+
+    Args:
+        f_img: Reference image (H, W), float64.
+        g_img: Deformed image (H, W), float64.
+        seed_xy: (x, y) seed coordinate in the reference image, pixels.
+            Sub-pixel values are rounded to integer pixel center.
+        winsize: Template window size (pixels). Must be even.
+        search_radius: Half-width of the search window in pixels.
+        hint_uv: Optional prior (u, v) guess to center the search
+            window on ``seed_xy + hint_uv``. Halves the effective search
+            radius required when accumulated displacement is known.
+
+    Returns:
+        SeedFFTResult with integer (du, dv), peak NCC, and clipping flag.
+    """
+    sx, sy = int(round(seed_xy[0])), int(round(seed_xy[1]))
+    hu, hv = (0, 0) if hint_uv is None else (
+        int(round(hint_uv[0])), int(round(hint_uv[1])),
+    )
+    half_w = winsize // 2
+
+    h, w = f_img.shape
+
+    # Reference template window
+    tpl_lo_x = sx - half_w
+    tpl_hi_x = sx + half_w + 1
+    tpl_lo_y = sy - half_w
+    tpl_hi_y = sy + half_w + 1
+
+    # Search window on deformed image, centered at seed + hint
+    search_cx = sx + hu
+    search_cy = sy + hv
+    search_lo_x = search_cx - half_w - search_radius
+    search_hi_x = search_cx + half_w + search_radius + 1
+    search_lo_y = search_cy - half_w - search_radius
+    search_hi_y = search_cy + half_w + search_radius + 1
+
+    if (
+        tpl_lo_x < 0 or tpl_hi_x > w or tpl_lo_y < 0 or tpl_hi_y > h
+        or search_lo_x < 0 or search_hi_x > w
+        or search_lo_y < 0 or search_hi_y > h
+    ):
+        return SeedFFTResult(
+            valid=False, du=0, dv=0, ncc_peak=float("nan"), peak_clipped=False,
+        )
+
+    template = f_img[tpl_lo_y:tpl_hi_y, tpl_lo_x:tpl_hi_x].astype(np.float32)
+    search_img = g_img[search_lo_y:search_hi_y, search_lo_x:search_hi_x].astype(np.float32)
+
+    ncc_map = cv2.matchTemplate(search_img, template, cv2.TM_CCOEFF_NORMED)
+    _, max_val, _, max_loc = cv2.minMaxLoc(ncc_map)
+    peak_x, peak_y = int(max_loc[0]), int(max_loc[1])
+
+    du = peak_x - search_radius + hu
+    dv = peak_y - search_radius + hv
+
+    ncc_h, ncc_w = ncc_map.shape
+    peak_clipped = (
+        peak_x == 0 or peak_x == ncc_w - 1
+        or peak_y == 0 or peak_y == ncc_h - 1
+    )
+
+    return SeedFFTResult(
+        valid=True,
+        du=du,
+        dv=dv,
+        ncc_peak=float(max_val),
+        peak_clipped=peak_clipped,
+    )

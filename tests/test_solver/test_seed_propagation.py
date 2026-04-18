@@ -4,16 +4,27 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
 from al_dic.solver.seed_propagation import (
     MissingSeedForRegion,
     Seed,
+    SeedFFTResult,
     SeedICGNDiverged,
     SeedNCCBelowThreshold,
     SeedPropagationError,
     SeedSet,
     build_node_adjacency,
+    seed_single_point_fft,
 )
+
+
+def _speckle(size=256, seed=42):
+    rng = np.random.RandomState(seed)
+    img = rng.rand(size, size).astype(np.float64)
+    img = gaussian_filter(img, sigma=3.0)
+    img = (img - img.min()) / (img.max() - img.min() + 1e-10)
+    return img
 
 
 class TestExceptions:
@@ -94,3 +105,73 @@ class TestBuildNodeAdjacency:
         # Midside 4 connects to corners 0,1,2,3 via element 1
         # AND to 1,5,6 via element 2
         assert adj[4] == {0, 1, 2, 3, 5, 6}
+
+
+class TestSeedSinglePointFFT:
+    def test_recovers_integer_translation(self):
+        ref = _speckle(size=256, seed=42)
+        dx, dy = 8, -5
+        deformed = ndimage_shift(ref, [dy, dx], order=3, mode="reflect")
+
+        result = seed_single_point_fft(
+            ref, deformed, seed_xy=(128.0, 128.0),
+            winsize=40, search_radius=20,
+        )
+
+        assert result.valid is True
+        assert result.du == dx
+        assert result.dv == dy
+        assert result.ncc_peak > 0.95
+        assert result.peak_clipped is False
+
+    def test_recovers_large_translation(self):
+        ref = _speckle(size=512, seed=7)
+        dx, dy = 80, 0
+        deformed = ndimage_shift(ref, [dy, dx], order=3, mode="reflect")
+
+        result = seed_single_point_fft(
+            ref, deformed, seed_xy=(200.0, 256.0),
+            winsize=32, search_radius=100,
+        )
+
+        assert result.valid is True
+        assert result.du == dx
+        assert result.dv == dy
+
+    def test_out_of_bounds_returns_invalid(self):
+        ref = _speckle(size=128, seed=1)
+        deformed = ref.copy()
+
+        result = seed_single_point_fft(
+            ref, deformed, seed_xy=(5.0, 5.0),
+            winsize=20, search_radius=50,
+        )
+        assert result.valid is False
+        assert np.isnan(result.ncc_peak)
+
+    def test_peak_clipped_when_search_too_small(self):
+        ref = _speckle(size=256, seed=3)
+        # True displacement (15, 0) but we only search ±5
+        deformed = ndimage_shift(ref, [0, 15], order=3, mode="reflect")
+
+        result = seed_single_point_fft(
+            ref, deformed, seed_xy=(128.0, 128.0),
+            winsize=30, search_radius=5,
+        )
+        assert result.valid is True
+        assert result.peak_clipped is True
+
+    def test_hint_uv_shifts_search_center(self):
+        ref = _speckle(size=512, seed=9)
+        dx, dy = 60, 40
+        deformed = ndimage_shift(ref, [dy, dx], order=3, mode="reflect")
+
+        # With hint (60, 40), small search radius suffices
+        result = seed_single_point_fft(
+            ref, deformed, seed_xy=(256.0, 256.0),
+            winsize=30, search_radius=5, hint_uv=(60.0, 40.0),
+        )
+        assert result.valid is True
+        assert result.du == dx
+        assert result.dv == dy
+        assert result.peak_clipped is False
