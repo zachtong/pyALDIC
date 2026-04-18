@@ -161,6 +161,45 @@ def compute_seed_prop_init_guess(
             max_snap_distance=max_snap_distance,
         )
 
+    # Accumulative-mode warm-start: seed the bootstrap's single-point
+    # NCC with the previous frame's converged U as a hint, so the
+    # search window is centered on the expected material-point
+    # position rather than at the seed's original (0, 0) offset. Without
+    # this, late frames in accumulative mode accumulate displacement
+    # beyond what _bootstrap_seed_fft can reach before running out of
+    # image; hints let the search stay local even at frame 50+.
+    #
+    # Skip immediately after a ref switch: warp_seeds_to_new_ref has
+    # already moved each seed to its post-warp node, so the expected
+    # displacement from there is small and hints would be misleading.
+    if (
+        not ref_switched
+        and state.prev_U_2d is not None
+        and state.prev_coords_fem is not None
+        and state.prev_U_2d.shape[0] == dic_mesh.coordinates_fem.shape[0]
+    ):
+        import dataclasses as _dc
+        from al_dic.solver.seed_propagation import Seed as _Seed
+        from al_dic.solver.seed_propagation import SeedSet as _SeedSet
+
+        prev_U = state.prev_U_2d
+        hinted: list[_Seed] = []
+        for s in state.current_seeds.seeds:
+            if s.node_idx < prev_U.shape[0]:
+                u = prev_U[s.node_idx, 0]
+                v = prev_U[s.node_idx, 1]
+                if np.isfinite(u) and np.isfinite(v):
+                    hinted.append(
+                        _dc.replace(s, user_hint_uv=(float(u), float(v))),
+                    )
+                    continue
+            hinted.append(s)
+        state.current_seeds = _SeedSet(
+            seeds=tuple(hinted),
+            ncc_threshold=state.current_seeds.ncc_threshold,
+            max_bfs_depth=state.current_seeds.max_bfs_depth,
+        )
+
     ctx = local_icgn_precompute(dic_mesh.coordinates_fem, Df, f_img, para)
     result = propagate_from_seeds(
         ctx,
