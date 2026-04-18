@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("pyALDIC")
         self.setWindowIcon(icon_app())
-        self.setMinimumSize(1380, 800)
+        self.setMinimumSize(1420, 800)
         _enable_dark_title_bar(self)
 
         central = QWidget()

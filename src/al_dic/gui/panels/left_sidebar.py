@@ -163,10 +163,12 @@ class LeftSidebar(QWidget):
         self._state = image_ctrl._state
 
         self.setObjectName("leftSidebar")
+        # 320 (was 288) so nested radios + italic guidance under the
+        # INITIAL GUESS section don't wrap awkwardly.
         # Extra 18 px accounts for the vertical scrollbar in the settings
         # scroll area below so the viewport content width stays ≥ 270 px
         # whether or not the scrollbar is visible.
-        self.setFixedWidth(288)
+        self.setFixedWidth(320)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -265,8 +267,11 @@ class LeftSidebar(QWidget):
         # Initial-guess choice is a PRIMARY decision (matches the
         # displacement regime), so it lives in its own top-level
         # section right below Workflow Type — not inside ADVANCED.
+        # Collapsed by default: user can review/change on demand
+        # without the inline guidance notes crowding the sidebar on
+        # first launch.
         self._init_guess_section = CollapsibleSection(
-            "INITIAL GUESS", expanded=True,
+            "INITIAL GUESS", expanded=False,
         )
         self._init_guess_widget = InitGuessWidget()
         self._init_guess_section.add_widget(self._init_guess_widget)
