@@ -13,7 +13,12 @@ from scipy.ndimage import gaussian_filter, shift as ndimage_shift
 
 from al_dic.core.data_structures import DICPara, FrameSchedule, GridxyROIRange
 from al_dic.core.pipeline import run_aldic
-from al_dic.solver.seed_propagation import Seed, SeedSet
+from al_dic.solver.seed_propagation import (
+    Seed,
+    SeedNCCBelowThreshold,
+    SeedPropagationError,
+    SeedSet,
+)
 
 
 def _speckle(h: int = 192, w: int = 192, seed: int = 7) -> np.ndarray:
@@ -179,3 +184,55 @@ class TestSeedPropagationRefSwitch:
         v_med = np.nanmedian(U3[1::2])
         np.testing.assert_allclose(u_med, dx, atol=0.35)
         np.testing.assert_allclose(v_med, dy, atol=0.35)
+
+
+class TestSeedPropagationQualityGates:
+    """Verify fail-loud behavior when a user picks a bad seed location.
+    Any SeedPropagationError subclass is acceptable — the contract is
+    'do not silently degrade to wrong output'. Unit tests in
+    test_solver/test_seed_propagation.py exercise each exception type
+    in isolation.
+    """
+
+    def test_seed_in_low_texture_region_raises(self):
+        """Seed placed in a uniform zone triggers a SeedPropagationError.
+
+        Ascending failure modes depending on setup:
+          - NCC < threshold (SeedNCCBelowThreshold) — if search-window
+            fits in image at the clamp-down search_radius.
+          - Out-of-bounds (SeedPropagationError 'window out of image
+            bounds') — if auto-expand pushes the window past the edge
+            because uniform regions keep clipping the peak.
+
+        Either is acceptable: the test confirms the pipeline propagates
+        a typed error rather than silently continuing with garbage.
+        """
+        h, w = 192, 192
+        # Textured left half, uniform right half.
+        ref = _speckle(h, w, seed=13)
+        ref[:, w // 2:] = 0.5  # kill all texture in right half
+        deformed = ndimage_shift(
+            ref, [0.0, 1.5], order=3, mode="reflect",
+        )
+        masks = [np.ones((h, w)), np.ones((h, w))]
+
+        # Probe mesh to pick a node in the uniform right half
+        probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
+        probe = run_aldic(
+            probe_para, [ref, deformed], masks, compute_strain=False,
+        )
+        coords = probe.dic_mesh.coordinates_fem
+        # Nodes with x > w/2 are in the uniform zone
+        right_half = np.where(coords[:, 0] > w / 2 + 20)[0]
+        bad_seed_idx = int(right_half[len(right_half) // 2])
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=bad_seed_idx, region_id=0),),
+            ncc_threshold=0.85,  # strict — uniform region won't reach this
+        )
+        para = _make_para(h, w, seed_set=seed_set)
+
+        with pytest.raises((SeedNCCBelowThreshold, SeedPropagationError)):
+            run_aldic(
+                para, [ref, deformed], masks, compute_strain=False,
+            )
