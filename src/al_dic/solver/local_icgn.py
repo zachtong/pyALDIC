@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 import time
+from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
@@ -24,6 +25,56 @@ from ..core.data_structures import DICPara, ImageGradients
 from ..utils.outlier_detection import detect_bad_points, fill_nan_idw
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class LocalICGNContext:
+    """Precomputed IC-GN state shared across full and subset solves.
+
+    Holds reference-side data (subsets, gradients, Hessians) that depends
+    only on the reference image and mesh — independent of any particular
+    deformed image or initial guess. Built once per (frame, mesh) pair and
+    reused across multiple solve_subset calls (e.g. per-layer BFS in seed
+    propagation).
+    """
+
+    pre: dict
+    coordinates_fem: NDArray[np.float64]
+    winsize: int
+    max_iter: int
+    img_ref_mask: NDArray[np.float64] | None
+    n_nodes: int
+
+
+def local_icgn_precompute(
+    coordinates_fem: NDArray[np.float64],
+    Df: ImageGradients,
+    f_img: NDArray[np.float64],
+    para: DICPara,
+) -> LocalICGNContext:
+    """Precompute reference-side subsets, gradients, Hessians, hole mask.
+
+    Call once per (reference image, mesh) pair. The returned context is
+    consumed by local_icgn_solve_subset (possibly multiple times) and then
+    local_icgn_postprocess.
+    """
+    from .icgn_batch import precompute_subsets_6dof
+    pre = precompute_subsets_6dof(
+        coordinates_fem,
+        f_img,
+        Df.df_dx,
+        Df.df_dy,
+        Df.img_ref_mask,
+        para.winsize,
+    )
+    return LocalICGNContext(
+        pre=pre,
+        coordinates_fem=coordinates_fem,
+        winsize=para.winsize,
+        max_iter=para.icgn_max_iter,
+        img_ref_mask=Df.img_ref_mask,
+        n_nodes=coordinates_fem.shape[0],
+    )
 
 
 def local_icgn(
@@ -63,24 +114,15 @@ def local_icgn(
     Returns:
         (U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain)
     """
-    n_nodes = coordinates_fem.shape[0]
-    winsize = para.winsize
-    max_iter = para.icgn_max_iter
-
-    df_dx = Df.df_dx
-    df_dy = Df.df_dy
-    img_ref_mask = Df.img_ref_mask
-
     t0 = time.perf_counter()
+
+    ctx = local_icgn_precompute(coordinates_fem, Df, f_img, para)
+    n_nodes = ctx.n_nodes
+    max_iter = ctx.max_iter
+    pre = ctx.pre
 
     # Reshape initial displacement to (N, 2)
     U0_2d = U0.reshape(-1, 2)
-
-    # Pre-compute subsets (shared by Numba and batch backends)
-    from .icgn_batch import precompute_subsets_6dof
-    pre = precompute_subsets_6dof(
-        coordinates_fem, f_img, df_dx, df_dy, img_ref_mask, winsize,
-    )
 
     # Try Numba backend first, fall back to batch vectorized
     U_2d, F_2d, conv_iter = _dispatch_6dof(
