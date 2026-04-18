@@ -54,24 +54,22 @@ class ParamPanel(QWidget):
         self._subset_step.currentTextChanged.connect(self._on_subset_step_changed)
 
         # --- Search Range (maximum detectable per-frame displacement) ---
-        # Maps to DICPara.size_of_fft_search_region.
-        self._search_range = self._add_spinbox(
-            layout,
-            "Search Range",
-            state.search_range,
-            minimum=4,
-            maximum=512,
-            step=2,
-            tooltip=(
-                "Maximum per-frame displacement the FFT search can detect "
-                "(pixels).\n"
-                "Set comfortably larger than the expected inter-frame motion.\n"
-                "For large rotations in incremental mode, this must cover\n"
-                "  radius \u00d7 sin(per-step angle)."
-            ),
-        )
+        # Maps to DICPara.size_of_fft_search_region. Label + tooltip swap
+        # when init_guess_mode == 'seed_propagation' (see _sync_search_label).
+        search_row = QHBoxLayout()
+        self._search_lbl = QLabel("Search Range")
+        self._search_lbl.setFixedWidth(120)
+        self._search_range = QSpinBox()
+        self._search_range.setRange(4, 512)
+        self._search_range.setSingleStep(2)
+        self._search_range.setValue(state.search_range)
         self._search_range.setSuffix(" px")
+        search_row.addWidget(self._search_lbl)
+        search_row.addWidget(self._search_range)
+        layout.addLayout(search_row)
         self._search_range.valueChanged.connect(self._on_search_range_changed)
+        state.params_changed.connect(self._sync_search_label)
+        self._sync_search_label()
 
         # --- Mesh Refinement (inner / outer boundary) ---
         self._refine_inner_cb = QCheckBox("Refine Inner Boundary")
@@ -155,6 +153,38 @@ class ParamPanel(QWidget):
         """Update subset_step in state and refresh refinement readout."""
         AppState.instance().set_param("subset_step", int(value_text))
         self._update_refinement_ui()
+
+    def _sync_search_label(self) -> None:
+        """Switch the Search Range label/tooltip based on init_guess_mode.
+
+        In seed_propagation mode, the parameter only governs the seed
+        bootstrap search radius (auto-expands on clipped peaks) rather
+        than every-node FFT search; the label makes that explicit.
+        """
+        state = AppState.instance()
+        fft_tip = (
+            "Maximum per-frame displacement the FFT search can detect "
+            "(pixels).\n"
+            "Set comfortably larger than the expected inter-frame motion.\n"
+            "For large rotations in incremental mode, this must cover\n"
+            "  radius \u00d7 sin(per-step angle)."
+        )
+        seed_tip = (
+            "Initial half-width (pixels) of the single-point NCC search "
+            "at each Starting Point.\n"
+            "Auto-expands 2x per retry if the peak is clipped, up to "
+            "image half-size.\n"
+            "Only affects Starting Point bootstrap; other nodes use "
+            "F-aware propagation (no per-node search)."
+        )
+        if state.init_guess_mode == "seed_propagation":
+            self._search_lbl.setText("Initial Seed Search")
+            self._search_lbl.setToolTip(seed_tip)
+            self._search_range.setToolTip(seed_tip)
+        else:
+            self._search_lbl.setText("Search Range")
+            self._search_lbl.setToolTip(fft_tip)
+            self._search_range.setToolTip(fft_tip)
 
     def _on_search_range_changed(self, value: int) -> None:
         """Update search_range in state (mirrors InitGuessWidget pattern)."""
