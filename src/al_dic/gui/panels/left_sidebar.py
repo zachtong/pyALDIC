@@ -262,6 +262,16 @@ class LeftSidebar(QWidget):
         self._workflow_section.add_widget(self._workflow_panel)
         settings_layout.addWidget(self._workflow_section)
 
+        # Initial-guess choice is a PRIMARY decision (matches the
+        # displacement regime), so it lives in its own top-level
+        # section right below Workflow Type — not inside ADVANCED.
+        self._init_guess_section = CollapsibleSection(
+            "INITIAL GUESS", expanded=True,
+        )
+        self._init_guess_widget = InitGuessWidget()
+        self._init_guess_section.add_widget(self._init_guess_widget)
+        settings_layout.addWidget(self._init_guess_section)
+
         self._roi_section = CollapsibleSection("REGION OF INTEREST", expanded=True)
         # Dynamic hint: lives above the toolbar and updates whenever the
         # workflow-type panel changes tracking mode / ref-update policy.
@@ -279,8 +289,13 @@ class LeftSidebar(QWidget):
         self._advanced_section = CollapsibleSection("ADVANCED", expanded=False)
         self._mesh_appearance = MeshAppearanceWidget()
         self._advanced_section.add_widget(self._mesh_appearance)
-        self._init_guess_widget = InitGuessWidget()
-        self._advanced_section.add_widget(self._init_guess_widget)
+        # ADMM iterations + FFT auto-expand toggle: advanced-user tuning
+        # knobs that don't drive the workflow.
+        from al_dic.gui.widgets.advanced_tuning_widget import (
+            AdvancedTuningWidget,
+        )
+        self._advanced_tuning = AdvancedTuningWidget()
+        self._advanced_section.add_widget(self._advanced_tuning)
         settings_layout.addWidget(self._advanced_section)
 
         # Pushes sections to the top when the scroll area is taller than content

@@ -82,27 +82,8 @@ class WorkflowTypePanel(QWidget):
         solver_row.addWidget(self._solver)
         layout.addLayout(solver_row)
 
-        # --- ADMM iterations (visible only for AL-DIC) ---
-        self._admm_panel = QWidget()
-        admm_layout = QVBoxLayout(self._admm_panel)
-        admm_layout.setContentsMargins(12, 0, 0, 0)
-        admm_layout.setSpacing(4)
-        self._admm_iter_spin = QSpinBox()
-        self._admm_iter_spin.setRange(1, 10)
-        self._admm_iter_spin.setValue(state.admm_max_iter)
-        self._admm_iter_spin.setToolTip(
-            "Number of ADMM alternating minimization cycles.\n"
-            "1 = single global pass (fastest), 3 = default,\n"
-            "5+ = diminishing returns for most cases."
-        )
-        admm_row = QHBoxLayout()
-        admm_lbl = QLabel("ADMM Iterations")
-        admm_lbl.setFixedWidth(108)
-        admm_row.addWidget(admm_lbl)
-        admm_row.addWidget(self._admm_iter_spin)
-        admm_layout.addLayout(admm_row)
-        layout.addWidget(self._admm_panel)
-        self._admm_panel.setVisible(state.use_admm)
+        # ADMM iterations moved to ADVANCED > AdvancedTuningWidget —
+        # it's a numerical tuning knob, not a workflow choice.
 
         # --- Incremental sub-panel (Reference Update) ---
         self._inc_panel = QWidget()
@@ -160,7 +141,6 @@ class WorkflowTypePanel(QWidget):
             self._on_tracking_mode_changed
         )
         self._solver.currentTextChanged.connect(self._on_solver_changed)
-        self._admm_iter_spin.valueChanged.connect(self._on_admm_iter_changed)
         self._ref_mode.currentIndexChanged.connect(self._on_ref_mode_changed)
         self._interval_spin.valueChanged.connect(
             lambda v: state.set_param("inc_ref_interval", v)
@@ -173,7 +153,7 @@ class WorkflowTypePanel(QWidget):
 
         # Block scroll-wheel changes on unfocused widgets
         for widget in [
-            self._tracking_mode, self._solver, self._admm_iter_spin,
+            self._tracking_mode, self._solver,
             self._ref_mode, self._interval_spin,
         ]:
             widget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -182,14 +162,10 @@ class WorkflowTypePanel(QWidget):
     # ------------------------------------------------------------------
 
     def _on_solver_changed(self, text: str) -> None:
-        """Toggle ADMM sub-panel and update state."""
+        """Toggle solver kind in state."""
         state = AppState.instance()
         use_admm = text == "AL-DIC"
         state.set_param("use_admm", use_admm)
-        self._admm_panel.setVisible(use_admm)
-
-    def _on_admm_iter_changed(self, value: int) -> None:
-        AppState.instance().set_param("admm_max_iter", value)
 
     def _on_tracking_mode_changed(self, text: str) -> None:
         """Set tracking mode and swap init-guess default + inc sub-panel."""

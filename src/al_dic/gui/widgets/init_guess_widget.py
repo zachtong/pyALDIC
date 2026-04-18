@@ -1,28 +1,23 @@
-"""Initial-guess parameter panel inside the ADVANCED collapsible section.
+"""Initial-Guess panel.
 
-Controls:
-    - Mode radio buttons:
-        * previous-frame warm-start
-        * FFT when reference frame updates (incremental mode default)
-        * FFT every frame
-        * FFT every-N-frames (with spinbox for N)
-    - Auto-expand checkbox: let the pipeline widen the search region
-      automatically when FFT peaks are clipped.
+Three-tier layout:
 
-Note: the FFT search radius (``state.search_range``) is now edited in
-the main ParamPanel as "Search Range" since it is a fundamental DIC
-parameter, not an initial-guess tuning knob.
+    - Starting Points    -> DICPara.init_guess_mode = "seed_propagation"
+    - FFT                -> one of:
+        * every N frames (N=1 is FFT-every-frame) -> "fft_every" if N==1
+                                                      "fft_reset_n" otherwise
+        * only on reference-frame updates         -> "fft_ref_update"
+    - Previous frame     -> "previous"
 
-Auto-selection on tracking mode change:
-    accumulative  -> "previous"
-    incremental   -> "fft_ref_update"
+Each top-level choice carries an inline, one-line guidance note so
+users pick a mode matching their data (displacement magnitude,
+smoothness, texture discontinuities).
 """
 
 from __future__ import annotations
 
 from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtWidgets import (
-    QCheckBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -36,15 +31,28 @@ from al_dic.gui.app_state import AppState
 from al_dic.gui.theme import COLORS
 
 
+def _help_label(text: str) -> QLabel:
+    lbl = QLabel(text)
+    lbl.setWordWrap(True)
+    lbl.setStyleSheet(
+        f"color: {COLORS.TEXT_SECONDARY}; "
+        f"font-size: 11px; font-style: italic; padding-left: 18px;"
+    )
+    return lbl
+
+
 class InitGuessWidget(QWidget):
-    """Initial-guess controls wired to AppState."""
+    """Initial-guess controls with tri-mode (seed / FFT / previous) layout.
+
+    Lives directly below WORKFLOW TYPE in the left sidebar — prominent
+    placement so users think about which init matches their scenario
+    before reaching ROI drawing.
+    """
 
     # Emitted when the user clicks "Place Starting Points" — the top-level
-    # controller forwards this to canvas.set_tool("seed") so the canvas
-    # widget doesn't need to know about this widget directly.
+    # controller forwards to canvas.set_tool("seed").
     request_place_seeds = Signal()
-    # Emitted when the user clicks "Auto-place" — app.py handles the
-    # image fetch + SeedController.auto_place_seeds call.
+    # Emitted when the user clicks "Auto-place".
     request_auto_place_seeds = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
@@ -55,108 +63,48 @@ class InitGuessWidget(QWidget):
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 4, 0, 4)
-        layout.setSpacing(4)
+        layout.setSpacing(6)
 
-        sec_lbl = QLabel("INITIAL GUESS")
-        sec_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
-            f"font-weight: bold; letter-spacing: 1px;"
-        )
-        layout.addWidget(sec_lbl)
-
-        # --- Mode: previous frame ---
-        self._rb_previous = QRadioButton("Previous frame (default, fastest)")
-        self._rb_previous.setToolTip(
-            "Use the converged result from the previous frame as the IC-GN "
-            "starting point.  Fastest; may propagate errors over many frames.  "
-            "Recommended for accumulative mode."
-        )
-        layout.addWidget(self._rb_previous)
-
-        # --- Mode: FFT when reference frame updates (incremental default) ---
-        self._rb_fft_ref_update = QRadioButton("FFT when reference frame updates")
-        self._rb_fft_ref_update.setToolTip(
-            "Run an FFT search whenever the reference frame changes.  "
-            "Within a same-reference segment, the previous frame's result is "
-            "used for warm-start.  Recommended default for incremental mode."
-        )
-        layout.addWidget(self._rb_fft_ref_update)
-
-        # --- Mode: FFT every frame ---
-        self._rb_fft_every = QRadioButton("FFT every frame (safest)")
-        self._rb_fft_every.setToolTip(
-            "Run a fresh FFT cross-correlation search for every frame.  "
-            "Eliminates warm-start error propagation; slowest."
-        )
-        layout.addWidget(self._rb_fft_every)
-
-        # --- Mode: FFT every N frames ---
-        reset_row = QHBoxLayout()
-        reset_row.setSpacing(6)
-        self._rb_reset_n = QRadioButton("Reset FFT every")
-        self._rb_reset_n.setToolTip(
-            "Perform a full FFT reset every N frames, then resume warm-start.  "
-            "Limits error propagation to at most N frames."
-        )
-        reset_row.addWidget(self._rb_reset_n)
-
-        self._reset_spin = QSpinBox()
-        self._reset_spin.setRange(2, 999)
-        self._reset_spin.setValue(self._state.fft_reset_interval)
-        self._reset_spin.setFixedWidth(52)
-        self._reset_spin.setSuffix(" fr")
-        self._reset_spin.setToolTip("FFT reset interval in frames")
-        reset_row.addWidget(self._reset_spin)
-        reset_row.addStretch()
-        layout.addLayout(reset_row)
-
-        # --- Mode: seed propagation ---
-        self._rb_seed_prop = QRadioButton(
-            "Starting Points (large displacement / cracks)"
-        )
+        # ----------------------------------------------------------------
+        # Starting Points (seed propagation) — large displacement / cracks
+        # ----------------------------------------------------------------
+        self._rb_seed_prop = QRadioButton("Starting Points")
         self._rb_seed_prop.setToolTip(
-            "Place a few 'starting points' manually on the canvas; "
-            "pyALDIC bootstraps each with single-point NCC, then propagates "
-            "the displacement field across mesh neighbours via F-aware BFS.\n\n"
-            "Best for: large inter-frame displacement (>50 px), discontinuous "
-            "fields (cracks, shear bands).  At least one starting point per "
-            "connected mask region required before the pipeline can run."
+            "Place a few Starting Points; pyALDIC bootstraps each "
+            "with single-point NCC then propagates via F-aware BFS."
         )
         layout.addWidget(self._rb_seed_prop)
+        layout.addWidget(_help_label(
+            "Best for large inter-frame displacement (> 50 px), "
+            "discontinuous fields (cracks, shear bands), or when FFT "
+            "struggles. Auto-placed per region on ROI edit."
+        ))
 
-        # "Place Starting Points" sub-panel — visible only when this mode
-        # is selected. Contains the Place button + region-progress label.
         self._seed_panel = QWidget()
-        seed_panel_layout = QVBoxLayout(self._seed_panel)
-        seed_panel_layout.setContentsMargins(18, 4, 0, 4)
-        seed_panel_layout.setSpacing(4)
-
+        seed_layout = QVBoxLayout(self._seed_panel)
+        seed_layout.setContentsMargins(18, 2, 0, 2)
+        seed_layout.setSpacing(4)
         btn_row = QHBoxLayout()
         btn_row.setSpacing(4)
         self._btn_place_seeds = QPushButton("Place Starting Points")
         self._btn_place_seeds.setCheckable(True)
         self._btn_place_seeds.setToolTip(
-            "Enter placement mode on the canvas.\n"
-            "Left-click inside the ROI to drop a point, right-click on a "
-            "point to remove it, Esc or click again to exit."
+            "Enter placement mode on the canvas. Left-click to add, "
+            "right-click to remove, Esc or click again to exit."
         )
         btn_row.addWidget(self._btn_place_seeds, stretch=2)
         self._btn_auto_place = QPushButton("Auto-place")
         self._btn_auto_place.setToolTip(
-            "Automatically pick one Starting Point per region at the node "
-            "with the highest normalized cross-correlation.\n"
-            "Requires at least two frames loaded.  Existing Starting "
-            "Points are replaced."
+            "Fill empty regions with the highest-NCC node in each. "
+            "Existing Starting Points are preserved."
         )
         btn_row.addWidget(self._btn_auto_place, stretch=1)
-        seed_panel_layout.addLayout(btn_row)
-
-        self._lbl_seed_progress = QLabel("0 / 0 regions seeded")
+        seed_layout.addLayout(btn_row)
+        self._lbl_seed_progress = QLabel("0 / 0 regions ready")
         self._lbl_seed_progress.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
         )
-        seed_panel_layout.addWidget(self._lbl_seed_progress)
-
+        seed_layout.addWidget(self._lbl_seed_progress)
         self._seed_panel.setVisible(False)
         layout.addWidget(self._seed_panel)
 
@@ -165,39 +113,95 @@ class InitGuessWidget(QWidget):
             self.request_auto_place_seeds.emit,
         )
 
-        # NOTE: "Search Radius" (``state.search_range``) was previously edited
-        # here. It has been moved to the main ParamPanel as "Search Range"
-        # so users can find it without expanding the ADVANCED section.
-
-        # --- Auto-expand checkbox ---
-        self._auto_expand_cb = QCheckBox("Auto-expand search on clipped peaks")
-        self._auto_expand_cb.setToolTip(
-            "When the NCC peak reaches the edge of the search region, "
-            "automatically retry with a larger region (up to image half-size).  "
-            "Retries up to 6 times with 2× growth each attempt."
+        # ----------------------------------------------------------------
+        # FFT (cross-correlation) — standard small-to-moderate motion
+        # ----------------------------------------------------------------
+        self._rb_fft = QRadioButton("FFT (cross-correlation)")
+        self._rb_fft.setToolTip(
+            "Full-grid normalized cross-correlation. Robust within the "
+            "search radius; search auto-expands when peaks clip."
         )
-        self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
-        layout.addWidget(self._auto_expand_cb)
+        layout.addWidget(self._rb_fft)
+        layout.addWidget(_help_label(
+            "Best for small-to-moderate smooth motion with good "
+            "texture. No user setup needed. Slows down as search "
+            "radius grows for very large displacements."
+        ))
 
-        # --- Set initial radio state ---
-        self._sync_from_state()
+        # FFT sub-mode selector
+        self._fft_panel = QWidget()
+        fft_layout = QVBoxLayout(self._fft_panel)
+        fft_layout.setContentsMargins(18, 2, 0, 2)
+        fft_layout.setSpacing(4)
 
-        # --- Prevent scroll-wheel from changing unfocused spinboxes ---
-        for w in (self._reset_spin,):
+        every_row = QHBoxLayout()
+        every_row.setSpacing(6)
+        self._rb_fft_every_n = QRadioButton("Every")
+        self._rb_fft_every_n.setToolTip(
+            "Run FFT every N frames. N = 1 means FFT every frame "
+            "(safest, slowest). N > 1 uses warm-start between "
+            "resets to limit error propagation to N frames."
+        )
+        self._spin_fft_n = QSpinBox()
+        self._spin_fft_n.setRange(1, 999)
+        self._spin_fft_n.setFixedWidth(60)
+        self._spin_fft_n.setSuffix(" fr")
+        every_row.addWidget(self._rb_fft_every_n)
+        every_row.addWidget(self._spin_fft_n)
+        _every_hint = QLabel("(N=1 = every frame)")
+        _every_hint.setStyleSheet(
+            f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px;"
+        )
+        every_row.addWidget(_every_hint)
+        every_row.addStretch()
+        fft_layout.addLayout(every_row)
+
+        self._rb_fft_ref_update = QRadioButton(
+            "Only when reference frame updates (incremental only)"
+        )
+        self._rb_fft_ref_update.setToolTip(
+            "Run FFT whenever the reference frame changes; warm-start "
+            "within each segment. Typical default for incremental mode."
+        )
+        fft_layout.addWidget(self._rb_fft_ref_update)
+
+        self._fft_panel.setVisible(False)
+        layout.addWidget(self._fft_panel)
+
+        # ----------------------------------------------------------------
+        # Previous — fastest, smooth small motion only
+        # ----------------------------------------------------------------
+        self._rb_previous = QRadioButton("Previous frame")
+        self._rb_previous.setToolTip(
+            "Use the previous frame's converged U as the init. "
+            "No cross-correlation performed."
+        )
+        layout.addWidget(self._rb_previous)
+        layout.addWidget(_help_label(
+            "Fastest. Valid only when inter-frame motion is very "
+            "small (a few pixels). Errors can accumulate over long "
+            "sequences; prefer FFT or Starting Points for noisy data."
+        ))
+
+        # ----------------------------------------------------------------
+        # Wheel-focus guard: unfocused spinboxes ignore scroll
+        # ----------------------------------------------------------------
+        for w in (self._spin_fft_n,):
             w.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             w.installEventFilter(self)
 
-        # --- Connections ---
-        self._rb_previous.toggled.connect(self._on_mode_changed)
-        self._rb_fft_ref_update.toggled.connect(self._on_mode_changed)
-        self._rb_fft_every.toggled.connect(self._on_mode_changed)
-        self._rb_reset_n.toggled.connect(self._on_mode_changed)
-        self._rb_seed_prop.toggled.connect(self._on_mode_changed)
-        self._reset_spin.valueChanged.connect(self._on_interval_changed)
-        self._auto_expand_cb.stateChanged.connect(self._on_auto_expand_changed)
-
-        # Listen for external state changes (e.g. tracking mode auto-switch)
+        # ----------------------------------------------------------------
+        # Connections
+        # ----------------------------------------------------------------
+        self._rb_seed_prop.toggled.connect(self._on_top_level_changed)
+        self._rb_fft.toggled.connect(self._on_top_level_changed)
+        self._rb_previous.toggled.connect(self._on_top_level_changed)
+        self._rb_fft_every_n.toggled.connect(self._on_fft_submode_changed)
+        self._rb_fft_ref_update.toggled.connect(self._on_fft_submode_changed)
+        self._spin_fft_n.valueChanged.connect(self._on_fft_n_changed)
         self._state.params_changed.connect(self._on_params_changed_externally)
+
+        self._sync_from_state()
 
     # ------------------------------------------------------------------
     # State -> UI
@@ -206,37 +210,50 @@ class InitGuessWidget(QWidget):
     def _sync_from_state(self) -> None:
         self._building = True
         mode = self._state.init_guess_mode
-        self._rb_previous.setChecked(mode == "previous")
-        self._rb_fft_ref_update.setChecked(mode == "fft_ref_update")
-        self._rb_fft_every.setChecked(mode == "fft_every")
-        self._rb_reset_n.setChecked(mode == "fft_reset_n")
-        self._rb_seed_prop.setChecked(mode == "seed_propagation")
-        self._reset_spin.setValue(self._state.fft_reset_interval)
-        self._reset_spin.setEnabled(mode == "fft_reset_n")
-        self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
-        self._seed_panel.setVisible(mode == "seed_propagation")
+        is_seed = mode == "seed_propagation"
+        is_fft = mode in ("fft_every", "fft_reset_n", "fft_ref_update")
+        is_prev = mode == "previous"
+
+        self._rb_seed_prop.setChecked(is_seed)
+        self._rb_fft.setChecked(is_fft)
+        self._rb_previous.setChecked(is_prev)
+
+        if is_fft:
+            if mode == "fft_ref_update":
+                self._rb_fft_ref_update.setChecked(True)
+                self._rb_fft_every_n.setChecked(False)
+                self._spin_fft_n.setEnabled(False)
+            else:
+                self._rb_fft_every_n.setChecked(True)
+                self._rb_fft_ref_update.setChecked(False)
+                if mode == "fft_every":
+                    self._spin_fft_n.setValue(1)
+                else:  # fft_reset_n
+                    self._spin_fft_n.setValue(
+                        max(1, self._state.fft_reset_interval),
+                    )
+                self._spin_fft_n.setEnabled(True)
+
+        self._seed_panel.setVisible(is_seed)
+        self._fft_panel.setVisible(is_fft)
         self._refresh_seed_progress()
         self._building = False
 
+    def _on_params_changed_externally(self) -> None:
+        if not self._building:
+            self._sync_from_state()
+
     def set_seed_controller(self, ctrl) -> None:
-        """Attach the SeedController for region-progress readout."""
         self._seed_ctrl = ctrl
         self._state.seeds_changed.connect(self._refresh_seed_progress)
         self._state.roi_changed.connect(self._refresh_seed_progress)
         self._refresh_seed_progress()
 
     def set_seed_mode_active(self, active: bool) -> None:
-        """Reflect the canvas seed-tool state on the Place button.
-
-        Called by the top-level app when canvas.tool_changed fires.
-        Toggles the checkable button's state + label so the user has
-        a clear indicator that placement mode is engaged.
-        """
         self._btn_place_seeds.setChecked(active)
-        if active:
-            self._btn_place_seeds.setText("Placing... (click to exit)")
-        else:
-            self._btn_place_seeds.setText("Place Starting Points")
+        self._btn_place_seeds.setText(
+            "Placing... (click to exit)" if active else "Place Starting Points"
+        )
 
     def _refresh_seed_progress(self) -> None:
         if self._seed_ctrl is None:
@@ -245,46 +262,58 @@ class InitGuessWidget(QWidget):
         total = len(status)
         seeded = sum(1 for _, has, _ in status if has)
         self._lbl_seed_progress.setText(
-            f"{seeded} / {total} regions seeded"
+            f"{seeded} / {total} regions ready"
         )
-
-    def _on_params_changed_externally(self) -> None:
-        """Re-sync UI when tracking mode (or other state) changes externally."""
-        if not self._building:
-            self._sync_from_state()
 
     # ------------------------------------------------------------------
     # UI -> State
     # ------------------------------------------------------------------
 
-    def _on_mode_changed(self) -> None:
+    def _on_top_level_changed(self) -> None:
         if self._building:
             return
-        if self._rb_previous.isChecked():
-            mode = "previous"
-        elif self._rb_fft_ref_update.isChecked():
-            mode = "fft_ref_update"
-        elif self._rb_fft_every.isChecked():
-            mode = "fft_every"
-        elif self._rb_seed_prop.isChecked():
-            mode = "seed_propagation"
+        if self._rb_seed_prop.isChecked():
+            self._state.init_guess_mode = "seed_propagation"
+        elif self._rb_fft.isChecked():
+            # Switch to whichever FFT sub-mode was previously active, or
+            # default to 'every 1' if this is the first time.
+            current = self._state.init_guess_mode
+            if current not in ("fft_every", "fft_reset_n", "fft_ref_update"):
+                self._state.init_guess_mode = "fft_every"
+                self._state.fft_reset_interval = 0
+        elif self._rb_previous.isChecked():
+            self._state.init_guess_mode = "previous"
+        self._sync_from_state()
+        self._state.params_changed.emit()
+
+    def _on_fft_submode_changed(self) -> None:
+        if self._building:
+            return
+        if self._rb_fft_ref_update.isChecked():
+            self._state.init_guess_mode = "fft_ref_update"
+            self._state.fft_reset_interval = 0
+        elif self._rb_fft_every_n.isChecked():
+            n = self._spin_fft_n.value()
+            if n == 1:
+                self._state.init_guess_mode = "fft_every"
+                self._state.fft_reset_interval = 0
+            else:
+                self._state.init_guess_mode = "fft_reset_n"
+                self._state.fft_reset_interval = n
+        self._sync_from_state()
+        self._state.params_changed.emit()
+
+    def _on_fft_n_changed(self, value: int) -> None:
+        if self._building:
+            return
+        if not self._rb_fft_every_n.isChecked():
+            return
+        if value == 1:
+            self._state.init_guess_mode = "fft_every"
+            self._state.fft_reset_interval = 0
         else:
-            mode = "fft_reset_n"
-        self._reset_spin.setEnabled(mode == "fft_reset_n")
-        self._seed_panel.setVisible(mode == "seed_propagation")
-        self._state.init_guess_mode = mode
-        self._state.params_changed.emit()
-
-    def _on_interval_changed(self, value: int) -> None:
-        if self._building:
-            return
-        self._state.fft_reset_interval = value
-        self._state.params_changed.emit()
-
-    def _on_auto_expand_changed(self, _: int) -> None:
-        if self._building:
-            return
-        self._state.fft_auto_expand = self._auto_expand_cb.isChecked()
+            self._state.init_guess_mode = "fft_reset_n"
+            self._state.fft_reset_interval = value
         self._state.params_changed.emit()
 
     def eventFilter(self, obj, event) -> bool:
