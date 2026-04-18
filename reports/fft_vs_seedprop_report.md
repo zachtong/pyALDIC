@@ -15,12 +15,12 @@ Comparison of the two primary init-guess methods in pyALDIC across displacement 
 
 | Scenario | FFT time (s) | seed time (s) | speedup | FFT mean RMSE | seed mean RMSE | FFT conv | seed conv |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| S1-tiny_smooth_2f | 1.22 | 0.74 | 1.64x | 0.0039 | 0.0000 | 100.00% | 100.00% |
-| S2-medium_2f | 0.91 | 0.69 | 1.32x | 0.0041 | 0.0000 | 100.00% | 100.00% |
-| S3-large_2f | 20.46 | 4.48 | 4.56x | 0.0037 | 0.0000 | 100.00% | 100.00% |
-| S4-xlarge_2f | 23.23 | 3.81 | 6.10x | 0.0027 | 0.0000 | 100.00% | 100.00% |
-| S5-multi_accum_grow | 57.17 | 14.95 | 3.82x | 0.0044 | 0.0028 | 100.00% | 100.00% |
-| S6-multi_accum_xlarge | 122.66 | 18.53 | 6.62x | 0.0044 | 0.0020 | 100.00% | 100.00% |
+| S1-tiny_smooth_2f | 0.24 | 0.20 | 1.25x | 0.0047 | 0.0000 | 100.00% | 100.00% |
+| S2-medium_2f | 0.25 | 0.18 | 1.38x | 0.0042 | 0.0000 | 100.00% | 100.00% |
+| S3-large_2f | 4.26 | 0.93 | 4.57x | 0.0051 | 0.0000 | 100.00% | 100.00% |
+| S4-xlarge_2f | 7.36 | 0.90 | 8.18x | 0.0034 | 0.0000 | 100.00% | 100.00% |
+| S5-multi_accum_grow | 15.70 | 4.45 | 3.53x | 0.0049 | 0.0041 | 100.00% | 100.00% |
+| S6-multi_accum_xlarge | 34.17 | 5.55 | 6.16x | 0.0048 | 0.0029 | 100.00% | 100.00% |
 
 ## Per-Scenario Details
 
@@ -29,93 +29,93 @@ Comparison of the two primary init-guess methods in pyALDIC across displacement 
 *Single-pair, 2 px shift — baseline for smooth, sub-subset motion.*
 
 - image: 512x512, frames: 2, peak displacement: 2.0 px
-- FFT wall-clock: **1.22 s**
-- seed_prop wall-clock: **0.74 s**
+- FFT wall-clock: **0.24 s**
+- seed_prop wall-clock: **0.20 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 2.00 | 2.00 | 0.0039 | 2.00 | 0.0000 |
+| 1 | 2.00 | 2.00 | 0.0047 | 2.00 | 0.0000 |
 
 ### S2-medium_2f
 
 *Single-pair, 30 px shift — typical inter-frame motion for moderate deformation.*
 
 - image: 512x512, frames: 2, peak displacement: 30.0 px
-- FFT wall-clock: **0.91 s**
-- seed_prop wall-clock: **0.69 s**
+- FFT wall-clock: **0.25 s**
+- seed_prop wall-clock: **0.18 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 30.00 | 30.00 | 0.0041 | 30.00 | 0.0000 |
+| 1 | 30.00 | 30.00 | 0.0042 | 30.00 | 0.0000 |
 
 ### S3-large_2f
 
 *Single-pair, 100 px shift — stress test for FFT's quadratic cost scaling in search radius.*
 
 - image: 1024x1024, frames: 2, peak displacement: 100.0 px
-- FFT wall-clock: **20.46 s**
-- seed_prop wall-clock: **4.48 s**
+- FFT wall-clock: **4.26 s**
+- seed_prop wall-clock: **0.93 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 100.00 | 100.00 | 0.0037 | 100.00 | 0.0000 |
+| 1 | 100.00 | 100.00 | 0.0051 | 100.00 | 0.0000 |
 
 ### S4-xlarge_2f
 
 *Single-pair, 200 px shift — material point far from seed, near image-half-size limit.*
 
 - image: 1024x1024, frames: 2, peak displacement: 200.0 px
-- FFT wall-clock: **23.23 s**
-- seed_prop wall-clock: **3.81 s**
+- FFT wall-clock: **7.36 s**
+- seed_prop wall-clock: **0.90 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 200.00 | 200.00 | 0.0027 | 200.00 | 0.0000 |
+| 1 | 200.00 | 200.00 | 0.0034 | 200.00 | 0.0000 |
 
 ### S5-multi_accum_grow
 
 *10-frame accumulative, displacement grows linearly 0 -> 100 px. Exercises per-frame bootstrap with varying magnitude.*
 
 - image: 1000x1000, frames: 10, peak displacement: 100.0 px
-- FFT wall-clock: **57.17 s**
-- seed_prop wall-clock: **14.95 s**
+- FFT wall-clock: **15.70 s**
+- seed_prop wall-clock: **4.45 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 11.11 | 11.11 | 0.0046 | 11.11 | 0.0014 |
-| 2 | 22.22 | 22.22 | 0.0046 | 22.22 | 0.0038 |
-| 3 | 33.33 | 33.34 | 0.0046 | 33.33 | 0.0052 |
-| 4 | 44.44 | 44.45 | 0.0045 | 44.45 | 0.0057 |
-| 5 | 55.56 | 55.55 | 0.0045 | 55.55 | 0.0043 |
-| 6 | 66.67 | 66.66 | 0.0044 | 66.67 | 0.0024 |
-| 7 | 77.78 | 77.78 | 0.0046 | 77.78 | 0.0014 |
-| 8 | 88.89 | 88.89 | 0.0041 | 88.89 | 0.0007 |
-| 9 | 100.00 | 100.00 | 0.0040 | 100.00 | 0.0000 |
+| 1 | 11.11 | 11.11 | 0.0049 | 11.11 | 0.0019 |
+| 2 | 22.22 | 22.22 | 0.0048 | 22.22 | 0.0037 |
+| 3 | 33.33 | 33.34 | 0.0048 | 33.33 | 0.0058 |
+| 4 | 44.44 | 44.45 | 0.0050 | 44.44 | 0.0074 |
+| 5 | 55.56 | 55.55 | 0.0050 | 55.55 | 0.0067 |
+| 6 | 66.67 | 66.66 | 0.0047 | 66.67 | 0.0048 |
+| 7 | 77.78 | 77.78 | 0.0047 | 77.78 | 0.0047 |
+| 8 | 88.89 | 88.89 | 0.0052 | 88.89 | 0.0022 |
+| 9 | 100.00 | 100.00 | 0.0046 | 100.00 | 0.0000 |
 
 ### S6-multi_accum_xlarge
 
 *15-frame accumulative, 0 -> 180 px. Worst case for warm-start propagation; late frames need large seed-search radius.*
 
 - image: 1000x1000, frames: 15, peak displacement: 180.0 px
-- FFT wall-clock: **122.66 s**
-- seed_prop wall-clock: **18.53 s**
+- FFT wall-clock: **34.17 s**
+- seed_prop wall-clock: **5.55 s**
 
 | frame | truth u | FFT u_med | FFT RMSE | seed u_med | seed RMSE |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 12.86 | 12.85 | 0.0045 | 12.85 | 0.0031 |
-| 2 | 25.71 | 25.71 | 0.0045 | 25.71 | 0.0026 |
-| 3 | 38.57 | 38.57 | 0.0046 | 38.57 | 0.0012 |
-| 4 | 51.43 | 51.43 | 0.0045 | 51.43 | 0.0019 |
-| 5 | 64.29 | 64.29 | 0.0046 | 64.29 | 0.0021 |
-| 6 | 77.14 | 77.15 | 0.0047 | 77.15 | 0.0032 |
-| 7 | 90.00 | 90.00 | 0.0040 | 90.00 | 0.0000 |
-| 8 | 102.86 | 102.85 | 0.0042 | 102.85 | 0.0031 |
-| 9 | 115.71 | 115.71 | 0.0046 | 115.71 | 0.0026 |
-| 10 | 128.57 | 128.57 | 0.0046 | 128.57 | 0.0012 |
-| 11 | 141.43 | 141.43 | 0.0043 | 141.43 | 0.0019 |
-| 12 | 154.29 | 154.29 | 0.0046 | 154.29 | 0.0021 |
-| 13 | 167.14 | 167.15 | 0.0045 | 167.15 | 0.0032 |
-| 14 | 180.00 | 180.00 | 0.0038 | 180.00 | 0.0000 |
+| 1 | 12.86 | 12.85 | 0.0050 | 12.86 | 0.0032 |
+| 2 | 25.71 | 25.71 | 0.0048 | 25.72 | 0.0044 |
+| 3 | 38.57 | 38.57 | 0.0049 | 38.57 | 0.0013 |
+| 4 | 51.43 | 51.43 | 0.0050 | 51.43 | 0.0059 |
+| 5 | 64.29 | 64.29 | 0.0047 | 64.28 | 0.0036 |
+| 6 | 77.14 | 77.15 | 0.0049 | 77.14 | 0.0023 |
+| 7 | 90.00 | 90.00 | 0.0045 | 90.00 | 0.0000 |
+| 8 | 102.86 | 102.85 | 0.0057 | 102.86 | 0.0032 |
+| 9 | 115.71 | 115.71 | 0.0053 | 115.72 | 0.0044 |
+| 10 | 128.57 | 128.57 | 0.0051 | 128.57 | 0.0013 |
+| 11 | 141.43 | 141.43 | 0.0047 | 141.43 | 0.0059 |
+| 12 | 154.29 | 154.29 | 0.0046 | 154.28 | 0.0036 |
+| 13 | 167.14 | 167.15 | 0.0044 | 167.14 | 0.0023 |
+| 14 | 180.00 | 180.00 | 0.0037 | 180.00 | 0.0000 |
 
 ## Verdict
 
