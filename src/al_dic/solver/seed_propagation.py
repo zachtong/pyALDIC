@@ -336,13 +336,24 @@ def _bootstrap_seed_fft(
     current = search_radius
     result = None
 
+    # Expand-decision threshold is STRICTER than the caller's
+    # ncc_threshold (which is the final accept/reject gate). A
+    # mismatched window of speckle can easily produce a noise-level
+    # argmax with NCC 0.4-0.6 (well above most practical user
+    # thresholds), so if we used ncc_threshold directly we'd stop
+    # expanding on those fake peaks and return junk. A true matched
+    # peak on typical speckle is >0.9; 0.85 is a safe cutoff
+    # distinguishing 'true peak found' from 'noise in a window that
+    # doesn't contain the true peak'.
+    true_peak_ncc = 0.85
+
     for _ in range(max_retries):
         result = seed_single_point_fft(
             f_img, g_img, seed_xy, winsize, current, hint_uv,
         )
         if not result.valid:
             break
-        if not result.peak_clipped and result.ncc_peak >= ncc_threshold:
+        if not result.peak_clipped and result.ncc_peak >= true_peak_ncc:
             break
         new_radius = min(max_radius, current * 2)
         if new_radius == current:
