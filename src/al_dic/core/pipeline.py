@@ -57,6 +57,12 @@ from ..mesh.refinement import RefinementContext, RefinementPolicy, refine_mesh
 from ..solver.init_disp import init_disp
 from ..solver.integer_search import integer_search, integer_search_pyramid
 from ..solver.local_icgn import local_icgn
+from ..solver.seed_prop_pipeline import (
+    SeedPropagationState,
+    build_grid_for_roi,
+    capture_for_next_frame,
+    compute_seed_prop_init_guess,
+)
 from ..solver.subpb1_solver import precompute_subpb1, subpb1_solver
 from ..solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from ..strain.compute_strain import compute_strain as _compute_strain_fn
@@ -632,6 +638,22 @@ def run_aldic(
         init_guess_mode = "previous"
     # Track previous ref to detect ref switches (force FFT on switch)
     prev_ref_idx: int | None = None
+
+    # Seed-propagation per-run state (None when mode is anything else).
+    # V1 restriction: seed_propagation is incompatible with refinement
+    # policies that have a pre_solve hook — the pre_solve mesh rebuild
+    # invalidates the seed's node_idx mid-frame. Reject loudly.
+    use_seed_prop = init_guess_mode == "seed_propagation"
+    seed_prop_state: SeedPropagationState | None = None
+    if use_seed_prop:
+        if refinement_policy is not None and refinement_policy.has_pre_solve:
+            raise ValueError(
+                "init_guess_mode='seed_propagation' is incompatible with "
+                "refinement policies that have pre_solve=True in V1. "
+                "Disable pre_solve refinement or use a different mode."
+            )
+        seed_prop_state = SeedPropagationState.from_para(para)
+
     logger.info(
         "Frame schedule: %s (n_frames=%d), init_guess=%s",
         schedule.ref_indices, n_frames, init_guess_mode,
@@ -684,10 +706,14 @@ def run_aldic(
             "=== Frame %d/%d (ref=%d) ===", frame_idx + 1, n_frames, ref_idx,
         )
 
+        # Detect ref switch (used both by FFT path and seed-prop warp).
+        ref_switched_this_frame = (
+            prev_ref_idx is not None and ref_idx != prev_ref_idx
+        )
         # Force FFT when reference frame changes — the previous frame's
         # displacement is relative to a different reference, so it cannot
         # serve as a valid initial guess for the new reference.
-        if prev_ref_idx is not None and ref_idx != prev_ref_idx:
+        if ref_switched_this_frame:
             logger.info(
                 "Ref switch %d -> %d: forcing FFT for initial guess",
                 prev_ref_idx, ref_idx,
@@ -766,7 +792,14 @@ def run_aldic(
 
         need_fft = dic_mesh is None or current_U0 is None
 
-        if need_fft:
+        # For seed_propagation: pre-build the mesh from ROI (first frame)
+        # so the standard trim/refine flow below has something to work
+        # with without needing FFT's x0/y0 output.
+        if use_seed_prop and dic_mesh is None:
+            img_h_sp, img_w_sp = f_img.shape[:2]
+            x0, y0 = build_grid_for_roi(para, img_h_sp, img_w_sp)
+
+        if need_fft and not use_seed_prop:
             # FFT integer search for initial guess.
             # Use raw (unmasked) images for both ref and deformed:
             # benchmarked 3 strategies on bubble 30→150→30 (25 frames,
@@ -886,7 +919,24 @@ def run_aldic(
             subpb2_cache_mhs_key = None
             prev_mask_hash = mask_hash
 
-        if need_fft:
+        if use_seed_prop:
+            # Seed propagation init-guess path (replaces FFT init for
+            # this mode). Mesh is already built/trimmed above. Compute
+            # U0 via BFS propagation from the seed set, warping across
+            # ref switches when needed.
+            current_U0 = compute_seed_prop_init_guess(
+                seed_prop_state,
+                dic_mesh,
+                f_img_raw,
+                g_img_icgn,
+                f_mask,
+                Df,
+                para,
+                tol=para.tol,
+                ref_switched=ref_switched_this_frame,
+            )
+
+        if need_fft and not use_seed_prop:
             # When re-running FFT for a subsequent frame (incremental mode
             # with init_guess_mode="fft"), the FFT grid may differ from the
             # existing mesh (e.g. auto-retry with enlarged search region on
@@ -1309,6 +1359,13 @@ def run_aldic(
         result_def_grad[frame_idx - 1] = FrameResult(
             U=U_final, F=F_final, ref_frame=ref_idx,
         )
+
+        # Seed-propagation mode: quality-gate the frame's U at the seed
+        # nodes (NaN at a seed means its IC-GN result drove unreliable
+        # BFS propagation), and cache coords+U for the next frame's
+        # ref-switch warp if/when one happens.
+        if use_seed_prop and seed_prop_state is not None:
+            capture_for_next_frame(seed_prop_state, dic_mesh, U_final)
 
     # =====================================================================
     # Cumulative displacement transform (tree-based)
