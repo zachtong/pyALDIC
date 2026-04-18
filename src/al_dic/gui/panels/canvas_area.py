@@ -1284,6 +1284,13 @@ class CanvasArea(QWidget):
         # seed overlay re-show when the user hits 'Edit ROI' after a
         # completed run.
         self._state.display_changed.connect(self._refresh_seed_visuals)
+        # Also refresh when the user scrolls to another frame or when
+        # the images_changed signal brings a new sequence online —
+        # both change whether seed visuals should be shown.
+        self._state.current_frame_changed.connect(
+            self._refresh_seed_visuals,
+        )
+        self._state.images_changed.connect(self._refresh_seed_visuals)
         # Auto-exit seed-placement tool when the canvas 'context'
         # changes out from under the user — a frame switch, an
         # init-mode switch, or entering another panel. Without this
@@ -1319,17 +1326,31 @@ class CanvasArea(QWidget):
     def _refresh_seed_visuals(self) -> None:
         """Redraw region overlay + seed markers from current state.
 
-        Visible during SETUP (no results yet, OR user re-entered ROI
-        editing after a run), hidden while the user is VIEWING results
-        so the displacement field isn't obscured. This mirrors the
-        blue ROI overlay's visibility rule.
+        Shown only when ALL preconditions hold:
+          - init mode is seed_propagation
+          - images are loaded
+          - frame-0 ROI mask exists (required for regions)
+          - user is looking at frame 0 (seeds live on the ref frame)
+          - not currently viewing results (OR user is in ROI editing,
+            which is how we re-enter setup after a run)
+
+        Hidden otherwise — including while the user scrolls to later
+        frames to inspect them, which previously left the seed markers
+        visible on top of whichever frame was on screen.
         """
-        is_seed_mode = self._state.init_guess_mode == "seed_propagation"
-        viewing_results = self._state.results is not None
-        roi_editing = getattr(self._state, "roi_editing", False)
+        s = self._state
+        is_seed_mode = s.init_guess_mode == "seed_propagation"
+        viewing_results = s.results is not None
+        roi_editing = getattr(s, "roi_editing", False)
+        has_images = bool(s.image_files)
+        has_mask = s.per_frame_rois.get(0) is not None
+        on_frame_zero = s.current_frame == 0
         show = (
             is_seed_mode
             and self._seed_ctrl is not None
+            and has_images
+            and has_mask
+            and on_frame_zero
             and (not viewing_results or roi_editing)
         )
         if not show:
