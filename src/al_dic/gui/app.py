@@ -26,22 +26,7 @@ from al_dic.gui.panels.right_sidebar import RightSidebar
 from al_dic.gui.theme import COLORS, build_stylesheet
 
 
-def _enable_dark_title_bar(window: QMainWindow) -> None:
-    """Enable immersive dark title bar on Windows 10/11."""
-    if sys.platform != "win32":
-        return
-    try:
-        import ctypes
-        hwnd = int(window.winId())
-        DWMWA_USE_IMMERSIVE_DARK_MODE = 20
-        ctypes.windll.dwmapi.DwmSetWindowAttribute(
-            hwnd,
-            DWMWA_USE_IMMERSIVE_DARK_MODE,
-            ctypes.byref(ctypes.c_int(1)),
-            ctypes.sizeof(ctypes.c_int),
-        )
-    except Exception:  # pragma: no cover
-        pass  # non-critical — fall back to default title bar
+from al_dic.gui.window_chrome import enable_dark_title_bar
 
 
 class MainWindow(QMainWindow):
@@ -52,7 +37,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("pyALDIC")
         self.setWindowIcon(icon_app())
         self.setMinimumSize(1420, 800)
-        _enable_dark_title_bar(self)
+        enable_dark_title_bar(self)
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -126,6 +111,9 @@ class MainWindow(QMainWindow):
         init_guess.request_place_seeds.connect(self._on_request_place_seeds)
         init_guess.request_auto_place_seeds.connect(
             self._on_request_auto_place_seeds,
+        )
+        init_guess.request_clear_seeds.connect(
+            self._on_request_clear_seeds,
         )
         # Any init-method action jumps the canvas back to frame-0 ROI
         # editing so the user sees a consistent 'setup' view.
@@ -300,6 +288,10 @@ class MainWindow(QMainWindow):
         """Switch to ROI editing mode — show ROI overlay, hide field overlay."""
         self._state.roi_editing = True
         self._state.display_changed.emit()
+        # Auto-scroll the left sidebar to the ROI section so the
+        # controls are immediately visible, no matter how far the user
+        # had scrolled through the settings.
+        self._left_sidebar.focus_roi_section()
 
     def _on_roi_edit_for_frame(self, frame: int) -> None:
         """Enter ROI editing mode for a specific frame.
@@ -496,6 +488,21 @@ class MainWindow(QMainWindow):
         state.log_message.emit(
             f"Auto-placed {placed} Starting Point(s) in unseeded regions.",
             "info",
+        )
+
+    def _on_request_clear_seeds(self) -> None:
+        """User clicked 'Clear' in the init-guess seed sub-panel."""
+        state = self._state
+        n_before = len(state.seeds)
+        if n_before == 0:
+            state.log_message.emit(
+                "No Starting Points to clear.", "info",
+            )
+            return
+        self._seed_ctrl.clear_seeds()
+        self._enter_frame0_setup_view()
+        state.log_message.emit(
+            f"Cleared {n_before} Starting Point(s).", "info",
         )
 
     def _on_draw_requested(self, shape: str, mode: str) -> None:

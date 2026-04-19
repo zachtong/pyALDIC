@@ -117,6 +117,14 @@ class StrainWindow(QMainWindow):
     ) -> None:
         super().__init__(parent)
         self.setWindowTitle("Strain Post-Processing")
+        # Use the shared app icon so the Strain window is recognisable
+        # in the taskbar / Alt-Tab alongside the main window.
+        from al_dic.gui.icons import icon_app
+        self.setWindowIcon(icon_app())
+        # Match the main window's dark OS title bar so the two windows
+        # share one visual frame.
+        from al_dic.gui.window_chrome import enable_dark_title_bar
+        enable_dark_title_bar(self)
         # Default size chosen for a roughly square canvas area: 320 px
         # right panel + ~1000 px canvas width, with ~880 px canvas
         # height. Matches the common square-ish DIC image aspect

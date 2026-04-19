@@ -347,6 +347,26 @@ class LeftSidebar(QWidget):
         """Access the Initial-Guess panel (for top-level controller wiring)."""
         return self._init_guess_widget
 
+    def focus_roi_section(self) -> None:
+        """Scroll the settings panel so REGION OF INTEREST is at the top
+        of the visible area, and expand the section if it is collapsed.
+
+        Called by ``app.py`` every time the user triggers an ROI-related
+        action (draw shape, edit region, clear, per-frame edit). Keeps
+        the controls visible without the user hunting through the
+        sidebar.
+        """
+        if not self._roi_section.expanded:
+            self._roi_section.set_expanded(True)
+        scroll_bar = self._settings_scroll.verticalScrollBar()
+        # Compute the ROI section's y-offset relative to its container.
+        target_y = self._roi_section.mapTo(
+            self._settings_scroll.widget(), self._roi_section.rect().topLeft(),
+        ).y()
+        # Clamp so we don't scroll past the bottom of the content.
+        target_y = max(scroll_bar.minimum(), min(scroll_bar.maximum(), target_y))
+        scroll_bar.setValue(target_y)
+
     def _update_badge(self) -> None:
         """Update the IMAGES section badge with current count."""
         count = len(self._state.image_files)

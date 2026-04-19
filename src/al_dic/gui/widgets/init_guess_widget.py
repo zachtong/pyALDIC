@@ -31,14 +31,47 @@ from al_dic.gui.app_state import AppState
 from al_dic.gui.theme import COLORS
 
 
-def _help_label(text: str) -> QLabel:
-    lbl = QLabel(text)
-    lbl.setWordWrap(True)
-    lbl.setStyleSheet(
-        f"color: {COLORS.TEXT_SECONDARY}; "
-        f"font-size: 11px; font-style: italic; padding-left: 18px;"
-    )
-    return lbl
+class _InfoIcon(QLabel):
+    """A small ⓘ glyph that surfaces its tooltip on hover OR click.
+
+    Tooltip alone is fragile: touchscreens never trigger hover, and
+    some users miss that the icon is interactive. A click also shows
+    the same tooltip, pinned at the cursor, so discoverability
+    doesn't depend on knowing the hover convention.
+    """
+
+    def __init__(self, tip: str, parent: QWidget | None = None) -> None:
+        super().__init__("ⓘ", parent)
+        self.setToolTip(tip)
+        self._tip_text = tip
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setStyleSheet(
+            f"color: {COLORS.TEXT_SECONDARY}; font-size: 13px; "
+            f"padding: 0 4px;"
+        )
+
+    def mousePressEvent(self, event):  # noqa: N802 (Qt override)
+        # Show the tooltip text at the cursor, same behaviour as hover.
+        # The global pos plus a small downward offset keeps the popup
+        # from sitting directly under the arrow cursor.
+        from PySide6.QtWidgets import QToolTip
+        QToolTip.showText(event.globalPos(), self._tip_text, self)
+        super().mousePressEvent(event)
+
+
+def _help_icon(tip: str) -> QLabel:
+    return _InfoIcon(tip)
+
+
+def _radio_row(radio: QRadioButton, info_tip: str) -> QHBoxLayout:
+    """Lay out a radio button + right-aligned info icon."""
+    row = QHBoxLayout()
+    row.setContentsMargins(0, 0, 0, 0)
+    row.setSpacing(2)
+    row.addWidget(radio)
+    row.addStretch()
+    row.addWidget(_help_icon(info_tip))
+    return row
 
 
 class InitGuessWidget(QWidget):
@@ -54,6 +87,8 @@ class InitGuessWidget(QWidget):
     request_place_seeds = Signal()
     # Emitted when the user clicks "Auto-place".
     request_auto_place_seeds = Signal()
+    # Emitted when the user clicks "Clear" to drop every Starting Point.
+    request_clear_seeds = Signal()
     # Emitted whenever the user changes the init-guess method via the UI
     # (radio toggle or FFT submode). App.py uses this to jump to frame 0
     # ROI editing so the user always sees a consistent 'setup' view
@@ -74,15 +109,16 @@ class InitGuessWidget(QWidget):
         # Starting Points (seed propagation) — large displacement / cracks
         # ----------------------------------------------------------------
         self._rb_seed_prop = QRadioButton("Starting Points")
-        self._rb_seed_prop.setToolTip(
-            "Place a few Starting Points; pyALDIC bootstraps each "
-            "with single-point NCC then propagates via F-aware BFS."
-        )
-        layout.addWidget(self._rb_seed_prop)
-        layout.addWidget(_help_label(
-            "Best for large inter-frame displacement (> 50 px), "
-            "discontinuous fields (cracks, shear bands), or when FFT "
-            "struggles. Auto-placed per region on ROI edit."
+        layout.addLayout(_radio_row(
+            self._rb_seed_prop,
+            "Place a few points; pyALDIC bootstraps each with a "
+            "single-point NCC and propagates the field along mesh "
+            "neighbours.\n\n"
+            "Best for:\n"
+            "• Large inter-frame displacement (> 50 px)\n"
+            "• Discontinuous fields (cracks, shear bands)\n"
+            "• Scenarios where FFT picks wrong peaks\n\n"
+            "Auto-placed per region when you draw or edit an ROI.",
         ))
 
         self._seed_panel = QWidget()
@@ -104,6 +140,12 @@ class InitGuessWidget(QWidget):
             "Existing Starting Points are preserved."
         )
         btn_row.addWidget(self._btn_auto_place, stretch=1)
+        self._btn_clear_seeds = QPushButton("Clear")
+        self._btn_clear_seeds.setToolTip(
+            "Remove every Starting Point. Faster than right-clicking "
+            "each one individually."
+        )
+        btn_row.addWidget(self._btn_clear_seeds, stretch=1)
         seed_layout.addLayout(btn_row)
         self._lbl_seed_progress = QLabel("0 / 0 regions ready")
         self._lbl_seed_progress.setStyleSheet(
@@ -117,20 +159,24 @@ class InitGuessWidget(QWidget):
         self._btn_auto_place.clicked.connect(
             self.request_auto_place_seeds.emit,
         )
+        self._btn_clear_seeds.clicked.connect(
+            self.request_clear_seeds.emit,
+        )
 
         # ----------------------------------------------------------------
         # FFT (cross-correlation) — standard small-to-moderate motion
         # ----------------------------------------------------------------
         self._rb_fft = QRadioButton("FFT (cross-correlation)")
-        self._rb_fft.setToolTip(
+        layout.addLayout(_radio_row(
+            self._rb_fft,
             "Full-grid normalized cross-correlation. Robust within the "
-            "search radius; search auto-expands when peaks clip."
-        )
-        layout.addWidget(self._rb_fft)
-        layout.addWidget(_help_label(
-            "Best for small-to-moderate smooth motion with good "
-            "texture. No user setup needed. Slows down as search "
-            "radius grows for very large displacements."
+            "search radius; the search auto-expands when peaks clip.\n\n"
+            "Best for:\n"
+            "• Small-to-moderate smooth motion\n"
+            "• Well-textured speckle\n"
+            "• No special user setup needed\n\n"
+            "Cost grows with the search radius, so very large "
+            "displacements become slow.",
         ))
 
         # FFT sub-mode selector
@@ -177,15 +223,15 @@ class InitGuessWidget(QWidget):
         # Previous — fastest, smooth small motion only
         # ----------------------------------------------------------------
         self._rb_previous = QRadioButton("Previous frame")
-        self._rb_previous.setToolTip(
-            "Use the previous frame's converged U as the init. "
-            "No cross-correlation performed."
-        )
-        layout.addWidget(self._rb_previous)
-        layout.addWidget(_help_label(
-            "Fastest. Valid only when inter-frame motion is very "
-            "small (a few pixels). Errors can accumulate over long "
-            "sequences; prefer FFT or Starting Points for noisy data."
+        layout.addLayout(_radio_row(
+            self._rb_previous,
+            "Use the previous frame's converged displacement as the "
+            "initial guess. No cross-correlation runs.\n\n"
+            "Best for:\n"
+            "• Very small inter-frame motion (a few pixels)\n"
+            "• Fastest option when motion is smooth\n\n"
+            "Errors can accumulate over long sequences. Prefer FFT or "
+            "Starting Points on noisy data or when motion is larger.",
         ))
 
         # ----------------------------------------------------------------

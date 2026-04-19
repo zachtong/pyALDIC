@@ -1186,6 +1186,13 @@ class CanvasArea(QWidget):
         from al_dic.gui.widgets.seed_legend_overlay import SeedLegendOverlay
         self._seed_legend = SeedLegendOverlay(self._canvas.viewport())
 
+        # --- Config overlay (top-left corner; live summary of the
+        # tracking-mode / solver / init-guess choices).
+        from al_dic.gui.widgets.canvas_config_overlay import (
+            CanvasConfigOverlay,
+        )
+        self._config_overlay = CanvasConfigOverlay(self._canvas.viewport())
+
         # The viewport can resize independently of CanvasArea (e.g. when
         # scrollbars appear/disappear on zoom).  Watch its resize events so
         # we can keep both overlays sized to the actual viewport rect.
@@ -1249,6 +1256,9 @@ class CanvasArea(QWidget):
             self._seed_legend.move(
                 vp.width() - self._seed_legend.width() - 10, 10,
             )
+        # Config overlay is pinned top-left; it sizes itself but needs
+        # a reposition call so it sticks to the corner on every resize.
+        self._config_overlay.reposition()
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         """Reposition overlays to fill the canvas viewport."""
