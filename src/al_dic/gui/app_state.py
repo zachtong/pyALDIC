@@ -122,13 +122,12 @@ class AppState(QObject):
         # Initial guess parameters
         # Modes: "previous" | "fft_ref_update" | "fft_every" | "fft_reset_n"
         # | "seed_propagation"
-        # Default is seed_propagation: ROI-ready auto-place populates the
-        # seed set so first-time users can draw an ROI and hit Run with
-        # no extra steps, and the seed-propagation path is faster +
-        # more robust than FFT on large-displacement / discontinuous
-        # scenarios (see project memory 'project_seed_propagation_design').
-        self.init_guess_mode: str = "seed_propagation"
-        self.fft_reset_interval: int = 5
+        # Default is FFT-every-frame (N=1): zero-setup, works for the
+        # common "load images → draw ROI → Run" path. Advanced users
+        # switch to Starting Points / warm-start / periodic reset from
+        # the Initial-Guess panel once they understand the trade-offs.
+        self.init_guess_mode: str = "fft_every"
+        self.fft_reset_interval: int = 1
         self.fft_auto_expand: bool = True
         # Seed propagation parameters (only relevant when
         # init_guess_mode == "seed_propagation").
