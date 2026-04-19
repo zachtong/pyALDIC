@@ -966,6 +966,8 @@ def run_aldic(
                 para,
                 tol=para.tol,
                 ref_switched=ref_switched_this_frame,
+                frame_idx=frame_idx,
+                ref_idx=ref_idx,
             )
 
         if need_fft and not use_seed_prop:

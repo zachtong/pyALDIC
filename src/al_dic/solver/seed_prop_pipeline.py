@@ -16,6 +16,7 @@ slim. Public functions:
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -25,9 +26,12 @@ from numpy.typing import NDArray
 from ..utils.region_analysis import precompute_node_regions
 from .integer_search import _centered_arange
 from .local_icgn import local_icgn_precompute
+
+logger = logging.getLogger(__name__)
 from .seed_propagation import (
     SeedQualityError,
     SeedSet,
+    SeedWarpFailure,
     build_node_adjacency,
     propagate_from_seeds,
     warp_seeds_to_new_ref,
@@ -35,6 +39,24 @@ from .seed_propagation import (
 
 if TYPE_CHECKING:
     from ..core.data_structures import DICMesh, DICPara, ImageGradients
+
+
+@dataclass(frozen=True)
+class ReseedEvent:
+    """Record of an auto-reseed triggered by a ref-switch warp failure.
+
+    Attributes:
+        frame_idx: Global frame index where the ref-switch occurred.
+        ref_idx: Reference-frame index that the switch was going to.
+        reason: Human-readable message describing why the warp failed
+            (e.g. "All seeds failed to warp to the new reference").
+        n_new_seeds: Number of seeds auto-placed on the new ref frame.
+    """
+
+    frame_idx: int
+    ref_idx: int
+    reason: str
+    n_new_seeds: int
 
 
 @dataclass
@@ -52,12 +74,16 @@ class SeedPropagationState:
         adjacency_cache: Cache of node_adjacency results keyed by
             ``id(elements_fem)`` — the same elements_fem array means
             the same adjacency; no need to rebuild per frame.
+        reseed_events: Auto-reseed log for the current run. Populated
+            each time a ref-switch warp fails and the pipeline falls
+            back to ``auto_place_seeds_on_mesh``.
     """
 
     current_seeds: SeedSet
     prev_coords_fem: NDArray[np.float64] | None = None
     prev_U_2d: NDArray[np.float64] | None = None
     adjacency_cache: dict[int, list[set[int]]] = field(default_factory=dict)
+    reseed_events: list[ReseedEvent] = field(default_factory=list)
 
     @classmethod
     def from_para(cls, para: DICPara) -> SeedPropagationState:
@@ -120,18 +146,30 @@ def compute_seed_prop_init_guess(
     tol: float,
     ref_switched: bool,
     max_snap_distance: float | None = None,
+    frame_idx: int = -1,
+    ref_idx: int = -1,
 ) -> NDArray[np.float64]:
     """Produce the interleaved U0 initial guess for one frame.
 
     - Caches adjacency per mesh (keyed by ``id(elements_fem)``).
     - Rebuilds NodeRegionMap per call (mask may change across frames).
     - On ``ref_switched=True``, warps state.current_seeds to the new
-      mesh using state.prev_coords_fem / prev_U_2d.
+      mesh using state.prev_coords_fem / prev_U_2d. If warp raises
+      ``SeedWarpFailure`` (e.g. material point moved outside the new
+      ROI), falls back to ``auto_place_seeds_on_mesh`` on the new
+      reference and records a ``ReseedEvent`` in ``state.reseed_events``
+      so the pipeline can surface the frame in its result.
     - Runs ``propagate_from_seeds`` with the NCC + region gates active.
     - Returns an interleaved U0 (length 2*n_nodes) with NaN on
       unsolved nodes, so the pipeline's existing mask-NaN pass and
       downstream fill_nan_idw handle them uniformly.
+
+    ``frame_idx`` and ``ref_idx`` are advisory — they are only used to
+    tag ``ReseedEvent`` entries on the fallback path. Defaults (-1) are
+    safe for tests that don't care.
     """
+    from .seed_auto_place import AutoPlaceConfig, auto_place_seeds_on_mesh
+
     n_nodes = dic_mesh.coordinates_fem.shape[0]
 
     mesh_key = id(dic_mesh.elements_fem)
@@ -152,14 +190,58 @@ def compute_seed_prop_init_guess(
                 "Caller must invoke capture_for_next_frame at the end of "
                 "each successful frame."
             )
-        state.current_seeds = warp_seeds_to_new_ref(
-            state.current_seeds,
-            state.prev_coords_fem,
-            state.prev_U_2d,
-            dic_mesh.coordinates_fem,
-            region_map,
-            max_snap_distance=max_snap_distance,
-        )
+        try:
+            state.current_seeds = warp_seeds_to_new_ref(
+                state.current_seeds,
+                state.prev_coords_fem,
+                state.prev_U_2d,
+                dic_mesh.coordinates_fem,
+                region_map,
+                max_snap_distance=max_snap_distance,
+            )
+        except SeedWarpFailure as exc:
+            # Fallback: auto-place fresh seeds on the new ref frame.
+            # If auto-place itself cannot find any viable candidate the
+            # original warp failure is re-raised so the pipeline still
+            # aborts loudly in the un-recoverable case.
+            logger.warning(
+                "Frame %d ref-switch (-> ref %d): %s. Auto-placing new seeds.",
+                frame_idx, ref_idx, exc,
+            )
+            ap_config = AutoPlaceConfig(
+                ncc_threshold=state.current_seeds.ncc_threshold,
+            )
+            ap_result = auto_place_seeds_on_mesh(
+                coordinates_fem=dic_mesh.coordinates_fem,
+                elements_fem=dic_mesh.elements_fem,
+                node_region_map=region_map,
+                f_img=f_img,
+                g_img=g_img,
+                mask=f_mask,
+                winsize=para.winsize,
+                search_radius=int(para.size_of_fft_search_region),
+                config=ap_config,
+                adjacency=adjacency,
+            )
+            if len(ap_result.seed_set.seeds) == 0:
+                raise SeedWarpFailure(
+                    f"{exc} Auto-place fallback also found no viable "
+                    f"candidates on the new reference frame "
+                    f"(n_regions_skipped={ap_result.n_regions_skipped}). "
+                    f"Manually re-place seeds on the new reference and "
+                    f"re-run."
+                ) from exc
+            state.current_seeds = ap_result.seed_set
+            state.reseed_events.append(
+                ReseedEvent(
+                    frame_idx=frame_idx,
+                    ref_idx=ref_idx,
+                    reason=str(exc),
+                    n_new_seeds=len(ap_result.seed_set.seeds),
+                ),
+            )
+            for msg in ap_result.warnings:
+                logger.warning("Auto-place fallback: %s", msg)
 
     # No prev-frame hint_uv warm-start: seeds are a handful of points,
     # and asymmetric single-point NCC happily searches up to image

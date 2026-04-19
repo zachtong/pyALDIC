@@ -186,6 +186,248 @@ class TestSeedPropagationRefSwitch:
         np.testing.assert_allclose(v_med, dy, atol=0.35)
 
 
+class TestSeedPropagationMultiRefSwitch:
+    """Multi-ref-switch and large-displacement scenarios to stress-test
+    the warp-or-reseed path across long incremental runs.
+    """
+
+    def _build_shifted_sequence(
+        self,
+        h: int, w: int,
+        n_frames: int,
+        dx: float, dy: float,
+        rng_seed: int = 17,
+    ) -> list[np.ndarray]:
+        """Return images where image[k] = image[0] shifted by k*(dx, dy)."""
+        ref = _speckle(h, w, seed=rng_seed)
+        imgs = [ref]
+        for k in range(1, n_frames):
+            imgs.append(
+                ndimage_shift(ref, [k * dy, k * dx], order=3, mode="reflect"),
+            )
+        return imgs
+
+    def _center_seed_idx(
+        self, h: int, w: int, images: list[np.ndarray],
+    ) -> int:
+        """Probe a non-seed pipeline to pick a node near image center."""
+        masks = [np.ones((h, w)) for _ in images[:2]]
+        probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
+        probe = run_aldic(
+            probe_para, images[:2], masks, compute_strain=False,
+        )
+        coords = probe.dic_mesh.coordinates_fem
+        center = np.array([w / 2, h / 2])
+        return int(np.argmin(np.linalg.norm(coords - center, axis=1)))
+
+    def test_multi_ref_switch_sequence(self):
+        """refs=(0,0,2,2,4,4): two ref-switches in one run, both succeed.
+
+        Verifies that the state machine correctly captures prev-frame
+        state after every frame and warps cleanly on every switch, not
+        just the first.
+        """
+        h, w = 192, 192
+        dx, dy = 1.0, 0.4
+        images = self._build_shifted_sequence(h, w, n_frames=6, dx=dx, dy=dy)
+        masks = [np.ones((h, w)) for _ in images]
+
+        seed_idx = self._center_seed_idx(h, w, images)
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=seed_idx, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        schedule = FrameSchedule.from_every_n(2, n_frames=6)
+        # FrameSchedule produces one ref per displacement frame; for
+        # n_frames=6 there are 5 displacement pairs.
+        assert schedule.ref_indices == (0, 0, 2, 2, 4)
+
+        para = _make_para(
+            h, w, seed_set=seed_set,
+            frame_schedule=schedule,
+            reference_mode="incremental",
+        )
+        result = run_aldic(para, images, masks, compute_strain=False)
+
+        # Every displacement frame should have completed
+        for k in range(5):  # n_frames - 1 displacement frames
+            assert result.result_disp[k] is not None, (
+                f"Frame {k + 1} (schedule index {k}) failed to produce a "
+                f"displacement result."
+            )
+        # Last frame post-switch recovers the per-frame motion (dx, dy)
+        U_last = result.result_disp[-1].U
+        np.testing.assert_allclose(
+            np.nanmedian(U_last[0::2]), dx, atol=0.35,
+        )
+        np.testing.assert_allclose(
+            np.nanmedian(U_last[1::2]), dy, atol=0.35,
+        )
+
+    def test_ref_switch_large_displacement_no_reseed(self):
+        """Large inter-frame shift at ref boundary: warp must still work.
+
+        Displacement between ref frames here is large enough that a
+        naive full-grid FFT would need a wide search, but seed warping
+        only needs the material point's cumulative U — which the prev
+        frame already knows. Fallback should NOT fire.
+        """
+        h, w = 256, 256
+        # 6 frames; per-frame shift = 15 px → ref-to-ref gap of 30 px
+        dx, dy = 15.0, 0.0
+        images = self._build_shifted_sequence(h, w, n_frames=6, dx=dx, dy=dy)
+        # Keep ROI generous so warped seeds stay inside new mesh
+        masks = [np.ones((h, w)) for _ in images]
+
+        seed_idx = self._center_seed_idx(h, w, images)
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=seed_idx, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        schedule = FrameSchedule.from_every_n(2, n_frames=6)
+        para = _make_para(
+            h, w, seed_set=seed_set,
+            frame_schedule=schedule,
+            reference_mode="incremental",
+            size_of_fft_search_region=40,  # wide enough for 15 px motion
+        )
+        result = run_aldic(para, images, masks, compute_strain=False)
+        # All frames must complete
+        for k, disp in enumerate(result.result_disp):
+            assert disp is not None, f"Frame index {k} failed."
+
+
+class TestSeedPropagationReseedFallback:
+    """Exercise the auto-reseed fallback path when warp raises."""
+
+    def test_warp_failure_triggers_autoplace_and_continues(self):
+        """Manually craft a state where old seeds warp outside new ROI.
+
+        Rather than rely on a full pipeline setup to reproduce the
+        narrow warp-fails-mid-run scenario, this test directly drives
+        ``compute_seed_prop_init_guess`` with a hand-built previous
+        state: seeds whose U values push them outside the new mesh's
+        region map. The fallback should auto-place new seeds and record
+        a ReseedEvent.
+        """
+        from al_dic.io.image_ops import compute_image_gradient
+        from al_dic.mesh.mesh_setup import mesh_setup
+        from al_dic.solver.seed_prop_pipeline import (
+            ReseedEvent,
+            SeedPropagationState,
+            build_grid_for_roi,
+            compute_seed_prop_init_guess,
+        )
+
+        h, w = 192, 192
+        ref = _speckle(h, w, seed=21)
+        deformed = ref.copy()  # zero displacement — seeds warp-in-place
+        mask = np.ones((h, w), dtype=np.float64)
+
+        # Build mesh via the same helpers the pipeline uses
+        seed_set_placeholder = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),), ncc_threshold=0.3,
+        )
+        para = _make_para(h, w, seed_set=seed_set_placeholder)
+        x0, y0 = build_grid_for_roi(para, h, w)
+        dic_mesh = mesh_setup(x0, y0, para)
+        coords = dic_mesh.coordinates_fem
+
+        # Prev-frame "displacement" pushes a seed way outside the new ROI
+        n_nodes = coords.shape[0]
+        prev_U_2d = np.zeros((n_nodes, 2))
+        # Drive seed node 0 off the map (+10000 px): nearest new node
+        # will be far out of range.
+        prev_U_2d[0] = [10000.0, 10000.0]
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        state = SeedPropagationState(
+            current_seeds=seed_set,
+            prev_coords_fem=coords.copy(),
+            prev_U_2d=prev_U_2d,
+        )
+
+        Df = compute_image_gradient(ref, mask)
+
+        # Trigger ref_switched=True. Warp distance (10000 px) blows past
+        # max_snap_distance (50 px), so warp_seeds_to_new_ref raises
+        # SeedWarpFailure. Fallback should auto-place fresh seeds.
+        U0 = compute_seed_prop_init_guess(
+            state, dic_mesh,
+            ref, deformed, mask, Df, para,
+            tol=para.tol, ref_switched=True,
+            max_snap_distance=50.0,
+            frame_idx=5, ref_idx=3,
+        )
+
+        # Run completed: got a U0 vector back
+        assert U0 is not None
+        assert U0.shape == (2 * n_nodes,)
+        # ReseedEvent was recorded with the correct frame_idx/ref_idx
+        assert len(state.reseed_events) == 1
+        ev: ReseedEvent = state.reseed_events[0]
+        assert ev.frame_idx == 5
+        assert ev.ref_idx == 3
+        assert ev.n_new_seeds >= 1
+        # state.current_seeds is the fresh auto-placed set, not the
+        # original (which would have failed).
+        assert len(state.current_seeds.seeds) >= 1
+
+    def test_warp_failure_then_autoplace_also_fails_reraises(self):
+        """If auto-place itself finds nothing, original SeedWarpFailure wins."""
+        from al_dic.io.image_ops import compute_image_gradient
+        from al_dic.mesh.mesh_setup import mesh_setup
+        from al_dic.solver.seed_prop_pipeline import (
+            SeedPropagationState,
+            build_grid_for_roi,
+            compute_seed_prop_init_guess,
+        )
+        from al_dic.solver.seed_propagation import SeedWarpFailure
+
+        h, w = 192, 192
+        # Pair with no matching structure (ref is speckle, def is random
+        # noise) — NCC will be low everywhere, so auto-place can't find
+        # anything above the floor.
+        ref = _speckle(h, w, seed=31)
+        rng = np.random.RandomState(99)
+        deformed = rng.rand(h, w).astype(np.float64)
+        mask = np.ones((h, w), dtype=np.float64)
+
+        # Strict NCC floor — auto-place cannot find anything on the
+        # random-noise "deformed" image.
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=0, region_id=0),),
+            ncc_threshold=0.99,
+        )
+        para = _make_para(h, w, seed_set=seed_set)
+        x0, y0 = build_grid_for_roi(para, h, w)
+        dic_mesh = mesh_setup(x0, y0, para)
+        coords = dic_mesh.coordinates_fem
+        n_nodes = coords.shape[0]
+
+        prev_U_2d = np.zeros((n_nodes, 2))
+        prev_U_2d[0] = [10000.0, 10000.0]  # push seed out of map
+
+        state = SeedPropagationState(
+            current_seeds=seed_set,
+            prev_coords_fem=coords.copy(),
+            prev_U_2d=prev_U_2d,
+        )
+        Df = compute_image_gradient(ref, mask)
+
+        with pytest.raises(SeedWarpFailure, match="Auto-place fallback"):
+            compute_seed_prop_init_guess(
+                state, dic_mesh,
+                ref, deformed, mask, Df, para,
+                tol=para.tol, ref_switched=True,
+                max_snap_distance=50.0,
+                frame_idx=1, ref_idx=1,
+            )
+
+
 class TestSeedPropagationQualityGates:
     """Verify fail-loud behavior when a user picks a bad seed location.
     Any SeedPropagationError subclass is acceptable — the contract is
