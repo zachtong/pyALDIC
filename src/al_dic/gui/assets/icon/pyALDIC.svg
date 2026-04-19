@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="clip">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"></rect>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip)">
+    <rect x="0" y="0" width="512" height="512" fill="#1e293b"></rect>
+    <text x="256" y="248" text-anchor="middle" font-family="Segoe UI, SF Pro Display, Inter, -apple-system, Helvetica, Arial, sans-serif" font-weight="900" font-size="220" letter-spacing="-8" fill="#ffffff">AL</text>
+    <g transform="translate(256 420) skewX(-10) translate(-256 -420)">
+      <text x="256" y="440" text-anchor="middle" font-family="Segoe UI, SF Pro Display, Inter, -apple-system, Helvetica, Arial, sans-serif" font-weight="900" font-size="180" letter-spacing="-6" fill="#14dcc8">DIC</text>
+    </g>
+  </g>
+</svg>

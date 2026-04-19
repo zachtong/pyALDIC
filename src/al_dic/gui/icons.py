@@ -153,30 +153,21 @@ def icon_maximize() -> QIcon:
 # -- Application icon -------------------------------------------------------
 
 def icon_app() -> QIcon:
-    """Quadtree mesh + displacement arrow app icon (64x64)."""
-    return _svg_to_icon(
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-        '<rect x="2" y="2" width="60" height="60" rx="10" fill="#6366f1"/>'
-        # Quadtree mesh: 2x2 base grid
-        '<line x1="32" y1="6" x2="32" y2="58" stroke="white" '
-        'stroke-width="1.5" opacity="0.8"/>'
-        '<line x1="6" y1="32" x2="58" y2="32" stroke="white" '
-        'stroke-width="1.5" opacity="0.8"/>'
-        # Top-left quadrant refined (2x2 sub-grid)
-        '<line x1="19" y1="6" x2="19" y2="32" stroke="white" '
-        'stroke-width="1" opacity="0.6"/>'
-        '<line x1="6" y1="19" x2="32" y2="19" stroke="white" '
-        'stroke-width="1" opacity="0.6"/>'
-        # Further refine top-left corner
-        '<line x1="12.5" y1="6" x2="12.5" y2="19" stroke="white" '
-        'stroke-width="0.8" opacity="0.4"/>'
-        '<line x1="6" y1="12.5" x2="19" y2="12.5" stroke="white" '
-        'stroke-width="0.8" opacity="0.4"/>'
-        # Displacement arrow (cyan accent)
-        '<line x1="38" y1="52" x2="52" y2="38" stroke="#14dcc8" '
-        'stroke-width="2.5" stroke-linecap="round"/>'
-        '<polyline points="48,38 52,38 52,42" fill="none" stroke="#14dcc8" '
-        'stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-        '</svg>',
-        size=64,
-    )
+    """Load the packaged pyALDIC application icon.
+
+    Loads ``gui/assets/icon/pyALDIC.ico`` — a multi-resolution ICO that
+    Qt scales into whichever size the OS asks for (window chrome, task
+    bar, Alt-Tab, etc.). Falls back to the 256-px PNG if the ICO is
+    missing and finally to an empty QIcon so a broken asset never
+    crashes startup.
+    """
+    from pathlib import Path
+
+    asset_dir = Path(__file__).parent / "assets" / "icon"
+    for name in ("pyALDIC.ico", "pyALDIC-256.png", "pyALDIC.svg"):
+        path = asset_dir / name
+        if path.is_file():
+            icon = QIcon(str(path))
+            if not icon.isNull():
+                return icon
+    return QIcon()
