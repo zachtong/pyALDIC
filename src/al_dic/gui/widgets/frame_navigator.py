@@ -2,117 +2,18 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-from PySide6.QtCore import QEvent, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter
+from PySide6.QtCore import Qt, QTimer
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QSlider,
-    QStyle,
-    QStyleOptionSlider,
-    QToolTip,
     QWidget,
 )
 
 from al_dic.gui.app_state import AppState
 from al_dic.gui.theme import COLORS
-
-
-# Marker colors: kept here instead of theme.py because they are
-# navigator-local and not re-used elsewhere. Chosen to contrast with
-# the dark panel background while remaining distinguishable.
-_REF_SWITCH_COLOR = QColor("#4aa3ff")   # blue: ref-switch
-_RESEED_COLOR = QColor("#ff9a3c")       # orange: auto-reseed fired
-_MARKER_RADIUS_PX = 4
-_MARKER_HIT_RADIUS_PX = 6  # for hover tooltips
-
-
-@dataclass(frozen=True)
-class _FrameMarker:
-    """One marker drawn on the slider groove.
-
-    ``color`` and ``tooltip`` are the rendering bits; the dict key in
-    ``_MarkedSlider._markers`` is the frame index.
-    """
-
-    color: QColor
-    tooltip: str
-
-
-class _MarkedSlider(QSlider):
-    """QSlider variant that paints small colored dots at given frame
-    indices and shows tooltips when the cursor hovers near them.
-
-    Markers are stored as a ``dict[int, _FrameMarker]`` where the key is
-    the frame index on the slider's own scale (``minimum()``, ``maximum()``).
-    Setting markers auto-triggers a repaint.
-    """
-
-    def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__(Qt.Orientation.Horizontal, parent)
-        self._markers: dict[int, _FrameMarker] = {}
-        self.setMouseTracking(True)
-
-    def set_markers(self, markers: dict[int, _FrameMarker]) -> None:
-        self._markers = dict(markers)
-        self.update()
-
-    def clear_markers(self) -> None:
-        if self._markers:
-            self._markers = {}
-            self.update()
-
-    def _frame_to_x(self, frame: int) -> int:
-        """Convert a frame index to x pixel along the groove."""
-        opt = QStyleOptionSlider()
-        self.initStyleOption(opt)
-        groove = self.style().subControlRect(
-            QStyle.ComplexControl.CC_Slider,
-            opt,
-            QStyle.SubControl.SC_SliderGroove,
-            self,
-        )
-        span = self.maximum() - self.minimum()
-        if span <= 0:
-            return groove.center().x()
-        frac = (frame - self.minimum()) / span
-        return int(groove.x() + frac * groove.width())
-
-    def paintEvent(self, event) -> None:
-        super().paintEvent(event)
-        if not self._markers:
-            return
-        painter = QPainter(self)
-        try:
-            painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
-            cy = self.rect().center().y() - 8  # above the groove center
-            for frame, marker in self._markers.items():
-                cx = self._frame_to_x(frame)
-                painter.setBrush(marker.color)
-                painter.setPen(Qt.PenStyle.NoPen)
-                painter.drawEllipse(
-                    cx - _MARKER_RADIUS_PX,
-                    cy - _MARKER_RADIUS_PX,
-                    2 * _MARKER_RADIUS_PX,
-                    2 * _MARKER_RADIUS_PX,
-                )
-        finally:
-            painter.end()
-
-    def event(self, ev: QEvent) -> bool:
-        if ev.type() == QEvent.Type.ToolTip and self._markers:
-            pos = ev.pos()
-            for frame, marker in self._markers.items():
-                cx = self._frame_to_x(frame)
-                if abs(pos.x() - cx) <= _MARKER_HIT_RADIUS_PX:
-                    QToolTip.showText(ev.globalPos(), marker.tooltip, self)
-                    return True
-            QToolTip.hideText()
-        return super().event(ev)
 
 try:
     from al_dic.gui.icons import (
@@ -203,9 +104,8 @@ class FrameNavigator(QWidget):
         )
         layout.addWidget(self._label)
 
-        # Slider (marker-aware: paints dots for ref-switch / auto-reseed
-        # frames once a pipeline result is set on AppState).
-        self._slider = _MarkedSlider(self)
+        # Slider
+        self._slider = QSlider(Qt.Orientation.Horizontal)
         self._slider.setRange(0, 0)
         self._slider.valueChanged.connect(self._on_slider_changed)
         layout.addWidget(self._slider, stretch=1)
@@ -219,7 +119,6 @@ class FrameNavigator(QWidget):
         # Connect signals
         self._state.images_changed.connect(self._on_images_changed)
         self._state.current_frame_changed.connect(self._on_frame_changed)
-        self._state.results_changed.connect(self._on_results_changed)
 
     def _on_images_changed(self) -> None:
         n = len(self._state.image_files)
@@ -227,33 +126,6 @@ class FrameNavigator(QWidget):
         self._update_label(0, n)
         # Stop playback when images change
         self._stop_playback()
-        # Results (and their markers) are cleared alongside new images.
-        self._slider.clear_markers()
-
-    def _on_results_changed(self) -> None:
-        results = self._state.results
-        if results is None:
-            self._slider.clear_markers()
-            return
-        markers: dict[int, _FrameMarker] = {}
-        for frame in getattr(results, "ref_switch_frames", ()):
-            markers[int(frame)] = _FrameMarker(
-                color=_REF_SWITCH_COLOR,
-                tooltip=f"Ref-switch at frame {frame + 1}",
-            )
-        # Reseed markers take precedence over plain ref-switch (orange
-        # overrides blue because auto-reseed implies the ref-switch
-        # already happened but also failed its warp).
-        for event in getattr(results, "reseed_events", ()):
-            frame = int(event.frame_idx)
-            tooltip = (
-                f"Frame {frame + 1}: auto-placed {event.n_new_seeds} "
-                f"new seed(s). Reason: {event.reason}"
-            )
-            markers[frame] = _FrameMarker(
-                color=_RESEED_COLOR, tooltip=tooltip,
-            )
-        self._slider.set_markers(markers)
 
     def _on_frame_changed(self, idx: int) -> None:
         self._slider.blockSignals(True)
