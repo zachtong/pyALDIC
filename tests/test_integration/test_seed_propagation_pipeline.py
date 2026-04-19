@@ -428,6 +428,77 @@ class TestSeedPropagationReseedFallback:
             )
 
 
+class TestSeedPropagationResultExposure:
+    """Verify ref_switch_frames and reseed_events propagate to
+    PipelineResult so the GUI can surface them.
+    """
+
+    def test_ref_switch_frames_populated(self):
+        """Multi-ref-switch run: every switch-frame appears in result."""
+        h, w = 192, 192
+        dx, dy = 1.0, 0.4
+        ref = _speckle(h, w, seed=41)
+        images = [ref]
+        for k in (1, 2, 3, 4, 5):
+            images.append(
+                ndimage_shift(ref, [k * dy, k * dx], order=3, mode="reflect"),
+            )
+        masks = [np.ones((h, w)) for _ in images]
+
+        # Probe node for seed
+        probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
+        probe = run_aldic(
+            probe_para, images[:2], masks[:2], compute_strain=False,
+        )
+        coords = probe.dic_mesh.coordinates_fem
+        center = np.array([w / 2, h / 2])
+        seed_idx = int(np.argmin(np.linalg.norm(coords - center, axis=1)))
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=seed_idx, region_id=0),),
+            ncc_threshold=0.3,
+        )
+        schedule = FrameSchedule.from_every_n(2, n_frames=6)
+        # refs = (0, 0, 2, 2, 4): switches happen at frame indices where
+        # ref_idx differs from prev. That is frames 2 (ref 0->2) and 4
+        # (ref 2->4). The loop starts at frame 1 (first displacement);
+        # prev_ref_idx is None at frame 1 so no switch recorded there.
+        para = _make_para(
+            h, w, seed_set=seed_set,
+            frame_schedule=schedule,
+            reference_mode="incremental",
+        )
+        result = run_aldic(para, images, masks, compute_strain=False)
+
+        # Two ref-switches: at frame 3 (ref 0->2) and frame 5 (ref 2->4).
+        assert result.ref_switch_frames == (3, 5)
+        # Run completed normally (no warp failures with this small motion)
+        # so reseed_events remains empty.
+        assert result.reseed_events == ()
+
+    def test_non_seed_prop_runs_have_empty_reseed_events(self):
+        """Non-seed-prop modes should have empty reseed_events but can still
+        report ref_switch_frames."""
+        h, w = 128, 128
+        ref = _speckle(h, w, seed=51)
+        deformed = ndimage_shift(ref, [0.5, 1.0], order=3, mode="reflect")
+        images = [ref, deformed, deformed, deformed]
+        masks = [np.ones((h, w)) for _ in images]
+
+        schedule = FrameSchedule.from_every_n(2, n_frames=4)
+        para = _make_para(
+            h, w, seed_set=None, init_mode="fft",
+            frame_schedule=schedule,
+            reference_mode="incremental",
+        )
+        result = run_aldic(para, images, masks, compute_strain=False)
+        assert result.reseed_events == ()
+        # The presence or absence of ref_switch_frames in non-seed-prop
+        # modes is determined by the schedule; just verify the attribute
+        # exists and is a tuple.
+        assert isinstance(result.ref_switch_frames, tuple)
+
+
 class TestSeedPropagationQualityGates:
     """Verify fail-loud behavior when a user picks a bad seed location.
     Any SeedPropagationError subclass is acceptable — the contract is

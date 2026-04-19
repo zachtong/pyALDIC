@@ -462,6 +462,16 @@ class PipelineResult:
         result_def_grad: Per-frame deformation gradient results.
         result_strain: Per-frame strain results (empty if strain not computed).
         result_fe_mesh_each_frame: Per-frame FE mesh snapshots.
+        ref_switch_frames: Displacement-frame indices where the active
+            reference frame changed. Empty on pure accumulative runs or
+            single-ref incremental runs. Produced by every init_guess_mode,
+            not just seed_propagation; consumers render a marker in the
+            frame navigator.
+        reseed_events: Auto-reseed log from seed_propagation mode. Each
+            entry records a frame where warp_seeds_to_new_ref failed and
+            the pipeline fell back to auto-placing fresh seeds on the
+            new reference frame. Empty on non-seed-prop runs and on
+            seed-prop runs where every warp succeeded.
     """
 
     dic_para: DICPara
@@ -471,6 +481,8 @@ class PipelineResult:
     result_strain: list[StrainResult]
     result_fe_mesh_each_frame: list[DICMesh]
     frame_schedule: FrameSchedule | None = None
+    ref_switch_frames: tuple[int, ...] = ()
+    reseed_events: tuple = ()  # tuple[ReseedEvent, ...] — avoid import cycle
 
 
 # ---------------------------------------------------------------------------

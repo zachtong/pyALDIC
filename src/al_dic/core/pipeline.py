@@ -643,6 +643,10 @@ def run_aldic(
         init_guess_mode = "previous"
     # Track previous ref to detect ref switches (force FFT on switch)
     prev_ref_idx: int | None = None
+    # Collect displacement-frame indices that triggered a ref switch.
+    # Surfaced via ``PipelineResult.ref_switch_frames`` so consumers
+    # (e.g. the GUI frame navigator) can render markers.
+    ref_switch_frames: list[int] = []
 
     # Seed-propagation per-run state (None when mode is anything else).
     # V1 restriction: seed_propagation is incompatible with refinement
@@ -731,6 +735,7 @@ def run_aldic(
                 prev_ref_idx, ref_idx,
             )
             current_U0 = None
+            ref_switch_frames.append(frame_idx)
         prev_ref_idx = ref_idx
 
         # --- Load reference image (with cache) ---
@@ -1505,6 +1510,9 @@ def run_aldic(
             elements_fem=np.empty((0, 8), dtype=np.int64),
         )
     )
+    reseed_events = tuple(
+        seed_prop_state.reseed_events
+    ) if seed_prop_state is not None else ()
     pipeline_result = PipelineResult(
         dic_para=para,
         dic_mesh=canonical_mesh,
@@ -1513,6 +1521,8 @@ def run_aldic(
         result_strain=valid_strain,
         result_fe_mesh_each_frame=valid_mesh,
         frame_schedule=schedule,
+        ref_switch_frames=tuple(ref_switch_frames),
+        reseed_events=reseed_events,
     )
 
     progress(1.0, "Pipeline complete.")
