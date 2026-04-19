@@ -74,6 +74,18 @@ Near mask boundaries, standard square subsets include invalid pixels. pyALDIC au
 
 For large inter-frame displacement (> 50 px) or discontinuous fields (cracks, shear bands), the default FFT-every-node search becomes slow and error-prone near discontinuities. Select **Starting Points** in the Initial-Guess panel, place one or more points per connected mask region on the canvas (manually or via **Auto-place**), and pyALDIC bootstraps each point with a single-point cross-correlation, then propagates the displacement field along mesh neighbours using F-aware (first-order) extrapolation. On a 512×512 speckle with 100 px rigid translation, this is ~3× faster than FFT with auto-expand, and crucially doesn't pick the wrong side of a crack. Every region must hold at least one point (yellow → green) before the Run button enables.
 
+<p align="center">
+  <img src="assets/seed_propagation_demo.gif" alt="Seed propagation — BFS wave expanding from the starting point around a crack tip with local mesh refinement" width="90%"/>
+</p>
+
+### FFT Initial Guess
+
+The classical whole-field initial-guess method is also built in. Each node carries its own FFT cross-correlation against the deformed image, and the peak of the combined cross-power spectrum pins down the rigid-body component in one pass. Choose it when deformation is small-to-moderate and the mesh is dense — one FFT over the whole field is cheaper than per-node searches.
+
+<p align="center">
+  <img src="assets/fft_spectral_overlay_3d.gif" alt="FFT initial guess — two spectra combine into a cross-correlation peak that resolves into the displacement field" width="90%"/>
+</p>
+
 ### Visualization & Export
 
 Full-field displacement and strain overlay with configurable colormaps, alpha blending, and deformed configuration display. Export to MATLAB `.mat`, NumPy `.npz`, CSV, PNG field maps, animated GIF/MP4, and PDF reports.
