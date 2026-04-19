@@ -260,6 +260,7 @@ def compute_seed_prop_init_guess(
         search_radius=para.size_of_fft_search_region,
         tol=tol,
         node_region_map=region_map,
+        mask=f_mask,
     )
 
     U0 = np.empty(2 * n_nodes, dtype=np.float64)

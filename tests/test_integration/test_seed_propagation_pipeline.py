@@ -297,6 +297,72 @@ class TestSeedPropagationMultiRefSwitch:
             assert disp is not None, f"Frame index {k} failed."
 
 
+class TestMultiSeedTolerance:
+    """Tolerant bootstrap: a single bad seed is dropped, not fatal."""
+
+    def test_one_bad_seed_among_many_does_not_abort(self):
+        """Place two seeds — one in a textured area, one in a uniform
+        low-NCC area. The bad seed should be dropped and the run
+        should complete using the good one.
+        """
+        from al_dic.solver.local_icgn import local_icgn_precompute
+        from al_dic.mesh.mesh_setup import mesh_setup
+        from al_dic.io.image_ops import compute_image_gradient
+        from al_dic.solver.seed_prop_pipeline import build_grid_for_roi
+        from al_dic.solver.seed_propagation import (
+            build_node_adjacency, propagate_from_seeds,
+        )
+        from al_dic.utils.region_analysis import precompute_node_regions
+
+        h, w = 192, 192
+        ref = _speckle(h, w, seed=29)
+        ref[:, w // 2:] = 0.5  # right half uniform
+        deformed = ndimage_shift(ref, [0.0, 1.0], order=3, mode="reflect")
+        mask = np.ones((h, w), dtype=np.float64)
+
+        para = _make_para(
+            h, w,
+            seed_set=SeedSet(seeds=(Seed(0, 0),), ncc_threshold=0.85),
+        )
+        x0, y0 = build_grid_for_roi(para, h, w)
+        mesh = mesh_setup(x0, y0, para)
+        coords = mesh.coordinates_fem
+
+        # Good seed: left-half textured, near centre vertically.
+        good_candidates = np.where(
+            (coords[:, 0] < w / 2 - 20) & (np.abs(coords[:, 1] - h / 2) < 20),
+        )[0]
+        good_idx = int(good_candidates[len(good_candidates) // 2])
+        # Bad seed: right-half uniform.
+        bad_candidates = np.where(coords[:, 0] > w / 2 + 20)[0]
+        bad_idx = int(bad_candidates[len(bad_candidates) // 2])
+
+        seed_set = SeedSet(
+            seeds=(
+                Seed(node_idx=bad_idx, region_id=0),
+                Seed(node_idx=good_idx, region_id=0),
+            ),
+            ncc_threshold=0.85,
+        )
+        Df = compute_image_gradient(ref, mask)
+        ctx = local_icgn_precompute(coords, Df, ref, para)
+        adj = build_node_adjacency(mesh.elements_fem, coords.shape[0])
+        region_map = precompute_node_regions(coords, mask, (h, w))
+
+        result = propagate_from_seeds(
+            ctx, seed_set, adj, ref, deformed,
+            search_radius=20, tol=1e-2,
+            node_region_map=region_map,
+            mask=mask,
+        )
+        # Bad seed was dropped; good seed survived.
+        dropped_ids = {d[0] for d in result.dropped_seeds}
+        assert bad_idx in dropped_ids
+        assert good_idx not in dropped_ids
+        # Left-half nodes were solved via propagation from the good seed.
+        assert result.U_2d.shape[0] > 0
+
+
 class TestSeedPropagationReseedFallback:
     """Exercise the auto-reseed fallback path when warp raises."""
 
@@ -507,45 +573,69 @@ class TestSeedPropagationQualityGates:
     in isolation.
     """
 
-    def test_seed_in_low_texture_region_raises(self):
-        """Seed placed in a uniform zone triggers a SeedPropagationError.
+    def test_low_texture_seed_rescued_by_autoplace(self):
+        """Bad seed in a uniform zone is dropped and the auto-place
+        fallback rescues it by finding a textured node in the same
+        region. Run completes; pipeline does not raise.
 
-        Ascending failure modes depending on setup:
-          - NCC < threshold (SeedNCCBelowThreshold) — if search-window
-            fits in image at the clamp-down search_radius.
-          - Out-of-bounds (SeedPropagationError 'window out of image
-            bounds') — if auto-expand pushes the window past the edge
-            because uniform regions keep clipping the peak.
-
-        Either is acceptable: the test confirms the pipeline propagates
-        a typed error rather than silently continuing with garbage.
+        The old behavior was "any single seed failure aborts the run".
+        The tolerant multi-seed path treats individual failures as
+        drops and relies on auto-place to cover regions that would
+        otherwise have no working seed.
         """
         h, w = 192, 192
-        # Textured left half, uniform right half.
         ref = _speckle(h, w, seed=13)
-        ref[:, w // 2:] = 0.5  # kill all texture in right half
-        deformed = ndimage_shift(
-            ref, [0.0, 1.5], order=3, mode="reflect",
-        )
+        ref[:, w // 2:] = 0.5  # right half uniform (low NCC zone)
+        deformed = ndimage_shift(ref, [0.0, 1.5], order=3, mode="reflect")
         masks = [np.ones((h, w)), np.ones((h, w))]
 
-        # Probe mesh to pick a node in the uniform right half
         probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
         probe = run_aldic(
             probe_para, [ref, deformed], masks, compute_strain=False,
         )
         coords = probe.dic_mesh.coordinates_fem
-        # Nodes with x > w/2 are in the uniform zone
         right_half = np.where(coords[:, 0] > w / 2 + 20)[0]
         bad_seed_idx = int(right_half[len(right_half) // 2])
 
         seed_set = SeedSet(
             seeds=(Seed(node_idx=bad_seed_idx, region_id=0),),
-            ncc_threshold=0.85,  # strict — uniform region won't reach this
+            ncc_threshold=0.85,  # strict — bad seed will fail bootstrap
+        )
+        para = _make_para(h, w, seed_set=seed_set)
+        result = run_aldic(
+            para, [ref, deformed], masks, compute_strain=False,
+        )
+        assert result.result_disp[0] is not None
+
+    def test_no_texture_anywhere_raises(self):
+        """If neither the user seed nor any auto-placed rescue candidate
+        can clear the NCC floor, the pipeline still raises — the
+        tolerance is bounded, it does not silently return garbage.
+        """
+        h, w = 192, 192
+        ref = _speckle(h, w, seed=17)
+        # Make deformed image effectively random — no node will pass
+        # a strict NCC threshold anywhere.
+        rng = np.random.RandomState(99)
+        deformed = rng.rand(h, w).astype(np.float64)
+        masks = [np.ones((h, w)), np.ones((h, w))]
+
+        probe_para = _make_para(h, w, seed_set=None, init_mode="fft")
+        probe = run_aldic(
+            probe_para, [ref, deformed], masks, compute_strain=False,
+        )
+        coords = probe.dic_mesh.coordinates_fem
+        center_idx = int(np.argmin(
+            np.linalg.norm(coords - np.array([w / 2, h / 2]), axis=1),
+        ))
+
+        seed_set = SeedSet(
+            seeds=(Seed(node_idx=center_idx, region_id=0),),
+            ncc_threshold=0.95,  # impossibly strict against random noise
         )
         para = _make_para(h, w, seed_set=seed_set)
 
-        with pytest.raises((SeedNCCBelowThreshold, SeedPropagationError)):
+        with pytest.raises(SeedPropagationError):
             run_aldic(
                 para, [ref, deformed], masks, compute_strain=False,
             )

@@ -133,7 +133,7 @@ class AppState(QObject):
         # Seed propagation parameters (only relevant when
         # init_guess_mode == "seed_propagation").
         self.seeds: list[SeedRecord] = []
-        self.seed_ncc_threshold: float = 0.70
+        self.seed_ncc_threshold: float = 0.55
         # Computation
         self.run_state: RunState = RunState.IDLE
         self.progress: float = 0.0

@@ -114,7 +114,7 @@ class SeedSet:
     """
 
     seeds: tuple[Seed, ...]
-    ncc_threshold: float = 0.70
+    ncc_threshold: float = 0.55
     max_bfs_depth: int = 0
 
 
@@ -400,6 +400,14 @@ class PropagationResult:
     seed_ncc_min: float
     n_solve_calls: int
     unsolved_nodes: NDArray[np.int64]
+    # Per-seed bootstrap outcome. ``dropped_seeds`` lists seeds from
+    # the input SeedSet whose bootstrap failed (low NCC or IC-GN
+    # divergence) and were skipped. ``rescued_seeds`` lists auto-
+    # placed replacements that covered regions whose original seeds
+    # all failed. Both default to empty tuples; populated only by the
+    # tolerant bootstrap path.
+    dropped_seeds: tuple[tuple[int, str], ...] = ()
+    rescued_seeds: tuple[Seed, ...] = ()
 
 
 def _solve_single_node(
@@ -602,6 +610,7 @@ def propagate_from_seeds(
     search_radius: int,
     tol: float,
     node_region_map: NodeRegionMap | None = None,
+    mask: NDArray[np.float64] | np.ndarray | None = None,
 ) -> PropagationResult:
     """Eager first-converged BFS from seeds, with F-aware init per layer.
 
@@ -614,6 +623,16 @@ def propagate_from_seeds(
       - Layer-sync BFS: whole frontier batched per local_icgn_solve_subset
         call, exposing Numba prange parallelism.
 
+    Multi-seed tolerance: each seed is bootstrapped independently. A
+    single seed whose NCC falls below threshold or whose IC-GN diverges
+    is DROPPED (recorded in ``dropped_seeds``) rather than aborting the
+    run — BFS still starts from whatever seeds survived. If every seed
+    in a connected region fails and ``mask`` is provided, the function
+    calls ``auto_place_seeds_on_mesh`` on that region to try to recover;
+    those auto-placed replacements appear in ``rescued_seeds``. The
+    pipeline only raises when, after both mechanisms, some region still
+    has zero working seeds.
+
     Args:
         ctx: Precomputed reference-side state for the full mesh.
         seed_set: Seeds + thresholds (ncc_threshold, max_bfs_depth).
@@ -624,22 +643,24 @@ def propagate_from_seeds(
             Auto-expands on clipped peaks.
         tol: IC-GN convergence tolerance (same as local_icgn).
         node_region_map: Optional connected-component map. When provided,
-            every region must have at least one seed (BFS cannot cross
-            region boundaries), and each seed's declared region_id must
-            match its node's actual region. See _validate_multi_region_seeds.
+            every region must end up with at least one successful seed
+            (after any auto-place rescue). See _validate_multi_region_seeds.
+        mask: Optional ROI mask. When provided together with
+            ``node_region_map``, enables the auto-place fallback for
+            regions whose original seeds all failed.
 
     Returns:
-        PropagationResult. Unsolved nodes carry NaN in U_2d and whatever
-        diverged IC-GN wrote in F_2d; caller's postprocess handles NaN.
+        PropagationResult with U, F, and per-seed bootkeeping
+        (``dropped_seeds``, ``rescued_seeds``).
 
     Raises:
-        SeedNCCBelowThreshold: A seed's bootstrap NCC < threshold.
-        SeedICGNDiverged: A seed's own IC-GN solve failed to converge.
-        MissingSeedForRegion: A region has no seed, or a seed's region_id
-            disagrees with node_region_map.
+        MissingSeedForRegion: After drops + rescues, a region still
+            has no working seed.
         SeedPropagationError: Seed FFT window out of image bounds, or
             seed lies outside any tracked region.
     """
+    from .seed_auto_place import AutoPlaceConfig, auto_place_seeds_on_mesh
+
     n = ctx.n_nodes
     max_iter = ctx.max_iter
     winsize = ctx.winsize
@@ -652,20 +673,29 @@ def propagate_from_seeds(
     conv_iter = np.full(n, max_iter + 2, dtype=np.int64)
     solved = np.zeros(n, dtype=bool)
 
-    seed_ncc_min = float("inf")
+    seed_ncc_values: list[float] = []
     n_solve_calls = 0
+    dropped_seeds: list[tuple[int, str]] = []
+    active_seeds: list[Seed] = []
+    rescued_seeds: list[Seed] = []
 
-    # --- Seed bootstrap: single-point NCC + IC-GN per seed --------------
-    for seed in seed_set.seeds:
+    def _bootstrap_one(seed: Seed) -> bool:
+        """Try to bootstrap one seed. Return True on success, False on a
+        typed seed-level failure (bad NCC or IC-GN divergence). Raises
+        any other SeedPropagationError (e.g. window out of bounds)."""
+        nonlocal n_solve_calls
         seed_xy = (
             float(ctx.coordinates_fem[seed.node_idx, 0]),
             float(ctx.coordinates_fem[seed.node_idx, 1]),
         )
-        fft_result = _bootstrap_seed_fft(
-            f_img, g_img, seed_xy, winsize, search_radius,
-            seed.user_hint_uv, seed_set.ncc_threshold,
-        )
-        seed_ncc_min = min(seed_ncc_min, fft_result.ncc_peak)
+        try:
+            fft_result = _bootstrap_seed_fft(
+                f_img, g_img, seed_xy, winsize, search_radius,
+                seed.user_hint_uv, seed_set.ncc_threshold,
+            )
+        except SeedNCCBelowThreshold as exc:
+            dropped_seeds.append((int(seed.node_idx), str(exc)))
+            return False
 
         U_seed, F_seed, iter_seed = _solve_single_node(
             ctx, seed.node_idx,
@@ -674,18 +704,71 @@ def propagate_from_seeds(
         )
         n_solve_calls += 1
         if iter_seed > max_iter:
-            raise SeedICGNDiverged(
-                f"Seed at node {seed.node_idx} "
-                f"(xy={seed_xy}) IC-GN did not converge "
-                f"(iterations={iter_seed}, max={max_iter})."
-            )
+            dropped_seeds.append((
+                int(seed.node_idx),
+                f"IC-GN did not converge (iter={iter_seed} > {max_iter})",
+            ))
+            return False
+
+        seed_ncc_values.append(float(fft_result.ncc_peak))
         U_2d[seed.node_idx] = U_seed
         F_2d[seed.node_idx] = F_seed
         conv_iter[seed.node_idx] = iter_seed
         solved[seed.node_idx] = True
+        return True
 
-    if seed_ncc_min == float("inf"):
-        seed_ncc_min = float("nan")
+    # --- Pass 1: bootstrap every user-supplied seed independently.
+    for seed in seed_set.seeds:
+        if _bootstrap_one(seed):
+            active_seeds.append(seed)
+
+    # --- Pass 2: any region with zero active seeds → auto-place rescue
+    # (only if node_region_map + mask are provided).
+    if node_region_map is not None and mask is not None:
+        active_regions = {int(s.region_id) for s in active_seeds}
+        required_regions = set(range(node_region_map.n_regions))
+        missing = required_regions - active_regions
+        if missing:
+            ap_config = AutoPlaceConfig(ncc_threshold=seed_set.ncc_threshold)
+            # Only place on the missing regions; pass adjacency so the
+            # BFS-depth tier doesn't rebuild it.
+            ap_result = auto_place_seeds_on_mesh(
+                coordinates_fem=ctx.coordinates_fem,
+                elements_fem=np.empty((0, 8), dtype=np.int64),
+                node_region_map=node_region_map,
+                f_img=f_img, g_img=g_img, mask=np.asarray(mask),
+                winsize=winsize,
+                search_radius=search_radius,
+                config=ap_config,
+                skip_region_ids=frozenset(active_regions),
+                adjacency=adjacency,
+            )
+            # Bootstrap each rescue candidate; keep the ones that pass.
+            for rs in ap_result.seed_set.seeds:
+                if _bootstrap_one(rs):
+                    active_seeds.append(rs)
+                    rescued_seeds.append(rs)
+
+    # --- Region-coverage hard check after drops + rescues.
+    if node_region_map is not None:
+        active_regions = {int(s.region_id) for s in active_seeds}
+        required_regions = set(range(node_region_map.n_regions))
+        still_missing = sorted(required_regions - active_regions)
+        if still_missing:
+            raise MissingSeedForRegion(
+                f"{len(still_missing)} region(s) have no working seed "
+                f"after drops + rescues: indices {still_missing}. "
+                f"({len(dropped_seeds)} user seeds dropped, "
+                f"{len(rescued_seeds)} auto-place seeds accepted)."
+            )
+    elif not active_seeds:
+        # No region map, but every seed dropped — nothing to propagate.
+        raise SeedPropagationError(
+            f"Every seed ({len(dropped_seeds)}) failed bootstrap; "
+            f"nothing to propagate."
+        )
+
+    seed_ncc_min = min(seed_ncc_values) if seed_ncc_values else float("nan")
 
     # --- Layer-sync BFS -----------------------------------------------
     depth = 0
@@ -753,7 +836,9 @@ def propagate_from_seeds(
         U_2d=U_2d,
         F_2d=F_2d,
         conv_iter=conv_iter,
-        n_seeds=len(seed_set.seeds),
+        n_seeds=len(active_seeds),
+        dropped_seeds=tuple(dropped_seeds),
+        rescued_seeds=tuple(rescued_seeds),
         max_bfs_depth_reached=depth,
         seed_ncc_min=seed_ncc_min,
         n_solve_calls=n_solve_calls,

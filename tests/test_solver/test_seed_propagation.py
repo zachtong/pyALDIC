@@ -52,7 +52,7 @@ class TestDataStructures:
 
     def test_seedset_defaults(self):
         ss = SeedSet(seeds=(Seed(0, 0),))
-        assert ss.ncc_threshold == 0.70
+        assert ss.ncc_threshold == 0.55
         assert ss.max_bfs_depth == 0
         assert len(ss.seeds) == 1
 
