@@ -648,7 +648,7 @@ class MainWindow(QMainWindow):
         """
         state = self._state
         if not state.image_files:
-            state.log_message.emit("Load images first.", "warn")
+            state.log_message.emit(self.tr("Load images first."), "warn")
             return
         if state.current_frame != 0:
             state.log_message.emit(
@@ -701,7 +701,7 @@ class MainWindow(QMainWindow):
         """Open the batch mask import dialog and load assigned masks."""
         state = self._state
         if not state.image_files:
-            state.log_message.emit("Load images first.", "warn")
+            state.log_message.emit(self.tr("Load images first."), "warn")
             return
 
         from al_dic.gui.dialogs.batch_import_dialog import BatchImportDialog

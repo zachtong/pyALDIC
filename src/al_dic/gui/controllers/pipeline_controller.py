@@ -342,7 +342,7 @@ class PipelineController:
             state.roi_editing = False
             state.display_changed.emit()
 
-            state.log_message.emit("Building pipeline configuration...", "info")
+            state.log_message.emit(self.tr("Building pipeline configuration..."), "info")
 
             # Build DICPara from GUI state
             n_images = len(state.image_files)
@@ -491,7 +491,7 @@ class PipelineController:
             )
 
             # Load all images
-            state.log_message.emit("Loading images...", "info")
+            state.log_message.emit(self.tr("Loading images..."), "info")
             images = [
                 self._image_ctrl.read_image(i)
                 for i in range(n_images)

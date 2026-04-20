@@ -8,6 +8,30 @@
         <source>ADMM Iterations</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="50"/>
+        <source>Number of ADMM alternating minimization cycles for AL-DIC.
+1 = single global pass (fastest), 3 = default,
+5+ = diminishing returns for most cases.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="56"/>
+        <source>Only affects AL-DIC solver. Ignored by Local DIC.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="69"/>
+        <source>Auto-expand FFT search on clipped peaks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="75"/>
+        <source>When the NCC peak reaches the edge of the search region, automatically retry with a larger region (up to image half-size, 6 retries with 2x growth).
+
+Only relevant for the FFT init-guess mode.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BatchImportDialog</name>
@@ -152,6 +176,69 @@
     <message>
         <location filename="../../gui/panels/canvas_area.py" line="1397"/>
         <source>Placing Starting Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CanvasConfigOverlay</name>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="41"/>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="42"/>
+        <source>Solver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
+        <source>Init</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
+        <source>Accumulative</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="94"/>
+        <source>Incremental</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="102"/>
+        <source>Local DIC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="103"/>
+        <source>ADMM (%1 iter)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="111"/>
+        <source>Starting Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="113"/>
+        <source>Previous frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="115"/>
+        <source>FFT every frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <source>FFT every %1 fr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="123"/>
+        <source>FFT</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -647,6 +734,12 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <source>Open Session Failed</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../gui/app.py" line="651"/>
+        <location filename="../../gui/app.py" line="704"/>
+        <source>Load images first.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MeshAppearanceWidget</name>
@@ -777,6 +870,19 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="161"/>
         <source>Disp: px  Velocity: px/fr</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PipelineController</name>
+    <message>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="345"/>
+        <source>Building pipeline configuration...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="494"/>
+        <source>Loading images...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1047,6 +1153,19 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
 </context>
 <context>
+    <name>StrainFieldSelector</name>
+    <message>
+        <location filename="../../gui/widgets/strain_field_selector.py" line="150"/>
+        <source>DISPLACEMENT</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_field_selector.py" line="161"/>
+        <source>STRAIN</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>StrainNavigator</name>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="73"/>
@@ -1089,6 +1208,63 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="206"/>
         <source>Pause animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StrainParamPanel</name>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="69"/>
+        <source>Plane fitting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="70"/>
+        <source>FEM nodal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="72"/>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="81"/>
+        <source>VSG size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="97"/>
+        <source>Gaussian smoothing of the strain field after computation.
+σ is the Gaussian kernel width; &apos;step&apos; = DIC node spacing.
+  Light  (0.5 × step):  subtle, preserves fine features.
+  Medium (1 × step):    balanced, recommended for noisy data.
+  Strong (2 × step) ⚠:  aggressive, may blur real gradients.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="98"/>
+        <source>Strain field smoothing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="103"/>
+        <source>Infinitesimal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="104"/>
+        <source>Eulerian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="105"/>
+        <source>Green-Lagrangian</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="107"/>
+        <source>Strain type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1150,6 +1326,36 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/strain_window.py" line="181"/>
         <source>–</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="223"/>
+        <source>STRAIN PARAMETERS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="239"/>
+        <source>Export displacement and strain results to NPZ / MAT / CSV / PNG</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="270"/>
+        <source>FIELD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="276"/>
+        <source>VISUALIZATION</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="283"/>
+        <source>PHYSICAL UNITS</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="288"/>
+        <source>LOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

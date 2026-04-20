@@ -66,10 +66,10 @@ class StrainParamPanel(QWidget):
         # --- Method ---
         self._method_combo = QComboBox()
         self._method_codes = (2, 3)
-        self._method_combo.addItem("Plane fitting")
-        self._method_combo.addItem("FEM nodal")
+        self._method_combo.addItem(self.tr("Plane fitting"))
+        self._method_combo.addItem(self.tr("FEM nodal"))
         self._method_combo.setCurrentIndex(0)   # default: plane fitting (method 2)
-        layout.addRow("Method", self._method_combo)
+        layout.addRow(self.tr("Method"), self._method_combo)
 
         # --- VSG size (virtual strain gauge diameter, pixels) ---
         # Odd integer: VSG = 2*rad + 1.  Shown only for plane fitting.
@@ -78,7 +78,7 @@ class StrainParamPanel(QWidget):
         self._vsg_spin.setSingleStep(2)
         self._vsg_spin.setSuffix(" px")
         self._vsg_spin.setValue(_DEFAULT_VSG_PX)
-        layout.addRow("VSG size", self._vsg_spin)
+        layout.addRow(self.tr("VSG size"), self._vsg_spin)
 
         # --- Strain field smoothing ---
         # Applies Gaussian smoothing to the computed strain tensor field
@@ -86,25 +86,25 @@ class StrainParamPanel(QWidget):
         # Kernel width scales with local mesh spacing.
         self._smooth_combo = QComboBox()
         for label, _ in _SMOOTH_PRESETS:
-            self._smooth_combo.addItem(label)
+            self._smooth_combo.addItem(self.tr(label))
         self._smooth_combo.setCurrentIndex(0)   # default: Off
-        self._smooth_combo.setToolTip(
+        self._smooth_combo.setToolTip(self.tr(
             "Gaussian smoothing of the strain field after computation.\n"
-            "\u03c3 is the Gaussian kernel width; 'step' = DIC node spacing.\n"
-            "  Light  (0.5 \u00d7 step):  subtle, preserves fine features.\n"
-            "  Medium (1 \u00d7 step):    balanced, recommended for noisy data.\n"
-            "  Strong (2 \u00d7 step) ⚠:  aggressive, may blur real gradients."
-        )
-        layout.addRow("Strain field smoothing", self._smooth_combo)
+            "σ is the Gaussian kernel width; 'step' = DIC node spacing.\n"
+            "  Light  (0.5 × step):  subtle, preserves fine features.\n"
+            "  Medium (1 × step):    balanced, recommended for noisy data.\n"
+            "  Strong (2 × step) ⚠:  aggressive, may blur real gradients."
+        ))
+        layout.addRow(self.tr("Strain field smoothing"), self._smooth_combo)
 
         # --- Strain type ---
         self._type_combo = QComboBox()
         self._type_codes = (0, 1, 2)
-        self._type_combo.addItem("Infinitesimal")
-        self._type_combo.addItem("Eulerian")
-        self._type_combo.addItem("Green-Lagrangian")
+        self._type_combo.addItem(self.tr("Infinitesimal"))
+        self._type_combo.addItem(self.tr("Eulerian"))
+        self._type_combo.addItem(self.tr("Green-Lagrangian"))
         self._type_combo.setCurrentIndex(0)
-        layout.addRow("Strain type", self._type_combo)
+        layout.addRow(self.tr("Strain type"), self._type_combo)
 
         self._dirty = False
 

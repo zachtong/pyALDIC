@@ -220,7 +220,7 @@ class StrainWindow(QMainWindow):
         right_widget.setFixedWidth(320)
 
         # Strain parameters (first: user computes before viewing)
-        right.addWidget(_sec_label("STRAIN PARAMETERS"))
+        right.addWidget(_sec_label(self.tr("STRAIN PARAMETERS")))
         self._param_panel = StrainParamPanel()
         self._param_panel.params_dirty.connect(self._on_params_dirty)
         right.addWidget(self._param_panel)
@@ -234,9 +234,9 @@ class StrainWindow(QMainWindow):
 
         self._export_strain_btn = QPushButton(self.tr("Export Results"))
         self._export_strain_btn.setFixedHeight(30)
-        self._export_strain_btn.setToolTip(
+        self._export_strain_btn.setToolTip(self.tr(
             "Export displacement and strain results to NPZ / MAT / CSV / PNG"
-        )
+        ))
         self._export_strain_btn.setEnabled(False)
         self._export_strain_btn.clicked.connect(self._on_export_strain)
         right.addWidget(self._export_strain_btn)
@@ -267,25 +267,25 @@ class StrainWindow(QMainWindow):
         right.addWidget(self._stale_label)
 
         # Field selector (second: choose what to display after compute)
-        right.addWidget(_sec_label("FIELD"))
+        right.addWidget(_sec_label(self.tr("FIELD")))
         self._field_selector = StrainFieldSelector()
         self._field_selector.field_changed.connect(self._on_field_changed)
         right.addWidget(self._field_selector)
 
         # Visualization controls
-        right.addWidget(_sec_label("VISUALIZATION"))
+        right.addWidget(_sec_label(self.tr("VISUALIZATION")))
         self._viz_panel = StrainVizPanel()
         self._viz_panel.viz_changed.connect(self._on_viz_panel_changed)
         self._viz_panel.auto_disabled.connect(self._on_auto_range_disabled)
         right.addWidget(self._viz_panel)
 
         # Physical units
-        right.addWidget(_sec_label("PHYSICAL UNITS"))
+        right.addWidget(_sec_label(self.tr("PHYSICAL UNITS")))
         self._physical_units = PhysicalUnitsWidget()
         right.addWidget(self._physical_units)
 
         # Console
-        right.addWidget(_sec_label("LOG"))
+        right.addWidget(_sec_label(self.tr("LOG")))
         self._console = ConsoleLog()
         right.addWidget(self._console)
 

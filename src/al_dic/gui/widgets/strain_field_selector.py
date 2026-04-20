@@ -147,7 +147,7 @@ class StrainFieldSelector(QWidget):
         self._buttons: dict[str, QPushButton] = {}
 
         # --- DISPLACEMENT section ---
-        outer.addWidget(_section_label("DISPLACEMENT"))
+        outer.addWidget(_section_label(self.tr("DISPLACEMENT")))
         disp_grid = QGridLayout()
         disp_grid.setContentsMargins(0, 0, 0, 0)
         disp_grid.setHorizontalSpacing(4)
@@ -158,7 +158,7 @@ class StrainFieldSelector(QWidget):
         outer.addLayout(disp_grid)
 
         # --- STRAIN section ---
-        outer.addWidget(_section_label("STRAIN"))
+        outer.addWidget(_section_label(self.tr("STRAIN")))
         strain_grid = QGridLayout()
         strain_grid.setContentsMargins(0, 0, 0, 0)
         strain_grid.setHorizontalSpacing(4)

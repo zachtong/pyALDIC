@@ -43,17 +43,17 @@ class AdvancedTuningWidget(QWidget):
         self._admm_iter_spin.setRange(1, 10)
         self._admm_iter_spin.setValue(self._state.admm_max_iter)
         self._admm_iter_spin.setFixedWidth(60)
-        self._admm_iter_spin.setToolTip(
+        self._admm_iter_spin.setToolTip(self.tr(
             "Number of ADMM alternating minimization cycles for AL-DIC.\n"
             "1 = single global pass (fastest), 3 = default,\n"
             "5+ = diminishing returns for most cases."
-        )
+        ))
         admm_row.addWidget(self._admm_iter_spin)
         admm_row.addStretch()
         layout.addLayout(admm_row)
-        self._admm_hint = QLabel(
+        self._admm_hint = QLabel(self.tr(
             "Only affects AL-DIC solver. Ignored by Local DIC."
-        )
+        ))
         self._admm_hint.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
             f"padding-left: 6px;"
@@ -64,15 +64,15 @@ class AdvancedTuningWidget(QWidget):
         self._admm_iter_spin.setEnabled(self._state.use_admm)
 
         # --- FFT auto-expand -------------------------------------------
-        self._auto_expand_cb = QCheckBox(
+        self._auto_expand_cb = QCheckBox(self.tr(
             "Auto-expand FFT search on clipped peaks"
-        )
-        self._auto_expand_cb.setToolTip(
+        ))
+        self._auto_expand_cb.setToolTip(self.tr(
             "When the NCC peak reaches the edge of the search region, "
             "automatically retry with a larger region "
             "(up to image half-size, 6 retries with 2x growth).\n\n"
             "Only relevant for the FFT init-guess mode."
-        )
+        ))
         self._auto_expand_cb.setChecked(self._state.fft_auto_expand)
         layout.addWidget(self._auto_expand_cb)
 

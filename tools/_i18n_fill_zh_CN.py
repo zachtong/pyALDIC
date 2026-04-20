@@ -53,7 +53,7 @@ TRANSLATIONS: dict[str, str] = {
     "ELAPSED  %1": "已用  %1",
     "REMAINING  %1": "剩余  %1",
     "%1  \u2014  Frame %2": "%1  \u2014  第 %2 帧",
-    "FIELD": "场",
+    "FIELD": "场变量",
     "Show on deformed frame": "在变形帧上显示",
     "When checked, overlay results on the deformed (current) frame instead of the reference frame":
         "勾选后，将结果叠加在变形（当前）帧上，而非参考帧",
@@ -302,6 +302,54 @@ TRANSLATIONS: dict[str, str] = {
     "Complete": "完成",
     "⚠ Params changed -- click Compute Strain": "⚠ 参数已变更 — 请点击“计算应变”",
     "Unit: px/frame": "单位：px/帧",
+
+    # Advanced tuning — full tooltips
+    "Number of ADMM alternating minimization cycles for AL-DIC.\n1 = single global pass (fastest), 3 = default,\n5+ = diminishing returns for most cases.":
+        "AL-DIC 的 ADMM 交替最小化循环次数。\n1 = 单次全局迭代（最快），3 = 默认值，\n5 及以上对大多数场景收益递减。",
+    "Only affects AL-DIC solver. Ignored by Local DIC.":
+        "仅对 AL-DIC 求解器生效，Local DIC 会忽略。",
+    "Auto-expand FFT search on clipped peaks":
+        "峰值被截断时自动扩大 FFT 搜索范围",
+    "When the NCC peak reaches the edge of the search region, automatically retry with a larger region (up to image half-size, 6 retries with 2x growth).\n\nOnly relevant for the FFT init-guess mode.":
+        "当 NCC 峰值触及搜索区域边缘时，自动以更大的搜索范围重试（最大到图像一半尺寸，每次放大 2 倍，共 6 次重试）。\n\n仅对 FFT 初始猜测模式有效。",
+
+    # Canvas overlay
+    "Mode": "模式",
+    "Init": "初始猜测",
+    "Accumulative": "累积式",
+    "Incremental": "增量式",
+    "Local DIC": "Local DIC",
+    "ADMM (%1 iter)": "ADMM（%1 次迭代）",
+    "FFT every frame": "每帧 FFT",
+    "FFT every %1 fr": "每 %1 帧 FFT",
+    "FFT": "FFT",
+
+    # Log messages (common)
+    "Load images first.": "请先加载图像。",
+    "Building pipeline configuration...": "正在构建流水线配置…",
+    "Loading images...": "正在加载图像…",
+
+    # Strain field selector
+    "DISPLACEMENT": "位移",
+    "STRAIN": "应变",
+
+    # Strain param panel
+    "STRAIN PARAMETERS": "应变参数",
+    "Method": "方法",
+    "Plane fitting": "平面拟合",
+    "FEM nodal": "有限元节点",
+    "VSG size": "VSG 尺寸",
+    "Strain field smoothing": "应变场平滑",
+    "Strain type": "应变类型",
+    "Infinitesimal": "无穷小应变",
+    "Eulerian": "欧拉应变",
+    "Green-Lagrangian": "格林-拉格朗日应变",
+    "Gaussian smoothing of the strain field after computation.\nσ is the Gaussian kernel width; 'step' = DIC node spacing.\n  Light  (0.5 × step):  subtle, preserves fine features.\n  Medium (1 × step):    balanced, recommended for noisy data.\n  Strong (2 × step) ⚠:  aggressive, may blur real gradients.":
+        "计算后对应变场做高斯平滑。\nσ 为高斯核宽度；“step” 为 DIC 节点间距。\n  Light（0.5 × step）：轻度平滑，保留细节。\n  Medium（1 × step）：平衡选择，推荐用于噪声数据。\n  Strong（2 × step）⚠：强平滑，可能模糊真实梯度。",
+
+    # Strain window export tooltip
+    "Export displacement and strain results to NPZ / MAT / CSV / PNG":
+        "将位移和应变结果导出为 NPZ / MAT / CSV / PNG",
 }
 
 

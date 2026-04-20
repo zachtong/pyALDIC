@@ -8,6 +8,34 @@
         <source>ADMM Iterations</source>
         <translation>ADMM 迭代次数</translation>
     </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="50"/>
+        <source>Number of ADMM alternating minimization cycles for AL-DIC.
+1 = single global pass (fastest), 3 = default,
+5+ = diminishing returns for most cases.</source>
+        <translation>AL-DIC 的 ADMM 交替最小化循环次数。
+1 = 单次全局迭代（最快），3 = 默认值，
+5 及以上对大多数场景收益递减。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="56"/>
+        <source>Only affects AL-DIC solver. Ignored by Local DIC.</source>
+        <translation>仅对 AL-DIC 求解器生效，Local DIC 会忽略。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="69"/>
+        <source>Auto-expand FFT search on clipped peaks</source>
+        <translation>峰值被截断时自动扩大 FFT 搜索范围</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="75"/>
+        <source>When the NCC peak reaches the edge of the search region, automatically retry with a larger region (up to image half-size, 6 retries with 2x growth).
+
+Only relevant for the FFT init-guess mode.</source>
+        <translation>当 NCC 峰值触及搜索区域边缘时，自动以更大的搜索范围重试（最大到图像一半尺寸，每次放大 2 倍，共 6 次重试）。
+
+仅对 FFT 初始猜测模式有效。</translation>
+    </message>
 </context>
 <context>
     <name>BatchImportDialog</name>
@@ -153,6 +181,69 @@
         <location filename="../../gui/panels/canvas_area.py" line="1397"/>
         <source>Placing Starting Points</source>
         <translation>正在放置种子点</translation>
+    </message>
+</context>
+<context>
+    <name>CanvasConfigOverlay</name>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="41"/>
+        <source>Mode</source>
+        <translation>模式</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="42"/>
+        <source>Solver</source>
+        <translation>求解器</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
+        <source>Init</source>
+        <translation>初始猜测</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
+        <source>Accumulative</source>
+        <translation>累积式</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="94"/>
+        <source>Incremental</source>
+        <translation>增量式</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="102"/>
+        <source>Local DIC</source>
+        <translation>Local DIC</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="103"/>
+        <source>ADMM (%1 iter)</source>
+        <translation>ADMM（%1 次迭代）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="111"/>
+        <source>Starting Points</source>
+        <translation>种子点</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="113"/>
+        <source>Previous frame</source>
+        <translation>上一帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="115"/>
+        <source>FFT every frame</source>
+        <translation>每帧 FFT</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <source>FFT every %1 fr</source>
+        <translation>每 %1 帧 FFT</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="123"/>
+        <source>FFT</source>
+        <translation>FFT</translation>
     </message>
 </context>
 <context>
@@ -668,6 +759,12 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <source>Open Session Failed</source>
         <translation>打开会话失败</translation>
     </message>
+    <message>
+        <location filename="../../gui/app.py" line="651"/>
+        <location filename="../../gui/app.py" line="704"/>
+        <source>Load images first.</source>
+        <translation>请先加载图像。</translation>
+    </message>
 </context>
 <context>
     <name>MeshAppearanceWidget</name>
@@ -805,6 +902,19 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/widgets/physical_units_widget.py" line="161"/>
         <source>Disp: px  Velocity: px/fr</source>
         <translation>位移：px  速度：px/帧</translation>
+    </message>
+</context>
+<context>
+    <name>PipelineController</name>
+    <message>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="345"/>
+        <source>Building pipeline configuration...</source>
+        <translation>正在构建流水线配置…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="494"/>
+        <source>Loading images...</source>
+        <translation>正在加载图像…</translation>
     </message>
 </context>
 <context>
@@ -1016,7 +1126,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="134"/>
         <source>FIELD</source>
-        <translation>场</translation>
+        <translation>场变量</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="141"/>
@@ -1075,6 +1185,19 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
 </context>
 <context>
+    <name>StrainFieldSelector</name>
+    <message>
+        <location filename="../../gui/widgets/strain_field_selector.py" line="150"/>
+        <source>DISPLACEMENT</source>
+        <translation>位移</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_field_selector.py" line="161"/>
+        <source>STRAIN</source>
+        <translation>应变</translation>
+    </message>
+</context>
+<context>
     <name>StrainNavigator</name>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="73"/>
@@ -1118,6 +1241,67 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/widgets/strain_navigator.py" line="206"/>
         <source>Pause animation</source>
         <translation>暂停动画</translation>
+    </message>
+</context>
+<context>
+    <name>StrainParamPanel</name>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="69"/>
+        <source>Plane fitting</source>
+        <translation>平面拟合</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="70"/>
+        <source>FEM nodal</source>
+        <translation>有限元节点</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="72"/>
+        <source>Method</source>
+        <translation>方法</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="81"/>
+        <source>VSG size</source>
+        <translation>VSG 尺寸</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="97"/>
+        <source>Gaussian smoothing of the strain field after computation.
+σ is the Gaussian kernel width; &apos;step&apos; = DIC node spacing.
+  Light  (0.5 × step):  subtle, preserves fine features.
+  Medium (1 × step):    balanced, recommended for noisy data.
+  Strong (2 × step) ⚠:  aggressive, may blur real gradients.</source>
+        <translation>计算后对应变场做高斯平滑。
+σ 为高斯核宽度；“step” 为 DIC 节点间距。
+  Light（0.5 × step）：轻度平滑，保留细节。
+  Medium（1 × step）：平衡选择，推荐用于噪声数据。
+  Strong（2 × step）⚠：强平滑，可能模糊真实梯度。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="98"/>
+        <source>Strain field smoothing</source>
+        <translation>应变场平滑</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="103"/>
+        <source>Infinitesimal</source>
+        <translation>无穷小应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="104"/>
+        <source>Eulerian</source>
+        <translation>欧拉应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="105"/>
+        <source>Green-Lagrangian</source>
+        <translation>格林-拉格朗日应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="107"/>
+        <source>Strain type</source>
+        <translation>应变类型</translation>
     </message>
 </context>
 <context>
@@ -1179,6 +1363,36 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/strain_window.py" line="181"/>
         <source>–</source>
         <translation>–</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="223"/>
+        <source>STRAIN PARAMETERS</source>
+        <translation>应变参数</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="239"/>
+        <source>Export displacement and strain results to NPZ / MAT / CSV / PNG</source>
+        <translation>将位移和应变结果导出为 NPZ / MAT / CSV / PNG</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="270"/>
+        <source>FIELD</source>
+        <translation>场变量</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="276"/>
+        <source>VISUALIZATION</source>
+        <translation>可视化</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="283"/>
+        <source>PHYSICAL UNITS</source>
+        <translation>物理单位</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="288"/>
+        <source>LOG</source>
+        <translation>日志</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="453"/>

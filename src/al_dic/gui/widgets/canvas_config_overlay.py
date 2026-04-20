@@ -38,9 +38,9 @@ class CanvasConfigOverlay(QFrame):
         layout.setContentsMargins(10, 8, 10, 8)
         layout.setSpacing(3)
 
-        self._mode_lbl = self._make_row(layout, "Mode")
-        self._solver_lbl = self._make_row(layout, "Solver")
-        self._init_lbl = self._make_row(layout, "Init")
+        self._mode_lbl = self._make_row(layout, self.tr("Mode"))
+        self._solver_lbl = self._make_row(layout, self.tr("Solver"))
+        self._init_lbl = self._make_row(layout, self.tr("Init"))
         self.adjustSize()
 
         # Keep in sync with the sidebar.
@@ -87,31 +87,34 @@ class CanvasConfigOverlay(QFrame):
         self._reposition()
 
     def _format_mode(self) -> str:
+        from al_dic.i18n import tr_args
         raw = getattr(self._state, "tracking_mode", "accumulative")
         return {
-            "accumulative": "Accumulative",
-            "incremental": "Incremental",
+            "accumulative": self.tr("Accumulative"),
+            "incremental": self.tr("Incremental"),
         }.get(str(raw).lower(), str(raw))
 
     def _format_solver(self) -> str:
+        from al_dic.i18n import tr_args
         use_admm = getattr(self._state, "use_admm", True)
         if not use_admm:
-            return "Local DIC"
+            return self.tr("Local DIC")
         iters = int(getattr(self._state, "admm_max_iter", 3))
-        return f"ADMM ({iters} iter)"
+        return tr_args(self.tr("ADMM (%1 iter)"), iters)
 
     def _format_init(self) -> str:
+        from al_dic.i18n import tr_args
         mode = str(getattr(self._state, "init_guess_mode", "fft_every"))
         interval = int(getattr(self._state, "fft_reset_interval", 0) or 0)
         if mode == "seed_propagation":
-            return "Starting Points"
+            return self.tr("Starting Points")
         if mode in ("previous", "fft_ref_update", "auto"):
-            return "Previous frame"
+            return self.tr("Previous frame")
         if mode == "fft_every":
-            return "FFT every frame"
+            return self.tr("FFT every frame")
         if mode == "fft_reset_n" and interval > 1:
-            return f"FFT every {interval} fr"
-        return "FFT"
+            return tr_args(self.tr("FFT every %1 fr"), interval)
+        return self.tr("FFT")
 
     # ----------------------------------------------------------------------
     # Geometry — pin to top-left of parent viewport
