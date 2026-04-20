@@ -31,9 +31,11 @@ Standard subset-based DIC (IC-GN) solves each node independently — accurate fo
 A complete desktop application built with PySide6. Three-column layout with image list, ROI tools, and parameter controls on the left — interactive zoom/pan canvas in the center — run controls, field overlay, and console log on the right. Load images, draw ROIs, configure parameters, run DIC, and visualize results — all without writing a single line of code.
 
 <p align="center">
-  <!-- TODO: Full-window screenshot of the GUI with data loaded and displacement overlay -->
-  <!-- <img src="docs/images/feature-gui.png" alt="pyALDIC GUI" width="90%"/> -->
-  <i>Desktop GUI — demo coming soon</i>
+  <img src="assets/pyALDIC_demo.gif" alt="pyALDIC end-to-end workflow demo — import images, pick workflow, draw / batch-import ROI, refine mesh, run DIC, inspect displacement and strain fields" width="90%"/>
+</p>
+
+<p align="center">
+  <i>End-to-end GUI walkthrough — click the <a href="assets/videos/pyALDIC_demo.mp4">full-HD MP4</a> for maximum clarity.</i>
 </p>
 
 ### Adaptive Spatial Refinement
