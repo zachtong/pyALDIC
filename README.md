@@ -12,8 +12,20 @@
   <img src="https://img.shields.io/badge/Python-3.10+-3776ab?style=flat-square&logo=python&logoColor=white" alt="Python"/>
   <img src="https://img.shields.io/badge/GUI-PySide6-41cd52?style=flat-square" alt="PySide6"/>
   <img src="https://img.shields.io/badge/License-BSD--3--Clause-22c55e?style=flat-square" alt="License"/>
-  <a href="https://doi.org/10.5281/zenodo.19521071"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.19521071-blue?style=flat-square" alt="DOI"/></a>
+  <a href="https://doi.org/10.5281/zenodo.19669774"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.19669774-blue?style=flat-square" alt="DOI"/></a>
   <a href="https://pypi.org/project/al-dic/"><img src="https://img.shields.io/pypi/v/al-dic?style=flat-square&label=PyPI" alt="PyPI"/></a>
+</p>
+
+<p align="center">
+  <strong>🌍 Now available in 8 languages</strong><br/>
+  <img src="https://img.shields.io/badge/English-✓-22c55e?style=flat-square" alt="English"/>
+  <img src="https://img.shields.io/badge/简体中文-✓-22c55e?style=flat-square" alt="Simplified Chinese"/>
+  <img src="https://img.shields.io/badge/繁體中文-✓-22c55e?style=flat-square" alt="Traditional Chinese"/>
+  <img src="https://img.shields.io/badge/日本語-✓-22c55e?style=flat-square" alt="Japanese"/>
+  <img src="https://img.shields.io/badge/한국어-✓-22c55e?style=flat-square" alt="Korean"/>
+  <img src="https://img.shields.io/badge/Deutsch-✓-22c55e?style=flat-square" alt="German"/>
+  <img src="https://img.shields.io/badge/Français-✓-22c55e?style=flat-square" alt="French"/>
+  <img src="https://img.shields.io/badge/Español-✓-22c55e?style=flat-square" alt="Spanish"/>
 </p>
 
 ---
