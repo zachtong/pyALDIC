@@ -1104,25 +1104,25 @@ class CanvasArea(QWidget):
         tb_layout.setContentsMargins(8, 2, 8, 2)
         tb_layout.setSpacing(4)
 
-        btn_fit = QPushButton("Fit")
-        btn_fit.setToolTip("Fit image to viewport")
+        btn_fit = QPushButton(self.tr("Fit"))
+        btn_fit.setToolTip(self.tr("Fit image to viewport"))
         btn_fit.setFixedWidth(60)
         if _HAS_ICONS:
             btn_fit.setIcon(icon_maximize())
 
-        btn_100 = QPushButton("100%")
-        btn_100.setToolTip("Zoom to 100% (1:1)")
+        btn_100 = QPushButton(self.tr("100%"))
+        btn_100.setToolTip(self.tr("Zoom to 100% (1:1)"))
         btn_100.setFixedWidth(60)
 
         btn_zoom_in = QPushButton("+")
-        btn_zoom_in.setToolTip("Zoom in")
+        btn_zoom_in.setToolTip(self.tr("Zoom in"))
         btn_zoom_in.setFixedWidth(28)
         if _HAS_ICONS:
             btn_zoom_in.setIcon(icon_zoom_in())
             btn_zoom_in.setText("")
 
-        btn_zoom_out = QPushButton("\u2013")  # en-dash as minus
-        btn_zoom_out.setToolTip("Zoom out")
+        btn_zoom_out = QPushButton(self.tr("–"))  # en-dash as minus
+        btn_zoom_out.setToolTip(self.tr("Zoom out"))
         btn_zoom_out.setFixedWidth(28)
         if _HAS_ICONS:
             btn_zoom_out.setIcon(icon_zoom_out())
@@ -1135,12 +1135,12 @@ class CanvasArea(QWidget):
         tb_layout.addStretch()
 
         # --- Mesh overlay toggles ---
-        self._btn_grid = QCheckBox("Show Grid")
-        self._btn_grid.setToolTip("Show/hide computational mesh grid")
+        self._btn_grid = QCheckBox(self.tr("Show Grid"))
+        self._btn_grid.setToolTip(self.tr("Show/hide computational mesh grid"))
         self._btn_grid.setChecked(True)
 
-        self._btn_window = QCheckBox("Show Subset")
-        self._btn_window.setToolTip("Show subset window on hover (requires Grid)")
+        self._btn_window = QCheckBox(self.tr("Show Subset"))
+        self._btn_window.setToolTip(self.tr("Show subset window on hover (requires Grid)"))
         self._btn_window.setChecked(False)
 
         tb_layout.addWidget(self._btn_grid)
@@ -1394,7 +1394,7 @@ class CanvasArea(QWidget):
         if self._seed_banner.isHidden():
             return
         if self._seed_ctrl is None:
-            self._seed_banner.setText("Placing Starting Points")
+            self._seed_banner.setText(self.tr("Placing Starting Points"))
             return
         status = self._seed_ctrl.regions_status()
         total = len(status)

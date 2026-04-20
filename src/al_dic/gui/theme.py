@@ -60,7 +60,7 @@ def build_stylesheet() -> str:
    ============================================================ */
 * {{
     color: {c.TEXT_PRIMARY};
-    font-family: "Segoe UI", "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-family: "Segoe UI", "SF Pro Text", "Helvetica Neue", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC", "Yu Gothic UI", "Malgun Gothic", sans-serif;
     font-size: 13px;
 }}
 

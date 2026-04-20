@@ -562,7 +562,7 @@ class ExportDialog(QDialog):
         self._pixel_size_spin.setFixedWidth(100)
         phys_row.addWidget(self._pixel_size_spin)
         self._pixel_unit_combo = QComboBox()
-        self._pixel_unit_combo.addItems(["nm", "\u03bcm", "mm", "cm", "m", "inch"])
+        self._pixel_unit_combo.addItems(["nm", "μm", "mm", "cm", "m", "inch"])
         self._pixel_unit_combo.setCurrentText(hint.pixel_unit)
         self._pixel_unit_combo.setFixedWidth(70)
         phys_row.addWidget(self._pixel_unit_combo)
@@ -1103,7 +1103,7 @@ class ExportDialog(QDialog):
                 exported.append("csv/")
 
             self._data_status_lbl.setText(
-                f"Exported {len(exported)} files \u2192 {cfg.dest_dir}"
+                f"Exported {len(exported)} files → {cfg.dest_dir}"
             )
             self._data_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
             self._open_folder_btn.setEnabled(True)
@@ -1159,7 +1159,7 @@ class ExportDialog(QDialog):
         self._reset_img_controls()
         self._img_progress.setValue(100)
         folder = self._folder_edit.text().strip()
-        self._img_status_lbl.setText(f"Exported {len(paths)} images \u2192 {folder}")
+        self._img_status_lbl.setText(f"Exported {len(paths)} images → {folder}")
         self._img_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
         self._open_folder_btn.setEnabled(True)
 
@@ -1220,7 +1220,7 @@ class ExportDialog(QDialog):
         self._anim_progress.setValue(100)
         folder = self._folder_edit.text().strip()
         self._anim_status_lbl.setText(
-            f"Exported {len(paths)} animation(s) \u2192 {folder}"
+            f"Exported {len(paths)} animation(s) → {folder}"
         )
         self._anim_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
         self._open_folder_btn.setEnabled(True)
@@ -1259,7 +1259,7 @@ class ExportDialog(QDialog):
                 sample_every=cfg.report_sample_every,
                 ref_image=None,
             )
-            self._report_status_lbl.setText(f"Report saved \u2192 {p}")
+            self._report_status_lbl.setText(f"Report saved → {p}")
             self._report_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
             self._open_folder_btn.setEnabled(True)
         except Exception as exc:

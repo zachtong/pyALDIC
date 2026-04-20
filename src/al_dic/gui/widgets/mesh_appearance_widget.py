@@ -35,10 +35,10 @@ class MeshAppearanceWidget(QWidget):
         # --- Line color row ---
         color_row = QHBoxLayout()
         color_row.setSpacing(6)
-        color_row.addWidget(QLabel("Mesh color"))
+        color_row.addWidget(QLabel(self.tr("Mesh color")))
         self._color_btn = QPushButton()
         self._color_btn.setFixedSize(24, 18)
-        self._color_btn.setToolTip("Click to choose mesh line color")
+        self._color_btn.setToolTip(self.tr("Click to choose mesh line color"))
         self._color_btn.clicked.connect(self._pick_color)
         color_row.addWidget(self._color_btn)
         color_row.addStretch()
@@ -47,7 +47,7 @@ class MeshAppearanceWidget(QWidget):
         # --- Line width row ---
         width_row = QHBoxLayout()
         width_row.setSpacing(6)
-        width_row.addWidget(QLabel("Line width"))
+        width_row.addWidget(QLabel(self.tr("Line width")))
         self._width_spin = QSpinBox()
         self._width_spin.setRange(1, 8)
         self._width_spin.setValue(1)

@@ -183,7 +183,7 @@ class ImageList(QWidget):
             self._tree.addTopLevelItem(item)
 
             # ROI button
-            roi_btn = QPushButton("Add")
+            roi_btn = QPushButton(self.tr("Add"))
             roi_btn.setFixedHeight(20)
             roi_btn.setCursor(Qt.CursorShape.PointingHandCursor)
             # NoFocus prevents the button from stealing focus on hover/click,
@@ -235,13 +235,13 @@ class ImageList(QWidget):
             is_ref = i in ref_frames
 
             if has_roi:
-                btn.setText("Edit")
+                btn.setText(self.tr("Edit"))
                 btn.setStyleSheet(_STYLE_ROI_HAS)
             elif is_ref:
-                btn.setText("Need")
+                btn.setText(self.tr("Need"))
                 btn.setStyleSheet(_STYLE_ROI_NEED)
             else:
-                btn.setText("Add")
+                btn.setText(self.tr("Add"))
                 btn.setStyleSheet(_STYLE_ROI_ADD)
 
             # Ref-frame highlighting: subtle row background + bold accent filename

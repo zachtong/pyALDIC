@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN" sourcelanguage="en_US">
 <context>
+    <name>AdvancedTuningWidget</name>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="39"/>
+        <source>ADMM Iterations</source>
+        <translation>ADMM 迭代次数</translation>
+    </message>
+</context>
+<context>
     <name>BatchImportDialog</name>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="45"/>
@@ -82,6 +90,92 @@
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="122"/>
         <source>Clear All</source>
         <translation>全部清除</translation>
+    </message>
+</context>
+<context>
+    <name>CanvasArea</name>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1107"/>
+        <source>Fit</source>
+        <translation>适配</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1108"/>
+        <source>Fit image to viewport</source>
+        <translation>将图像适配到视口</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1113"/>
+        <source>100%</source>
+        <translation>100%</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1114"/>
+        <source>Zoom to 100% (1:1)</source>
+        <translation>缩放到 100%（1:1）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1118"/>
+        <source>Zoom in</source>
+        <translation>放大</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1124"/>
+        <source>–</source>
+        <translation>–</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1125"/>
+        <source>Zoom out</source>
+        <translation>缩小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1138"/>
+        <source>Show Grid</source>
+        <translation>显示网格</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1139"/>
+        <source>Show/hide computational mesh grid</source>
+        <translation>显示/隐藏计算网格</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1142"/>
+        <source>Show Subset</source>
+        <translation>显示子集</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1143"/>
+        <source>Show subset window on hover (requires Grid)</source>
+        <translation>悬停时显示子集窗口（需要先开启网格）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1397"/>
+        <source>Placing Starting Points</source>
+        <translation>正在放置种子点</translation>
+    </message>
+</context>
+<context>
+    <name>ColorRange</name>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="29"/>
+        <source>Range</source>
+        <translation>范围</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="30"/>
+        <source>Auto</source>
+        <translation>自动</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="41"/>
+        <source>Min</source>
+        <translation>最小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="51"/>
+        <source>Max</source>
+        <translation>最大</translation>
     </message>
 </context>
 <context>
@@ -234,6 +328,83 @@
     </message>
 </context>
 <context>
+    <name>FieldSelector</name>
+    <message>
+        <location filename="../../gui/widgets/field_selector.py" line="18"/>
+        <source>Disp U</source>
+        <translation>位移 U</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/field_selector.py" line="19"/>
+        <source>Disp V</source>
+        <translation>位移 V</translation>
+    </message>
+</context>
+<context>
+    <name>FrameNavigator</name>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="59"/>
+        <source>Previous frame</source>
+        <translation>上一帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="69"/>
+        <location filename="../../gui/widgets/frame_navigator.py" line="170"/>
+        <source>Play animation</source>
+        <translation>播放动画</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="73"/>
+        <location filename="../../gui/widgets/frame_navigator.py" line="169"/>
+        <source>▶</source>
+        <translation>▶</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="80"/>
+        <source>Next frame</source>
+        <translation>下一帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="93"/>
+        <source>Playback speed</source>
+        <translation>播放速度</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="98"/>
+        <source>FRAME 0/0</source>
+        <translation>第 0/0 帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="159"/>
+        <source>⏸</source>
+        <translation>⏸</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="160"/>
+        <source>Pause animation</source>
+        <translation>暂停动画</translation>
+    </message>
+</context>
+<context>
+    <name>ImageList</name>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="186"/>
+        <location filename="../../gui/widgets/image_list.py" line="244"/>
+        <source>Add</source>
+        <translation>添加</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="238"/>
+        <source>Edit</source>
+        <translation>编辑</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="241"/>
+        <source>Need</source>
+        <translation>待绘</translation>
+    </message>
+</context>
+<context>
     <name>InitGuessWidget</name>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="111"/>
@@ -261,7 +432,7 @@ Auto-placed per region when you draw or edit an ROI.</source>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="131"/>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="312"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="313"/>
         <source>Place Starting Points</source>
         <translation>放置种子点</translation>
     </message>
@@ -291,18 +462,18 @@ Auto-placed per region when you draw or edit an ROI.</source>
         <translation>移除所有种子点。比逐个右键删除快。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="152"/>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="321"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="153"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="323"/>
         <source>%1 / %2 regions ready</source>
         <translation>%1 / %2 区域就绪</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="171"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="172"/>
         <source>FFT (cross-correlation)</source>
         <translation>FFT（互相关）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="182"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="183"/>
         <source>Full-grid normalized cross-correlation. Robust within the search radius; the search auto-expands when peaks clip.
 
 Best for:
@@ -321,37 +492,37 @@ Cost grows with the search radius, so very large displacements become slow.</sou
 计算成本随搜索半径增长，极大位移会变慢。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="193"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="194"/>
         <source>Every</source>
         <translation>每</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="198"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="199"/>
         <source>Run FFT every N frames. N = 1 means FFT every frame (safest, slowest). N &gt; 1 uses warm-start between resets to limit error propagation to N frames.</source>
         <translation>每 N 帧运行一次 FFT。N = 1 表示每帧都做 FFT（最安全但最慢）。N &gt; 1 在两次重置之间使用热启动，将误差传播限制在 N 帧内。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="205"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="206"/>
         <source>(N=1 = every frame)</source>
         <translation>（N=1 即每帧）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="215"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="216"/>
         <source>Only when reference frame updates (incremental only)</source>
         <translation>仅在参考帧更新时（只对增量模式）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="219"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="220"/>
         <source>Run FFT whenever the reference frame changes; warm-start within each segment. Typical default for incremental mode.</source>
         <translation>参考帧变化时运行 FFT；每段内使用热启动。是增量模式的典型默认值。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="228"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="229"/>
         <source>Previous frame</source>
-        <translation>前一帧</translation>
+        <translation>上一帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="238"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="239"/>
         <source>Use the previous frame&apos;s converged displacement as the initial guess. No cross-correlation runs.
 
 Best for:
@@ -368,7 +539,7 @@ Errors can accumulate over long sequences. Prefer FFT or Starting Points on nois
 长序列中误差会累积。数据有噪声或运动较大时请选 FFT 或种子点。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="310"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="311"/>
         <source>Placing... (click to exit)</source>
         <translation>放置中…（再次点击退出）</translation>
     </message>
@@ -451,51 +622,69 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="243"/>
+        <location filename="../../gui/app.py" line="245"/>
         <source>Language changed</source>
         <translation>语言已切换</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="246"/>
+        <location filename="../../gui/app.py" line="249"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation>语言已切换至 %1。请重启 pyALDIC 以让所有界面生效。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="256"/>
+        <location filename="../../gui/app.py" line="260"/>
         <source>Save Session</source>
         <translation>保存会话</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="258"/>
-        <location filename="../../gui/app.py" line="285"/>
+        <location filename="../../gui/app.py" line="262"/>
+        <location filename="../../gui/app.py" line="289"/>
         <source>pyALDIC Session</source>
         <translation>pyALDIC 会话</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="259"/>
-        <location filename="../../gui/app.py" line="287"/>
+        <location filename="../../gui/app.py" line="263"/>
+        <location filename="../../gui/app.py" line="291"/>
         <source>All Files</source>
         <translation>全部文件</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="269"/>
+        <location filename="../../gui/app.py" line="273"/>
         <source>Save Session Failed</source>
         <translation>保存会话失败</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="283"/>
+        <location filename="../../gui/app.py" line="287"/>
         <source>Open Session</source>
         <translation>打开会话</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="286"/>
+        <location filename="../../gui/app.py" line="290"/>
         <source>JSON</source>
         <translation>JSON</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="295"/>
+        <location filename="../../gui/app.py" line="299"/>
         <source>Open Session Failed</source>
         <translation>打开会话失败</translation>
+    </message>
+</context>
+<context>
+    <name>MeshAppearanceWidget</name>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="38"/>
+        <source>Mesh color</source>
+        <translation>网格颜色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="41"/>
+        <source>Click to choose mesh line color</source>
+        <translation>点击选择网格线颜色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="50"/>
+        <source>Line width</source>
+        <translation>线宽</translation>
     </message>
 </context>
 <context>
@@ -585,45 +774,73 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>初始种子搜索</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="240"/>
+        <location filename="../../gui/widgets/param_panel.py" line="241"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>最小单元尺寸 = %1 px  (子集步长=%2, 级别=%3)</translation>
     </message>
 </context>
 <context>
+    <name>PhysicalUnitsWidget</name>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="54"/>
+        <source>Use physical units</source>
+        <translation>使用物理单位</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="65"/>
+        <source>Physical size of one image pixel</source>
+        <translation>单个图像像素对应的物理尺寸</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="80"/>
+        <source>/ px</source>
+        <translation>/ px</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="93"/>
+        <source>Acquisition frame rate (used for velocity field)</source>
+        <translation>采集帧率（用于速度场）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="161"/>
+        <source>Disp: px  Velocity: px/fr</source>
+        <translation>位移：px  速度：px/帧</translation>
+    </message>
+</context>
+<context>
     <name>ROIHint</name>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="63"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="64"/>
         <source>Load images first, then draw a Region of Interest on frame 1.</source>
         <translation>请先加载图像，再在第 1 帧上绘制感兴趣区域。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="71"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="72"/>
         <source>&lt;b&gt;Accumulative mode&lt;/b&gt; — only frame 1 needs a Region of Interest. All later frames are compared against it directly.</source>
         <translation>&lt;b&gt;累积模式&lt;/b&gt; — 只有第 1 帧需要感兴趣区域。后续帧都直接与其比较。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="81"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="82"/>
         <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
         <translation>&lt;b&gt;增量模式，每帧&lt;/b&gt; — 第 1 帧需要感兴趣区域。系统会自动将其扭曲到每个后续帧（无需逐帧绘制）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="98"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="99"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;增量模式，每 %1 帧&lt;/b&gt; — 请在以下帧绘制感兴趣区域：&lt;b&gt;%2&lt;/b&gt;（共 %3 个参考帧）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="112"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="113"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;增量模式，自定义&lt;/b&gt; — 未设置自定义参考帧。仅第 1 帧为参考；请在参考帧列表中添加更多索引。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="122"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="123"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;增量模式，自定义&lt;/b&gt; — 请在以下帧绘制感兴趣区域：&lt;b&gt;%1&lt;/b&gt;（共 %2 个参考帧）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="128"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>请在第 1 帧绘制感兴趣区域。</translation>
     </message>
@@ -741,120 +958,275 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="57"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="58"/>
         <source>Run DIC Analysis</source>
         <translation>运行 DIC 分析</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="70"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="71"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="78"/>
         <source>Cancel the current analysis. Already-computed frames are kept; the run is marked as IDLE (not DONE).</source>
         <translation>取消当前分析。已计算的帧会保留；运行状态标记为 IDLE（非 DONE）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="83"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="84"/>
         <source>Export Results</source>
         <translation>导出结果</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="91"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="92"/>
         <source>Open Strain Window</source>
         <translation>打开应变窗口</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="97"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>在独立的后处理窗口中计算并可视化应变。需先完成一次运行以获得位移结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="103"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="104"/>
         <source>PROGRESS</source>
         <translation>进度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="112"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="349"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="113"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
         <source>Ready</source>
         <translation>就绪</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="120"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="404"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="121"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="406"/>
         <source>ELAPSED  %1</source>
         <translation>已用  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="125"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="412"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="416"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="126"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="354"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
         <source>REMAINING  %1</source>
         <translation>剩余  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="133"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="134"/>
         <source>FIELD</source>
         <translation>场</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="140"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
         <source>Show on deformed frame</source>
         <translation>在变形帧上显示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="145"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="146"/>
         <source>When checked, overlay results on the deformed (current) frame instead of the reference frame</source>
         <translation>勾选后，将结果叠加在变形（当前）帧上，而非参考帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="151"/>
         <source>VISUALIZATION</source>
         <translation>可视化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="155"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
         <source>Colormap</source>
         <translation>色图</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="177"/>
         <source>Opacity</source>
         <translation>透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>叠加图透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="190"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理单位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="195"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="196"/>
         <source>LOG</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="202"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="320"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="321"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>运行前请在每个红色区域放置至少一个种子点（红色 = 需要种子点）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="387"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="389"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 帧</translation>
+    </message>
+</context>
+<context>
+    <name>StrainNavigator</name>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="73"/>
+        <source>Previous frame</source>
+        <translation>上一帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="84"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="216"/>
+        <source>Play animation</source>
+        <translation>播放动画</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="88"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="215"/>
+        <source>▶</source>
+        <translation>▶</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="95"/>
+        <source>Next frame</source>
+        <translation>下一帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="109"/>
+        <source>Playback speed</source>
+        <translation>播放速度</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="114"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="222"/>
+        <source>FRAME 0/0</source>
+        <translation>第 0/0 帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="205"/>
+        <source>⏸</source>
+        <translation>⏸</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="206"/>
+        <source>Pause animation</source>
+        <translation>暂停动画</translation>
+    </message>
+</context>
+<context>
+    <name>StrainVizPanel</name>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="62"/>
+        <source>Show on deformed frame</source>
+        <translation>在变形帧上显示</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="74"/>
+        <source>Auto</source>
+        <translation>自动</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="96"/>
+        <source>Min</source>
+        <translation>最小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="98"/>
+        <source>Max</source>
+        <translation>最大</translation>
+    </message>
+</context>
+<context>
+    <name>StrainWindow</name>
+    <message>
+        <location filename="../../gui/strain_window.py" line="119"/>
+        <source>Strain Post-Processing</source>
+        <translation>应变后处理</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="165"/>
+        <source>Fit</source>
+        <translation>适配</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="166"/>
+        <source>Fit image to viewport</source>
+        <translation>将图像适配到视口</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="172"/>
+        <source>100%</source>
+        <translation>100%</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="173"/>
+        <source>Zoom to 100% (1:1)</source>
+        <translation>缩放到 100%（1:1）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="176"/>
+        <source>Zoom in</source>
+        <translation>放大</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="181"/>
+        <source>–</source>
+        <translation>–</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="453"/>
+        <source>⚠ Params changed -- click Compute Strain</source>
+        <translation>⚠ 参数已变更 — 请点击“计算应变”</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="182"/>
+        <source>Zoom out</source>
+        <translation>缩小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="229"/>
+        <source>Compute Strain</source>
+        <translation>计算应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="235"/>
+        <source>Export Results</source>
+        <translation>导出结果</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="378"/>
+        <source>Starting…</source>
+        <translation>启动中…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="400"/>
+        <source>Complete</source>
+        <translation>完成</translation>
+    </message>
+</context>
+<context>
+    <name>VelocitySettingsWidget</name>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="46"/>
+        <source>Use physical units</source>
+        <translation>使用物理单位</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="68"/>
+        <source>/ px</source>
+        <translation>/ px</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="83"/>
+        <source>Unit: px/frame</source>
+        <translation>单位：px/帧</translation>
     </message>
 </context>
 <context>

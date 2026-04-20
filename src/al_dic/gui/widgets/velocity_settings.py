@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (
 )
 
 
-_UNIT_OPTIONS: tuple[str, ...] = ("nm", "\u00b5m", "mm", "cm", "m", "inch")
+_UNIT_OPTIONS: tuple[str, ...] = ("nm", "µm", "mm", "cm", "m", "inch")
 
 
 class VelocitySettingsWidget(QWidget):
@@ -43,7 +43,7 @@ class VelocitySettingsWidget(QWidget):
         layout.setSpacing(4)
 
         # Toggle physical units
-        self._use_phy = QCheckBox("Use physical units")
+        self._use_phy = QCheckBox(self.tr("Use physical units"))
         self._use_phy.setChecked(False)
         layout.addRow(self._use_phy)
 
@@ -65,7 +65,7 @@ class VelocitySettingsWidget(QWidget):
         px_row.setSpacing(4)
         px_row.addWidget(self._px_size_spin, 1)
         px_row.addWidget(self._unit_combo)
-        px_row.addWidget(QLabel("/ px"))
+        px_row.addWidget(QLabel(self.tr("/ px")))
         px_widget = QWidget()
         px_widget.setLayout(px_row)
         layout.addRow("Pixel size", px_widget)
@@ -80,7 +80,7 @@ class VelocitySettingsWidget(QWidget):
         layout.addRow("Frame rate (fps)", self._fps_spin)
 
         # Computed unit display
-        self._unit_label = QLabel("Unit: px/frame")
+        self._unit_label = QLabel(self.tr("Unit: px/frame"))
         self._unit_label.setStyleSheet("font-size: 10px; color: gray;")
         layout.addRow(self._unit_label)
 

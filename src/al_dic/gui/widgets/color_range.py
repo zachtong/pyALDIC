@@ -26,8 +26,8 @@ class ColorRange(QWidget):
         # Range label + Auto checkbox on same row (no stretch between them)
         auto_row = QHBoxLayout()
         auto_row.setSpacing(6)
-        auto_row.addWidget(QLabel("Range"))
-        self._auto_cb = QCheckBox("Auto")
+        auto_row.addWidget(QLabel(self.tr("Range")))
+        self._auto_cb = QCheckBox(self.tr("Auto"))
         self._auto_cb.setChecked(True)
         self._auto_cb.stateChanged.connect(self._on_auto_changed)
         auto_row.addWidget(self._auto_cb)
@@ -38,7 +38,7 @@ class ColorRange(QWidget):
         range_row = QHBoxLayout()
         range_row.setSpacing(4)
 
-        range_row.addWidget(QLabel("Min"))
+        range_row.addWidget(QLabel(self.tr("Min")))
         self._min_spin = QDoubleSpinBox()
         self._min_spin.setRange(-1000, 1000)
         self._min_spin.setDecimals(3)
@@ -48,7 +48,7 @@ class ColorRange(QWidget):
         self._min_spin.valueChanged.connect(self._on_range_changed)
         range_row.addWidget(self._min_spin)
 
-        range_row.addWidget(QLabel("Max"))
+        range_row.addWidget(QLabel(self.tr("Max")))
         self._max_spin = QDoubleSpinBox()
         self._max_spin.setRange(-1000, 1000)
         self._max_spin.setDecimals(3)

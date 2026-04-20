@@ -36,7 +36,7 @@ class AdvancedTuningWidget(QWidget):
         # --- ADMM iterations (AL-DIC only) -----------------------------
         admm_row = QHBoxLayout()
         admm_row.setSpacing(6)
-        admm_lbl = QLabel("ADMM Iterations")
+        admm_lbl = QLabel(self.tr("ADMM Iterations"))
         admm_lbl.setFixedWidth(120)
         admm_row.addWidget(admm_lbl)
         self._admm_iter_spin = QSpinBox()

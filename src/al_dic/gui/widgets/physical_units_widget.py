@@ -35,7 +35,7 @@ from PySide6.QtWidgets import (
 from al_dic.gui.app_state import AppState
 
 
-_UNIT_OPTIONS: tuple[str, ...] = ("nm", "\u00b5m", "mm", "cm", "m", "inch")
+_UNIT_OPTIONS: tuple[str, ...] = ("nm", "µm", "mm", "cm", "m", "inch")
 
 
 class PhysicalUnitsWidget(QWidget):
@@ -51,7 +51,7 @@ class PhysicalUnitsWidget(QWidget):
         layout.setSpacing(6)
 
         # Toggle
-        self._enabled_cb = QCheckBox("Use physical units")
+        self._enabled_cb = QCheckBox(self.tr("Use physical units"))
         self._enabled_cb.setChecked(self._state.use_physical_units)
         layout.addRow(self._enabled_cb)
 
@@ -62,7 +62,7 @@ class PhysicalUnitsWidget(QWidget):
         self._pixel_spin.setSingleStep(0.1)
         self._pixel_spin.setValue(self._state.pixel_size)
         self._pixel_spin.setEnabled(self._state.use_physical_units)
-        self._pixel_spin.setToolTip("Physical size of one image pixel")
+        self._pixel_spin.setToolTip(self.tr("Physical size of one image pixel"))
 
         self._unit_combo = QComboBox()
         for u in _UNIT_OPTIONS:
@@ -77,7 +77,7 @@ class PhysicalUnitsWidget(QWidget):
         px_row.setContentsMargins(0, 0, 0, 0)
         px_row.addWidget(self._pixel_spin, 1)
         px_row.addWidget(self._unit_combo)
-        px_row.addWidget(QLabel("/ px"))
+        px_row.addWidget(QLabel(self.tr("/ px")))
         px_widget = QWidget()
         px_widget.setLayout(px_row)
         layout.addRow("Pixel size", px_widget)
@@ -90,7 +90,7 @@ class PhysicalUnitsWidget(QWidget):
         self._fps_spin.setValue(self._state.frame_rate)
         self._fps_spin.setSuffix(" fps")
         self._fps_spin.setEnabled(self._state.use_physical_units)
-        self._fps_spin.setToolTip("Acquisition frame rate (used for velocity field)")
+        self._fps_spin.setToolTip(self.tr("Acquisition frame rate (used for velocity field)"))
         layout.addRow("Frame rate", self._fps_spin)
 
         # Computed unit info label
@@ -158,4 +158,4 @@ class PhysicalUnitsWidget(QWidget):
         if self._enabled_cb.isChecked():
             self._unit_label.setText(f"Disp: {unit}  Velocity: {unit}/s")
         else:
-            self._unit_label.setText("Disp: px  Velocity: px/fr")
+            self._unit_label.setText(self.tr("Disp: px  Velocity: px/fr"))

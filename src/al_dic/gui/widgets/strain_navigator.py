@@ -70,7 +70,7 @@ class StrainNavigator(QWidget):
         # Prev
         self._prev_btn = QPushButton()
         self._prev_btn.setFixedWidth(28)
-        self._prev_btn.setToolTip("Previous frame")
+        self._prev_btn.setToolTip(self.tr("Previous frame"))
         if _HAS_ICONS:
             self._prev_btn.setIcon(icon_chevron_left())
         else:
@@ -81,18 +81,18 @@ class StrainNavigator(QWidget):
         # Play / Pause
         self._play_btn = QPushButton()
         self._play_btn.setFixedWidth(28)
-        self._play_btn.setToolTip("Play animation")
+        self._play_btn.setToolTip(self.tr("Play animation"))
         if _HAS_ICONS:
             self._play_btn.setIcon(icon_play())
         else:
-            self._play_btn.setText("\u25B6")
+            self._play_btn.setText(self.tr("▶"))
         self._play_btn.clicked.connect(self._on_play_toggle)
         layout.addWidget(self._play_btn)
 
         # Next
         self._next_btn = QPushButton()
         self._next_btn.setFixedWidth(28)
-        self._next_btn.setToolTip("Next frame")
+        self._next_btn.setToolTip(self.tr("Next frame"))
         if _HAS_ICONS:
             self._next_btn.setIcon(icon_chevron_right())
         else:
@@ -106,12 +106,12 @@ class StrainNavigator(QWidget):
             self._speed_combo.addItem(label)
         self._speed_combo.setCurrentIndex(1)   # default 2 fps
         self._speed_combo.setFixedWidth(68)
-        self._speed_combo.setToolTip("Playback speed")
+        self._speed_combo.setToolTip(self.tr("Playback speed"))
         self._speed_combo.currentIndexChanged.connect(self._on_speed_changed)
         layout.addWidget(self._speed_combo)
 
         # Frame label
-        self._label = QLabel("FRAME 0/0")
+        self._label = QLabel(self.tr("FRAME 0/0"))
         self._label.setFixedWidth(90)
         self._label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._label.setStyleSheet(
@@ -202,8 +202,8 @@ class StrainNavigator(QWidget):
         if _HAS_ICONS:
             self._play_btn.setIcon(icon_pause())
         else:
-            self._play_btn.setText("\u23F8")
-        self._play_btn.setToolTip("Pause animation")
+            self._play_btn.setText(self.tr("⏸"))
+        self._play_btn.setToolTip(self.tr("Pause animation"))
         self._timer.start()
 
     def _stop_playback(self) -> None:
@@ -212,11 +212,11 @@ class StrainNavigator(QWidget):
         if _HAS_ICONS:
             self._play_btn.setIcon(icon_play())
         else:
-            self._play_btn.setText("\u25B6")
-        self._play_btn.setToolTip("Play animation")
+            self._play_btn.setText(self.tr("▶"))
+        self._play_btn.setToolTip(self.tr("Play animation"))
 
     def _update_label(self) -> None:
         if self._n_frames > 0:
             self._label.setText(f"FRAME {self._current + 1}/{self._n_frames}")
         else:
-            self._label.setText("FRAME 0/0")
+            self._label.setText(self.tr("FRAME 0/0"))

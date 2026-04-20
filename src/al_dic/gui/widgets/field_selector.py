@@ -15,8 +15,8 @@ class FieldSelector(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(4)
 
-        self._btn_u = QPushButton("Disp U")
-        self._btn_v = QPushButton("Disp V")
+        self._btn_u = QPushButton(self.tr("Disp U"))
+        self._btn_v = QPushButton(self.tr("Disp V"))
 
         for btn in (self._btn_u, self._btn_v):
             btn.setCheckable(True)

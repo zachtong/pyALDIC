@@ -43,7 +43,7 @@ _SMOOTH_PRESETS: tuple[tuple[str, float], ...] = (
     ("Off",                       0.0),
     ("Light (\u03c3 = 0.5 \u00d7 step)",    1e-3),
     ("Medium (\u03c3 = 1 \u00d7 step)",     2e-3),
-    ("Strong (\u03c3 = 2 \u00d7 step) \u26a0", 4e-3),
+    ("Strong (\u03c3 = 2 \u00d7 step) ⚠", 4e-3),
 )
 
 # Default VSG size in pixels (must be odd).
@@ -93,7 +93,7 @@ class StrainParamPanel(QWidget):
             "\u03c3 is the Gaussian kernel width; 'step' = DIC node spacing.\n"
             "  Light  (0.5 \u00d7 step):  subtle, preserves fine features.\n"
             "  Medium (1 \u00d7 step):    balanced, recommended for noisy data.\n"
-            "  Strong (2 \u00d7 step) \u26a0:  aggressive, may blur real gradients."
+            "  Strong (2 \u00d7 step) ⚠:  aggressive, may blur real gradients."
         )
         layout.addRow("Strain field smoothing", self._smooth_combo)
 

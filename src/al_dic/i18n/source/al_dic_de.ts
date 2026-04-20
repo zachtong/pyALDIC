@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de" sourcelanguage="en_US">
 <context>
+    <name>AdvancedTuningWidget</name>
+    <message>
+        <location filename="../../gui/widgets/advanced_tuning_widget.py" line="39"/>
+        <source>ADMM Iterations</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BatchImportDialog</name>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="45"/>
@@ -81,6 +89,92 @@
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="122"/>
         <source>Clear All</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CanvasArea</name>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1107"/>
+        <source>Fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1108"/>
+        <source>Fit image to viewport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1113"/>
+        <source>100%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1114"/>
+        <source>Zoom to 100% (1:1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1118"/>
+        <source>Zoom in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1124"/>
+        <source>–</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1125"/>
+        <source>Zoom out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1138"/>
+        <source>Show Grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1139"/>
+        <source>Show/hide computational mesh grid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1142"/>
+        <source>Show Subset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1143"/>
+        <source>Show subset window on hover (requires Grid)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/canvas_area.py" line="1397"/>
+        <source>Placing Starting Points</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ColorRange</name>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="29"/>
+        <source>Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="30"/>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="41"/>
+        <source>Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/color_range.py" line="51"/>
+        <source>Max</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -234,6 +328,83 @@
     </message>
 </context>
 <context>
+    <name>FieldSelector</name>
+    <message>
+        <location filename="../../gui/widgets/field_selector.py" line="18"/>
+        <source>Disp U</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/field_selector.py" line="19"/>
+        <source>Disp V</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FrameNavigator</name>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="59"/>
+        <source>Previous frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="69"/>
+        <location filename="../../gui/widgets/frame_navigator.py" line="170"/>
+        <source>Play animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="73"/>
+        <location filename="../../gui/widgets/frame_navigator.py" line="169"/>
+        <source>▶</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="80"/>
+        <source>Next frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="93"/>
+        <source>Playback speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="98"/>
+        <source>FRAME 0/0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="159"/>
+        <source>⏸</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/frame_navigator.py" line="160"/>
+        <source>Pause animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ImageList</name>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="186"/>
+        <location filename="../../gui/widgets/image_list.py" line="244"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="238"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/image_list.py" line="241"/>
+        <source>Need</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>InitGuessWidget</name>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="111"/>
@@ -254,7 +425,7 @@ Auto-placed per region when you draw or edit an ROI.</source>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="131"/>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="312"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="313"/>
         <source>Place Starting Points</source>
         <translation type="unfinished"></translation>
     </message>
@@ -284,18 +455,18 @@ Auto-placed per region when you draw or edit an ROI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="152"/>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="321"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="153"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="323"/>
         <source>%1 / %2 regions ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="171"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="172"/>
         <source>FFT (cross-correlation)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="182"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="183"/>
         <source>Full-grid normalized cross-correlation. Robust within the search radius; the search auto-expands when peaks clip.
 
 Best for:
@@ -307,37 +478,37 @@ Cost grows with the search radius, so very large displacements become slow.</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="193"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="194"/>
         <source>Every</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="198"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="199"/>
         <source>Run FFT every N frames. N = 1 means FFT every frame (safest, slowest). N &gt; 1 uses warm-start between resets to limit error propagation to N frames.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="205"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="206"/>
         <source>(N=1 = every frame)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="215"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="216"/>
         <source>Only when reference frame updates (incremental only)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="219"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="220"/>
         <source>Run FFT whenever the reference frame changes; warm-start within each segment. Typical default for incremental mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="228"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="229"/>
         <source>Previous frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="238"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="239"/>
         <source>Use the previous frame&apos;s converged displacement as the initial guess. No cross-correlation runs.
 
 Best for:
@@ -348,7 +519,7 @@ Errors can accumulate over long sequences. Prefer FFT or Starting Points on nois
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/init_guess_widget.py" line="310"/>
+        <location filename="../../gui/widgets/init_guess_widget.py" line="311"/>
         <source>Placing... (click to exit)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -430,50 +601,68 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="243"/>
+        <location filename="../../gui/app.py" line="245"/>
         <source>Language changed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="246"/>
+        <location filename="../../gui/app.py" line="249"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="256"/>
+        <location filename="../../gui/app.py" line="260"/>
         <source>Save Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="258"/>
-        <location filename="../../gui/app.py" line="285"/>
+        <location filename="../../gui/app.py" line="262"/>
+        <location filename="../../gui/app.py" line="289"/>
         <source>pyALDIC Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="259"/>
-        <location filename="../../gui/app.py" line="287"/>
+        <location filename="../../gui/app.py" line="263"/>
+        <location filename="../../gui/app.py" line="291"/>
         <source>All Files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="269"/>
+        <location filename="../../gui/app.py" line="273"/>
         <source>Save Session Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="283"/>
+        <location filename="../../gui/app.py" line="287"/>
         <source>Open Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="286"/>
+        <location filename="../../gui/app.py" line="290"/>
         <source>JSON</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="295"/>
+        <location filename="../../gui/app.py" line="299"/>
         <source>Open Session Failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MeshAppearanceWidget</name>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="38"/>
+        <source>Mesh color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="41"/>
+        <source>Click to choose mesh line color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mesh_appearance_widget.py" line="50"/>
+        <source>Line width</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -558,45 +747,73 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="240"/>
+        <location filename="../../gui/widgets/param_panel.py" line="241"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PhysicalUnitsWidget</name>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="54"/>
+        <source>Use physical units</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="65"/>
+        <source>Physical size of one image pixel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="80"/>
+        <source>/ px</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="93"/>
+        <source>Acquisition frame rate (used for velocity field)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/physical_units_widget.py" line="161"/>
+        <source>Disp: px  Velocity: px/fr</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ROIHint</name>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="63"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="64"/>
         <source>Load images first, then draw a Region of Interest on frame 1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="71"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="72"/>
         <source>&lt;b&gt;Accumulative mode&lt;/b&gt; — only frame 1 needs a Region of Interest. All later frames are compared against it directly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="81"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="82"/>
         <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="98"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="99"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="112"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="113"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="122"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="123"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="128"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -713,119 +930,274 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="57"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="58"/>
         <source>Run DIC Analysis</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="70"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="71"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="78"/>
         <source>Cancel the current analysis. Already-computed frames are kept; the run is marked as IDLE (not DONE).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="83"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="84"/>
         <source>Export Results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="91"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="92"/>
         <source>Open Strain Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="97"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="103"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="104"/>
         <source>PROGRESS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="112"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="349"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="113"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
         <source>Ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="120"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="404"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="121"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="406"/>
         <source>ELAPSED  %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="125"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="412"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="416"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="126"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="354"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
         <source>REMAINING  %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="133"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="134"/>
         <source>FIELD</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="140"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
         <source>Show on deformed frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="145"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="146"/>
         <source>When checked, overlay results on the deformed (current) frame instead of the reference frame</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="151"/>
         <source>VISUALIZATION</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="155"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
         <source>Colormap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="177"/>
         <source>Opacity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="190"/>
         <source>PHYSICAL UNITS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="195"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="196"/>
         <source>LOG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="202"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="320"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="321"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="387"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="389"/>
         <source>%1  —  Frame %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StrainNavigator</name>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="73"/>
+        <source>Previous frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="84"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="216"/>
+        <source>Play animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="88"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="215"/>
+        <source>▶</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="95"/>
+        <source>Next frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="109"/>
+        <source>Playback speed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="114"/>
+        <location filename="../../gui/widgets/strain_navigator.py" line="222"/>
+        <source>FRAME 0/0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="205"/>
+        <source>⏸</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_navigator.py" line="206"/>
+        <source>Pause animation</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StrainVizPanel</name>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="62"/>
+        <source>Show on deformed frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="74"/>
+        <source>Auto</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="96"/>
+        <source>Min</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="98"/>
+        <source>Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StrainWindow</name>
+    <message>
+        <location filename="../../gui/strain_window.py" line="119"/>
+        <source>Strain Post-Processing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="165"/>
+        <source>Fit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="166"/>
+        <source>Fit image to viewport</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="172"/>
+        <source>100%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="173"/>
+        <source>Zoom to 100% (1:1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="176"/>
+        <source>Zoom in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="181"/>
+        <source>–</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="453"/>
+        <source>⚠ Params changed -- click Compute Strain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="182"/>
+        <source>Zoom out</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="229"/>
+        <source>Compute Strain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="235"/>
+        <source>Export Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="378"/>
+        <source>Starting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="400"/>
+        <source>Complete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VelocitySettingsWidget</name>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="46"/>
+        <source>Use physical units</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="68"/>
+        <source>/ px</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/velocity_settings.py" line="83"/>
+        <source>Unit: px/frame</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -59,7 +59,7 @@ class StrainVizPanel(QWidget):
         layout.setSpacing(6)
 
         # --- Show on deformed (first: sets rendering mode before other controls) ---
-        self._deformed_check = QCheckBox("Show on deformed frame")
+        self._deformed_check = QCheckBox(self.tr("Show on deformed frame"))
         self._deformed_check.setChecked(True)
         layout.addRow("Deformed", self._deformed_check)
 
@@ -71,7 +71,7 @@ class StrainVizPanel(QWidget):
         layout.addRow("Colormap", self._cmap_combo)
 
         # --- Auto range ---
-        self._auto_check = QCheckBox("Auto")
+        self._auto_check = QCheckBox(self.tr("Auto"))
         self._auto_check.setChecked(True)
         layout.addRow("Range", self._auto_check)
 
@@ -93,9 +93,9 @@ class StrainVizPanel(QWidget):
         minmax_row = QHBoxLayout()
         minmax_row.setSpacing(4)
         minmax_row.setContentsMargins(0, 0, 0, 0)
-        minmax_row.addWidget(QLabel("Min"))
+        minmax_row.addWidget(QLabel(self.tr("Min")))
         minmax_row.addWidget(self._vmin_spin, 1)
-        minmax_row.addWidget(QLabel("Max"))
+        minmax_row.addWidget(QLabel(self.tr("Max")))
         minmax_row.addWidget(self._vmax_spin, 1)
         minmax_widget = QWidget()
         minmax_widget.setLayout(minmax_row)

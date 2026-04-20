@@ -116,7 +116,7 @@ class StrainWindow(QMainWindow):
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Strain Post-Processing")
+        self.setWindowTitle(self.tr("Strain Post-Processing"))
         # Use the shared app icon so the Strain window is recognisable
         # in the taskbar / Alt-Tab alongside the main window.
         from al_dic.gui.icons import icon_app
@@ -162,24 +162,24 @@ class StrainWindow(QMainWindow):
         _zoom_layout = QHBoxLayout(_zoom_bar)
         _zoom_layout.setContentsMargins(8, 2, 8, 2)
         _zoom_layout.setSpacing(4)
-        _btn_fit = QPushButton("Fit")
-        _btn_fit.setToolTip("Fit image to viewport")
+        _btn_fit = QPushButton(self.tr("Fit"))
+        _btn_fit.setToolTip(self.tr("Fit image to viewport"))
         _btn_fit.setFixedWidth(60)
         if _HAS_ICONS:
             _btn_fit.setIcon(icon_maximize())
             _btn_fit.setText("")
             _btn_fit.setFixedWidth(28)
-        _btn_100 = QPushButton("100%")
-        _btn_100.setToolTip("Zoom to 100% (1:1)")
+        _btn_100 = QPushButton(self.tr("100%"))
+        _btn_100.setToolTip(self.tr("Zoom to 100% (1:1)"))
         _btn_100.setFixedWidth(60)
         _btn_zin = QPushButton("+")
-        _btn_zin.setToolTip("Zoom in")
+        _btn_zin.setToolTip(self.tr("Zoom in"))
         _btn_zin.setFixedWidth(28)
         if _HAS_ICONS:
             _btn_zin.setIcon(icon_zoom_in())
             _btn_zin.setText("")
-        _btn_zout = QPushButton("\u2013")
-        _btn_zout.setToolTip("Zoom out")
+        _btn_zout = QPushButton(self.tr("–"))
+        _btn_zout.setToolTip(self.tr("Zoom out"))
         _btn_zout.setFixedWidth(28)
         if _HAS_ICONS:
             _btn_zout.setIcon(icon_zoom_out())
@@ -226,13 +226,13 @@ class StrainWindow(QMainWindow):
         right.addWidget(self._param_panel)
 
         # Prominent compute button (matches main window "Run DIC Analysis" style)
-        self._compute_btn = QPushButton("Compute Strain")
+        self._compute_btn = QPushButton(self.tr("Compute Strain"))
         self._compute_btn.setProperty("class", "btn-primary")
         self._compute_btn.setFixedHeight(40)
         self._compute_btn.clicked.connect(self._on_compute_clicked)
         right.addWidget(self._compute_btn)
 
-        self._export_strain_btn = QPushButton("Export Results")
+        self._export_strain_btn = QPushButton(self.tr("Export Results"))
         self._export_strain_btn.setFixedHeight(30)
         self._export_strain_btn.setToolTip(
             "Export displacement and strain results to NPZ / MAT / CSV / PNG"
@@ -375,7 +375,7 @@ class StrainWindow(QMainWindow):
         self._compute_btn.setEnabled(False)
         self._strain_progress.setValue(0)
         self._strain_progress.setVisible(True)
-        self._strain_progress_label.setText("Starting…")
+        self._strain_progress_label.setText(self.tr("Starting…"))
         self._strain_progress_label.setVisible(True)
 
         self._strain_worker = _StrainWorker(
@@ -397,7 +397,7 @@ class StrainWindow(QMainWindow):
         self._state.results_changed.emit()
 
         self._strain_progress.setValue(1000)
-        self._strain_progress_label.setText("Complete")
+        self._strain_progress_label.setText(self.tr("Complete"))
         self._compute_btn.setEnabled(True)
         self._param_panel.mark_clean()
         self._stale_label.setText("")
@@ -450,7 +450,7 @@ class StrainWindow(QMainWindow):
         dlg.exec()
 
     def _on_params_dirty(self) -> None:
-        self._stale_label.setText("\u26a0 Params changed -- click Compute Strain")
+        self._stale_label.setText(self.tr("⚠ Params changed -- click Compute Strain"))
 
     def _on_field_changed(self, name: str) -> None:
         """Switch the active display field: restore its remembered color state first."""
