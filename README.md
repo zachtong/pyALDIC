@@ -104,12 +104,14 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
 
 |  | **pyALDIC** | **Ncorr** | **DICe** | **VIC-2D** | **MatchID** |
 |---|---|---|---|---|---|
-| **Mesh** | ${\color{green}\textsf{\textbf{Adaptive (quadtree refinement)}}}$ | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
-| **Multi-frame tracking** | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental |
-| **GUI** | Built-in desktop | Built-in (requires MATLAB) | None (CLI + ParaView viewer) | Built-in desktop | Built-in desktop |
+| **Subset shape function** | Affine (1st) + Q8 FEM global coupling | 2nd order | Configurable | 2nd order | 2nd order |
+| **Mesh** | ${\color{green}\textsf{\textbf{Adaptive (quadtree)}}}$ | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
+| **Strain calculation** | FEM-based (global) | Pointwise LSQ | Pointwise / global | Pointwise LSQ | Pointwise LSQ |
+| **3D / stereo DIC** | **2D only** | Via Ncorr_3D (separate) | Supported | Supported (VIC-3D) | Supported (MatchID 3D) |
+| **GUI** | Built-in desktop | Built-in (requires MATLAB) | Basic Qt + CLI | Built-in desktop | Built-in desktop |
 | **Platform** | ${\color{green}\textsf{\textbf{Windows / macOS / Linux}}}$ | Windows / macOS / Linux (via MATLAB) | Windows / macOS / Linux | Windows only | Windows only |
-| **Development** | ${\color{green}\textsf{\textbf{Active (v0.3, 2026)}}}$ | Dormant (last release 2017) | Active | Active (commercial) | Active (commercial) |
-| **Cost** | ${\color{green}\textsf{\textbf{Free}}}$ | Free (requires MATLAB license) | Free | Commercial (`$5K–50K`) | Commercial (`$5K–30K`) |
+| **Last release** | ${\color{green}\textsf{\textbf{v0.3 (2026)}}}$ | v1.2.2 (2017) | Active | Active (commercial) | Active (commercial) |
+| **Cost** | ${\color{green}\textsf{\textbf{Free (BSD-3)}}}$ | Free (requires MATLAB license) | Free (BSD) | Commercial (quote-based) | Commercial (quote-based) |
 
 > **Accuracy**: all mature subset-DIC tools achieve sub-pixel accuracy on clean data. pyALDIC's RMSE on synthetic speckle ground truth is reported in the [Accuracy](#accuracy) section below and regression-tested in CI.
 
