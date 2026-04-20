@@ -36,12 +36,19 @@ SOURCE_SCAN_DIR = PROJECT_ROOT / "src" / "al_dic" / "gui"
 TS_DIR = PROJECT_ROOT / "src" / "al_dic" / "i18n" / "source"
 QM_DIR = PROJECT_ROOT / "src" / "al_dic" / "i18n" / "compiled"
 
-# Languages pyALDIC targets. Order = tier: the first is always shipped,
-# the rest are added by community contribution.
+# Languages pyALDIC targets. Must match SUPPORTED_LANGUAGES in
+# src/al_dic/i18n/__init__.py. Order = tier: first shipped with v0.x,
+# later ones accepted by community contribution.
 LANGUAGES: tuple[str, ...] = (
-    "zh_CN",    # Simplified Chinese (first tier — primary non-English)
+    # Tier 1 — core Asian + source group
+    "zh_CN",    # Simplified Chinese (primary non-English)
     "zh_TW",    # Traditional Chinese
     "ja",       # Japanese
+    "ko",       # Korean
+    # Tier 2 — European engineering markets
+    "de",       # German
+    "fr",       # French
+    "es",       # Spanish
 )
 
 
@@ -109,21 +116,30 @@ def _run(cmd: list[str]) -> None:
 # ---------- Subcommands ----------------------------------------------------
 
 def cmd_extract(_args: argparse.Namespace) -> None:
-    """Scan gui/ and refresh every language's .ts file."""
+    """Scan gui/ and refresh every language's .ts file.
+
+    pyside6-lupdate does NOT walk directories recursively for Python
+    sources (it expects Qt .pro files for that). We enumerate every
+    .py under gui/ ourselves and pass the explicit file list.
+    """
     _ensure_dirs()
     lupdate = _find_tool("pyside6-lupdate")
 
-    # Collect all .py files under gui/. pyside6-lupdate accepts file
-    # lists or directories; passing the directory walks recursively.
     if not SOURCE_SCAN_DIR.is_dir():
         raise SystemExit(f"GUI source dir not found: {SOURCE_SCAN_DIR}")
 
+    py_files = sorted(str(p) for p in SOURCE_SCAN_DIR.rglob("*.py"))
+    if not py_files:
+        raise SystemExit(f"No .py files found under {SOURCE_SCAN_DIR}")
+
+    print(f"[extract] scanning {len(py_files)} .py files under "
+          f"{SOURCE_SCAN_DIR.relative_to(PROJECT_ROOT)}")
     for lang in LANGUAGES:
         ts = _ts_path(lang)
         print(f"[extract] {lang} -> {ts.relative_to(PROJECT_ROOT)}")
         _run([
             lupdate,
-            str(SOURCE_SCAN_DIR),
+            *py_files,
             "-ts", str(ts),
             "-no-obsolete",
             "-source-language", "en_US",

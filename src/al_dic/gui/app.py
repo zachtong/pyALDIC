@@ -209,6 +209,44 @@ class MainWindow(QMainWindow):
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
 
+        # Settings > Language submenu
+        from al_dic.i18n import SUPPORTED_LANGUAGES, LanguageManager
+
+        settings_menu = menu_bar.addMenu(self.tr("&Settings"))
+        language_menu = settings_menu.addMenu(self.tr("Language"))
+        current = LanguageManager.saved_preference()
+        for code, display_name in SUPPORTED_LANGUAGES.items():
+            act = QAction(display_name, self)
+            act.setCheckable(True)
+            act.setChecked(code == current)
+            act.triggered.connect(
+                lambda _checked=False, c=code: self._on_language_selected(c))
+            language_menu.addAction(act)
+
+    def _on_language_selected(self, lang_code: str) -> None:
+        """Persist the chosen language and prompt for a restart.
+
+        Phase-1 strategy: write the preference, show an info dialog,
+        wait for the next app launch. A live runtime switch will arrive
+        once every widget implements retranslate_ui() + changeEvent().
+        """
+        from al_dic.i18n import LanguageManager, SUPPORTED_LANGUAGES
+
+        app = QApplication.instance()
+        lang_mgr: LanguageManager | None = getattr(
+            app, "_pyaldic_lang_mgr", None)
+        if lang_mgr is not None:
+            lang_mgr.load(lang_code)
+
+        QMessageBox.information(
+            self,
+            self.tr("Language changed"),
+            self.tr(
+                "Language set to %1. Please restart pyALDIC for all "
+                "widgets to pick up the new language.").arg(
+                SUPPORTED_LANGUAGES.get(lang_code, lang_code)),
+        )
+
     def _on_save_session(self) -> None:
         """Save-session dialog: write state + Regions of Interest to JSON."""
         from al_dic.gui.session import SessionError, save_session
@@ -784,8 +822,22 @@ def main() -> None:
     sys.excepthook = _global_exception_hook
 
     app = QApplication(sys.argv)
+    app.setOrganizationName("pyALDIC")
+    app.setApplicationName("pyALDIC")
     app.setStyle("Fusion")  # required for QSS to work correctly
     app.setStyleSheet(build_stylesheet())
+
+    # i18n: install translators before any widget is constructed so
+    # tr() wrappers resolve correctly from the very first paint.
+    from al_dic.i18n import LanguageManager
+    from al_dic.utils.matplotlib_fonts import configure_matplotlib_fonts
+
+    configure_matplotlib_fonts()
+    lang_mgr = LanguageManager(app)
+    lang_mgr.load(LanguageManager.resolve_language())
+    # Keep a reference on the QApplication so widgets can reach the
+    # manager for language-switch actions (see Settings > Language menu).
+    app._pyaldic_lang_mgr = lang_mgr  # type: ignore[attr-defined]
 
     window = MainWindow()
     window.show()
