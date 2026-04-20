@@ -122,9 +122,9 @@ pyALDIC implements the Augmented Lagrangian DIC (AL-DIC) method. Quantitative ac
 
 - **Yang, J. & Bhattacharya, K.** *Augmented Lagrangian Digital Image Correlation.* **Experimental Mechanics** 59, 187–205 (2019). [doi:10.1007/s11340-018-00457-0](https://doi.org/10.1007/s11340-018-00457-0)  _— original AL-DIC paper, 145+ citations._
 
-- **Yang, J. et al.** *3D Stereo Adaptive Mesh Augmented Lagrangian Digital Image Correlation.* **Experimental Mechanics** (2025). [doi:10.1007/s11340-025-01225-7](https://doi.org/10.1007/s11340-025-01225-7)  _— 3D stereo extension of the AL-DIC framework._
+- **Tong, Z. et al.** *3D Stereo Adaptive Mesh Augmented Lagrangian Digital Image Correlation.* **Experimental Mechanics** (2025). [doi:10.1007/s11340-025-01225-7](https://doi.org/10.1007/s11340-025-01225-7)  _— 3D stereo extension of the AL-DIC framework._
 
-The AL-DIC method was also independently evaluated in the community benchmark **DIC Challenge 2.0** — *Reu et al., "DIC Challenge 2.0: developing images and guidelines for evaluating accuracy and resolution of 2D analyses: focus on the metrological efficiency indicator", Experimental Mechanics*.
+The AL-DIC method was also independently evaluated in the community benchmark **DIC Challenge 2.0** — *Reu et al., "DIC Challenge 2.0: developing images and guidelines for evaluating accuracy and resolution of 2D analyses: focus on the metrological efficiency indicator", Experimental Mechanics*. [doi:10.1007/s11340-021-00806-6](https://doi.org/10.1007/s11340-021-00806-6)
 
 ## Performance
 
@@ -250,6 +250,17 @@ pytest tests/test_solver/test_icgn_solver.py
 ```
 
 </details>
+
+---
+
+## About the Authors
+
+pyALDIC is developed in [Dr. Jin Yang's group](https://sites.utexas.edu/jyang/) at **The University of Texas at Austin**.
+
+Beyond pyALDIC itself, the authors have contributed to community-wide DIC standards:
+
+- **Jin Yang** — co-editor of *A Good Practices Guide for Digital Image Correlation*, **1st edition** (2018) and **2nd edition** (2025), published by the International Digital Image Correlation Society (iDICs).
+- **Zixiang Tong** — co-editor of *A Good Practices Guide for Digital Image Correlation*, **2nd edition** (2025).
 
 ---
 
