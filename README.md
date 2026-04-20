@@ -104,29 +104,27 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
 
 |  | **pyALDIC** | **Ncorr** | **DICe** | **VIC-2D** | **MatchID** |
 |---|---|---|---|---|---|
-| **Formulation** | Hybrid local + global (ALDIC) | Local (subset) | Local (subset) | Local (subset) | Local (subset) |
-| **Grid** | ${\color{green}\textsf{\textbf{Adaptive refined grid}}}$ | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
-| **GUI** | Built-in desktop | Built-in (requires MATLAB) | Built-in desktop | Built-in desktop | Built-in desktop |
-| **Platform** | ${\color{green}\textsf{\textbf{Windows / macOS / Linux}}}$ | Windows / macOS / Linux[^1] | Windows / macOS / Linux | Windows only | Windows only |
-| **Latest release**[^2] | v0.3 (2026) | v1.2.2 (2017) | v3.0-beta (2023) | VIC-2D 7 (2022) | MatchID 2D (2026) |
-| **Cost** | ${\color{green}\textsf{\textbf{Free}}}$ | Free[^1] | Free | Commercial | Commercial |
+| **Formulation** | <mark>**Hybrid local + global (ALDIC)**</mark> | Local (subset) | Local (subset) | Local (subset) | Local (subset) |
+| **Grid** | <mark>**Adaptive refined grid**</mark> | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
+| **GUI** | <mark>**Built-in desktop**</mark> | Built-in desktop¹ | Built-in desktop | Built-in desktop | Built-in desktop |
+| **Platform** | <mark>**Windows, macOS, Linux**</mark> | Windows, macOS, Linux¹ | Windows, macOS, Linux | Windows only | Windows only |
+| **Latest release**² | <mark>**v0.3 (2026)**</mark> | v1.2.2 (2017) | v3.0-beta (2023) | VIC-2D 7 (2022) | MatchID 2D (2026) |
+| **Cost** | <mark>**Free**</mark> | Free¹ | Free | Commercial | Commercial |
 
-[^1]: Requires a MATLAB license.
-[^2]: Compiled from public web sources and may be inaccurate. Last verified: 2026-04-20.
+<sub>¹ Requires a MATLAB license.</sub><br/>
+<sub>² Compiled from public web sources and may be inaccurate. Last verified: 2026-04-20.</sub>
 
 ---
 
 ## Accuracy
 
-Sub-pixel accuracy on synthetic speckle images (Lagrangian ground truth):
+pyALDIC implements the Augmented Lagrangian DIC (AL-DIC) method. Quantitative accuracy, convergence, and noise-robustness characterization — including synthetic-speckle ground-truth studies and comparisons against classical subset-based DIC — are reported in the peer-reviewed literature:
 
-| Test Case | RMSE |
-|-----------|------|
-| Rigid translation (2.5 px) | 0.010 px |
-| Rotation (2°) | 0.011 px |
-| Affine strain (2%) | 0.011 px |
+- **Yang, J. & Bhattacharya, K.** *Augmented Lagrangian Digital Image Correlation.* **Experimental Mechanics** 59, 187–205 (2019). [doi:10.1007/s11340-018-00457-0](https://doi.org/10.1007/s11340-018-00457-0)  _— original AL-DIC paper, 145+ citations._
 
-512² images, winsize=32, step=8. The global FEM regularizer (ADMM) enforces kinematic compatibility across neighboring nodes, improving robustness in noisy and high-gradient regions. Accuracy is regression-tested in CI.
+- **Yang, J. et al.** *3D Stereo Adaptive Mesh Augmented Lagrangian Digital Image Correlation.* **Experimental Mechanics** (2025). [doi:10.1007/s11340-025-01225-7](https://doi.org/10.1007/s11340-025-01225-7)  _— 3D stereo extension of the AL-DIC framework._
+
+The AL-DIC method was also independently evaluated in the community benchmark **DIC Challenge 2.0** — *Reu et al., "DIC Challenge 2.0: developing images and guidelines for evaluating accuracy and resolution of 2D analyses: focus on the metrological efficiency indicator", Experimental Mechanics*.
 
 ## Performance
 
