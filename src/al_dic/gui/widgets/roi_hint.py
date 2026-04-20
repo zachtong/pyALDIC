@@ -57,28 +57,28 @@ class ROIHint(QLabel):
         # No images yet: skip mode-specific advice, just tell the user
         # they need to load images first.
         if n == 0:
-            self.setText(
+            self.setText(self.tr(
                 "Load images first, then draw a Region of Interest on "
                 "frame 1."
-            )
+            ))
             return
 
         if s.tracking_mode == "accumulative":
-            self.setText(
-                "<b>Accumulative mode</b> \u2014 only frame 1 needs a "
+            self.setText(self.tr(
+                "<b>Accumulative mode</b> — only frame 1 needs a "
                 "Region of Interest. All later frames are compared "
                 "against it directly."
-            )
+            ))
             return
 
         # Incremental: the required ref frames depend on inc_ref_mode
         mode = s.inc_ref_mode
         if mode == "every_frame":
-            self.setText(
-                "<b>Incremental, every frame</b> \u2014 frame 1 needs a "
+            self.setText(self.tr(
+                "<b>Incremental, every frame</b> — frame 1 needs a "
                 "Region of Interest. It is automatically warped forward "
                 "to each later frame (no per-frame drawing required)."
-            )
+            ))
             return
 
         if mode == "every_n":
@@ -88,14 +88,14 @@ class ROIHint(QLabel):
             # Convert to 1-based for display
             refs_display = [str(r + 1) for r in refs]
             if len(refs_display) > 8:
-                preview = ", ".join(refs_display[:8]) + ", \u2026"
+                preview = ", ".join(refs_display[:8]) + ", …"
             else:
                 preview = ", ".join(refs_display)
-            self.setText(
-                f"<b>Incremental, every {N} frames</b> \u2014 draw a "
-                f"Region of Interest on frames: <b>{preview}</b> "
-                f"({len(refs_display)} reference frames total)."
-            )
+            self.setText(self.tr(
+                "<b>Incremental, every %1 frames</b> — draw a "
+                "Region of Interest on frames: <b>%2</b> "
+                "(%3 reference frames total)."
+            ).arg(N).arg(preview).arg(len(refs_display)))
             return
 
         if mode == "custom":
@@ -105,24 +105,24 @@ class ROIHint(QLabel):
                 refs = [0] + refs
             refs_display = [str(r + 1) for r in refs]
             if not refs_display or refs_display == ["1"]:
-                self.setText(
-                    "<b>Incremental, custom</b> \u2014 no custom reference "
+                self.setText(self.tr(
+                    "<b>Incremental, custom</b> — no custom reference "
                     "frames set. Frame 1 will be the only reference; add "
                     "more indices in the Reference Frames field."
-                )
+                ))
                 return
             if len(refs_display) > 8:
-                preview = ", ".join(refs_display[:8]) + ", \u2026"
+                preview = ", ".join(refs_display[:8]) + ", …"
             else:
                 preview = ", ".join(refs_display)
-            self.setText(
-                f"<b>Incremental, custom</b> \u2014 draw a Region of "
-                f"Interest on frames: <b>{preview}</b> "
-                f"({len(refs_display)} reference frames total)."
-            )
+            self.setText(self.tr(
+                "<b>Incremental, custom</b> — draw a Region of "
+                "Interest on frames: <b>%1</b> "
+                "(%2 reference frames total)."
+            ).arg(preview).arg(len(refs_display)))
             return
 
         # Fallback — unrecognized mode
-        self.setText(
+        self.setText(self.tr(
             "Draw a Region of Interest on frame 1."
-        )
+        ))

@@ -375,7 +375,7 @@ class StrainWindow(QMainWindow):
         self._compute_btn.setEnabled(False)
         self._strain_progress.setValue(0)
         self._strain_progress.setVisible(True)
-        self._strain_progress_label.setText("Starting\u2026")
+        self._strain_progress_label.setText("Starting…")
         self._strain_progress_label.setVisible(True)
 
         self._strain_worker = _StrainWorker(

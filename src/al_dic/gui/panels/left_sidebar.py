@@ -117,7 +117,7 @@ class _DropZone(QWidget):
         icon_label.setStyleSheet("font-size: 20px; background: transparent;")
         layout.addWidget(icon_label)
 
-        text_label = QLabel("Drop image folder\nor Browse")
+        text_label = QLabel(self.tr("Drop image folder\nor Browse"))
         text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         text_label.setStyleSheet(
             f"color: {COLORS.TEXT_MUTED}; font-size: 11px; background: transparent;"
@@ -127,7 +127,7 @@ class _DropZone(QWidget):
     def mousePressEvent(self, event) -> None:  # noqa: N802
         """Open folder dialog on click."""
         folder = QFileDialog.getExistingDirectory(
-            self, "Select Image Folder", ""
+            self, self.tr("Select Image Folder"), ""
         )
         if folder:
             self._image_ctrl.load_folder(folder)
@@ -175,19 +175,19 @@ class LeftSidebar(QWidget):
         layout.setSpacing(0)
 
         # --- IMAGES section (always visible, not collapsible) ---
-        self._images_header = _SectionHeader("IMAGES")
+        self._images_header = _SectionHeader(self.tr("IMAGES"))
         layout.addWidget(self._images_header)
 
         self._drop_zone = _DropZone(image_ctrl)
         layout.addWidget(self._drop_zone)
 
         # Natural sort checkbox
-        self._natural_sort_cb = QCheckBox("Natural Sort (1, 2, …, 10)")
+        self._natural_sort_cb = QCheckBox(self.tr("Natural Sort (1, 2, …, 10)"))
         self._natural_sort_cb.setChecked(False)
-        self._natural_sort_cb.setToolTip(
+        self._natural_sort_cb.setToolTip(self.tr(
             "Sort by embedded numbers: image1, image2, …, image10\n"
             "Default (unchecked): lexicographic — best for zero-padded names"
-        )
+        ))
         self._natural_sort_cb.setStyleSheet(
             f"QCheckBox {{ color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
             f"margin: 2px 12px; }}"
@@ -258,7 +258,7 @@ class LeftSidebar(QWidget):
         # Region of Interest. Picking that first avoids drawing regions on
         # the wrong frames.
         self._workflow_section = CollapsibleSection(
-            "WORKFLOW TYPE", expanded=True,
+            self.tr("WORKFLOW TYPE"), expanded=True,
         )
         self._workflow_panel = WorkflowTypePanel()
         self._workflow_section.add_widget(self._workflow_panel)
@@ -271,13 +271,14 @@ class LeftSidebar(QWidget):
         # without the inline guidance notes crowding the sidebar on
         # first launch.
         self._init_guess_section = CollapsibleSection(
-            "INITIAL GUESS", expanded=False,
+            self.tr("INITIAL GUESS"), expanded=False,
         )
         self._init_guess_widget = InitGuessWidget()
         self._init_guess_section.add_widget(self._init_guess_widget)
         settings_layout.addWidget(self._init_guess_section)
 
-        self._roi_section = CollapsibleSection("REGION OF INTEREST", expanded=True)
+        self._roi_section = CollapsibleSection(
+            self.tr("REGION OF INTEREST"), expanded=True)
         # Dynamic hint: lives above the toolbar and updates whenever the
         # workflow-type panel changes tracking mode / ref-update policy.
         self._roi_hint = ROIHint()
@@ -286,12 +287,14 @@ class LeftSidebar(QWidget):
         self._roi_section.add_widget(self._roi_toolbar)
         settings_layout.addWidget(self._roi_section)
 
-        self._params_section = CollapsibleSection("PARAMETERS", expanded=True)
+        self._params_section = CollapsibleSection(
+            self.tr("PARAMETERS"), expanded=True)
         self._param_panel = ParamPanel()
         self._params_section.add_widget(self._param_panel)
         settings_layout.addWidget(self._params_section)
 
-        self._advanced_section = CollapsibleSection("ADVANCED", expanded=False)
+        self._advanced_section = CollapsibleSection(
+            self.tr("ADVANCED"), expanded=False)
         self._mesh_appearance = MeshAppearanceWidget()
         self._advanced_section.add_widget(self._mesh_appearance)
         # ADMM iterations + FFT auto-expand toggle: advanced-user tuning

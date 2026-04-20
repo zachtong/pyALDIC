@@ -48,15 +48,15 @@ class WorkflowTypePanel(QWidget):
         self._tracking_mode = QComboBox()
         self._tracking_mode.addItems(["Incremental", "Accumulative"])
         self._tracking_mode.setCurrentText(state.tracking_mode.capitalize())
-        self._tracking_mode.setToolTip(
+        self._tracking_mode.setToolTip(self.tr(
             "Incremental: each frame is compared to the previous reference "
             "frame.\nSuitable for large accumulated deformation, required "
             "for large rotations.\n\n"
             "Accumulative: every frame is compared to frame 1.\n"
             "Accurate for small, monotonic deformation only."
-        )
+        ))
         row = QHBoxLayout()
-        lbl = QLabel("Tracking Mode")
+        lbl = QLabel(self.tr("Tracking Mode"))
         lbl.setFixedWidth(120)
         row.addWidget(lbl)
         row.addWidget(self._tracking_mode)
@@ -66,7 +66,7 @@ class WorkflowTypePanel(QWidget):
         self._solver = QComboBox()
         self._solver.addItems(["AL-DIC", "Local DIC"])
         self._solver.setCurrentIndex(0 if state.use_admm else 1)
-        self._solver.setToolTip(
+        self._solver.setToolTip(self.tr(
             "Local DIC: Independent subset matching (IC-GN). Fast,\n"
             "preserves sharp local features. Best for small\n"
             "deformations or high-quality images.\n\n"
@@ -74,9 +74,9 @@ class WorkflowTypePanel(QWidget):
             "regularization. Enforces displacement compatibility\n"
             "between subsets. Best for large deformations, noisy\n"
             "images, or when strain accuracy matters."
-        )
+        ))
         solver_row = QHBoxLayout()
-        solver_lbl = QLabel("Solver")
+        solver_lbl = QLabel(self.tr("Solver"))
         solver_lbl.setFixedWidth(120)
         solver_row.addWidget(solver_lbl)
         solver_row.addWidget(self._solver)
@@ -94,7 +94,7 @@ class WorkflowTypePanel(QWidget):
         self._ref_mode = QComboBox()
         self._ref_mode.addItems(["Every Frame", "Every N Frames", "Custom Frames"])
         self._ref_mode.setCurrentIndex(0)
-        self._ref_mode.setToolTip(
+        self._ref_mode.setToolTip(self.tr(
             "When the reference frame refreshes during incremental "
             "tracking.\n"
             "Every Frame: reset reference every frame (smallest per-step "
@@ -102,9 +102,9 @@ class WorkflowTypePanel(QWidget):
             "Every N Frames: reset every N frames (balance speed vs "
             "robustness).\n"
             "Custom Frames: user-defined list of reference frame indices."
-        )
+        ))
         ref_row = QHBoxLayout()
-        ref_lbl = QLabel("Reference Update")
+        ref_lbl = QLabel(self.tr("Reference Update"))
         ref_lbl.setFixedWidth(108)
         ref_row.addWidget(ref_lbl)
         ref_row.addWidget(self._ref_mode)
@@ -113,9 +113,10 @@ class WorkflowTypePanel(QWidget):
         self._interval_spin = QSpinBox()
         self._interval_spin.setRange(2, 100)
         self._interval_spin.setValue(state.inc_ref_interval)
-        self._interval_spin.setToolTip("Update reference every N frames")
+        self._interval_spin.setToolTip(self.tr(
+            "Update reference every N frames"))
         self._interval_row = QHBoxLayout()
-        self._interval_lbl = QLabel("Interval")
+        self._interval_lbl = QLabel(self.tr("Interval"))
         self._interval_lbl.setFixedWidth(108)
         self._interval_row.addWidget(self._interval_lbl)
         self._interval_row.addWidget(self._interval_spin)
@@ -123,12 +124,12 @@ class WorkflowTypePanel(QWidget):
 
         self._custom_edit = QLineEdit()
         self._custom_edit.setPlaceholderText("e.g. 0, 5, 10, 20")
-        self._custom_edit.setToolTip(
+        self._custom_edit.setToolTip(self.tr(
             "Comma-separated frame indices to use as reference frames "
             "(0-based)"
-        )
+        ))
         self._custom_row = QHBoxLayout()
-        self._custom_lbl = QLabel("Reference Frames")
+        self._custom_lbl = QLabel(self.tr("Reference Frames"))
         self._custom_lbl.setFixedWidth(108)
         self._custom_row.addWidget(self._custom_lbl)
         self._custom_row.addWidget(self._custom_edit)

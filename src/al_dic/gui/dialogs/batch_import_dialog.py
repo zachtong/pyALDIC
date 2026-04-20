@@ -42,7 +42,7 @@ class BatchImportDialog(QDialog):
 
     def __init__(self, image_files: list[str], parent=None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Batch Import Region of Interest Masks")
+        self.setWindowTitle(self.tr("Batch Import Region of Interest Masks"))
         self.setMinimumSize(700, 500)
 
         self._image_files = list(image_files)
@@ -61,13 +61,13 @@ class BatchImportDialog(QDialog):
 
         # --- Folder browser row ---
         folder_row = QHBoxLayout()
-        folder_row.addWidget(QLabel("Mask Folder:"))
-        self._folder_label = QLabel("(none)")
+        folder_row.addWidget(QLabel(self.tr("Mask Folder:")))
+        self._folder_label = QLabel(self.tr("(none)"))
         self._folder_label.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-style: italic;"
         )
         folder_row.addWidget(self._folder_label, stretch=1)
-        browse_btn = QPushButton("Browse...")
+        browse_btn = QPushButton(self.tr("Browse..."))
         browse_btn.clicked.connect(self._on_browse)
         folder_row.addWidget(browse_btn)
         layout.addLayout(folder_row)
@@ -77,20 +77,22 @@ class BatchImportDialog(QDialog):
 
         # Left panel: available mask files
         left = QVBoxLayout()
-        left.addWidget(QLabel("Available Masks"))
+        left.addWidget(QLabel(self.tr("Available Masks")))
         self._mask_list = QListWidget()
         self._mask_list.setSelectionMode(
             QListWidget.SelectionMode.ExtendedSelection
         )
         left.addWidget(self._mask_list)
 
-        auto_btn = QPushButton("Auto-Match by Name")
-        auto_btn.setToolTip("Match mask files to frames by number in filename")
+        auto_btn = QPushButton(self.tr("Auto-Match by Name"))
+        auto_btn.setToolTip(self.tr(
+            "Match mask files to frames by number in filename"))
         auto_btn.clicked.connect(self._auto_match)
         left.addWidget(auto_btn)
 
-        seq_btn = QPushButton("Assign Sequential")
-        seq_btn.setToolTip("Assign masks to frames in order starting from frame 0")
+        seq_btn = QPushButton(self.tr("Assign Sequential"))
+        seq_btn.setToolTip(self.tr(
+            "Assign masks to frames in order starting from frame 0"))
         seq_btn.clicked.connect(self._assign_sequential)
         left.addWidget(seq_btn)
 
@@ -98,9 +100,10 @@ class BatchImportDialog(QDialog):
 
         # Right panel: frame assignments
         right = QVBoxLayout()
-        right.addWidget(QLabel("Frame Assignments"))
+        right.addWidget(QLabel(self.tr("Frame Assignments")))
         self._assign_tree = QTreeWidget()
-        self._assign_tree.setHeaderLabels(["Frame", "Image", "Mask"])
+        self._assign_tree.setHeaderLabels([
+            self.tr("Frame"), self.tr("Image"), self.tr("Mask")])
         self._assign_tree.setColumnCount(3)
         self._assign_tree.setRootIsDecorated(False)
         header = self._assign_tree.header()
@@ -110,12 +113,13 @@ class BatchImportDialog(QDialog):
         self._assign_tree.setColumnWidth(0, 50)
         right.addWidget(self._assign_tree)
 
-        assign_btn = QPushButton("Assign Selected ->")
-        assign_btn.setToolTip("Pair selected mask(s) with selected frame(s)")
+        assign_btn = QPushButton(self.tr("Assign Selected ->"))
+        assign_btn.setToolTip(self.tr(
+            "Pair selected mask(s) with selected frame(s)"))
         assign_btn.clicked.connect(self._assign_selected)
         right.addWidget(assign_btn)
 
-        clear_btn = QPushButton("Clear All")
+        clear_btn = QPushButton(self.tr("Clear All"))
         clear_btn.clicked.connect(self._clear_assignments)
         right.addWidget(clear_btn)
 

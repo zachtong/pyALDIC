@@ -31,7 +31,9 @@ from pathlib import Path
 
 import numpy as np
 from numpy.typing import NDArray
-from PySide6.QtCore import QSettings, QThread, QUrl, Qt, Signal
+from PySide6.QtCore import (
+    QCoreApplication, QSettings, QThread, QUrl, Qt, Signal,
+)
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -464,9 +466,9 @@ def _make_select_all_none(
     checks: dict[str, QCheckBox],
 ) -> tuple[QPushButton, QPushButton]:
     """Return (All button, None button) wired to the given checkbox dict."""
-    all_btn = QPushButton("All")
+    all_btn = QPushButton(QCoreApplication.translate("ExportDialog", "All"))
     all_btn.setFixedWidth(60)
-    none_btn = QPushButton("None")
+    none_btn = QPushButton(QCoreApplication.translate("ExportDialog", "None"))
     none_btn.setFixedWidth(60)
     all_btn.clicked.connect(
         lambda: [c.setChecked(True) for c in checks.values() if c.isEnabled()]
@@ -495,7 +497,7 @@ class ExportDialog(QDialog):
                  per_frame_rois: dict | None = None,
                  parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Export Results")
+        self.setWindowTitle(self.tr("Export Results"))
         self.setMinimumWidth(780)
 
         from al_dic.export.export_utils import make_prefix, make_timestamp
@@ -515,7 +517,7 @@ class ExportDialog(QDialog):
         root.setSpacing(8)
 
         # --- Shared folder row ---
-        folder_lbl = QLabel("OUTPUT FOLDER")
+        folder_lbl = QLabel(self.tr("OUTPUT FOLDER"))
         folder_lbl.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
@@ -523,16 +525,16 @@ class ExportDialog(QDialog):
 
         path_row = QHBoxLayout()
         self._folder_edit = QLineEdit()
-        self._folder_edit.setPlaceholderText("Select output folder…")
+        self._folder_edit.setPlaceholderText(self.tr("Select output folder…"))
         self._folder_edit.textChanged.connect(self._on_folder_changed)
         path_row.addWidget(self._folder_edit, 1)
 
-        browse_btn = QPushButton("Browse…")
+        browse_btn = QPushButton(self.tr("Browse…"))
         browse_btn.setFixedWidth(90)
         browse_btn.clicked.connect(self._on_browse)
         path_row.addWidget(browse_btn)
 
-        self._open_folder_btn = QPushButton("Open Folder")
+        self._open_folder_btn = QPushButton(self.tr("Open Folder"))
         self._open_folder_btn.setFixedWidth(90)
         self._open_folder_btn.setEnabled(False)
         self._open_folder_btn.clicked.connect(self._on_open_folder)
@@ -540,16 +542,16 @@ class ExportDialog(QDialog):
         root.addLayout(path_row)
 
         # --- Physical units (shared by Images + Animation) ---
-        units_group = QGroupBox("PHYSICAL UNITS")
+        units_group = QGroupBox(self.tr("PHYSICAL UNITS"))
         units_form = QFormLayout(units_group)
         units_form.setSpacing(4)
 
-        self._phys_units_check = QCheckBox("Enable physical units")
+        self._phys_units_check = QCheckBox(self.tr("Enable physical units"))
         self._phys_units_check.setChecked(hint.use_physical_units)
-        self._phys_units_check.setToolTip(
+        self._phys_units_check.setToolTip(self.tr(
             "Scale displacement values by pixel size and show physical units "
             "on colorbar labels. Strain is dimensionless and unaffected."
-        )
+        ))
         units_form.addRow(self._phys_units_check)
 
         phys_row = QHBoxLayout()
@@ -564,9 +566,9 @@ class ExportDialog(QDialog):
         self._pixel_unit_combo.setCurrentText(hint.pixel_unit)
         self._pixel_unit_combo.setFixedWidth(70)
         phys_row.addWidget(self._pixel_unit_combo)
-        phys_row.addWidget(QLabel("/ pixel"))
+        phys_row.addWidget(QLabel(self.tr("/ pixel")))
         phys_row.addStretch()
-        units_form.addRow("Pixel size", phys_row)
+        units_form.addRow(self.tr("Pixel size"), phys_row)
 
         fr_row = QHBoxLayout()
         self._frame_rate_spin = QDoubleSpinBox()
@@ -575,9 +577,9 @@ class ExportDialog(QDialog):
         self._frame_rate_spin.setDecimals(2)
         self._frame_rate_spin.setFixedWidth(100)
         fr_row.addWidget(self._frame_rate_spin)
-        fr_row.addWidget(QLabel("fps"))
+        fr_row.addWidget(QLabel(self.tr("fps")))
         fr_row.addStretch()
-        units_form.addRow("Frame rate", fr_row)
+        units_form.addRow(self.tr("Frame rate"), fr_row)
 
         root.addWidget(units_group)
 
@@ -585,10 +587,10 @@ class ExportDialog(QDialog):
         self._tabs = QTabWidget()
         root.addWidget(self._tabs, 1)
 
-        self._tabs.addTab(self._build_data_tab(), "Data")
-        self._tabs.addTab(self._build_images_tab(), "Images")
-        self._tabs.addTab(self._build_animation_tab(), "Animation")
-        self._tabs.addTab(self._build_report_tab(), "Report")
+        self._tabs.addTab(self._build_data_tab(), self.tr("Data"))
+        self._tabs.addTab(self._build_images_tab(), self.tr("Images"))
+        self._tabs.addTab(self._build_animation_tab(), self.tr("Animation"))
+        self._tabs.addTab(self._build_report_tab(), self.tr("Report"))
 
         # Sync button enabled state now that all tabs (and buttons) are built
         self._on_folder_changed(self._folder_edit.text())
@@ -608,15 +610,16 @@ class ExportDialog(QDialog):
         layout.setSpacing(10)
 
         # FORMAT group
-        fmt_group = QGroupBox("FORMAT")
+        fmt_group = QGroupBox(self.tr("FORMAT"))
         fmt_layout = QVBoxLayout(fmt_group)
-        self._npz_check = QCheckBox("NumPy Archive (.npz)")
+        self._npz_check = QCheckBox(self.tr("NumPy Archive (.npz)"))
         self._npz_check.setChecked(True)
-        self._mat_check = QCheckBox("MATLAB (.mat)")
+        self._mat_check = QCheckBox(self.tr("MATLAB (.mat)"))
         self._mat_check.setChecked(True)
-        self._csv_check = QCheckBox("CSV (per frame)")
+        self._csv_check = QCheckBox(self.tr("CSV (per frame)"))
         self._csv_check.setChecked(True)
-        self._npz_per_frame_check = QCheckBox("NPZ: one file per frame (default: single merged file)")
+        self._npz_per_frame_check = QCheckBox(self.tr(
+            "NPZ: one file per frame (default: single merged file)"))
         self._npz_per_frame_check.setChecked(False)
         for chk in (self._npz_check, self._mat_check, self._csv_check,
                     self._npz_per_frame_check):
@@ -624,7 +627,7 @@ class ExportDialog(QDialog):
         layout.addWidget(fmt_group)
 
         # DISPLACEMENT group
-        disp_group = QGroupBox("DISPLACEMENT")
+        disp_group = QGroupBox(self.tr("DISPLACEMENT"))
         disp_vl = QVBoxLayout(disp_group)
         self._data_disp_checks: dict[str, QCheckBox] = {}
         for key, _ in _DISP_FIELDS:
@@ -633,7 +636,7 @@ class ExportDialog(QDialog):
             self._data_disp_checks[key] = chk
 
         sel_row = QHBoxLayout()
-        sel_row.addWidget(QLabel("Select:"))
+        sel_row.addWidget(QLabel(self.tr("Select:")))
         all_btn, none_btn = _make_select_all_none(self._data_disp_checks)
         sel_row.addWidget(all_btn)
         sel_row.addWidget(none_btn)
@@ -648,10 +651,10 @@ class ExportDialog(QDialog):
         layout.addWidget(disp_group)
 
         # STRAIN group
-        strain_group = QGroupBox("STRAIN")
+        strain_group = QGroupBox(self.tr("STRAIN"))
         strain_group.setEnabled(self._has_strain)
         if not self._has_strain:
-            strain_group.setToolTip("Run Compute Strain first.")
+            strain_group.setToolTip(self.tr("Run Compute Strain first."))
         strain_vl = QVBoxLayout(strain_group)
         self._data_strain_checks: dict[str, QCheckBox] = {}
         for key, _ in _STRAIN_FIELDS:
@@ -660,7 +663,7 @@ class ExportDialog(QDialog):
             self._data_strain_checks[key] = chk
 
         ssel_row = QHBoxLayout()
-        ssel_row.addWidget(QLabel("Select:"))
+        ssel_row.addWidget(QLabel(self.tr("Select:")))
         sall_btn, snone_btn = _make_select_all_none(self._data_strain_checks)
         ssel_row.addWidget(sall_btn)
         ssel_row.addWidget(snone_btn)
@@ -677,13 +680,14 @@ class ExportDialog(QDialog):
         strain_vl.addLayout(strain_r2)
         layout.addWidget(strain_group)
 
-        params_note = QLabel("✓ Parameters file (JSON) always exported")
+        params_note = QLabel(self.tr(
+            "✓ Parameters file (JSON) always exported"))
         params_note.setStyleSheet(f"color: {COLORS.TEXT_MUTED}; font-size: 11px;")
         layout.addWidget(params_note)
 
         data_btn_row = QHBoxLayout()
         data_btn_row.addStretch()
-        self._export_data_btn = QPushButton("Export Data")
+        self._export_data_btn = QPushButton(self.tr("Export Data"))
         self._export_data_btn.setEnabled(False)
         self._export_data_btn.clicked.connect(self._on_export_data)
         data_btn_row.addWidget(self._export_data_btn)

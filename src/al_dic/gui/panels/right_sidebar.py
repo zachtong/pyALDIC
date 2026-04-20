@@ -54,7 +54,7 @@ class RightSidebar(QWidget):
         layout.setSpacing(8)
 
         # --- Run controls ---
-        self._run_btn = QPushButton("Run DIC Analysis")
+        self._run_btn = QPushButton(self.tr("Run DIC Analysis"))
         self._run_btn.setProperty("class", "btn-primary")
         self._run_btn.setFixedHeight(36)
         if _HAS_ICONS:
@@ -67,20 +67,20 @@ class RightSidebar(QWidget):
         # was a hard kill. Merging them into one Cancel with a single
         # semantics ("stop the current run cleanly") is less confusing and
         # matches what users actually want when they press either button.
-        self._cancel_btn = QPushButton("Cancel")
+        self._cancel_btn = QPushButton(self.tr("Cancel"))
         self._cancel_btn.setProperty("class", "btn-danger")
         self._cancel_btn.setFixedHeight(30)
         self._cancel_btn.setEnabled(False)
-        self._cancel_btn.setToolTip(
+        self._cancel_btn.setToolTip(self.tr(
             "Cancel the current analysis. Already-computed frames are "
             "kept; the run is marked as IDLE (not DONE)."
-        )
+        ))
         if _HAS_ICONS:
             self._cancel_btn.setIcon(icon_stop())
         self._cancel_btn.clicked.connect(self._on_cancel)
         layout.addWidget(self._cancel_btn)
 
-        self._export_btn = QPushButton("Export Results")
+        self._export_btn = QPushButton(self.tr("Export Results"))
         self._export_btn.setFixedHeight(30)
         self._export_btn.setEnabled(False)
         if _HAS_ICONS:
@@ -88,19 +88,19 @@ class RightSidebar(QWidget):
         self._export_btn.clicked.connect(self._on_export)
         layout.addWidget(self._export_btn)
 
-        self._strain_btn = QPushButton("Open Strain Window")
+        self._strain_btn = QPushButton(self.tr("Open Strain Window"))
         self._strain_btn.setFixedHeight(30)
-        self._strain_btn.setToolTip(
+        self._strain_btn.setToolTip(self.tr(
             "Compute and visualize strain in a separate post-processing "
             "window. Requires displacement results from a completed Run."
-        )
+        ))
         self._strain_btn.clicked.connect(
             self.open_strain_window_requested.emit
         )
         layout.addWidget(self._strain_btn)
 
         # --- Progress section ---
-        self._add_section_label(layout, "PROGRESS")
+        self._add_section_label(layout, self.tr("PROGRESS"))
 
         self._progress_bar = QProgressBar()
         self._progress_bar.setRange(0, 1000)
@@ -109,7 +109,7 @@ class RightSidebar(QWidget):
         self._progress_bar.setFixedHeight(8)
         layout.addWidget(self._progress_bar)
 
-        self._progress_label = QLabel("Ready")
+        self._progress_label = QLabel(self.tr("Ready"))
         self._progress_label.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
         )
@@ -117,12 +117,12 @@ class RightSidebar(QWidget):
 
         # Elapsed / remaining
         stats_row = QHBoxLayout()
-        self._elapsed_label = QLabel("ELAPSED  --:--")
+        self._elapsed_label = QLabel(self.tr("ELAPSED  %1").arg("--:--"))
         self._elapsed_label.setStyleSheet(
             f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
         )
         stats_row.addWidget(self._elapsed_label)
-        self._remaining_label = QLabel("REMAINING  --:--")
+        self._remaining_label = QLabel(self.tr("REMAINING  %1").arg("--:--"))
         self._remaining_label.setStyleSheet(
             f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
         )
@@ -130,29 +130,29 @@ class RightSidebar(QWidget):
         layout.addLayout(stats_row)
 
         # --- Field section ---
-        self._add_section_label(layout, "FIELD")
+        self._add_section_label(layout, self.tr("FIELD"))
         self._field_selector = FieldSelector()
         layout.addWidget(self._field_selector)
 
         # Deformed vs reference frame toggle.
         # This controls WHERE the field is plotted (geometry, not styling),
         # so it lives in FIELD rather than VISUALIZATION.
-        self._deformed_cb = QCheckBox("Show on deformed frame")
+        self._deformed_cb = QCheckBox(self.tr("Show on deformed frame"))
         self._deformed_cb.setChecked(True)
-        self._deformed_cb.setToolTip(
+        self._deformed_cb.setToolTip(self.tr(
             "When checked, overlay results on the deformed (current) frame "
             "instead of the reference frame"
-        )
+        ))
         self._deformed_cb.stateChanged.connect(self._on_deformed_toggled)
         layout.addWidget(self._deformed_cb)
 
         # --- Visualization section ---
-        self._add_section_label(layout, "VISUALIZATION")
+        self._add_section_label(layout, self.tr("VISUALIZATION"))
 
         # Colormap selector
         cmap_row = QHBoxLayout()
         cmap_row.setSpacing(4)
-        cmap_lbl = QLabel("Colormap")
+        cmap_lbl = QLabel(self.tr("Colormap"))
         cmap_lbl.setFixedWidth(64)
         cmap_row.addWidget(cmap_lbl)
         self._cmap_combo = QComboBox()
@@ -173,31 +173,32 @@ class RightSidebar(QWidget):
         # Opacity slider (mirrors strain window's StrainVizPanel)
         opacity_row = QHBoxLayout()
         opacity_row.setSpacing(4)
-        opacity_lbl = QLabel("Opacity")
+        opacity_lbl = QLabel(self.tr("Opacity"))
         opacity_lbl.setFixedWidth(64)
         opacity_row.addWidget(opacity_lbl)
         self._opacity_slider = QSlider(Qt.Orientation.Horizontal)
         self._opacity_slider.setRange(0, 100)
         self._opacity_slider.setValue(int(self._state.overlay_alpha * 100))
-        self._opacity_slider.setToolTip("Overlay opacity (0 = transparent, 100 = opaque)")
+        self._opacity_slider.setToolTip(self.tr(
+            "Overlay opacity (0 = transparent, 100 = opaque)"))
         self._opacity_slider.valueChanged.connect(self._on_opacity_changed)
         opacity_row.addWidget(self._opacity_slider)
         layout.addLayout(opacity_row)
 
         # --- Physical units section ---
-        self._add_section_label(layout, "PHYSICAL UNITS")
+        self._add_section_label(layout, self.tr("PHYSICAL UNITS"))
         self._physical_units = PhysicalUnitsWidget()
         layout.addWidget(self._physical_units)
 
         # --- Log section ---
         console_header = QHBoxLayout()
-        lbl = QLabel("LOG")
+        lbl = QLabel(self.tr("LOG"))
         lbl.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
         console_header.addWidget(lbl)
         console_header.addStretch()
-        clear_btn = QPushButton("Clear")
+        clear_btn = QPushButton(self.tr("Clear"))
         clear_btn.setFixedSize(56, 20)
         clear_btn.setStyleSheet(
             f"font-size: 10px; color: {COLORS.TEXT_MUTED}; border: none;"
@@ -313,10 +314,10 @@ class RightSidebar(QWidget):
             and not self._seed_ctrl.all_regions_seeded()
         ):
             self._run_btn.setEnabled(False)
-            self._run_btn.setToolTip(
+            self._run_btn.setToolTip(self.tr(
                 "Place at least one Starting Point in each red region "
                 "before running (red = needs a Starting Point)."
-            )
+            ))
         else:
             self._run_btn.setEnabled(base_enabled)
             self._run_btn.setToolTip("")
@@ -345,9 +346,10 @@ class RightSidebar(QWidget):
 
         if idle:
             self._progress_bar.setValue(0)
-            self._progress_label.setText("Ready")
-            self._elapsed_label.setText("ELAPSED  --:--")
-            self._remaining_label.setText("REMAINING  --:--")
+            self._progress_label.setText(self.tr("Ready"))
+            self._elapsed_label.setText(self.tr("ELAPSED  %1").arg("--:--"))
+            self._remaining_label.setText(
+                self.tr("REMAINING  %1").arg("--:--"))
             self._last_frame_str = ""
 
     def _on_deformed_toggled(self, state: int) -> None:
@@ -377,13 +379,16 @@ class RightSidebar(QWidget):
         frame_match = re.search(r"[Ff]rame\s+(\d+/\d+)", message)
         if frame_match:
             self._last_frame_str = frame_match.group(1)
-        # Always show last known frame to avoid flickering
+        # Always show last known frame to avoid flickering.
+        # Percentage first (universal), then "Frame N/M" (translatable).
+        pct = f"{fraction * 100:.0f}%"
         if self._last_frame_str:
             self._progress_label.setText(
-                f"{fraction * 100:.0f}%  \u2014  Frame {self._last_frame_str}"
+                self.tr("%1  —  Frame %2").arg(pct).arg(
+                    self._last_frame_str)
             )
         else:
-            self._progress_label.setText(f"{fraction * 100:.0f}%")
+            self._progress_label.setText(pct)
 
     def _update_elapsed(self) -> None:
         """Refresh elapsed and estimated remaining time labels every second."""
@@ -395,13 +400,17 @@ class RightSidebar(QWidget):
             self._state.elapsed_seconds = elapsed
 
         mins, secs = divmod(int(elapsed), 60)
-        self._elapsed_label.setText(f"ELAPSED  {mins:02d}:{secs:02d}")
+        self._elapsed_label.setText(
+            self.tr("ELAPSED  %1").arg(f"{mins:02d}:{secs:02d}"))
 
         frac = self._state.progress
         if frac > 0.01:
             estimated_total = elapsed / frac
             remaining = estimated_total - elapsed
             r_mins, r_secs = divmod(int(max(0, remaining)), 60)
-            self._remaining_label.setText(f"REMAINING  {r_mins:02d}:{r_secs:02d}")
+            self._remaining_label.setText(
+                self.tr("REMAINING  %1").arg(
+                    f"{r_mins:02d}:{r_secs:02d}"))
         else:
-            self._remaining_label.setText("REMAINING  --:--")
+            self._remaining_label.setText(
+                self.tr("REMAINING  %1").arg("--:--"))

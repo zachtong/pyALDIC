@@ -69,28 +69,28 @@ class ROIToolbar(QWidget):
         layout.setSpacing(4)
 
         # --- Row 1: Add / Cut dropdown buttons ---
-        self._btn_add = QPushButton("+ Add  \u25b4")
-        self._btn_add.setToolTip(
+        self._btn_add = QPushButton(self.tr("+ Add") + "  \u25b4")
+        self._btn_add.setToolTip(self.tr(
             "Add region to the Region of Interest "
             "(Polygon / Rectangle / Circle)"
-        )
+        ))
         self._btn_add.setFixedHeight(30)
 
-        self._btn_cut = QPushButton("\u2702 Cut  \u25b4")
-        self._btn_cut.setToolTip(
+        self._btn_cut = QPushButton("\u2702 " + self.tr("Cut") + "  \u25b4")
+        self._btn_cut.setToolTip(self.tr(
             "Cut region from the Region of Interest "
             "(Polygon / Rectangle / Circle)"
-        )
+        ))
         self._btn_cut.setFixedHeight(30)
 
-        self._btn_refine = QPushButton("+ Refine  \u25b4")
+        self._btn_refine = QPushButton(self.tr("+ Refine") + "  \u25b4")
         # The enabled tooltip is also the default; when the button is
         # disabled (non-frame-0) we swap in a short explanation instead.
-        self._refine_enabled_tooltip = (
+        self._refine_enabled_tooltip = self.tr(
             "Paint extra mesh-refinement zones with a brush\n"
             "(only on frame 1 — material points auto-warped to later frames)"
         )
-        self._refine_disabled_tooltip = (
+        self._refine_disabled_tooltip = self.tr(
             "Refine brush is only available on frame 1. Switch to frame 1 "
             "to paint refinement zones; they are automatically warped to "
             "later frames."
@@ -115,14 +115,15 @@ class ROIToolbar(QWidget):
         import_row = QHBoxLayout()
         import_row.setSpacing(4)
 
-        self._btn_import = QPushButton("Import")
-        self._btn_import.setToolTip("Import mask from image file")
+        self._btn_import = QPushButton(self.tr("Import"))
+        self._btn_import.setToolTip(self.tr("Import mask from image file"))
         self._btn_import.setFixedHeight(26)
         self._btn_import.clicked.connect(self._on_import)
         import_row.addWidget(self._btn_import)
 
-        self._btn_batch = QPushButton("Batch Import")
-        self._btn_batch.setToolTip("Batch import mask files for multiple frames")
+        self._btn_batch = QPushButton(self.tr("Batch Import"))
+        self._btn_batch.setToolTip(self.tr(
+            "Batch import mask files for multiple frames"))
         self._btn_batch.setFixedHeight(26)
         self._btn_batch.clicked.connect(
             lambda: self.batch_import_requested.emit()
@@ -135,20 +136,22 @@ class ROIToolbar(QWidget):
         action_row = QHBoxLayout()
         action_row.setSpacing(4)
 
-        self._btn_save = QPushButton("Save")
-        self._btn_save.setToolTip("Save current mask to PNG file")
+        self._btn_save = QPushButton(self.tr("Save"))
+        self._btn_save.setToolTip(self.tr("Save current mask to PNG file"))
         self._btn_save.setFixedHeight(26)
         self._btn_save.clicked.connect(lambda: self.save_requested.emit())
         action_row.addWidget(self._btn_save)
 
-        self._btn_invert = QPushButton("Invert")
-        self._btn_invert.setToolTip("Invert the Region of Interest mask")
+        self._btn_invert = QPushButton(self.tr("Invert"))
+        self._btn_invert.setToolTip(self.tr(
+            "Invert the Region of Interest mask"))
         self._btn_invert.setFixedHeight(26)
         self._btn_invert.clicked.connect(lambda: self.invert_requested.emit())
         action_row.addWidget(self._btn_invert)
 
-        self._btn_clear = QPushButton("Clear")
-        self._btn_clear.setToolTip("Clear all Region of Interest masks")
+        self._btn_clear = QPushButton(self.tr("Clear"))
+        self._btn_clear.setToolTip(self.tr(
+            "Clear all Region of Interest masks"))
         self._btn_clear.setFixedHeight(26)
         self._btn_clear.clicked.connect(lambda: self.clear_requested.emit())
         action_row.addWidget(self._btn_clear)
@@ -180,7 +183,7 @@ class ROIToolbar(QWidget):
         radius_layout = QHBoxLayout(radius_widget)
         radius_layout.setContentsMargins(8, 4, 8, 4)
         radius_layout.setSpacing(6)
-        radius_layout.addWidget(QLabel("Radius"))
+        radius_layout.addWidget(QLabel(self.tr("Radius")))
         self._brush_radius_spin = QSpinBox()
         self._brush_radius_spin.setRange(2, 500)
         self._brush_radius_spin.setValue(16)
@@ -198,12 +201,12 @@ class ROIToolbar(QWidget):
 
         menu.addSeparator()
         menu.addAction(
-            "\u270E  Paint", lambda: self._on_brush_selected(
+            "\u270E  " + self.tr("Paint"), lambda: self._on_brush_selected(
                 "paint", self._brush_radius_spin.value()
             )
         )
         menu.addAction(
-            "\u2716  Erase", lambda: self._on_brush_selected(
+            "\u2716  " + self.tr("Erase"), lambda: self._on_brush_selected(
                 "erase", self._brush_radius_spin.value()
             )
         )
@@ -213,7 +216,7 @@ class ROIToolbar(QWidget):
         clear_widget = QWidget()
         clear_layout = QVBoxLayout(clear_widget)
         clear_layout.setContentsMargins(8, 4, 8, 4)
-        self._brush_clear_btn = QPushButton("Clear Brush")
+        self._brush_clear_btn = QPushButton(self.tr("Clear Brush"))
         self._brush_clear_btn.clicked.connect(
             lambda: self.brush_clear_requested.emit()
         )

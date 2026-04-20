@@ -108,17 +108,18 @@ class InitGuessWidget(QWidget):
         # ----------------------------------------------------------------
         # Starting Points (seed propagation) — large displacement / cracks
         # ----------------------------------------------------------------
-        self._rb_seed_prop = QRadioButton("Starting Points")
+        self._rb_seed_prop = QRadioButton(self.tr("Starting Points"))
         layout.addLayout(_radio_row(
             self._rb_seed_prop,
-            "Place a few points; pyALDIC bootstraps each with a "
-            "single-point NCC and propagates the field along mesh "
-            "neighbours.\n\n"
-            "Best for:\n"
-            "• Large inter-frame displacement (> 50 px)\n"
-            "• Discontinuous fields (cracks, shear bands)\n"
-            "• Scenarios where FFT picks wrong peaks\n\n"
-            "Auto-placed per region when you draw or edit an ROI.",
+            self.tr(
+                "Place a few points; pyALDIC bootstraps each with a "
+                "single-point NCC and propagates the field along mesh "
+                "neighbours.\n\n"
+                "Best for:\n"
+                "• Large inter-frame displacement (> 50 px)\n"
+                "• Discontinuous fields (cracks, shear bands)\n"
+                "• Scenarios where FFT picks wrong peaks\n\n"
+                "Auto-placed per region when you draw or edit an ROI."),
         ))
 
         self._seed_panel = QWidget()
@@ -127,27 +128,28 @@ class InitGuessWidget(QWidget):
         seed_layout.setSpacing(4)
         btn_row = QHBoxLayout()
         btn_row.setSpacing(4)
-        self._btn_place_seeds = QPushButton("Place Starting Points")
+        self._btn_place_seeds = QPushButton(self.tr("Place Starting Points"))
         self._btn_place_seeds.setCheckable(True)
-        self._btn_place_seeds.setToolTip(
+        self._btn_place_seeds.setToolTip(self.tr(
             "Enter placement mode on the canvas. Left-click to add, "
             "right-click to remove, Esc or click again to exit."
-        )
+        ))
         btn_row.addWidget(self._btn_place_seeds, stretch=2)
-        self._btn_auto_place = QPushButton("Auto-place")
-        self._btn_auto_place.setToolTip(
+        self._btn_auto_place = QPushButton(self.tr("Auto-place"))
+        self._btn_auto_place.setToolTip(self.tr(
             "Fill empty regions with the highest-NCC node in each. "
             "Existing Starting Points are preserved."
-        )
+        ))
         btn_row.addWidget(self._btn_auto_place, stretch=1)
-        self._btn_clear_seeds = QPushButton("Clear")
-        self._btn_clear_seeds.setToolTip(
+        self._btn_clear_seeds = QPushButton(self.tr("Clear"))
+        self._btn_clear_seeds.setToolTip(self.tr(
             "Remove every Starting Point. Faster than right-clicking "
             "each one individually."
-        )
+        ))
         btn_row.addWidget(self._btn_clear_seeds, stretch=1)
         seed_layout.addLayout(btn_row)
-        self._lbl_seed_progress = QLabel("0 / 0 regions ready")
+        self._lbl_seed_progress = QLabel(
+            self.tr("%1 / %2 regions ready").arg(0).arg(0))
         self._lbl_seed_progress.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
         )
@@ -166,17 +168,18 @@ class InitGuessWidget(QWidget):
         # ----------------------------------------------------------------
         # FFT (cross-correlation) — standard small-to-moderate motion
         # ----------------------------------------------------------------
-        self._rb_fft = QRadioButton("FFT (cross-correlation)")
+        self._rb_fft = QRadioButton(self.tr("FFT (cross-correlation)"))
         layout.addLayout(_radio_row(
             self._rb_fft,
-            "Full-grid normalized cross-correlation. Robust within the "
-            "search radius; the search auto-expands when peaks clip.\n\n"
-            "Best for:\n"
-            "• Small-to-moderate smooth motion\n"
-            "• Well-textured speckle\n"
-            "• No special user setup needed\n\n"
-            "Cost grows with the search radius, so very large "
-            "displacements become slow.",
+            self.tr(
+                "Full-grid normalized cross-correlation. Robust within the "
+                "search radius; the search auto-expands when peaks clip.\n\n"
+                "Best for:\n"
+                "• Small-to-moderate smooth motion\n"
+                "• Well-textured speckle\n"
+                "• No special user setup needed\n\n"
+                "Cost grows with the search radius, so very large "
+                "displacements become slow."),
         ))
 
         # FFT sub-mode selector
@@ -187,19 +190,19 @@ class InitGuessWidget(QWidget):
 
         every_row = QHBoxLayout()
         every_row.setSpacing(6)
-        self._rb_fft_every_n = QRadioButton("Every")
-        self._rb_fft_every_n.setToolTip(
+        self._rb_fft_every_n = QRadioButton(self.tr("Every"))
+        self._rb_fft_every_n.setToolTip(self.tr(
             "Run FFT every N frames. N = 1 means FFT every frame "
             "(safest, slowest). N > 1 uses warm-start between "
             "resets to limit error propagation to N frames."
-        )
+        ))
         self._spin_fft_n = QSpinBox()
         self._spin_fft_n.setRange(1, 999)
         self._spin_fft_n.setFixedWidth(60)
         self._spin_fft_n.setSuffix(" fr")
         every_row.addWidget(self._rb_fft_every_n)
         every_row.addWidget(self._spin_fft_n)
-        _every_hint = QLabel("(N=1 = every frame)")
+        _every_hint = QLabel(self.tr("(N=1 = every frame)"))
         _every_hint.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px;"
         )
@@ -207,13 +210,13 @@ class InitGuessWidget(QWidget):
         every_row.addStretch()
         fft_layout.addLayout(every_row)
 
-        self._rb_fft_ref_update = QRadioButton(
+        self._rb_fft_ref_update = QRadioButton(self.tr(
             "Only when reference frame updates (incremental only)"
-        )
-        self._rb_fft_ref_update.setToolTip(
+        ))
+        self._rb_fft_ref_update.setToolTip(self.tr(
             "Run FFT whenever the reference frame changes; warm-start "
             "within each segment. Typical default for incremental mode."
-        )
+        ))
         fft_layout.addWidget(self._rb_fft_ref_update)
 
         self._fft_panel.setVisible(False)
@@ -222,16 +225,17 @@ class InitGuessWidget(QWidget):
         # ----------------------------------------------------------------
         # Previous — fastest, smooth small motion only
         # ----------------------------------------------------------------
-        self._rb_previous = QRadioButton("Previous frame")
+        self._rb_previous = QRadioButton(self.tr("Previous frame"))
         layout.addLayout(_radio_row(
             self._rb_previous,
-            "Use the previous frame's converged displacement as the "
-            "initial guess. No cross-correlation runs.\n\n"
-            "Best for:\n"
-            "• Very small inter-frame motion (a few pixels)\n"
-            "• Fastest option when motion is smooth\n\n"
-            "Errors can accumulate over long sequences. Prefer FFT or "
-            "Starting Points on noisy data or when motion is larger.",
+            self.tr(
+                "Use the previous frame's converged displacement as the "
+                "initial guess. No cross-correlation runs.\n\n"
+                "Best for:\n"
+                "• Very small inter-frame motion (a few pixels)\n"
+                "• Fastest option when motion is smooth\n\n"
+                "Errors can accumulate over long sequences. Prefer FFT or "
+                "Starting Points on noisy data or when motion is larger."),
         ))
 
         # ----------------------------------------------------------------
@@ -303,7 +307,8 @@ class InitGuessWidget(QWidget):
     def set_seed_mode_active(self, active: bool) -> None:
         self._btn_place_seeds.setChecked(active)
         self._btn_place_seeds.setText(
-            "Placing... (click to exit)" if active else "Place Starting Points"
+            self.tr("Placing... (click to exit)") if active
+            else self.tr("Place Starting Points")
         )
 
     def _refresh_seed_progress(self) -> None:
@@ -313,7 +318,7 @@ class InitGuessWidget(QWidget):
         total = len(status)
         seeded = sum(1 for _, has, _ in status if has)
         self._lbl_seed_progress.setText(
-            f"{seeded} / {total} regions ready"
+            self.tr("%1 / %2 regions ready").arg(seeded).arg(total)
         )
 
     # ------------------------------------------------------------------

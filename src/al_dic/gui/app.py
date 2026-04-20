@@ -191,20 +191,20 @@ class MainWindow(QMainWindow):
     def _build_menu_bar(self) -> None:
         """Create the File menu with session save / load actions."""
         menu_bar = self.menuBar()
-        file_menu = menu_bar.addMenu("&File")
+        file_menu = menu_bar.addMenu(self.tr("&File"))
 
-        open_session_action = QAction("Open Session\u2026", self)
+        open_session_action = QAction(self.tr("Open Session…"), self)
         open_session_action.setShortcut(QKeySequence.StandardKey.Open)
         open_session_action.triggered.connect(self._on_open_session)
         file_menu.addAction(open_session_action)
 
-        save_session_action = QAction("Save Session\u2026", self)
+        save_session_action = QAction(self.tr("Save Session…"), self)
         save_session_action.setShortcut(QKeySequence.StandardKey.Save)
         save_session_action.triggered.connect(self._on_save_session)
         file_menu.addAction(save_session_action)
 
         file_menu.addSeparator()
-        quit_action = QAction("Quit", self)
+        quit_action = QAction(self.tr("Quit"), self)
         quit_action.setShortcut(QKeySequence.StandardKey.Quit)
         quit_action.triggered.connect(self.close)
         file_menu.addAction(quit_action)
@@ -253,9 +253,10 @@ class MainWindow(QMainWindow):
 
         path, _ = QFileDialog.getSaveFileName(
             self,
-            "Save Session",
+            self.tr("Save Session"),
             "",
-            "pyALDIC Session (*.aldic.json);;All Files (*)",
+            self.tr("pyALDIC Session") + " (*.aldic.json);;"
+            + self.tr("All Files") + " (*)",
         )
         if not path:
             return
@@ -265,7 +266,7 @@ class MainWindow(QMainWindow):
         try:
             save_session(Path(path), self._state)
         except SessionError as e:
-            QMessageBox.critical(self, "Save Session Failed", str(e))
+            QMessageBox.critical(self, self.tr("Save Session Failed"), str(e))
             return
         self._state.log_message.emit(f"Session saved to {path}", "success")
 
@@ -279,9 +280,11 @@ class MainWindow(QMainWindow):
 
         path, _ = QFileDialog.getOpenFileName(
             self,
-            "Open Session",
+            self.tr("Open Session"),
             "",
-            "pyALDIC Session (*.aldic.json);;JSON (*.json);;All Files (*)",
+            self.tr("pyALDIC Session") + " (*.aldic.json);;"
+            + self.tr("JSON") + " (*.json);;"
+            + self.tr("All Files") + " (*)",
         )
         if not path:
             return
@@ -289,7 +292,7 @@ class MainWindow(QMainWindow):
             session = load_session(Path(path))
             apply_session(session, self._state, self._image_ctrl)
         except SessionError as e:
-            QMessageBox.critical(self, "Open Session Failed", str(e))
+            QMessageBox.critical(self, self.tr("Open Session Failed"), str(e))
             return
         self._state.log_message.emit(
             f"Session loaded from {path} "

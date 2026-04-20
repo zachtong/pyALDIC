@@ -34,22 +34,23 @@ class ParamPanel(QWidget):
         # Internal winsize is even (20, 40 etc. = half-width parameter).
         self._subset_size = self._add_spinbox(
             layout,
-            "Subset Size",
+            self.tr("Subset Size"),
             state.subset_size + 1,  # internal 40 -> display 41
             minimum=11,
             maximum=201,
             step=2,
-            tooltip="IC-GN subset window size in pixels (odd number)",
+            tooltip=self.tr(
+                "IC-GN subset window size in pixels (odd number)"),
         )
         self._subset_size.valueChanged.connect(self._on_subset_size_changed)
 
         # --- Subset Step ---
         self._subset_step = self._add_power_of_2_combo(
             layout,
-            "Subset Step",
+            self.tr("Subset Step"),
             state.subset_step,
             options=[4, 8, 16, 32, 64],
-            tooltip="Node spacing in pixels (must be power of 2)",
+            tooltip=self.tr("Node spacing in pixels (must be power of 2)"),
         )
         self._subset_step.currentTextChanged.connect(self._on_subset_step_changed)
 
@@ -57,7 +58,7 @@ class ParamPanel(QWidget):
         # Maps to DICPara.size_of_fft_search_region. Label + tooltip swap
         # when init_guess_mode == 'seed_propagation' (see _sync_search_label).
         search_row = QHBoxLayout()
-        self._search_lbl = QLabel("Search Range")
+        self._search_lbl = QLabel(self.tr("Search Range"))
         self._search_lbl.setFixedWidth(120)
         self._search_range = QSpinBox()
         self._search_range.setRange(4, 512)
@@ -72,19 +73,19 @@ class ParamPanel(QWidget):
         self._sync_search_label()
 
         # --- Mesh Refinement (inner / outer boundary) ---
-        self._refine_inner_cb = QCheckBox("Refine Inner Boundary")
+        self._refine_inner_cb = QCheckBox(self.tr("Refine Inner Boundary"))
         self._refine_inner_cb.setChecked(state.refine_inner)
-        self._refine_inner_cb.setToolTip(
+        self._refine_inner_cb.setToolTip(self.tr(
             "Locally refine the mesh along internal mask boundaries\n"
             "(holes inside the Region of Interest). Useful for bubble / "
             "void edges."
-        )
-        self._refine_outer_cb = QCheckBox("Refine Outer Boundary")
+        ))
+        self._refine_outer_cb = QCheckBox(self.tr("Refine Outer Boundary"))
         self._refine_outer_cb.setChecked(state.refine_outer)
-        self._refine_outer_cb.setToolTip(
+        self._refine_outer_cb.setToolTip(self.tr(
             "Locally refine the mesh along the outer Region of Interest\n"
             "boundary."
-        )
+        ))
         # Indent the checkboxes so they visually belong to the subset_step row
         inner_row = QHBoxLayout()
         inner_row.setContentsMargins(120, 0, 0, 0)
@@ -97,14 +98,14 @@ class ParamPanel(QWidget):
 
         # Level selector
         self._refine_level = QComboBox()
-        self._refine_level.setToolTip(
+        self._refine_level.setToolTip(self.tr(
             "Refinement aggressiveness. min element size = "
             "max(2, subset_step / 2^level). Applies uniformly to inner-, "
             "outer-boundary AND brush-painted refinement zones. Available "
             "levels depend on subset size and subset step."
-        )
+        ))
         level_row = QHBoxLayout()
-        self._refine_level_lbl = QLabel("Refinement Level")
+        self._refine_level_lbl = QLabel(self.tr("Refinement Level"))
         self._refine_level_lbl.setFixedWidth(120)
         level_row.addWidget(self._refine_level_lbl)
         level_row.addWidget(self._refine_level)
@@ -162,14 +163,14 @@ class ParamPanel(QWidget):
         than every-node FFT search; the label makes that explicit.
         """
         state = AppState.instance()
-        fft_tip = (
+        fft_tip = self.tr(
             "Maximum per-frame displacement the FFT search can detect "
             "(pixels).\n"
             "Set comfortably larger than the expected inter-frame motion.\n"
             "For large rotations in incremental mode, this must cover\n"
-            "  radius \u00d7 sin(per-step angle)."
+            "  radius × sin(per-step angle)."
         )
-        seed_tip = (
+        seed_tip = self.tr(
             "Initial half-width (pixels) of the single-point NCC search "
             "at each Starting Point.\n"
             "Auto-expands 2x per retry if the peak is clipped, up to "
@@ -178,11 +179,11 @@ class ParamPanel(QWidget):
             "F-aware propagation (no per-node search)."
         )
         if state.init_guess_mode == "seed_propagation":
-            self._search_lbl.setText("Initial Seed Search")
+            self._search_lbl.setText(self.tr("Initial Seed Search"))
             self._search_lbl.setToolTip(seed_tip)
             self._search_range.setToolTip(seed_tip)
         else:
-            self._search_lbl.setText("Search Range")
+            self._search_lbl.setText(self.tr("Search Range"))
             self._search_lbl.setToolTip(fft_tip)
             self._search_range.setToolTip(fft_tip)
 
@@ -232,9 +233,12 @@ class ParamPanel(QWidget):
         if any_on:
             min_size = state.compute_refinement_min_size()
             self._refine_info_lbl.setText(
-                f"min element size = {min_size} px  "
-                f"(subset_step={state.subset_step}, "
-                f"level={state.refinement_level})"
+                self.tr(
+                    "min element size = %1 px  "
+                    "(subset_step=%2, level=%3)"
+                )
+                .arg(min_size).arg(state.subset_step)
+                .arg(state.refinement_level)
             )
             self._refine_info_lbl.setVisible(True)
         else:
