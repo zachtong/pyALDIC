@@ -66,12 +66,10 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/al_dic"]
-
-# Explicitly include compiled translation catalogs. Hatchling picks up
-# .py files by default under packages=[…], but non-Python assets need
-# an explicit glob so .qm runtime catalogs end up inside the wheel.
-[tool.hatch.build.targets.wheel.force-include]
-"src/al_dic/i18n/compiled" = "al_dic/i18n/compiled"
+# Hatchling walks packages=[…] including non-.py data files, so the
+# .qm translation catalogs under src/al_dic/i18n/compiled/ are picked
+# up automatically. An earlier force-include here produced duplicate
+# zip entries in the wheel; do NOT re-add it.
 
 # Explicit allowlist for sdist contents. Hatchling's default behaviour
 # is "everything not gitignored", which swept in local presentation
