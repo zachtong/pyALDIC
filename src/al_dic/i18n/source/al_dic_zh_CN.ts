@@ -907,12 +907,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="345"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="348"/>
         <source>Building pipeline configuration...</source>
         <translation>正在构建流水线配置…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="494"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="500"/>
         <source>Loading images...</source>
         <translation>正在加载图像…</translation>
     </message>

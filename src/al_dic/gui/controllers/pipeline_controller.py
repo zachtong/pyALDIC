@@ -7,7 +7,7 @@ import time
 import traceback
 
 import numpy as np
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QCoreApplication, QThread, Signal
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from al_dic.core.config import dicpara_default
@@ -342,7 +342,11 @@ class PipelineController:
             state.roi_editing = False
             state.display_changed.emit()
 
-            state.log_message.emit(self.tr("Building pipeline configuration..."), "info")
+            state.log_message.emit(
+                QCoreApplication.translate(
+                    "PipelineController",
+                    "Building pipeline configuration..."),
+                "info")
 
             # Build DICPara from GUI state
             n_images = len(state.image_files)
@@ -491,7 +495,10 @@ class PipelineController:
             )
 
             # Load all images
-            state.log_message.emit(self.tr("Loading images..."), "info")
+            state.log_message.emit(
+                QCoreApplication.translate(
+                    "PipelineController", "Loading images..."),
+                "info")
             images = [
                 self._image_ctrl.read_image(i)
                 for i in range(n_images)
