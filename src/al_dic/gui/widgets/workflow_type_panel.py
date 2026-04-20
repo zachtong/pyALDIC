@@ -45,9 +45,14 @@ class WorkflowTypePanel(QWidget):
         layout.setContentsMargins(8, 0, 4, 0)
 
         # --- Tracking Mode ---
+        # Display text is translated; stable English code stored as userData
+        # so state-sync doesn't break when language changes.
         self._tracking_mode = QComboBox()
-        self._tracking_mode.addItems(["Incremental", "Accumulative"])
-        self._tracking_mode.setCurrentText(state.tracking_mode.capitalize())
+        self._tracking_mode.addItem(self.tr("Incremental"), "incremental")
+        self._tracking_mode.addItem(self.tr("Accumulative"), "accumulative")
+        _idx = self._tracking_mode.findData(state.tracking_mode)
+        if _idx >= 0:
+            self._tracking_mode.setCurrentIndex(_idx)
         self._tracking_mode.setToolTip(self.tr(
             "Incremental: each frame is compared to the previous reference "
             "frame.\nSuitable for large accumulated deformation, required "
@@ -63,8 +68,11 @@ class WorkflowTypePanel(QWidget):
         layout.addLayout(row)
 
         # --- Solver ---
+        # "AL-DIC" is a brand-specific acronym kept literal across locales;
+        # "Local DIC" is translatable. Index-based sync stays unchanged.
         self._solver = QComboBox()
-        self._solver.addItems(["AL-DIC", "Local DIC"])
+        self._solver.addItem("AL-DIC", "aldic")
+        self._solver.addItem(self.tr("Local DIC"), "local")
         self._solver.setCurrentIndex(0 if state.use_admm else 1)
         self._solver.setToolTip(self.tr(
             "Local DIC: Independent subset matching (IC-GN). Fast,\n"
@@ -92,7 +100,10 @@ class WorkflowTypePanel(QWidget):
         inc_layout.setSpacing(4)
 
         self._ref_mode = QComboBox()
-        self._ref_mode.addItems(["Every Frame", "Every N Frames", "Custom Frames"])
+        # Display translated; stable code stored as userData.
+        self._ref_mode.addItem(self.tr("Every Frame"), "every_frame")
+        self._ref_mode.addItem(self.tr("Every N Frames"), "every_n")
+        self._ref_mode.addItem(self.tr("Custom Frames"), "custom")
         self._ref_mode.setCurrentIndex(0)
         self._ref_mode.setToolTip(self.tr(
             "When the reference frame refreshes during incremental "
@@ -138,10 +149,10 @@ class WorkflowTypePanel(QWidget):
         layout.addWidget(self._inc_panel)
 
         # --- Wiring ---
-        self._tracking_mode.currentTextChanged.connect(
+        self._tracking_mode.currentIndexChanged.connect(
             self._on_tracking_mode_changed
         )
-        self._solver.currentTextChanged.connect(self._on_solver_changed)
+        self._solver.currentIndexChanged.connect(self._on_solver_changed)
         self._ref_mode.currentIndexChanged.connect(self._on_ref_mode_changed)
         self._interval_spin.valueChanged.connect(
             lambda v: state.set_param("inc_ref_interval", v)
@@ -149,7 +160,7 @@ class WorkflowTypePanel(QWidget):
         self._custom_edit.editingFinished.connect(self._on_custom_refs_changed)
 
         # Initial visibility
-        self._on_tracking_mode_changed(self._tracking_mode.currentText())
+        self._on_tracking_mode_changed(self._tracking_mode.currentIndex())
         self._on_ref_mode_changed(0)
 
         # Block scroll-wheel changes on unfocused widgets
@@ -162,16 +173,16 @@ class WorkflowTypePanel(QWidget):
 
     # ------------------------------------------------------------------
 
-    def _on_solver_changed(self, text: str) -> None:
-        """Toggle solver kind in state."""
+    def _on_solver_changed(self, _index: int) -> None:
+        """Toggle solver kind in state (read from combobox userData code)."""
         state = AppState.instance()
-        use_admm = text == "AL-DIC"
+        use_admm = self._solver.currentData() == "aldic"
         state.set_param("use_admm", use_admm)
 
-    def _on_tracking_mode_changed(self, text: str) -> None:
+    def _on_tracking_mode_changed(self, _index: int) -> None:
         """Set tracking mode and swap init-guess default + inc sub-panel."""
         state = AppState.instance()
-        mode = text.lower()
+        mode = self._tracking_mode.currentData() or "accumulative"
         state.set_param("tracking_mode", mode)
         self._inc_panel.setVisible(mode == "incremental")
         # Auto-select a meaningful init-guess default for the new mode.
@@ -184,11 +195,10 @@ class WorkflowTypePanel(QWidget):
                 state.init_guess_mode = "fft_ref_update"
         state.params_changed.emit()
 
-    def _on_ref_mode_changed(self, index: int) -> None:
+    def _on_ref_mode_changed(self, _index: int) -> None:
         """Toggle Interval / Custom row visibility based on ref mode."""
         state = AppState.instance()
-        modes = ["every_frame", "every_n", "custom"]
-        mode = modes[index]
+        mode = self._ref_mode.currentData() or "every_frame"
         state.set_param("inc_ref_mode", mode)
         self._interval_spin.setVisible(mode == "every_n")
         self._interval_lbl.setVisible(mode == "every_n")

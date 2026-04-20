@@ -1446,7 +1446,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>WorkflowTypePanel</name>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="57"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="51"/>
+        <source>Incremental</source>
+        <translation>增量式</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
+        <source>Accumulative</source>
+        <translation>累积式</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="62"/>
         <source>Incremental: each frame is compared to the previous reference frame.
 Suitable for large accumulated deformation, required for large rotations.
 
@@ -1459,12 +1469,17 @@ Accurate for small, monotonic deformation only.</source>
 仅适用于小的、单调的变形。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="59"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="64"/>
         <source>Tracking Mode</source>
         <translation>追踪模式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="77"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="75"/>
+        <source>Local DIC</source>
+        <translation>Local DIC</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="85"/>
         <source>Local DIC: Independent subset matching (IC-GN). Fast,
 preserves sharp local features. Best for small
 deformations or high-quality images.
@@ -1482,12 +1497,27 @@ AL-DIC：全局 FEM 正则化的增广拉格朗日方法。
 噪声图像，或对应变精度要求高的场景。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="87"/>
         <source>Solver</source>
         <translation>求解器</translation>
     </message>
     <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <source>Every Frame</source>
+        <translation>每帧</translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="105"/>
+        <source>Every N Frames</source>
+        <translation>每 N 帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <source>Custom Frames</source>
+        <translation>自定义帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="116"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -1500,27 +1530,27 @@ Custom Frames: user-defined list of reference frame indices.</source>
 自定义：由用户指定参考帧索引列表。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="107"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
         <source>Reference Update</source>
         <translation>参考帧更新</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="117"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
         <source>Update reference every N frames</source>
         <translation>每 N 帧更新一次参考帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="119"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
         <source>Interval</source>
         <translation>间隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>用作参考帧的帧索引列表（0 为起始），用逗号分隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
         <source>Reference Frames</source>
         <translation>参考帧列表</translation>
     </message>

@@ -1410,7 +1410,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>WorkflowTypePanel</name>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="57"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="51"/>
+        <source>Incremental</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
+        <source>Accumulative</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="62"/>
         <source>Incremental: each frame is compared to the previous reference frame.
 Suitable for large accumulated deformation, required for large rotations.
 
@@ -1419,12 +1429,17 @@ Accurate for small, monotonic deformation only.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="59"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="64"/>
         <source>Tracking Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="77"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="75"/>
+        <source>Local DIC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="85"/>
         <source>Local DIC: Independent subset matching (IC-GN). Fast,
 preserves sharp local features. Best for small
 deformations or high-quality images.
@@ -1436,12 +1451,27 @@ images, or when strain accuracy matters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="87"/>
         <source>Solver</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <source>Every Frame</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="105"/>
+        <source>Every N Frames</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <source>Custom Frames</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="116"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -1450,27 +1480,27 @@ Custom Frames: user-defined list of reference frame indices.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="107"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
         <source>Reference Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="117"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
         <source>Update reference every N frames</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="119"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
         <source>Interval</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
         <source>Reference Frames</source>
         <translation type="unfinished"></translation>
     </message>

@@ -313,12 +313,15 @@ TRANSLATIONS: dict[str, str] = {
     "When the NCC peak reaches the edge of the search region, automatically retry with a larger region (up to image half-size, 6 retries with 2x growth).\n\nOnly relevant for the FFT init-guess mode.":
         "当 NCC 峰值触及搜索区域边缘时，自动以更大的搜索范围重试（最大到图像一半尺寸，每次放大 2 倍，共 6 次重试）。\n\n仅对 FFT 初始猜测模式有效。",
 
-    # Canvas overlay
+    # Canvas overlay + workflow dropdowns (same translations across contexts)
     "Mode": "模式",
     "Init": "初始猜测",
     "Accumulative": "累积式",
     "Incremental": "增量式",
     "Local DIC": "Local DIC",
+    "Every Frame": "每帧",
+    "Every N Frames": "每 N 帧",
+    "Custom Frames": "自定义帧",
     "ADMM (%1 iter)": "ADMM（%1 次迭代）",
     "FFT every frame": "每帧 FFT",
     "FFT every %1 fr": "每 %1 帧 FFT",
