@@ -276,6 +276,38 @@ Beyond pyALDIC itself, the authors have contributed to community-wide DIC standa
 
 ---
 
+## Community
+
+Come say hi — questions, bug reports, feature ideas, and general discussion are all welcome.
+
+### 💬 Async forum (English + 中文)
+
+[**GitHub Discussions**](https://github.com/zachtong/pyALDIC/discussions) — the long-form, searchable Q&A home for pyALDIC.
+
+- [Q&A](https://github.com/zachtong/pyALDIC/discussions/categories/q-a) — how do I use pyALDIC for X?
+- [Ideas](https://github.com/zachtong/pyALDIC/discussions/categories/ideas) — feature proposals and design talk
+- [Show and tell](https://github.com/zachtong/pyALDIC/discussions/categories/show-and-tell) — share your experiments and figures
+- [Announcements](https://github.com/zachtong/pyALDIC/discussions/categories/announcements) — release notes and news
+
+Both **English** and **中文** posts are welcome; please tag Chinese posts with `[中文]` in the title for easy filtering.
+
+### ⚡ Real-time chat
+
+| Audience | Platform | Join |
+|---|---|---|
+| 🌍 International | Discord | *(invite link — coming soon)* |
+| 🇨🇳 中文用户 | QQ 群 | *(群号 / 二维码 — 即将开放)* |
+
+### 🐛 Bug reports
+
+[**GitHub Issues**](https://github.com/zachtong/pyALDIC/issues/new/choose) — use the bug-report template. Usage questions should go to Discussions, not Issues.
+
+### 📧 Private consulting
+
+For research collaboration, confidential data, or one-on-one consulting: **zachtong@utexas.edu**.
+
+---
+
 ## Citation
 
 If you use pyALDIC in your research, please cite:

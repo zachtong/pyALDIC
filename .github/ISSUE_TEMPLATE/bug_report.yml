@@ -1,0 +1,80 @@
+name: 🐛 Bug report
+description: Report a reproducible bug in pyALDIC
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report!
+
+        **Before submitting**, please check:
+        - [ ] Your pyALDIC version is current (`pip install --upgrade al-dic`)
+        - [ ] A similar issue is not already reported at [Issues](https://github.com/zachtong/pyALDIC/issues?q=is%3Aissue)
+        - [ ] For usage questions (not bugs), please use [Discussions Q&A](https://github.com/zachtong/pyALDIC/discussions/categories/q-a) instead.
+
+  - type: input
+    id: version
+    attributes:
+      label: pyALDIC version
+      description: 'Output of `python -c "import al_dic; print(al_dic.__version__)"`'
+      placeholder: "e.g. 0.4.0"
+    validations:
+      required: true
+
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+      description: 'Output of `python --version`'
+      placeholder: "e.g. Python 3.11.5"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      options:
+        - Windows 10 / 11
+        - macOS
+        - Linux (Ubuntu / Debian / Fedora / other)
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug. What did you expect, what did you get?
+      placeholder: "After clicking Run DIC Analysis on a 30-frame sequence, the app crashed with ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal set of steps that triggers the bug. Parameter values, image size, etc.
+      placeholder: |
+        1. Load 30 images of size 512x512
+        2. Set Subset Size = 41, Subset Step = 8
+        3. Select Starting Points mode
+        4. Click Run
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log output / screenshots
+      description: Paste the LOG panel output or terminal traceback. Drop screenshots here too.
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      options:
+        - label: I agree to follow this project's [Code of Conduct](https://github.com/zachtong/pyALDIC/blob/main/CODE_OF_CONDUCT.md)
+          required: true

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Ask a question (Q&A)
+    url: https://github.com/zachtong/pyALDIC/discussions/new?category=q-a
+    about: For usage questions, parameter-tuning help, and how-tos. Please use Discussions rather than Issues.
+  - name: 💡 Suggest a feature / design idea
+    url: https://github.com/zachtong/pyALDIC/discussions/new?category=ideas
+    about: For feature proposals and design discussion, use the Ideas category in Discussions.
+  - name: 🎨 Show what you built with pyALDIC
+    url: https://github.com/zachtong/pyALDIC/discussions/new?category=show-and-tell
+    about: Share your experiments, figures, or papers that used pyALDIC.
+  - name: 💬 General community chat
+    url: https://github.com/zachtong/pyALDIC/discussions/new?category=general
+    about: Introductions, casual questions, and community discussion.
