@@ -4,6 +4,125 @@ All notable user-facing changes to pyALDIC are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-04-20
+
+### Added
+
+- **Multi-language support — 8 locales at 100% coverage.** pyALDIC's
+  GUI now ships with full translations for English (source),
+  简体中文 (zh_CN), 繁體中文 (zh_TW), 日本語 (ja), 한국어 (ko),
+  Deutsch (de), Français (fr), and Español (es) — 273 user-visible
+  strings per language. Choose a language from the new
+  **Settings → Language** menu; the choice is persisted via
+  `QSettings` and applied at next startup. System locale is picked
+  up automatically on first launch with a fallback chain for
+  regional variants (zh_HK → zh_TW, pt_BR → es, en_GB → en, etc.).
+- **`al_dic.i18n` runtime package** — `LanguageManager` wraps
+  `QTranslator` installation / persistence, plus a dev-only pseudo
+  locale (`"pseudo"`) that wraps every `tr()` string in `⟦…~~~⟧`
+  to surface missed wrappers and widgets that can't absorb +30%
+  text expansion.
+- **`al_dic.utils.locale_format`** — `QLocale`-based helpers for
+  numbers, dates, file sizes, and durations so UI output respects
+  the active language's conventions (e.g. `3,14` vs `3.14`).
+- **`al_dic.utils.matplotlib_fonts`** — configures a CJK-aware
+  font fallback chain at app startup so Chinese / Japanese / Korean
+  axis labels and titles embedded in matplotlib figures render with
+  real glyphs instead of tofu blocks.
+- **CJK-aware Qt stylesheet.** The global `font-family` chain in
+  `gui/theme.py` now includes Microsoft YaHei UI, PingFang SC,
+  Hiragino Sans GB, Source Han Sans SC, Noto Sans CJK SC,
+  Yu Gothic UI, and Malgun Gothic, so CJK strings render with a
+  modern sans face on every major platform.
+- **Translator workflow + docs** — `tools/i18n.py` (extract /
+  compile / stats / add-lang CLI), `docs/i18n/glossary.md` with
+  fixed DIC-term translations per language, and CLAUDE.md §i18n
+  rules R1–R8 covering placeholder formatting, `&` mnemonics,
+  context disambiguation, no `setFixedWidth`, and locale-aware
+  number formatting.
+- **End-to-end demo video** — `assets/pyALDIC_demo.gif` (78 s,
+  800×586, 11 MB, README-embedded) and `assets/videos/pyALDIC_demo.mp4`
+  (1920×1080 @ 30 fps, 14 MB) walk through the entire workflow:
+  import → pick workflow → draw / batch-import ROI → refine mesh →
+  run DIC → displacement / strain fields. Step 2 and step 5 use a
+  2× centered zoom with frosted-glass background to highlight the
+  sidebar and Run / Progress panel respectively.
+- **`docs/i18n/glossary.md`** — DIC terminology table spanning en,
+  zh_CN, zh_TW, ja, ko, plus a list of proper nouns / acronyms
+  (pyALDIC, AL-DIC, IC-GN, ADMM, FFT, NCC, FEM, MAT, NPZ, CSV, PNG,
+  GIF, MP4, PDF) that must stay English in every locale.
+- **`tools/demo_video/build_demo.py`** — reproducible pipeline that
+  assembles the README demo from per-step recordings: title card
+  with pyALDIC icon + wordmark, step cards with fade in/out
+  transitions, persistent top-bar "Step N — title" overlay,
+  10× speed-up on the compute step, and step-4 center-zoom finale.
+
+### Changed
+
+- **README landing page overhauled.** The comparison-with-DIC-tools
+  table was rewritten for academic honesty (dropped the algorithm /
+  regularization / export-format rows that overstated pyALDIC's
+  edge, added a technical 3D-stereo / subset-shape-function row
+  where pyALDIC is *not* the winner, footnotes on the Ncorr
+  MATLAB-license dependency and on the public-web-sourced release
+  info). Green highlights now wrap the pyALDIC column with `<mark>`
+  to read as *"this is the pyALDIC column"* rather than *"this is
+  where we win"*. The **Accuracy** section now points readers to
+  the two peer-reviewed AL-DIC papers (Yang & Bhattacharya 2019,
+  Tong et al. 2025) and the DIC Challenge 2.0 community benchmark
+  instead of reporting self-graded RMSE numbers. A new
+  **About the Authors** section records iDICs *Good Practices
+  Guide for Digital Image Correlation* editorial roles separately
+  from the algorithmic accuracy claims.
+- **README banner embeds the pyALDIC app icon** alongside the
+  wordmark so the README, the installed desktop icon, and the
+  taskbar/Alt-Tab identity all read as the same brand.
+- **Widget combobox state sync uses `userData` instead of
+  `currentText`.** Workflow-type, solver, and reference-update
+  dropdowns now store stable English codes (`"incremental"`,
+  `"accumulative"`, `"aldic"`, `"local"`, `"every_frame"`, …) as
+  item userData while the visible text is localised. This
+  decouples display from state-sync so translating the dropdown
+  labels never breaks backend behaviour.
+- **Default "Save Session" / "Open Session" dialog filters** are
+  translated. The `*.aldic.json` glob stays invariant (rule R6),
+  only the description text (*"pyALDIC Session"*, *"All Files"*)
+  is localised.
+- **GitHub repo description** updated from the outdated
+  *"refactored and optimized STAQ-DIC implementation"* to
+  *"pyALDIC: Augmented Lagrangian Digital Image Correlation in
+  Python"*.
+
+### Fixed
+
+- **`AttributeError: 'str' object has no attribute 'arg'`** when
+  any widget with a `%1 / %2`-style translated string rendered.
+  PySide6's `self.tr()` returns plain `str`, not Qt's `QString`,
+  so the `.arg()` chaining idiom from C++ Qt crashes at runtime.
+  Introduced `al_dic.i18n.tr_args(text, *values)` to perform the
+  same placeholder substitution on a Python `str`, and updated
+  every call site (`app.py`, `right_sidebar.py`,
+  `init_guess_widget.py`, `param_panel.py`, `roi_hint.py`).
+- **`AttributeError: 'PipelineController' object has no attribute
+  'tr'`** during `log_message.emit(...)` in the pipeline
+  controller. Non-`QObject` classes do not inherit `tr()`; switched
+  to `QCoreApplication.translate("PipelineController", …)`.
+- **`pyside6-lupdate` dropped backslashes from `\uXXXX` escape
+  sequences** inside `tr()` string literals, producing corrupt
+  `"Open Sessionu2026"` entries in the `.ts` file. Every GUI
+  source file now uses literal Unicode characters (`…`, `—`,
+  `×`, `▶`, `⏸`, `⚠`) instead of escape sequences, matching
+  what lupdate can actually extract.
+- **Ugly CJK rendering on Windows.** Falling back on the default
+  system CJK face produced an inconsistent, low-weight look; the
+  new font-family chain picks up Microsoft YaHei UI and renders
+  modern, consistent Chinese / Japanese / Korean glyphs.
+- **`pyside6-lupdate` does not recurse directories for Python
+  sources.** `tools/i18n.py extract` now enumerates every `.py`
+  file under `src/al_dic/gui/` explicitly before passing them to
+  lupdate, instead of relying on directory-walking that silently
+  returned zero strings.
+
 ## [0.3.0] — 2026-04-19
 
 ### Added
