@@ -104,16 +104,14 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
 
 |  | **pyALDIC** | **Ncorr** | **DICe** | **VIC-2D** | **MatchID** |
 |---|---|---|---|---|---|
-| **Algorithm** | ${\color{green}\textsf{ADMM global-local}}$ | Subset (IC-GN) | Subset / Global | Subset (proprietary) | Subset (proprietary) |
-| **Regularization** | ${\color{green}\textsf{FEM Q8 global}}$ | — | Tikhonov (global mode) | — | — |
-| **Adaptive mesh** | ${\color{green}\textsf{Quadtree (5 criteria)}}$ | — | — | — | — |
-| **Mask handling** | ${\color{green}\textsf{Auto warp + split}}$ | Manual | Manual ROI | GUI masks | GUI masks |
-| **Multi-frame** | Accum. + Incremental | Accumulative | Both | Both | Both |
-| **GUI** | Built-in (PySide6) | MATLAB GUI | CLI + ParaView | Built-in | Built-in |
-| **Platform** | ${\color{green}\textsf{Cross-platform}}$ | MATLAB (cross-platform) | Cross-platform | Windows only | Windows only |
-| **Export formats** | ${\color{green}\textsf{MAT, NPZ, CSV, PNG, GIF, PDF}}$ | MAT | ExodusII, VTK | Proprietary | CSV, images |
-| **Cost** | ${\color{green}\textsf{Free (BSD-3)}}$ | Free (needs MATLAB license) | Free (BSD) | `$5K–50K+` | `$5K–30K+` |
-| **Open source** | ${\color{green}\textsf{Yes}}$ | Yes | Yes | No | No |
+| **Mesh** | ${\color{green}\textsf{\textbf{Adaptive (quadtree refinement)}}}$ | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
+| **Multi-frame tracking** | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental | Accumulative + Incremental |
+| **GUI** | Built-in desktop | Built-in (requires MATLAB) | None (CLI + ParaView viewer) | Built-in desktop | Built-in desktop |
+| **Platform** | ${\color{green}\textsf{\textbf{Windows / macOS / Linux}}}$ | Windows / macOS / Linux (via MATLAB) | Windows / macOS / Linux | Windows only | Windows only |
+| **Development** | ${\color{green}\textsf{\textbf{Active (v0.3, 2026)}}}$ | Dormant (last release 2017) | Active | Active (commercial) | Active (commercial) |
+| **Cost** | ${\color{green}\textsf{\textbf{Free}}}$ | Free (requires MATLAB license) | Free | Commercial (`$5K–50K`) | Commercial (`$5K–30K`) |
+
+> **Accuracy**: all mature subset-DIC tools achieve sub-pixel accuracy on clean data. pyALDIC's RMSE on synthetic speckle ground truth is reported in the [Accuracy](#accuracy) section below and regression-tested in CI.
 
 ---
 
