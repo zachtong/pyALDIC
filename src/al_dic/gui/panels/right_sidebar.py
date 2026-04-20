@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.gui.app_state import AppState, RunState
 from al_dic.gui.theme import COLORS
+from al_dic.i18n import tr_args
 from al_dic.gui.widgets.color_range import ColorRange
 from al_dic.gui.widgets.console_log import ConsoleLog
 from al_dic.gui.widgets.field_selector import FieldSelector
@@ -117,12 +118,12 @@ class RightSidebar(QWidget):
 
         # Elapsed / remaining
         stats_row = QHBoxLayout()
-        self._elapsed_label = QLabel(self.tr("ELAPSED  %1").arg("--:--"))
+        self._elapsed_label = QLabel(tr_args(self.tr("ELAPSED  %1"), "--:--"))
         self._elapsed_label.setStyleSheet(
             f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
         )
         stats_row.addWidget(self._elapsed_label)
-        self._remaining_label = QLabel(self.tr("REMAINING  %1").arg("--:--"))
+        self._remaining_label = QLabel(tr_args(self.tr("REMAINING  %1"), "--:--"))
         self._remaining_label.setStyleSheet(
             f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
         )
@@ -347,9 +348,10 @@ class RightSidebar(QWidget):
         if idle:
             self._progress_bar.setValue(0)
             self._progress_label.setText(self.tr("Ready"))
-            self._elapsed_label.setText(self.tr("ELAPSED  %1").arg("--:--"))
+            self._elapsed_label.setText(
+                tr_args(self.tr("ELAPSED  %1"), "--:--"))
             self._remaining_label.setText(
-                self.tr("REMAINING  %1").arg("--:--"))
+                tr_args(self.tr("REMAINING  %1"), "--:--"))
             self._last_frame_str = ""
 
     def _on_deformed_toggled(self, state: int) -> None:
@@ -384,8 +386,8 @@ class RightSidebar(QWidget):
         pct = f"{fraction * 100:.0f}%"
         if self._last_frame_str:
             self._progress_label.setText(
-                self.tr("%1  —  Frame %2").arg(pct).arg(
-                    self._last_frame_str)
+                tr_args(self.tr("%1  —  Frame %2"),
+                        pct, self._last_frame_str)
             )
         else:
             self._progress_label.setText(pct)
@@ -401,7 +403,7 @@ class RightSidebar(QWidget):
 
         mins, secs = divmod(int(elapsed), 60)
         self._elapsed_label.setText(
-            self.tr("ELAPSED  %1").arg(f"{mins:02d}:{secs:02d}"))
+            tr_args(self.tr("ELAPSED  %1"), f"{mins:02d}:{secs:02d}"))
 
         frac = self._state.progress
         if frac > 0.01:
@@ -409,8 +411,8 @@ class RightSidebar(QWidget):
             remaining = estimated_total - elapsed
             r_mins, r_secs = divmod(int(max(0, remaining)), 60)
             self._remaining_label.setText(
-                self.tr("REMAINING  %1").arg(
-                    f"{r_mins:02d}:{r_secs:02d}"))
+                tr_args(self.tr("REMAINING  %1"),
+                        f"{r_mins:02d}:{r_secs:02d}"))
         else:
             self._remaining_label.setText(
-                self.tr("REMAINING  %1").arg("--:--"))
+                tr_args(self.tr("REMAINING  %1"), "--:--"))

@@ -257,9 +257,29 @@ class LanguageManager(QObject):
         QSettings().setValue(SETTINGS_KEY, lang_code)
 
 
+def tr_args(text: str, *values: object) -> str:
+    """Substitute Qt-style ``%1``, ``%2`` … placeholders in ``text``.
+
+    PySide6's ``self.tr()`` returns a plain Python :class:`str`, not
+    Qt's ``QString``, so it lacks the ``.arg()`` method used in the
+    C++ Qt idiom. This helper provides the equivalent substitution
+    that preserves the translator-friendly ``%1``/``%2`` source
+    format while being callable on a regular Python string.
+
+    Longer placeholders are replaced first so ``%10`` isn't consumed
+    by the ``%1`` substitution.
+    """
+    # Sort by placeholder number descending: %10 before %1, %20 before %2, ...
+    pairs = sorted(enumerate(values, start=1), key=lambda p: -p[0])
+    for i, val in pairs:
+        text = text.replace(f"%{i}", str(val))
+    return text
+
+
 __all__ = [
     "LanguageManager",
     "SUPPORTED_LANGUAGES",
     "FALLBACK_CHAIN",
     "PSEUDO_LOCALE",
+    "tr_args",
 ]

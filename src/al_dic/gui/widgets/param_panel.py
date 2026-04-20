@@ -232,13 +232,15 @@ class ParamPanel(QWidget):
         any_on = self._any_refinement_on()
         if any_on:
             min_size = state.compute_refinement_min_size()
+            from al_dic.i18n import tr_args
             self._refine_info_lbl.setText(
-                self.tr(
-                    "min element size = %1 px  "
-                    "(subset_step=%2, level=%3)"
+                tr_args(
+                    self.tr(
+                        "min element size = %1 px  "
+                        "(subset_step=%2, level=%3)"
+                    ),
+                    min_size, state.subset_step, state.refinement_level,
                 )
-                .arg(min_size).arg(state.subset_step)
-                .arg(state.refinement_level)
             )
             self._refine_info_lbl.setVisible(True)
         else:

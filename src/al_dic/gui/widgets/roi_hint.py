@@ -13,6 +13,7 @@ from PySide6.QtWidgets import QLabel, QSizePolicy, QWidget
 
 from al_dic.gui.app_state import AppState
 from al_dic.gui.theme import COLORS
+from al_dic.i18n import tr_args
 
 
 _HINT_STYLE = (
@@ -91,11 +92,11 @@ class ROIHint(QLabel):
                 preview = ", ".join(refs_display[:8]) + ", …"
             else:
                 preview = ", ".join(refs_display)
-            self.setText(self.tr(
+            self.setText(tr_args(self.tr(
                 "<b>Incremental, every %1 frames</b> — draw a "
                 "Region of Interest on frames: <b>%2</b> "
                 "(%3 reference frames total)."
-            ).arg(N).arg(preview).arg(len(refs_display)))
+            ), N, preview, len(refs_display)))
             return
 
         if mode == "custom":
@@ -115,11 +116,11 @@ class ROIHint(QLabel):
                 preview = ", ".join(refs_display[:8]) + ", …"
             else:
                 preview = ", ".join(refs_display)
-            self.setText(self.tr(
+            self.setText(tr_args(self.tr(
                 "<b>Incremental, custom</b> — draw a Region of "
                 "Interest on frames: <b>%1</b> "
                 "(%2 reference frames total)."
-            ).arg(preview).arg(len(refs_display)))
+            ), preview, len(refs_display)))
             return
 
         # Fallback — unrecognized mode

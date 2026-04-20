@@ -148,8 +148,9 @@ class InitGuessWidget(QWidget):
         ))
         btn_row.addWidget(self._btn_clear_seeds, stretch=1)
         seed_layout.addLayout(btn_row)
+        from al_dic.i18n import tr_args
         self._lbl_seed_progress = QLabel(
-            self.tr("%1 / %2 regions ready").arg(0).arg(0))
+            tr_args(self.tr("%1 / %2 regions ready"), 0, 0))
         self._lbl_seed_progress.setStyleSheet(
             f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
         )
@@ -317,8 +318,9 @@ class InitGuessWidget(QWidget):
         status = self._seed_ctrl.regions_status()
         total = len(status)
         seeded = sum(1 for _, has, _ in status if has)
+        from al_dic.i18n import tr_args
         self._lbl_seed_progress.setText(
-            self.tr("%1 / %2 regions ready").arg(seeded).arg(total)
+            tr_args(self.tr("%1 / %2 regions ready"), seeded, total)
         )
 
     # ------------------------------------------------------------------

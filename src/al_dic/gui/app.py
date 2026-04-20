@@ -238,13 +238,17 @@ class MainWindow(QMainWindow):
         if lang_mgr is not None:
             lang_mgr.load(lang_code)
 
+        from al_dic.i18n import tr_args
+
         QMessageBox.information(
             self,
             self.tr("Language changed"),
-            self.tr(
-                "Language set to %1. Please restart pyALDIC for all "
-                "widgets to pick up the new language.").arg(
-                SUPPORTED_LANGUAGES.get(lang_code, lang_code)),
+            tr_args(
+                self.tr(
+                    "Language set to %1. Please restart pyALDIC for all "
+                    "widgets to pick up the new language."),
+                SUPPORTED_LANGUAGES.get(lang_code, lang_code),
+            ),
         )
 
     def _on_save_session(self) -> None:
