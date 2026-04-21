@@ -296,7 +296,7 @@ Both **English** and **中文** posts are welcome; please tag Chinese posts with
 | Audience | Platform | Join |
 |---|---|---|
 | 🌍 International | Discord | *(invite link — coming soon)* |
-| 🇨🇳 中文用户 | QQ 群 | *(群号 / 二维码 — 即将开放)* |
+| 🇨🇳 中文用户 | QQ 群 | 群号 `1061177356`（入群需回答验证问题） |
 
 ### 🐛 Bug reports
 
