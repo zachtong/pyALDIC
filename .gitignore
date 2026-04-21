@@ -66,3 +66,7 @@ examples/
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Maintainer-only community / launch cheat sheets — not for public repo
+docs/community/
+assets/qq_group_qr.png

@@ -296,11 +296,7 @@ Both **English** and **中文** posts are welcome; please tag Chinese posts with
 | Audience | Platform | Join |
 |---|---|---|
 | 🌍 International | Discord | [**discord.gg/Uh9RXvZt6n**](https://discord.gg/Uh9RXvZt6n) |
-| 🇨🇳 中文用户 | QQ 群 | 群号 `1061177356`（入群需回答验证问题），或扫码 ↓ |
-
-<p align="center">
-  <img src="assets/qq_group_qr.png" alt="pyALDIC QQ 群二维码" width="200"/>
-</p>
+| 🇨🇳 中文用户 | QQ 群 | 群号 `1061177356` |
 
 ### 🐛 Bug reports
 
