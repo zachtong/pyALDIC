@@ -101,9 +101,40 @@ def compute_strain(
             rad=para.strain_plane_fit_rad,
             mask=para.img_ref_mask,
         )
-        # Fill any NaN from plane fitting
+        # Fill any NaN from plane fitting. If **every** node came back
+        # NaN (e.g. the VSG radius is smaller than the DIC node spacing
+        # so no node has enough neighbours for a 3-unknown plane fit),
+        # fail loudly with an actionable message rather than letting
+        # fill_nan_idw silently return zeros — which would masquerade
+        # as a "converged" all-zero strain field.
         from ..utils.outlier_detection import fill_nan_idw
-        F_raw = fill_nan_idw(F_raw, mesh.coordinates_fem, n_components=4)
+        try:
+            F_raw = fill_nan_idw(
+                F_raw, mesh.coordinates_fem, n_components=4,
+                on_all_nan="raise",
+            )
+        except ValueError as exc:
+            subset_step = getattr(para, "winstepsize", None) \
+                or getattr(para, "subset_step", None)
+            rad = para.strain_plane_fit_rad
+            detail = (
+                f"Plane-fit strain failed: every node's plane fit "
+                f"returned NaN (no node had >= 3 valid neighbours "
+                f"within the VSG radius). "
+                f"VSG radius = {rad} px"
+            )
+            if subset_step is not None:
+                detail += f", DIC node spacing = {subset_step} px"
+                detail += (
+                    f". Recommended VSG size >= {2 * subset_step + 1} px "
+                    f"(VSG radius >= {subset_step} px). "
+                )
+            detail += (
+                "Fix: increase VSG Size in the Strain panel, or "
+                "switch Method to 'FEM nodal' which does not depend "
+                "on a neighbourhood radius."
+            )
+            raise ValueError(detail) from exc
     elif method == 3:
         F_raw = global_nodal_strain_fem(mesh, para, U)
     else:

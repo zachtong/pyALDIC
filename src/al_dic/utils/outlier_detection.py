@@ -91,6 +91,8 @@ def fill_nan_idw(
     n_components: int = 2,
     k_neighbors: int = 16,
     cached_tree: cKDTree | None = None,
+    *,
+    on_all_nan: str = "zeros",
 ) -> NDArray[np.float64]:
     """Fill NaN values in an interleaved vector via kNN IDW interpolation.
 
@@ -113,9 +115,21 @@ def fill_nan_idw(
         cached_tree: Pre-built ``cKDTree`` on good-node coordinates.
             If provided **and** the tree size matches the current
             good-node count, it is reused; otherwise a new tree is built.
+        on_all_nan: What to do when **every** node is NaN (i.e. no
+            non-NaN neighbour is available to interpolate from).
+            ``"zeros"`` (default, backward-compatible): warn and return
+            a zero-filled array. ``"raise"``: raise ``ValueError`` with
+            a diagnostic message. Callers that treat all-NaN as a user
+            error (e.g. strain plane-fit with a too-small VSG radius)
+            should pass ``"raise"`` so the failure becomes visible
+            instead of silently producing a wrong-but-plausible
+            zero-valued result.
 
     Returns:
         New vector with NaN values replaced by interpolated values.
+
+    Raises:
+        ValueError: if ``on_all_nan="raise"`` and every node is NaN.
     """
     V_out = V.copy()
     n_nodes = coordinates_fem.shape[0]
@@ -128,6 +142,15 @@ def fill_nan_idw(
 
     not_nan_idx = np.setdiff1d(np.arange(n_nodes), nan_idx)
     if len(not_nan_idx) == 0:
+        if on_all_nan == "raise":
+            raise ValueError(
+                "fill_nan_idw: every node is NaN, cannot interpolate. "
+                "Upstream computation produced no valid value anywhere. "
+                "If this came from strain plane-fitting, the virtual "
+                "strain gauge (VSG) radius is likely smaller than the "
+                "DIC node spacing — increase VSG size to at least "
+                "2 x subset_step."
+            )
         warnings.warn(
             "All nodes are NaN, cannot interpolate. Returning zeros.",
             stacklevel=2,

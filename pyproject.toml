@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "al-dic"
-version = "0.4.0"
+version = "0.4.1"
 description = "AL-DIC: Augmented Lagrangian Digital Image Correlation with adaptive quadtree mesh"
 readme = "README.md"
 requires-python = ">=3.10"

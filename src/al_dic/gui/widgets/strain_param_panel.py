@@ -23,9 +23,13 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QComboBox,
     QFormLayout,
+    QLabel,
     QSpinBox,
     QWidget,
 )
+
+from al_dic.gui.app_state import AppState
+from al_dic.i18n import tr_args
 
 
 # Smoothness presets for the strain-field smoothing dropdown.
@@ -80,6 +84,18 @@ class StrainParamPanel(QWidget):
         self._vsg_spin.setValue(_DEFAULT_VSG_PX)
         layout.addRow(self.tr("VSG size"), self._vsg_spin)
 
+        # Inline warning: plane fit needs VSG radius >= subset_step for
+        # every node to find >= 3 neighbours; otherwise the strain
+        # field collapses to zero. Updated live as VSG or subset step
+        # change.
+        self._vsg_warning = QLabel("")
+        self._vsg_warning.setWordWrap(True)
+        self._vsg_warning.setStyleSheet(
+            "color: #d97706; font-size: 10px; padding-left: 4px;"
+        )
+        self._vsg_warning.setVisible(False)
+        layout.addRow("", self._vsg_warning)
+
         # --- Strain field smoothing ---
         # Applies Gaussian smoothing to the computed strain tensor field
         # after differentiation (not to the displacement field).
@@ -117,6 +133,11 @@ class StrainParamPanel(QWidget):
         self._vsg_spin.valueChanged.connect(self._on_vsg_value_changed)
         self._smooth_combo.currentIndexChanged.connect(self._mark_dirty)
         self._type_combo.currentIndexChanged.connect(self._mark_dirty)
+
+        # Refresh VSG warning whenever the DIC subset_step changes
+        # (mesh refinement, param panel edit, session load, …).
+        AppState.instance().params_changed.connect(self._refresh_vsg_warning)
+        self._refresh_vsg_warning()
 
     # ------------------------------------------------------------------
     # Public API
@@ -159,12 +180,46 @@ class StrainParamPanel(QWidget):
             self._vsg_spin.blockSignals(True)
             self._vsg_spin.setValue(value + 1)
             self._vsg_spin.blockSignals(False)
+        self._refresh_vsg_warning()
         self._mark_dirty()
 
     def _on_method_changed(self, index: int) -> None:
         """Show / enable VSG size only for plane fitting (method 2)."""
         code = self._method_codes[index]
         self._vsg_spin.setEnabled(code == 2)
+        self._refresh_vsg_warning()
+
+    def _refresh_vsg_warning(self) -> None:
+        """Warn when VSG radius is smaller than the DIC node spacing.
+
+        Plane fit needs >= 3 valid neighbours within the VSG radius at
+        every node. When `rad < subset_step`, many nodes (or all of
+        them, if rad < step) have zero neighbours within radius, the
+        whole F field comes back NaN, and fill_nan_idw's all-NaN path
+        kicks in. The strain compute now raises loudly in that case,
+        but warning the user *before* they hit Compute is nicer.
+        """
+        if self._method_combo.currentIndex() != 0:  # Plane fitting only
+            self._vsg_warning.setVisible(False)
+            return
+        subset_step = int(getattr(
+            AppState.instance(), "subset_step", 8,
+        ) or 8)
+        rad = (self._vsg_spin.value() - 1) / 2.0
+        recommended_vsg = 2 * subset_step + 1
+        if rad < subset_step:
+            msg = tr_args(
+                self.tr(
+                    "⚠ VSG radius (%1 px) < DIC node spacing (%2 px); "
+                    "plane fit will fail. Use VSG ≥ %3 px or switch "
+                    "Method to FEM nodal."
+                ),
+                int(rad), subset_step, recommended_vsg,
+            )
+            self._vsg_warning.setText(msg)
+            self._vsg_warning.setVisible(True)
+        else:
+            self._vsg_warning.setVisible(False)
 
     def _mark_dirty(self, *_args: object) -> None:
         self._dirty = True

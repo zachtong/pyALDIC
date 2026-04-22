@@ -4,6 +4,38 @@ All notable user-facing changes to pyALDIC are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.1] — 2026-04-22
+
+### Fixed
+
+- **Plane-fit strain no longer silently returns a field of zeros when
+  the VSG radius is too small.** Previously, if the VSG size was set
+  below the DIC node spacing (e.g. VSG = 3 px with subset_step = 8 px,
+  giving VSG radius = 1 px), every node's plane fit would find fewer
+  than 3 valid neighbours inside the radius; `comp_def_grad` would
+  return an all-NaN deformation gradient; `fill_nan_idw` would hit
+  its all-NaN branch and quietly return a zero-filled array; and
+  downstream strain computation would produce a "converged" result
+  of **εxx = εyy = εxy = 0 everywhere** — indistinguishable from a
+  legitimate no-strain run. The FEM nodal method was not affected
+  because it integrates over element connectivity, not a radius.
+
+### Added
+
+- **`fill_nan_idw` opt-in `on_all_nan="raise"`.** New keyword-only
+  argument; default `"zeros"` preserves the previous behaviour
+  (warn + return zeros) for backward compatibility. The strain
+  plane-fit path now passes `"raise"` so the GUI surfaces an
+  actionable error in the LOG panel and a "Strain compute failed"
+  dialog, instead of masquerading a bad configuration as a valid
+  zero-strain result.
+- **`StrainParamPanel` inline warning.** When Method = Plane
+  fitting AND VSG radius < DIC node spacing, an amber warning
+  below the VSG spin box now reads: *"⚠ VSG radius (X px) < DIC
+  node spacing (Y px); plane fit will fail. Use VSG ≥ Z px or
+  switch Method to FEM nodal."* Updates live when either VSG or
+  subset_step changes.
+
 ## [0.4.0] — 2026-04-20
 
 ### Added
