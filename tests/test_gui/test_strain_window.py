@@ -84,7 +84,10 @@ def test_compute_button_populates_results(window, state_with_results):
 
 def test_compute_clears_stale_label(window):
     """Touching a parameter sets the stale hint, and Compute clears it."""
-    window.param_panel()._vsg_spin.setValue(31)  # mark dirty
+    # VSG = 51 → rad = 25, safely above the test fixture's subset_step=16
+    # so the v0.4.1 plane-fit guard does not trip. Must differ from the
+    # panel default (41) so the dirty flag actually flips.
+    window.param_panel()._vsg_spin.setValue(51)  # mark dirty
     assert window.is_stale() is True
     window.trigger_compute()
     assert window.is_stale() is False
@@ -92,7 +95,7 @@ def test_compute_clears_stale_label(window):
 
 def test_param_change_marks_stale(window):
     assert window.is_stale() is False
-    window.param_panel()._vsg_spin.setValue(31)
+    window.param_panel()._vsg_spin.setValue(51)
     assert window.is_stale() is True
 
 

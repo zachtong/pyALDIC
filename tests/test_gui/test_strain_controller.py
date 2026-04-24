@@ -71,7 +71,11 @@ class TestComputeAllFrames:
     def test_override_does_not_mutate_base_para(self, state_with_results):
         original_rad = state_with_results.results.dic_para.strain_plane_fit_rad
         ctrl = StrainController(state_with_results)
-        ctrl.compute_all_frames(override={"strain_plane_fit_rad": 5.0})
+        # Pick a VSG radius safely above subset_step (fixture uses
+        # subset_step=16) so we don't trip the v0.4.1 plane-fit guard
+        # (which would mask this test's real purpose — verifying para
+        # immutability — with a ValueError).
+        ctrl.compute_all_frames(override={"strain_plane_fit_rad": 25.0})
         # Base para must remain frozen / unchanged
         assert (
             state_with_results.results.dic_para.strain_plane_fit_rad
