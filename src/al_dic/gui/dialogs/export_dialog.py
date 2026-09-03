@@ -60,6 +60,7 @@ from PySide6.QtWidgets import (
 from al_dic.core.data_structures import PipelineResult
 from al_dic.export.colorbar import ColorbarStyle
 from al_dic.gui.app_state import AppState
+from al_dic.core.colormaps import COLORMAP_NAMES
 from al_dic.gui.theme import COLORS
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.range_mode import AutoFixedSelector
@@ -420,10 +421,7 @@ class _FieldRow(QWidget):
         _field_vmax = _fs.vmax
 
         self._cmap_combo = QComboBox()
-        self._cmap_combo.addItems([
-            "jet", "viridis", "turbo", "coolwarm",
-            "plasma", "RdBu_r", "seismic", "inferno",
-        ])
+        self._cmap_combo.addItems(list(COLORMAP_NAMES))
         self._cmap_combo.setCurrentText(_field_cmap)
         self._cmap_combo.setEnabled(has_data)
         self._cmap_combo.setFixedWidth(90)
@@ -1296,10 +1294,7 @@ class ExportDialog(QDialog):
         appear_group = QGroupBox(self.tr("FIELD APPEARANCE"))
         aform = QFormLayout(appear_group)
         self._pv_cmap_combo = QComboBox()
-        self._pv_cmap_combo.addItems([
-            "jet", "viridis", "turbo", "coolwarm",
-            "plasma", "RdBu_r", "seismic", "inferno",
-        ])
+        self._pv_cmap_combo.addItems(list(COLORMAP_NAMES))
         self._pv_cmap_combo.currentIndexChanged.connect(
             self._on_preview_appearance_changed)
         aform.addRow(self.tr("Colormap"), self._pv_cmap_combo)

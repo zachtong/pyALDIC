@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState, RunState
+from al_dic.core.colormaps import COLORMAP_NAMES
 from al_dic.gui.theme import COLORS
 from al_dic.i18n import tr_args
 from al_dic.gui.widgets.color_range import ColorRange
@@ -157,10 +158,7 @@ class RightSidebar(QWidget):
         cmap_lbl.setFixedWidth(64)
         cmap_row.addWidget(cmap_lbl)
         self._cmap_combo = QComboBox()
-        self._cmap_combo.addItems([
-            "jet", "viridis", "turbo", "coolwarm",
-            "plasma", "inferno", "RdBu_r", "seismic",
-        ])
+        self._cmap_combo.addItems(list(COLORMAP_NAMES))
         self._cmap_combo.setCurrentText(self._state.colormap)
         self._cmap_combo.currentTextChanged.connect(self._state.set_colormap)
         cmap_row.addWidget(self._cmap_combo)

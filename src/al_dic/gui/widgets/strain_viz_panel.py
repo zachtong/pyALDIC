@@ -33,19 +33,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from al_dic.core.colormaps import COLORMAP_NAMES
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.range_mode import AutoFixedSelector
 
-_COLORMAP_OPTIONS: tuple[str, ...] = (
-    "jet",
-    "viridis",
-    "turbo",
-    "coolwarm",
-    "plasma",
-    "inferno",
-    "RdBu_r",
-    "seismic",
-)
+#: Alias so existing references read unchanged; the list itself lives in
+#: al_dic.core.colormaps, so every chooser offers the same options.
+_COLORMAP_OPTIONS: tuple[str, ...] = COLORMAP_NAMES
 
 
 class StrainVizPanel(QWidget):

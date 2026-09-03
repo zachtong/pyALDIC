@@ -71,6 +71,8 @@ def _render_bar(
     import matplotlib.pyplot as plt
     from matplotlib.colors import Normalize
 
+    from al_dic.core.colormaps import resolve
+
     fg = "white" if background == "black" else "black"
     face = "black" if background == "black" else "white"
     if orientation == "vertical":
@@ -82,10 +84,7 @@ def _render_bar(
 
     fig, ax = plt.subplots(figsize=(max(0.3, fig_w), max(0.3, fig_h)), dpi=dpi)
     fig.patch.set_facecolor(face)
-    try:
-        cmap = plt.get_cmap(cmap_name)
-    except ValueError:
-        cmap = plt.get_cmap("jet")
+    cmap = resolve(cmap_name)
     sm = plt.cm.ScalarMappable(norm=Normalize(vmin=vmin, vmax=vmax), cmap=cmap)
     sm.set_array([])
     cb = fig.colorbar(sm, cax=ax, orientation=orientation)

@@ -7,7 +7,7 @@ events so it does not interfere with canvas pan/zoom/drawing.
 from __future__ import annotations
 
 import numpy as np
-from matplotlib import colormaps
+from al_dic.core.colormaps import resolve
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import (
     QColor,
@@ -128,10 +128,7 @@ class ColorbarOverlay(QWidget):
         )
 
         # --- Build gradient from matplotlib colormap ---
-        try:
-            cm = colormaps[self._cmap_name]
-        except KeyError:
-            cm = colormaps["jet"]
+        cm = resolve(self._cmap_name)
 
         gradient = QLinearGradient(bar_x, bar_bottom, bar_x, bar_top)
         for i in range(_N_STOPS):

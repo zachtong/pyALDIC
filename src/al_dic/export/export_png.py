@@ -203,11 +203,9 @@ def _colormap_bgr_lut(cmap_name: str) -> NDArray:
     256-entry colormaps (jet, viridis, ...), but is ~7x faster than calling
     matplotlib per pixel over a full-resolution grid.  Cached per colormap.
     """
-    from matplotlib import colormaps
-    try:
-        cm = colormaps[cmap_name]
-    except KeyError:
-        cm = colormaps["jet"]
+    from al_dic.core.colormaps import resolve
+
+    cm = resolve(cmap_name)
     rgba = (cm(np.linspace(0.0, 1.0, 256)) * 255).astype(np.uint8)  # (256,4)
     return np.ascontiguousarray(rgba[:, [2, 1, 0]])  # RGB -> BGR, (256, 3)
 

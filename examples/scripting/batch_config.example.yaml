@@ -26,7 +26,8 @@ fields: [disp_u, disp_v, strain_exx, strain_eyy, strain_exy]
 
 # --- field-image options (only used when "images" is in export) ---
 image_fields: [disp_u, strain_eyy]
-colormap: jet                 # jet, viridis, turbo, coolwarm, plasma, RdBu_r, seismic
+colormap: jet                 # jet, viridis, turbo, coolwarm, plasma,
+                              # inferno, RdBu_r, seismic, black_rainbow
 image_format: png             # png, jpeg, tiff
 dpi: 150
 colorbar: true
