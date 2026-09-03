@@ -161,6 +161,18 @@ def encode_params_for(ext: str, jpeg_quality: int) -> list[int]:
     return []
 
 
+#: Fill used in place of a background image when the user hides it.
+#: "transparent" is honoured only by formats with an alpha channel; the
+#: exporters downgrade it to white for JPEG, GIF and MP4 rather than refusing.
+HIDDEN_BG_COLORS: tuple[str, ...] = ("white", "black", "transparent")
+_HIDDEN_BG_FILL = {"white": 255, "black": 0, "transparent": 0}
+
+
+def hidden_bg_fill(color: str) -> int:
+    """Grey level painted where the background image would have been."""
+    return _HIDDEN_BG_FILL.get(color, 0)
+
+
 def _load_frame_image(
     image_files: list[str], frame: int, bg_mode: str
 ) -> NDArray | None:
@@ -170,11 +182,12 @@ def _load_frame_image(
         image_files: Ordered list of source image paths.
         frame:       Current frame index (0-based).
         bg_mode:     "ref_frame" -> always load index 0;
-                     "current_frame" -> load the matching frame.
+                     "current_frame" -> load the matching frame;
+                     "none" -> the user hid the background.
     Returns:
-        (H, W) uint8 grayscale array, or None if unavailable.
+        (H, W) uint8 grayscale array, or None if unavailable or hidden.
     """
-    if not image_files:
+    if bg_mode == "none" or not image_files:
         return None
     idx = 0 if bg_mode == "ref_frame" else min(frame, len(image_files) - 1)
     # cv2.imread cannot open a non-ASCII path on Windows -- it returns None,
@@ -223,8 +236,13 @@ def render_field_frame(
     render_max_dim: int = 0,
     output_shape: tuple[int, int] | None = None,
     blank_invalid_nodes: bool = True,
+    hidden_bg_color: str = "black",
 ) -> NDArray:
-    """Render a single field frame to a BGR uint8 image.
+    """Render a single field frame to a BGR (or BGRA) uint8 image.
+
+    *hidden_bg_color* only applies when *bg_image* is None. "transparent"
+    returns four channels; the default stays black so that existing callers,
+    which pass no background at all in tests, keep their current output.
 
     Composite pipeline (matches GUI VizController rendering):
     1. Interpolate scatter -> regular grid (NaN outside convex hull).
@@ -274,9 +292,15 @@ def render_field_frame(
     Ho, Wo = output_shape if output_shape is not None else image_shape
     render_coords = deformed_coords if deformed_coords is not None else coords
 
-    # Prepare background at the OUTPUT resolution (black when no image given).
-    bg_bgr = (_to_bgr(bg_image, Ho, Wo) if bg_image is not None
-              else np.zeros((Ho, Wo, 3), dtype=np.uint8))
+    # Prepare background at the OUTPUT resolution.  With no image the user
+    # picked the fill; "transparent" is carried as alpha at the end, so the
+    # colour under it only matters for pixels nothing else covers.
+    hidden = bg_image is None
+    if hidden:
+        bg_bgr = np.full((Ho, Wo, 3), hidden_bg_fill(hidden_bg_color),
+                         dtype=np.uint8)
+    else:
+        bg_bgr = _to_bgr(bg_image, Ho, Wo)
 
     # A node contributes only when BOTH its value and its render position are
     # finite.  Crack-destroyed nodes carry NaN deformed positions (crack-aware
@@ -419,6 +443,14 @@ def render_field_frame(
     # per-pixel formula bg*(1-op) + field*op exactly, ~4x faster than the
     # float64 numpy path.
     op = float(field_cfg.bg_alpha)
+
+    if hidden and hidden_bg_color == "transparent":
+        # Nothing to blend toward: a 70% field over black is just a darker
+        # field, which is not what the opacity control means here.  Spend the
+        # opacity on the alpha channel instead and leave the colour alone.
+        alpha = (inside * (op * 255.0)).clip(0, 255).astype(np.uint8)
+        return np.dstack([field_bgr, alpha])
+
     blended = cv2.addWeighted(bg_bgr, 1.0 - op, field_bgr, op, 0.0)
     result = np.where(inside[:, :, None], blended, bg_bgr)
 
@@ -504,6 +536,7 @@ def export_png(
     margin_ratio: float = 0.0,
     margin_color: str = "white",
     fill_trimmed_edges: bool = False,
+    hidden_bg_color: str = "black",
 ) -> list[Path]:
     """Render and save images for each enabled field and frame.
 
@@ -560,6 +593,12 @@ def export_png(
         "png": ".png", "jpeg": ".jpg", "jpg": ".jpg",
         "tiff": ".tif", "tif": ".tif",
     }.get(image_format.lower(), ".png")
+
+    # JPEG has no alpha channel.  Downgrading to a white fill loses the
+    # transparency but still produces the file the user asked for; encoding a
+    # four-channel array would simply fail.
+    if hidden_bg_color == "transparent" and ext == ".jpg":
+        hidden_bg_color = "white"
 
     coords = results.dic_mesh.coordinates_fem
     img_shape = results.dic_para.img_size
@@ -680,6 +719,7 @@ def export_png(
                 render_max_dim=render_max_dim,
                 output_shape=out_shape,
                 blank_invalid_nodes=not fill_trimmed_edges,
+                hidden_bg_color=hidden_bg_color,
             )
 
             # Append the styled colorbar (position/font/thickness/background)

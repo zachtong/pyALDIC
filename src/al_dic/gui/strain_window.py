@@ -577,6 +577,8 @@ class StrainWindow(QMainWindow):
             vmin=float(viz["vmin"]),
             vmax=float(viz["vmax"]),
             show_deformed=bool(viz.get("show_deformed", False)),
+            show_background=bool(viz.get("show_background", True)),
+            hidden_bg_color=self._state.hidden_bg_color,
             fill_trimmed_edges=bool(viz.get("fill_trimmed_edges", False)),
             overlay_alpha=self._state.overlay_alpha,
             use_physical_units=self._state.use_physical_units,
@@ -855,6 +857,16 @@ class StrainWindow(QMainWindow):
         except (IndexError, FileNotFoundError, ValueError):
             pass
 
+    def _blank_background(self, result: PipelineResult) -> None:
+        """Paint the hidden-background fill at the result's image size."""
+        shape = tuple(result.dic_para.img_size)
+        if shape == (0, 0):
+            # Nothing to size the scene with; leave what is showing rather
+            # than collapsing it.
+            return
+        self._canvas.set_blank(
+            shape[0], shape[1], self._state.hidden_bg_color)
+
     def _update_trim_readout(
         self, field_name: str, frame: int, result: PipelineResult,
         show_deformed: bool = False,
@@ -894,6 +906,7 @@ class StrainWindow(QMainWindow):
 
             viz = self._viz_panel.get_state()
             show_deformed = bool(viz.get("show_deformed", False))
+            show_background = bool(viz.get("show_background", True))
 
             # Trim frame follows the display frame: reference view -> frame-0
             # geometry (matches the main window's displacement), deformed view
@@ -904,8 +917,11 @@ class StrainWindow(QMainWindow):
             self._update_trim_readout(field_name, frame, result, show_deformed)
 
             # Background image: frame is now the image-file index (0=ref, 1..N=deformed).
-            # show_deformed → load the current image; otherwise always show reference.
-            if show_deformed and frame >= 1:
+            # show_deformed → load the current image; otherwise always show
+            # reference.  Which frame only matters once one is shown at all.
+            if not show_background:
+                self._blank_background(result)
+            elif show_deformed and frame >= 1:
                 self._try_load_background(frame)
             else:
                 self._try_load_background(0)

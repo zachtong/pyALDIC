@@ -16,6 +16,7 @@
   "colorbar": true,
   "show_deformed": false,
   "bg_mode": "ref_frame",
+  "hidden_bg_color": "white",
   "bg_alpha": 0.7,
 
   "params": {

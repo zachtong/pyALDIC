@@ -136,17 +136,35 @@ class RightSidebar(QWidget):
         self._field_selector = FieldSelector()
         layout.addWidget(self._field_selector)
 
-        # Deformed vs reference frame toggle.
-        # This controls WHERE the field is plotted (geometry, not styling),
-        # so it lives in FIELD rather than VISUALIZATION.
-        self._deformed_cb = QCheckBox(self.tr("Show on deformed frame"))
-        self._deformed_cb.setChecked(True)
-        self._deformed_cb.setToolTip(self.tr(
-            "When checked, overlay results on the deformed (current) frame "
-            "instead of the reference frame"
+        # Where the field is plotted, and whether an image sits behind it,
+        # are independent questions -- one control each.  Both describe WHERE
+        # the field goes rather than how it is styled, so they live in FIELD.
+        geom_row = QHBoxLayout()
+        geom_row.setSpacing(4)
+        geom_lbl = QLabel(self.tr("Show on"))
+        # Not setFixedWidth: German runs about half again as long (R5).
+        geom_lbl.setMinimumWidth(64)
+        geom_row.addWidget(geom_lbl)
+        self._geometry_combo = QComboBox()
+        self._geometry_combo.addItem(self.tr("Deformed frame"), True)
+        self._geometry_combo.addItem(self.tr("Reference frame"), False)
+        self._geometry_combo.setToolTip(self.tr(
+            "Plot the field at the deformed node positions, or at their "
+            "positions in the reference frame."
         ))
-        self._deformed_cb.stateChanged.connect(self._on_deformed_toggled)
-        layout.addWidget(self._deformed_cb)
+        self._geometry_combo.currentIndexChanged.connect(
+            self._on_geometry_changed)
+        geom_row.addWidget(self._geometry_combo, 1)
+        layout.addLayout(geom_row)
+
+        self._background_cb = QCheckBox(self.tr("Show background image"))
+        self._background_cb.setChecked(True)
+        self._background_cb.setToolTip(self.tr(
+            "Uncheck to show the field on its own, with no speckle image "
+            "behind it."
+        ))
+        self._background_cb.stateChanged.connect(self._on_background_toggled)
+        layout.addWidget(self._background_cb)
 
         # --- Visualization section ---
         self._add_section_label(layout, self.tr("VISUALIZATION"))
@@ -164,6 +182,7 @@ class RightSidebar(QWidget):
         cmap_row.addWidget(self._cmap_combo)
         # Sync combo when active field changes (each field stores its own colormap)
         self._state.display_changed.connect(self._sync_colormap_combo)
+        self._state.display_changed.connect(self._sync_display_controls)
         layout.addLayout(cmap_row)
 
         self._color_range = ColorRange()
@@ -274,6 +293,8 @@ class RightSidebar(QWidget):
             vmin=self._state.color_min,
             vmax=self._state.color_max,
             show_deformed=self._state.show_deformed,
+            show_background=self._state.show_background,
+            hidden_bg_color=self._state.hidden_bg_color,
             overlay_alpha=self._state.overlay_alpha,
             use_physical_units=self._state.use_physical_units,
             pixel_size=self._state.pixel_size,
@@ -352,11 +373,34 @@ class RightSidebar(QWidget):
                 tr_args(self.tr("REMAINING  %1"), "--:--"))
             self._last_frame_str = ""
 
-    def _on_deformed_toggled(self, state: int) -> None:
-        """Toggle between reference and deformed frame display."""
-        deformed = state == Qt.CheckState.Checked.value
-        self._state.show_deformed = deformed
+    def _on_geometry_changed(self, index: int) -> None:
+        """Plot the field on deformed or reference node positions."""
+        self._state.show_deformed = bool(
+            self._geometry_combo.itemData(index))
         self._state.display_changed.emit()
+
+    def _on_background_toggled(self, state: int) -> None:
+        """Show or hide the image behind the field."""
+        self._state.show_background = state == Qt.CheckState.Checked.value
+        self._state.display_changed.emit()
+
+    def _sync_display_controls(self) -> None:
+        """Follow state that was changed from somewhere else.
+
+        Clearing results forces show_deformed off (image_list), and a restored
+        session sets both fields directly; without this the controls would go
+        on claiming whatever the user last picked.  Signals are blocked so the
+        sync does not write straight back into the state it just read.
+        """
+        want = 0 if self._state.show_deformed else 1
+        if self._geometry_combo.currentIndex() != want:
+            self._geometry_combo.blockSignals(True)
+            self._geometry_combo.setCurrentIndex(want)
+            self._geometry_combo.blockSignals(False)
+        if self._background_cb.isChecked() != self._state.show_background:
+            self._background_cb.blockSignals(True)
+            self._background_cb.setChecked(self._state.show_background)
+            self._background_cb.blockSignals(False)
 
     def _on_opacity_changed(self, value: int) -> None:
         """Update overlay opacity from slider (0–100 → 0.0–1.0)."""

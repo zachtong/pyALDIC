@@ -48,7 +48,6 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QProgressBar,
     QPushButton,
-    QRadioButton,
     QScrollArea,
     QSlider,
     QSpinBox,
@@ -99,6 +98,26 @@ def _label(key: str) -> str:
 # Pure-data configuration types (no Qt, fully testable)
 # ---------------------------------------------------------------------------
 
+def _bg_mode_for(show_deformed: bool, show_background: bool) -> str:
+    """Which image goes behind the field, if any.
+
+    Written once because the images tab, the animation tab and the live
+    preview all have to agree; three copies of a two-line rule is how a
+    preview ends up showing something the export does not produce.
+    """
+    if not show_background:
+        return "none"
+    return "current_frame" if show_deformed else "ref_frame"
+
+
+def _checkerboard(h: int, w: int, size: int = 12) -> "np.ndarray":
+    """Grey checkerboard, so a transparent preview does not read as white."""
+    import numpy as _np
+    yy, xx = _np.mgrid[0:h, 0:w]
+    odd = ((yy // size) + (xx // size)) % 2
+    return _np.where(odd[..., None], 153, 204).astype(_np.uint8).repeat(3, 2)
+
+
 @dataclass
 class VizExportHint:
     """Snapshot of the current window's visualisation settings."""
@@ -107,6 +126,11 @@ class VizExportHint:
     vmin: float = 0.0
     vmax: float = 1.0
     show_deformed: bool = False
+    #: Whether an image sits behind the field. Independent of show_deformed:
+    #: which frame to use is only a question once you show one at all.
+    show_background: bool = True
+    #: Fill when the background is hidden: "white", "black" or "transparent".
+    hidden_bg_color: str = "white"
     # Re-interpolate the edge-trimmed strain band from reliable interior
     # nodes instead of blanking it (image/animation export only; data stays
     # NaN).  Mirrors the strain window's "Fill trimmed edges" toggle.
@@ -153,7 +177,7 @@ class ExportConfig:
     image_output_max_dim: int = 1024  # cap long edge in px (0 = native)
     jpeg_quality: int = 92
     show_deformed: bool = False     # render field at deformed node positions
-    bg_mode: str = "ref_frame"      # "ref_frame" | "current_frame"
+    bg_mode: str = "ref_frame"      # "ref_frame" | "current_frame" | "none"
     frame_start: int = 0
     frame_end: int = -1
     # Fill (re-interpolate) the edge-trimmed strain band instead of blanking
@@ -168,7 +192,9 @@ class ExportConfig:
     anim_output_max_dim: int = 1024  # cap long edge in px (0 = native)
     anim_frame_step: int = 1         # keep every Nth frame (1 = all)
     anim_show_deformed: bool = False
-    anim_bg_mode: str = "ref_frame"  # "ref_frame" | "current_frame"
+    anim_bg_mode: str = "ref_frame"  # "ref_frame" | "current_frame" | "none"
+    #: Fill used by images and animation alike when the background is hidden.
+    hidden_bg_color: str = "white"
     anim_frame_start: int = 0
     anim_frame_end: int = -1
 
@@ -293,6 +319,7 @@ class ExportImagesWorker(QThread):
                 roi_mask=self._roi_mask,
                 dpi=self._config.image_dpi,
                 show_deformed=self._config.show_deformed,
+                hidden_bg_color=self._config.hidden_bg_color,
                 frame_start=self._config.frame_start,
                 frame_end=frame_end,
                 stop_event=self._stop_event,
@@ -361,6 +388,7 @@ class ExportAnimationWorker(QThread):
                 fmt=self._config.anim_format,
                 fps=self._config.anim_fps,
                 show_deformed=self._config.anim_show_deformed,
+                hidden_bg_color=self._config.hidden_bg_color,
                 frame_start=self._config.anim_frame_start,
                 frame_end=frame_end,
                 stop_event=self._stop_event,
@@ -906,25 +934,31 @@ class ExportDialog(QDialog):
         ))
         img_form.addRow(self._img_colorbar_check)
 
-        # Reference vs. deformed: couples background image + field node positions
+        # Where the field is drawn, and whether an image sits behind it, are
+        # separate questions -- one control each, matching the main window.
         config_row = QHBoxLayout()
-        self._img_ref_rb = QRadioButton(self.tr("Original (frame 1 background)"))
-        self._img_ref_rb.setChecked(not self._hint.show_deformed)
-        self._img_ref_rb.setToolTip(self.tr(
-            "Field is drawn at the original (undeformed) node positions.\n"
-            "Background image is always the first frame."
+        self._img_geom_combo = QComboBox()
+        self._img_geom_combo.addItem(self.tr("Deformed frame"), True)
+        self._img_geom_combo.addItem(self.tr("Reference frame"), False)
+        self._img_geom_combo.setCurrentIndex(
+            0 if self._hint.show_deformed else 1)
+        self._img_geom_combo.setToolTip(self.tr(
+            "Deformed: the field is drawn at the displaced node positions "
+            "(reference + displacement), over each frame's own photo.\n"
+            "Reference: drawn at the original node positions, over the "
+            "first frame."
         ))
-        self._img_def_rb = QRadioButton(
-            self.tr("Deformed (current frame background)")
-        )
-        self._img_def_rb.setChecked(self._hint.show_deformed)
-        self._img_def_rb.setToolTip(self.tr(
-            "Field is drawn at the displaced node positions "
-            "(reference + displacement).\n"
-            "Background image follows each frame's own photo."
+        self._img_geom_combo.currentIndexChanged.connect(
+            self._schedule_preview)
+        config_row.addWidget(self._img_geom_combo)
+        self._img_bg_check = QCheckBox(self.tr("Show background image"))
+        self._img_bg_check.setChecked(self._hint.show_background)
+        self._img_bg_check.setToolTip(self.tr(
+            "Uncheck to export the field on its own, with no speckle image "
+            "behind it. Pick the fill on the Preview & Colorbar tab."
         ))
-        config_row.addWidget(self._img_ref_rb)
-        config_row.addWidget(self._img_def_rb)
+        self._img_bg_check.toggled.connect(self._schedule_preview)
+        config_row.addWidget(self._img_bg_check)
         config_row.addStretch()
         img_form.addRow(self.tr("Render as"), config_row)
         layout.addWidget(img_group)
@@ -1051,25 +1085,28 @@ class ExportDialog(QDialog):
         ))
         anim_form.addRow(self._anim_colorbar_check)
 
-        # Reference vs. deformed: couples background image + field node positions
+        # Same pair of controls as the images tab.
         anim_config_row = QHBoxLayout()
-        self._anim_ref_rb = QRadioButton(self.tr("Original (frame 1 background)"))
-        self._anim_ref_rb.setChecked(not self._hint.show_deformed)
-        self._anim_ref_rb.setToolTip(self.tr(
-            "Field is drawn at the original (undeformed) node positions.\n"
-            "Background image is always the first frame."
+        self._anim_geom_combo = QComboBox()
+        self._anim_geom_combo.addItem(self.tr("Deformed frame"), True)
+        self._anim_geom_combo.addItem(self.tr("Reference frame"), False)
+        self._anim_geom_combo.setCurrentIndex(
+            0 if self._hint.show_deformed else 1)
+        self._anim_geom_combo.setToolTip(self.tr(
+            "Deformed: the field is drawn at the displaced node positions "
+            "(reference + displacement), over each frame's own photo.\n"
+            "Reference: drawn at the original node positions, over the "
+            "first frame."
         ))
-        self._anim_def_rb = QRadioButton(
-            self.tr("Deformed (current frame background)")
-        )
-        self._anim_def_rb.setChecked(self._hint.show_deformed)
-        self._anim_def_rb.setToolTip(self.tr(
-            "Field is drawn at the displaced node positions "
-            "(reference + displacement).\n"
-            "Background image follows each frame's own photo."
+        anim_config_row.addWidget(self._anim_geom_combo)
+        self._anim_bg_check = QCheckBox(self.tr("Show background image"))
+        self._anim_bg_check.setChecked(self._hint.show_background)
+        self._anim_bg_check.setToolTip(self.tr(
+            "Uncheck to export the field on its own, with no speckle image "
+            "behind it. GIF and MP4 cannot store transparency, so a "
+            "transparent fill is written as white."
         ))
-        anim_config_row.addWidget(self._anim_ref_rb)
-        anim_config_row.addWidget(self._anim_def_rb)
+        anim_config_row.addWidget(self._anim_bg_check)
         anim_config_row.addStretch()
         anim_form.addRow(self.tr("Render as"), anim_config_row)
         layout.addWidget(anim_group)
@@ -1284,6 +1321,21 @@ class ExportDialog(QDialog):
         self._pv_margin_color_combo.currentIndexChanged.connect(self._schedule_preview)
         form.addRow(self.tr("Margin color"), self._pv_margin_color_combo)
 
+        self._pv_hidden_bg_combo = QComboBox()
+        for _lbl, _val in ((self.tr("White"), "white"),
+                           (self.tr("Black"), "black"),
+                           (self.tr("Transparent"), "transparent")):
+            self._pv_hidden_bg_combo.addItem(_lbl, _val)
+        self._pv_hidden_bg_combo.setToolTip(self.tr(
+            "Fill used where the background image would have been, when "
+            "'Show background image' is off.\n"
+            "Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have "
+            "no alpha channel and get white instead."
+        ))
+        self._pv_hidden_bg_combo.currentIndexChanged.connect(
+            self._schedule_preview)
+        form.addRow(self.tr("Hidden background"), self._pv_hidden_bg_combo)
+
         refresh = QPushButton(self.tr("Refresh preview"))
         refresh.clicked.connect(self._render_preview)
         form.addRow(refresh)
@@ -1487,8 +1539,8 @@ class ExportDialog(QDialog):
         if img_shape == (0, 0):
             img_shape = (256, 256)
 
-        show_def = self._img_def_rb.isChecked()
-        bg_mode = "current_frame" if show_def else "ref_frame"
+        show_def = bool(self._img_geom_combo.currentData())
+        bg_mode = _bg_mode_for(show_def, self._img_bg_check.isChecked())
         bg = (_load_frame_image(self._image_files, frame + 1, bg_mode)
               if self._image_files else None)
 
@@ -1517,7 +1569,8 @@ class ExportDialog(QDialog):
         img = render_field_frame(
             coords, values, img_shape, bg, render_cfg,
             roi_mask=self._roi_mask, deformed_coords=deformed_coords,
-            render_max_dim=512, output_shape=out_shape)
+            render_max_dim=512, output_shape=out_shape,
+            hidden_bg_color=self._pv_hidden_bg_combo.currentData())
 
         if self._img_colorbar_check.isChecked():
             lbl_txt = colorbar_label(
@@ -1527,6 +1580,13 @@ class ExportDialog(QDialog):
         img = add_margin(img, self._pv_margin_spin.value(),
                          self._pv_margin_color_combo.currentData())
 
+        if img.ndim == 3 and img.shape[2] == 4:
+            # Show transparency the way an image editor does. Flattening onto
+            # white would make "transparent" and "white" look identical here
+            # and only differ in the written file.
+            a = img[:, :, 3:4].astype(np.float32) / 255.0
+            board = _checkerboard(img.shape[0], img.shape[1])
+            img = (img[:, :, :3] * a + board * (1.0 - a)).astype(np.uint8)
         rgb = np.ascontiguousarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         h, w = rgb.shape[:2]
         qimg = QImage(rgb.data, w, h, 3 * w, QImage.Format.Format_RGB888)
@@ -1966,26 +2026,30 @@ class ExportDialog(QDialog):
             export_csv=self._csv_check.isChecked(),
             data_fields=data_fields,
             npz_per_frame=self._npz_per_frame_check.isChecked(),
-            # Images — "Deformed frame" couples bg_mode + show_deformed together
+            # Images — geometry and background are chosen separately
             export_images=False,
             image_fields=[r.get_config() for r in self._img_field_rows],
             image_format=self._img_fmt_combo.currentText().lower(),
             image_dpi=self._img_dpi_spin.value(),
             image_output_max_dim=int(self._img_res_combo.currentData()),
             jpeg_quality=self._img_quality_spin.value(),
-            show_deformed=self._img_def_rb.isChecked(),
-            bg_mode="current_frame" if self._img_def_rb.isChecked() else "ref_frame",
+            show_deformed=bool(self._img_geom_combo.currentData()),
+            bg_mode=_bg_mode_for(bool(self._img_geom_combo.currentData()),
+                                 self._img_bg_check.isChecked()),
             frame_start=img_start,
             frame_end=img_end,
-            # Animation — same coupling
+            # Animation — same pair of controls
             export_animation=False,
             anim_fields=[r.get_config() for r in self._anim_field_rows],
             anim_format=self._anim_fmt_combo.currentText().lower(),
             anim_fps=self._anim_fps_spin.value(),
             anim_output_max_dim=int(self._anim_res_combo.currentData()),
             anim_frame_step=self._anim_step_spin.value(),
-            anim_show_deformed=self._anim_def_rb.isChecked(),
-            anim_bg_mode="current_frame" if self._anim_def_rb.isChecked() else "ref_frame",
+            anim_show_deformed=bool(self._anim_geom_combo.currentData()),
+            anim_bg_mode=_bg_mode_for(
+                bool(self._anim_geom_combo.currentData()),
+                self._anim_bg_check.isChecked()),
+            hidden_bg_color=self._pv_hidden_bg_combo.currentData(),
             anim_frame_start=anim_start,
             anim_frame_end=anim_end,
             # Report

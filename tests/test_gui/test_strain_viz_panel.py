@@ -16,18 +16,19 @@ def panel():
 
 
 def test_default_state(panel):
-    """Default colormap is jet, auto range on, opacity = 0.70, show_deformed on."""
+    """jet, auto range, opacity 0.70, deformed geometry, background shown."""
     s = panel.get_state()
     assert s["colormap"] == "jet"
     assert s["use_percentile"] is True
     assert s["alpha"] == pytest.approx(0.70)
     assert s["show_deformed"] is True
+    assert s["show_background"] is True
     assert "vmin" in s and "vmax" in s
 
 
 def test_state_keys(panel):
     expected = {"colormap", "vmin", "vmax", "alpha", "use_percentile",
-                "show_deformed", "fill_trimmed_edges"}
+                "show_deformed", "show_background", "fill_trimmed_edges"}
     assert set(panel.get_state().keys()) == expected
 
 
@@ -132,11 +133,29 @@ def test_opacity_renamed_label(panel):
     assert not any(t == "Alpha" for t in labels), f"'Alpha' should be renamed: {labels}"
 
 
-def test_show_deformed_toggle(panel):
-    panel._deformed_check.setChecked(True)
+def test_geometry_combo_selects_where_the_field_is_plotted(panel):
+    """Deformed is first so it stays the default; reference is second."""
+    panel._geometry_combo.setCurrentIndex(0)
     assert panel.get_state()["show_deformed"] is True
-    panel._deformed_check.setChecked(False)
+    panel._geometry_combo.setCurrentIndex(1)
     assert panel.get_state()["show_deformed"] is False
+
+
+def test_background_toggle_is_independent_of_geometry(panel):
+    """The whole point of splitting the old checkbox: all four combinations.
+
+    Hiding the image used to be impossible, and asking for the reference
+    image used to force reference geometry along with it.
+    """
+    panel._geometry_combo.setCurrentIndex(0)      # deformed
+    panel._background_check.setChecked(False)
+    s = panel.get_state()
+    assert s["show_deformed"] is True and s["show_background"] is False
+
+    panel._geometry_combo.setCurrentIndex(1)      # reference
+    panel._background_check.setChecked(True)
+    s = panel.get_state()
+    assert s["show_deformed"] is False and s["show_background"] is True
 
 
 def test_colormaps_list(panel):

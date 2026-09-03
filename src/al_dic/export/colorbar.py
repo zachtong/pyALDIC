@@ -148,6 +148,10 @@ def add_margin(image: NDArray, ratio: float, color: str = "white") -> NDArray:
     if m <= 0:
         return image
     value = (255, 255, 255) if color == "white" else (0, 0, 0)
+    if image.ndim == 3 and image.shape[2] == 4:
+        # A transparent figure that gains an opaque frame is worse than no
+        # margin at all, so the padding inherits the transparency.
+        value = (*value, 0)
     return cv2.copyMakeBorder(image, m, m, m, m, cv2.BORDER_CONSTANT, value=value)
 
 
@@ -168,6 +172,14 @@ def attach_colorbar(
     H, W = image.shape[:2]
     pos = style.position if style.position in ColorbarStyle.POSITIONS else "right"
     bg = style.background if style.background in ColorbarStyle.BACKGROUNDS else "black"
+    # The strip is rendered BGR.  Stacking it onto a transparent figure needs
+    # a matching channel count, and the bar itself stays opaque -- it carries
+    # its own background setting and has to remain readable.
+    alpha = image.ndim == 3 and image.shape[2] == 4
+
+    def _match(bar: NDArray) -> NDArray:
+        return cv2.cvtColor(bar, cv2.COLOR_BGR2BGRA) if alpha else bar
+
     try:
         if pos in ("right", "left"):
             bar = max(10, int(round(W * style.width_ratio)))
@@ -176,6 +188,7 @@ def attach_colorbar(
                              label, style.font_size, bg, dpi, style.font_family)
             if cb.shape[0] != H:
                 cb = cv2.resize(cb, (cb.shape[1], H))
+            cb = _match(cb)
             return np.hstack([cb, image] if pos == "left" else [image, cb])
         bar = max(10, int(round(H * style.width_ratio)))
         thickness = bar + int(round(style.font_size * 4.5))
@@ -183,6 +196,7 @@ def attach_colorbar(
                          label, style.font_size, bg, dpi, style.font_family)
         if cb.shape[1] != W:
             cb = cv2.resize(cb, (W, cb.shape[0]))
+        cb = _match(cb)
         return np.vstack([cb, image] if pos == "top" else [image, cb])
     except Exception:
         return image

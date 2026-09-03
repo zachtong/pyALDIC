@@ -58,6 +58,7 @@ from al_dic.gui.widgets.mesh_overlay import MeshOverlay
 
 from al_dic.core.data_structures import split_uv
 from al_dic.gui.controllers.viz_controller import VizController
+from al_dic.gui.panels.strain_canvas import blank_pixmap
 
 try:
     from al_dic.gui.icons import icon_maximize, icon_zoom_in, icon_zoom_out
@@ -564,6 +565,18 @@ class ImageCanvas(QGraphicsView):
         # .copy() so QImage owns the data after numpy array may be freed
         self._bg_item.setPixmap(QPixmap.fromImage(qimg.copy()))
         self._scene.setSceneRect(QRectF(0, 0, w, h))
+
+    def set_blank(self, height: int, width: int, color: str = "white") -> None:
+        """Show *color* instead of an image, at the given size.
+
+        "transparent" paints nothing, so the view's own background shows
+        through and the field appears to float -- which is what transparent
+        means once there is no file behind it to see.
+        """
+        if height <= 0 or width <= 0:
+            return
+        self._bg_item.setPixmap(blank_pixmap(width, height, color))
+        self._scene.setSceneRect(QRectF(0, 0, width, height))
 
     def update_roi_overlay(self) -> None:
         """Refresh the ROI overlay from per_frame_rois[current_frame].
@@ -1566,15 +1579,30 @@ class CanvasArea(QWidget):
         """Set the background image based on current mode."""
         state = self._state
         if state.roi_editing:
-            # ROI editing: show the frame being edited
+            # ROI editing always needs the frame being edited, whatever the
+            # display toggle says -- you cannot draw a region onto nothing.
             self._load_frame(state.current_frame)
         elif state.results is not None:
-            if state.show_deformed:
+            if not state.show_background:
+                self._blank_background()
+            elif state.show_deformed:
                 self._load_frame(state.current_frame)
             else:
                 self._load_frame(0)
         else:
             self._load_frame(state.current_frame)
+
+    def _blank_background(self) -> None:
+        """Paint the hidden-background fill at the results' image size."""
+        state = self._state
+        shape = (0, 0)
+        if state.results is not None:
+            shape = tuple(state.results.dic_para.img_size)
+        if shape == (0, 0):
+            # No size to go on: keep whatever is showing rather than
+            # collapsing the scene to nothing.
+            return
+        self._canvas.set_blank(shape[0], shape[1], state.hidden_bg_color)
 
     def _load_frame(self, idx: int) -> None:
         """Load and display an image frame by index."""

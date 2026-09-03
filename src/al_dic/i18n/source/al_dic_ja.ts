@@ -219,62 +219,62 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>CanvasArea</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1202"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1215"/>
         <source>Fit</source>
         <translation>フィット</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1203"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1216"/>
         <source>Fit image to viewport</source>
         <translation>画像をビューポートに合わせる</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1208"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1209"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>100% (1:1) ズーム</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1213"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1226"/>
         <source>Zoom in</source>
         <translation>拡大</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1219"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
         <source>–</source>
         <translation>–</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1220"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
         <source>Zoom out</source>
         <translation>縮小</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1246"/>
         <source>Show Grid</source>
         <translation>グリッドを表示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1234"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1247"/>
         <source>Show/hide computational mesh grid</source>
         <translation>計算メッシュグリッドの表示/非表示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1237"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1250"/>
         <source>Show Subset</source>
         <translation>サブセットを表示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1238"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1251"/>
         <source>Show subset window on hover (requires Grid)</source>
         <translation>ホバー時にサブセットウィンドウを表示(グリッド必須)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1492"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1505"/>
         <source>Placing Starting Points</source>
         <translation>シード点を配置中</translation>
     </message>
@@ -363,226 +363,227 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>ExportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="833"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="976"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
         <source>Auto</source>
         <translation>自動</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="455"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1332"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1379"/>
         <source>Opacity</source>
+        <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="457"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
         <translation>フィールドの不透明度（0 = 透明、1 = 完全に不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="565"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
         <source>All</source>
         <translation>全選択</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="567"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
         <source>None</source>
         <translation>全解除</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="596"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
         <source>Export Results</source>
         <translation>結果をエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="620"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="646"/>
         <source>OUTPUT FOLDER</source>
         <translation>出力フォルダ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="628"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="654"/>
         <source>Select output folder…</source>
         <translation>出力フォルダを選択…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="632"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="658"/>
         <source>Browse…</source>
         <translation>参照…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="637"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="663"/>
         <source>Open Folder</source>
         <translation>フォルダを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="645"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理単位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="649"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="675"/>
         <source>Enable physical units</source>
         <translation>物理単位を有効化</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="652"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
         <translation>変位値をピクセルサイズでスケールし、カラーバーのラベルに物理単位を表示します。ひずみは無次元量のため影響を受けません。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="669"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
         <source>/ pixel</source>
         <translation>/ ピクセル</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
         <source>Pixel size</source>
         <translation>ピクセルサイズ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="686"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="712"/>
         <source>fps</source>
         <translation>fps</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="688"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
         <source>Frame rate</source>
         <translation>フレームレート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="696"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
         <source>Data</source>
         <translation>データ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
         <source>Images</source>
         <translation>画像</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="698"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
         <source>Animation</source>
         <translation>アニメーション</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="699"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
         <source>Report</source>
         <translation>レポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="701"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="727"/>
         <source>Preview &amp; Colorbar</source>
         <translation>プレビューとカラーバー</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="732"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
         <source>FORMAT</source>
         <translation>形式</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="734"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="760"/>
         <source>NumPy Archive (.npz)</source>
         <translation>NumPy アーカイブ (.npz)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="736"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="762"/>
         <source>MATLAB (.mat)</source>
         <translation>MATLAB (.mat)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="738"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="764"/>
         <source>CSV (per frame)</source>
         <translation>CSV(フレーム単位)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="741"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="767"/>
         <source>NPZ: one file per frame (default: single merged file)</source>
         <translation>NPZ: フレーム単位で 1 ファイル(デフォルト: 統合 1 ファイル)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="749"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="775"/>
         <source>DISPLACEMENT</source>
         <translation>変位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="785"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="784"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="811"/>
         <source>Select:</source>
         <translation>選択:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="773"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="799"/>
         <source>STRAIN</source>
         <translation>ひずみ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="776"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="802"/>
         <source>Run Compute Strain first.</source>
         <translation>先に「ひずみを計算」を実行してください。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="803"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="829"/>
         <source>✓ Parameters file (JSON) always exported</source>
         <translation>✓ パラメータファイル (JSON) は常にエクスポートされます</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="809"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
         <source>Export Data</source>
         <translation>データをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="830"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="973"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="856"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1005"/>
         <source>Export</source>
         <translation>エクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="831"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="974"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1218"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1253"/>
         <source>Field</source>
         <translation>フィールド</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="832"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="975"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1305"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1352"/>
         <source>Colormap</source>
         <translation>カラーマップ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="834"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="977"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1317"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1364"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="978"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1324"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1371"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="854"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="880"/>
         <source>IMAGE SETTINGS</source>
         <translation>画像設定</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="864"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="890"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1039"/>
         <source>Format</source>
         <translation>形式</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="872"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1015"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="898"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1047"/>
         <source>Full resolution</source>
         <translation>フル解像度</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="874"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="900"/>
         <source>Cap the exported image&apos;s long edge (the larger of width/height; aspect ratio is kept).
 Field detail is bounded by the mesh, so a smaller cap is near-lossless
 but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolution&apos; keeps the native size.</source>
@@ -591,378 +592,405 @@ but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolu
 ファイルは小さく書き出しも高速です。小さいほど高速。「フル解像度」は元のサイズを保ちます。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="881"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1022"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="907"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1054"/>
         <source>Resolution (long edge)</source>
         <translation>解像度（長辺）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1017"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="941"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1091"/>
+        <source>Deformed frame</source>
+        <translation>変形フレーム</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <source>Reference frame</source>
+        <translation>参照フレーム</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="946"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
+        <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
+Reference: drawn at the original node positions, over the first frame.</source>
+        <translation>変形フレーム：フィールドを変位後のノード位置（参照位置 + 変位）に描画し、各フレーム自身の写真に重ねます。
+参照フレーム：元のノード位置に描画し、最初のフレームに重ねます。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1102"/>
+        <source>Show background image</source>
+        <translation>背景画像を表示</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
+        <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
+        <translation>チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。塗りつぶしは Preview &amp; Colorbar タブで選択します。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
         <source>Cap the animation&apos;s long edge (the larger of width/height).
 Lower = faster and much smaller. Strongly recommended for GIF, whose size explodes at native resolution.</source>
         <translation>アニメーションの長辺（幅と高さの大きい方）を制限します。
 小さいほど高速・小容量。GIF に強く推奨されます。ネイティブ解像度ではサイズが急激に増大します。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="889"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="915"/>
         <source>JPEG quality (higher = larger file). Ignored for PNG/TIFF.</source>
         <translation>JPEG 品質（高いほどファイルが大きくなります）。PNG/TIFF では無視されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="892"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="918"/>
         <source>JPEG quality</source>
         <translation>JPEG 品質</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="901"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="927"/>
         <source>DPI</source>
         <translation>DPI</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="903"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1048"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="929"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1080"/>
         <source>Include colorbar</source>
         <translation>カラーバーを含める</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="906"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="932"/>
         <source>Append a vertical colorbar strip to the right of each image.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>各画像の右側に垂直カラーバーを追加します。
 自動レンジ有効時、目盛りラベルはフレームごとに更新されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="913"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1058"/>
-        <source>Original (frame 1 background)</source>
-        <translation>原形（第 1 フレームを背景）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="916"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1061"/>
-        <source>Field is drawn at the original (undeformed) node positions.
-Background image is always the first frame.</source>
-        <translation>フィールドは元の（未変形の）ノード位置に描画されます。
-背景画像は常に最初のフレームです。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="920"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1065"/>
-        <source>Deformed (current frame background)</source>
-        <translation>変形後（現在のフレームを背景）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="924"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1069"/>
-        <source>Field is drawn at the displaced node positions (reference + displacement).
-Background image follows each frame&apos;s own photo.</source>
-        <translation>フィールドは変位後のノード位置（参照 + 変位）に描画されます。
-背景画像は各フレーム自身の写真を使用します。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="931"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1076"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="963"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1111"/>
         <source>Render as</source>
         <translation>描画方法</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="949"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="981"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1127"/>
         <source>Cancel Export</source>
         <translation>エクスポートをキャンセル</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="986"/>
         <source>Export Images</source>
         <translation>画像をエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="997"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1029"/>
         <source>ANIMATION SETTINGS</source>
         <translation>アニメーション設定</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1031"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1063"/>
         <source>FPS</source>
         <translation>FPS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1041"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>N フレームごとに 1 枚書き出します（1 = 全フレーム）。大きいほど高速・小容量ですが、
 カクついて見えます。再生時間は維持されます（上の FPS は間引き前のレート）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1046"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
         <source>Frame step</source>
         <translation>フレーム間引き</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1051"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1083"/>
         <source>Append a vertical colorbar strip to the right of each frame.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>各フレームの右側に垂直カラーバーを追加します。
 自動レンジ有効時、目盛りラベルはフレームごとに更新されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1097"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
+        <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
+        <translation>チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。GIF と MP4 は透明度を保存できないため、透明の塗りつぶしは白として書き出されます。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
         <source>Export Animation</source>
         <translation>アニメーションをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1114"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1149"/>
         <source>CONTENT</source>
         <translation>内容</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1116"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1151"/>
         <source>Parameter summary table</source>
         <translation>パラメータ要約表</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1119"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1154"/>
         <source>Field statistics (min/max/mean/std per frame)</source>
         <translation>フィールド統計（フレームごとの最小/最大/平均/標準偏差）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1122"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1157"/>
         <source>Sample field images</source>
         <translation>フィールド画像のサンプル</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1129"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1164"/>
         <source>Sample every</source>
         <translation>抽出間隔</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1135"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1170"/>
         <source>frames</source>
         <comment>Report: sample every N frames</comment>
         <translation>フレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1141"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1176"/>
         <source>FIELDS</source>
         <translation>フィールド</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1144"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1179"/>
         <source>Displacement:</source>
         <translation>変位：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1159"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1194"/>
         <source>Strain:</source>
         <translation>ひずみ：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1181"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1216"/>
         <source>Format: HTML (self-contained, view in any browser)</source>
         <translation>形式：HTML（自己完結型、任意のブラウザで表示可能）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1188"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1223"/>
         <source>Generate Report</source>
         <translation>レポートを生成</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1210"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
         <source>Open this tab to render a preview.</source>
         <translation>このタブを開くとプレビューが描画されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1226"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1261"/>
         <source>Frame</source>
         <translation>フレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1238"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1273"/>
         <source>COLORBAR STYLE</source>
         <translation>カラーバーのスタイル</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1241"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
         <source>Right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1241"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
         <source>Left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1242"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Top</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1242"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Bottom</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1280"/>
         <source>Position</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1251"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1286"/>
         <source>Font size</source>
         <translation>フォントサイズ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1257"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1292"/>
         <source>Font family</source>
         <translation>フォント</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1265"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1300"/>
         <source>Bar thickness</source>
         <translation>バーの太さ</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1268"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1284"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
         <source>Black</source>
         <translation>黒</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1268"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1284"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1325"/>
         <source>White</source>
         <translation>白</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1271"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1306"/>
         <source>Background</source>
         <translation>背景</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1313"/>
         <source>Add a blank border around the exported content, as a fraction of the long edge (0 = none).</source>
         <translation>書き出す内容の周囲に空白の枠を追加します。幅は長辺に対する割合です（0 = なし）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1281"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1316"/>
         <source>Margin</source>
         <translation>余白</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1287"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1322"/>
         <source>Margin color</source>
         <translation>余白の色</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1289"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1330"/>
+        <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
+Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
+        <translation>「背景画像を表示」をオフにしたとき、背景画像があった領域を塗りつぶす色です。
+PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはアルファチャンネルがないため、白になります。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1337"/>
+        <source>Hidden background</source>
+        <translation>非表示時の背景</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1339"/>
         <source>Refresh preview</source>
         <translation>プレビューを更新</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1296"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1346"/>
         <source>FIELD APPEARANCE</source>
         <translation>フィールドの外観</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1310"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1357"/>
         <source>Range</source>
         <translation>範囲</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1334"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1381"/>
         <source>Apply to all fields</source>
         <translation>すべてのフィールドに適用</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1336"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1383"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>このフィールドの colormap・不透明度・自動範囲を、有効なすべてのフィールドに適用します（各フィールドの min/max は保持）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1459"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1506"/>
         <source>Preview failed: </source>
         <translation>プレビューに失敗しました：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1474"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1521"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>プレビューするには Images タブでフィールドを有効にしてください。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1487"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1534"/>
         <source>No data for this field/frame.</source>
         <translation>このフィールド/フレームにはデータがありません。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1545"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1600"/>
         <source>FRAME RANGE</source>
         <translation>フレーム範囲</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1548"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
         <source>All frames</source>
         <translation>すべてのフレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1554"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1609"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>開始</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1562"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1617"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>まで</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1593"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1648"/>
         <source>Select Output Folder</source>
         <translation>出力フォルダーを選択</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1652"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1707"/>
         <source>Exported %1 files → %2</source>
         <translation>%1 個のファイルをエクスポートしました → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1661"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1791"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1880"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1922"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1716"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1846"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1935"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1977"/>
         <source>Error: %1</source>
         <translation>エラー：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1686"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1819"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1741"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1874"/>
         <source>Starting…</source>
         <translation>開始中…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1764"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1842"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1819"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1897"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>%1 を描画中 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1770"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1848"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1825"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1903"/>
         <source>Frame %1/%2</source>
         <translation>フレーム %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1780"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1835"/>
         <source>Exported %1 images → %2</source>
         <translation>%1 枚の画像をエクスポートしました → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1913"/>
         <source>No animation was written. See the log for details.</source>
         <translation>。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1970"/>
         <source>Report saved → %1</source>
         <translation>レポートを保存しました → %1</translation>
     </message>
@@ -1034,12 +1062,12 @@ Tick labels update per frame when Auto range is enabled.</source>
 <context>
     <name>ImageCanvas</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1048"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1061"/>
         <source>Load images first before drawing a Region of Interest.</source>
         <translation>関心領域を描画する前に、まず画像を読み込んでください。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1067"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1080"/>
         <source>The three points are nearly collinear — pick points spread around the circle&apos;s edge.</source>
         <translation>3 点がほぼ一直線です — 円周上に分散させて 3 点を選んでください。</translation>
     </message>
@@ -1930,118 +1958,138 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="58"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="59"/>
         <source>Run DIC Analysis</source>
         <translation>DIC 解析を実行</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="71"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="72"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="76"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
         <source>Cancel the current analysis. Frames already computed are kept so you can review or export the partial run.</source>
         <translation>現在の解析をキャンセルします。計算済みのフレームは保持され、途中までの結果を確認またはエクスポートできます。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="84"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="85"/>
         <source>Export Results</source>
         <translation>結果をエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="92"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="93"/>
         <source>Open Strain Window</source>
         <translation>ひずみウィンドウを開く</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="95"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>別ウィンドウでひずみを計算・可視化します。完了した実行結果の変位データが必要です。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="104"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="105"/>
         <source>PROGRESS</source>
         <translation>進捗</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="113"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="114"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="369"/>
         <source>Ready</source>
         <translation>準備完了</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="121"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="406"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="122"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="371"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="448"/>
         <source>ELAPSED  %1</source>
         <translation>経過  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="126"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="354"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="127"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="373"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="456"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="460"/>
         <source>REMAINING  %1</source>
         <translation>残り  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="134"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="135"/>
         <source>FIELD</source>
         <translation>表示項目</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
-        <source>Show on deformed frame</source>
-        <translation>変形後フレームに表示</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/right_sidebar.py" line="144"/>
-        <source>When checked, overlay results on the deformed (current) frame instead of the reference frame</source>
-        <translation>オンにすると、結果を参照フレームではなく変形後(現在)フレームに重ねて表示します</translation>
+        <source>Show on</source>
+        <translation>表示先</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="151"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="149"/>
+        <source>Deformed frame</source>
+        <translation>変形フレーム</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <source>Reference frame</source>
+        <translation>参照フレーム</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="152"/>
+        <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
+        <translation>フィールドを変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <source>Show background image</source>
+        <translation>背景画像を表示</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
+        <translation>チェックを外すと、背後にスペックル画像を表示せずフィールドのみを表示します。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="170"/>
         <source>VISUALIZATION</source>
         <translation>可視化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
         <source>Colormap</source>
         <translation>カラーマップ</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="177"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>オーバーレイの不透明度(0 = 透明、100 = 不透明)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="190"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="207"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理単位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="196"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
         <source>LOG</source>
         <translation>ログ</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="202"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="219"/>
         <source>Clear</source>
         <translation>クリア</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="319"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="338"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>実行前に、各赤色領域に少なくとも 1 つのシード点を配置してください(赤色 = シード点が必要)。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="389"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="431"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  フレーム %2</translation>
     </message>
@@ -2256,52 +2304,78 @@ Only applies when Method = Plane fitting.</source>
 <context>
     <name>StrainVizPanel</name>
     <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="65"/>
+        <source>Deformed frame</source>
+        <extracomment>Alias so existing references read unchanged; the list itself lives in al_dic.core.colormaps, so every chooser offers the same options.</extracomment>
+        <translation>変形フレーム</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="66"/>
+        <source>Reference frame</source>
+        <translation>参照フレーム</translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="68"/>
-        <source>Show on deformed frame</source>
-        <translation>変形後フレームに表示</translation>
+        <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
+        <translation>フィールドを変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="70"/>
-        <source>Deformed</source>
-        <translation>変形後</translation>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="71"/>
+        <source>Show on</source>
+        <translation>表示先</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="77"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
+        <source>Show background image</source>
+        <translation>背景画像を表示</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
+        <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
+        <translation>チェックを外すと、背後にスペックル画像を表示せずフィールドのみを表示します。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
+        <source>Background</source>
+        <translation>背景</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="86"/>
         <source>Colormap</source>
         <translation>カラーマップ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="81"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="90"/>
         <source>Range</source>
         <translation>範囲</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="101"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="110"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="103"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="112"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="113"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="131"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>トリミングされた縁を補間（表示のみ）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="135"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>縁がトリミングされたひずみ帯を、信頼できる内部ノードから再補間します。画面表示とエクスポートした画像/アニメーションに影響します。エクスポートしたデータファイルでは、トリミングされた縁は常に NaN のままです。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="140"/>
         <source>Edges</source>
         <translation>縁</translation>
     </message>
@@ -2420,7 +2494,7 @@ Only applies when Method = Plane fitting.</source>
         <translation>ひずみ計算に失敗しました</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="600"/>
+        <location filename="../../gui/strain_window.py" line="602"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ パラメータが変更されました — 「ひずみを計算」をクリックしてください</translation>
     </message>

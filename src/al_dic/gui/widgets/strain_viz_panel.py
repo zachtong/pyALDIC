@@ -58,10 +58,25 @@ class StrainVizPanel(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
 
-        # --- Show on deformed (first: sets rendering mode before other controls) ---
-        self._deformed_check = QCheckBox(self.tr("Show on deformed frame"))
-        self._deformed_check.setChecked(True)
-        layout.addRow(self.tr("Deformed"), self._deformed_check)
+        # --- Where the field goes (first: sets rendering mode before the
+        # styling controls).  Geometry and background are separate questions;
+        # this mirrors the main window's sidebar exactly.
+        self._geometry_combo = QComboBox()
+        self._geometry_combo.addItem(self.tr("Deformed frame"), True)
+        self._geometry_combo.addItem(self.tr("Reference frame"), False)
+        self._geometry_combo.setToolTip(self.tr(
+            "Plot the field at the deformed node positions, or at their "
+            "positions in the reference frame."
+        ))
+        layout.addRow(self.tr("Show on"), self._geometry_combo)
+
+        self._background_check = QCheckBox(self.tr("Show background image"))
+        self._background_check.setChecked(True)
+        self._background_check.setToolTip(self.tr(
+            "Uncheck to show the field on its own, with no speckle image "
+            "behind it."
+        ))
+        layout.addRow(self.tr("Background"), self._background_check)
 
         # --- Colormap ---
         self._cmap_combo = QComboBox()
@@ -130,7 +145,8 @@ class StrainVizPanel(QWidget):
         self._vmin_spin.valueChanged.connect(self._emit_changed)
         self._vmax_spin.valueChanged.connect(self._emit_changed)
         self._opacity_slider.valueChanged.connect(self._emit_changed)
-        self._deformed_check.toggled.connect(self._emit_changed)
+        self._geometry_combo.currentIndexChanged.connect(self._emit_changed)
+        self._background_check.toggled.connect(self._emit_changed)
         self._fill_edges_check.toggled.connect(self._emit_changed)
 
     # ------------------------------------------------------------------
@@ -145,7 +161,8 @@ class StrainVizPanel(QWidget):
             "vmin": float(self._vmin_spin.value()),
             "vmax": float(self._vmax_spin.value()),
             "alpha": float(self._opacity_slider.value()) / 100.0,
-            "show_deformed": self._deformed_check.isChecked(),
+            "show_deformed": bool(self._geometry_combo.currentData()),
+            "show_background": self._background_check.isChecked(),
             "fill_trimmed_edges": self._fill_edges_check.isChecked(),
         }
 

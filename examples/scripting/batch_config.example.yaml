@@ -31,8 +31,15 @@ colormap: jet                 # jet, viridis, turbo, coolwarm, plasma,
 image_format: png             # png, jpeg, tiff
 dpi: 150
 colorbar: true
-show_deformed: false
-bg_mode: ref_frame            # ref_frame | deformed_frame | none
+show_deformed: false          # draw the field at deformed node positions
+bg_mode: ref_frame            # ref_frame | current_frame | none
+                              #   ref_frame     = always frame 0 behind it
+                              #   current_frame = each frame's own photo
+                              #   none          = no image, field only
+hidden_bg_color: white        # white | black | transparent
+                              # used only when bg_mode is none; transparent
+                              # is kept for png and tiff, and written as
+                              # white for jpeg
 bg_alpha: 0.7
 
 # --- DIC parameters, applied to every sample (any DICPara field works) ---
