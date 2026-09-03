@@ -1326,6 +1326,9 @@ class ExportDialog(QDialog):
                            (self.tr("Black"), "black"),
                            (self.tr("Transparent"), "transparent")):
             self._pv_hidden_bg_combo.addItem(_lbl, _val)
+        _fill = self._pv_hidden_bg_combo.findData(self._hint.hidden_bg_color)
+        if _fill >= 0:
+            self._pv_hidden_bg_combo.setCurrentIndex(_fill)
         self._pv_hidden_bg_combo.setToolTip(self.tr(
             "Fill used where the background image would have been, when "
             "'Show background image' is off.\n"

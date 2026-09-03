@@ -907,6 +907,10 @@ class StrainWindow(QMainWindow):
             viz = self._viz_panel.get_state()
             show_deformed = bool(viz.get("show_deformed", False))
             show_background = bool(viz.get("show_background", True))
+            # One shared setting: the panel is the strain window's way of
+            # editing it, not a second copy of it.
+            self._state.hidden_bg_color = str(
+                viz.get("hidden_bg_color", self._state.hidden_bg_color))
 
             # Trim frame follows the display frame: reference view -> frame-0
             # geometry (matches the main window's displacement), deformed view

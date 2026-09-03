@@ -370,7 +370,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1379"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1382"/>
         <source>Opacity</source>
         <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>불투명도</translation>
@@ -547,21 +547,21 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1352"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1355"/>
         <source>Colormap</source>
         <translation>색상 맵</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1364"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1367"/>
         <source>Min</source>
         <translation>최소</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1371"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1374"/>
         <source>Max</source>
         <translation>최대</translation>
     </message>
@@ -870,127 +870,127 @@ Tick labels update per frame when Auto range is enabled.</source>
         <translation>투명</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1330"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1333"/>
         <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
 Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
         <translation>‘배경 이미지 표시’를 끄면 배경 이미지가 있던 자리를 채우는 색입니다.
 PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 없어 흰색으로 대체됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1337"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1340"/>
         <source>Hidden background</source>
         <translation>숨김 시 배경</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1339"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1342"/>
         <source>Refresh preview</source>
         <translation>미리보기 새로고침</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1346"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
         <source>FIELD APPEARANCE</source>
         <translation>필드 모양</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1357"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
         <source>Range</source>
         <translation>범위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1381"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
         <source>Apply to all fields</source>
         <translation>모든 필드에 적용</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1383"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>이 필드의 colormap, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 min/max는 유지).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1506"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
         <source>Preview failed: </source>
         <translation>미리보기 실패: </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1521"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>미리보려면 Images 탭에서 필드를 활성화하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1534"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
         <source>No data for this field/frame.</source>
         <translation>이 필드/프레임에 데이터가 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1600"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
         <source>FRAME RANGE</source>
         <translation>프레임 범위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1606"/>
         <source>All frames</source>
         <translation>모든 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1609"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1612"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>시작</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1617"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1620"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>끝</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1648"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1651"/>
         <source>Select Output Folder</source>
         <translation>출력 폴더 선택</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1707"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1710"/>
         <source>Exported %1 files → %2</source>
         <translation>%1 개 파일 내보냄 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1716"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1846"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1935"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1977"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
         <source>Error: %1</source>
         <translation>오류: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1741"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1874"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1744"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1877"/>
         <source>Starting…</source>
         <translation>시작 중…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1819"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1897"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1822"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1900"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>%1 렌더링 중 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1825"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1903"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1828"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1906"/>
         <source>Frame %1/%2</source>
         <translation>프레임 %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1835"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1838"/>
         <source>Exported %1 images → %2</source>
         <translation>%1 개 이미지 내보냄 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1913"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1916"/>
         <source>No animation was written. See the log for details.</source>
         <translation>.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1970"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
         <source>Report saved → %1</source>
         <translation>보고서 저장됨 → %1</translation>
     </message>
@@ -1994,22 +1994,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="369"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="388"/>
         <source>Ready</source>
         <translation>준비 완료</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="371"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="448"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="390"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="481"/>
         <source>ELAPSED  %1</source>
         <translation>경과  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="373"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="456"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="460"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="493"/>
         <source>REMAINING  %1</source>
         <translation>남음  %1</translation>
     </message>
@@ -2039,57 +2039,77 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>필드를 변형된 노드 위치에 그리거나 참조 프레임에서의 위치에 그립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="162"/>
         <source>Show background image</source>
         <translation>배경 이미지 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="165"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="170"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <source>White</source>
+        <translation>흰색</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <source>Black</source>
+        <translation>검정</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <source>Transparent</source>
+        <translation>투명</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>배경을 숨겼을 때 이미지를 대신할 채우기입니다. 내보낼 때 PNG와 TIFF는 투명도를 유지하며, 다른 형식은 흰색이 됩니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
         <source>VISUALIZATION</source>
         <translation>시각화</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
         <source>Colormap</source>
         <translation>색상표</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
         <source>Opacity</source>
         <translation>불투명도</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="220"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>오버레이 불투명도(0 = 투명, 100 = 불투명)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="207"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="226"/>
         <source>PHYSICAL UNITS</source>
         <translation>물리 단위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="232"/>
         <source>LOG</source>
         <translation>로그</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="219"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="238"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="338"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="357"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>실행 전에 각 빨간 영역에 시드점을 하나 이상 배치하세요(빨강 = 시드점 필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="431"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="464"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  프레임 %2</translation>
     </message>
@@ -2325,57 +2345,77 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
         <translation>표시 기준</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="75"/>
         <source>Show background image</source>
         <translation>배경 이미지 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="78"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
+        <source>White</source>
+        <translation>흰색</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
+        <source>Black</source>
+        <translation>검정</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="85"/>
+        <source>Transparent</source>
+        <translation>투명</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="88"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>배경을 숨겼을 때 이미지를 대신할 채우기입니다. 내보낼 때 PNG와 TIFF는 투명도를 유지하며, 다른 형식은 흰색이 됩니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="93"/>
         <source>Background</source>
         <translation>배경</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="86"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="100"/>
         <source>Colormap</source>
         <translation>색상 맵</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="90"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="104"/>
         <source>Range</source>
         <translation>범위</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="110"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
         <source>Min</source>
         <translation>최소</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="112"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
         <source>Max</source>
         <translation>최대</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="136"/>
         <source>Opacity</source>
         <translation>불투명도</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="145"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>잘라낸 가장자리 채우기 (표시 전용)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="135"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="149"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>가장자리가 잘린 변형률 띠를 신뢰할 수 있는 내부 노드에서 다시 보간합니다. 화면 표시와 내보낸 이미지/애니메이션에 영향을 줍니다. 내보낸 데이터 파일은 잘라낸 가장자리를 항상 NaN으로 유지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="140"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="154"/>
         <source>Edges</source>
         <translation>가장자리</translation>
     </message>

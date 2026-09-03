@@ -157,6 +157,8 @@ class RightSidebar(QWidget):
         geom_row.addWidget(self._geometry_combo, 1)
         layout.addLayout(geom_row)
 
+        bg_row = QHBoxLayout()
+        bg_row.setSpacing(4)
         self._background_cb = QCheckBox(self.tr("Show background image"))
         self._background_cb.setChecked(True)
         self._background_cb.setToolTip(self.tr(
@@ -164,7 +166,24 @@ class RightSidebar(QWidget):
             "behind it."
         ))
         self._background_cb.stateChanged.connect(self._on_background_toggled)
-        layout.addWidget(self._background_cb)
+        bg_row.addWidget(self._background_cb)
+
+        # Right next to the checkbox that makes it matter. Disabled rather
+        # than hidden while the image is shown, so the row does not jump.
+        self._hidden_bg_combo = QComboBox()
+        for _lbl, _val in ((self.tr("White"), "white"),
+                           (self.tr("Black"), "black"),
+                           (self.tr("Transparent"), "transparent")):
+            self._hidden_bg_combo.addItem(_lbl, _val)
+        self._hidden_bg_combo.setToolTip(self.tr(
+            "What replaces the image when it is hidden. Transparency is "
+            "kept for PNG and TIFF on export; other formats get white."
+        ))
+        self._hidden_bg_combo.setEnabled(False)
+        self._hidden_bg_combo.currentIndexChanged.connect(
+            self._on_hidden_bg_changed)
+        bg_row.addWidget(self._hidden_bg_combo, 1)
+        layout.addLayout(bg_row)
 
         # --- Visualization section ---
         self._add_section_label(layout, self.tr("VISUALIZATION"))
@@ -381,7 +400,15 @@ class RightSidebar(QWidget):
 
     def _on_background_toggled(self, state: int) -> None:
         """Show or hide the image behind the field."""
-        self._state.show_background = state == Qt.CheckState.Checked.value
+        shown = state == Qt.CheckState.Checked.value
+        self._state.show_background = shown
+        self._hidden_bg_combo.setEnabled(not shown)
+        self._state.display_changed.emit()
+
+    def _on_hidden_bg_changed(self, index: int) -> None:
+        """Pick what replaces a hidden background image."""
+        self._state.hidden_bg_color = str(
+            self._hidden_bg_combo.itemData(index))
         self._state.display_changed.emit()
 
     def _sync_display_controls(self) -> None:
@@ -401,6 +428,12 @@ class RightSidebar(QWidget):
             self._background_cb.blockSignals(True)
             self._background_cb.setChecked(self._state.show_background)
             self._background_cb.blockSignals(False)
+        self._hidden_bg_combo.setEnabled(not self._state.show_background)
+        fill = self._hidden_bg_combo.findData(self._state.hidden_bg_color)
+        if fill >= 0 and self._hidden_bg_combo.currentIndex() != fill:
+            self._hidden_bg_combo.blockSignals(True)
+            self._hidden_bg_combo.setCurrentIndex(fill)
+            self._hidden_bg_combo.blockSignals(False)
 
     def _on_opacity_changed(self, value: int) -> None:
         """Update overlay opacity from slider (0–100 → 0.0–1.0)."""

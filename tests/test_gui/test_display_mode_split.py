@@ -145,3 +145,47 @@ def test_the_preview_renders_with_no_background(dialog):
     idx = dialog._pv_hidden_bg_combo.findData("transparent")
     dialog._pv_hidden_bg_combo.setCurrentIndex(idx)
     dialog._render_preview()          # must not raise on a 4-channel image
+
+
+# --- the fill has to be reachable, not just readable ----------------------
+
+@pytest.fixture
+def sidebar():
+    from al_dic.gui.app_state import AppState as _AS
+    from al_dic.gui.controllers.image_controller import ImageController
+    from al_dic.gui.controllers.pipeline_controller import PipelineController
+    from al_dic.gui.panels.right_sidebar import RightSidebar
+
+    _AS._instance = None
+    state = _AS.instance()
+    ctrl = PipelineController(state, ImageController(state))
+    panel = RightSidebar(ctrl)
+    yield panel, state
+    _AS._instance = None
+
+
+def test_the_sidebar_can_actually_set_the_fill(sidebar):
+    """Every render path read state.hidden_bg_color and nothing wrote it, so
+    the on-screen fill was permanently white whatever was configured."""
+    panel, state = sidebar
+    panel._background_cb.setChecked(False)
+    panel._hidden_bg_combo.setCurrentIndex(
+        panel._hidden_bg_combo.findData("black"))
+    assert state.hidden_bg_color == "black"
+
+
+def test_the_fill_is_disabled_while_the_image_is_shown(sidebar):
+    panel, _ = sidebar
+    panel._background_cb.setChecked(True)
+    assert panel._hidden_bg_combo.isEnabled() is False
+    panel._background_cb.setChecked(False)
+    assert panel._hidden_bg_combo.isEnabled() is True
+
+
+def test_the_export_dialog_opens_on_the_stored_fill():
+    """The combo used to always start at white, so an export silently ignored
+    what the window was already showing."""
+    hint = VizExportHint(hidden_bg_color="transparent", show_background=False)
+    dlg = ExportDialog(_result(), None, hint, image_files=[])
+    assert dlg._pv_hidden_bg_combo.currentData() == "transparent"
+    assert dlg.get_config().hidden_bg_color == "transparent"

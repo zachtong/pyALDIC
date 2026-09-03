@@ -28,7 +28,8 @@ def test_default_state(panel):
 
 def test_state_keys(panel):
     expected = {"colormap", "vmin", "vmax", "alpha", "use_percentile",
-                "show_deformed", "show_background", "fill_trimmed_edges"}
+                "show_deformed", "show_background", "hidden_bg_color",
+                "fill_trimmed_edges"}
     assert set(panel.get_state().keys()) == expected
 
 
@@ -165,3 +166,20 @@ def test_colormaps_list(panel):
     assert items[0] == "jet"
     for name in ("RdBu_r", "seismic", "coolwarm"):
         assert name in items
+
+
+def test_the_fill_is_only_editable_when_it_applies(panel):
+    """Disabled, not hidden: the row must not jump as the box is toggled."""
+    panel._background_check.setChecked(True)
+    assert panel._hidden_bg_combo.isEnabled() is False
+    panel._background_check.setChecked(False)
+    assert panel._hidden_bg_combo.isEnabled() is True
+
+
+def test_the_fill_reaches_get_state(panel):
+    """It was readable by every render path and writable by none, so the
+    display was permanently white whatever the setting said."""
+    assert panel.get_state()["hidden_bg_color"] == "white"
+    panel._hidden_bg_combo.setCurrentIndex(
+        panel._hidden_bg_combo.findData("transparent"))
+    assert panel.get_state()["hidden_bg_color"] == "transparent"

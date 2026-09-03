@@ -1740,6 +1740,15 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Remplissage utilisé là où se serait trouvée l'image de fond, quand « Afficher l'image de fond » est décoché.\nLa transparence est conservée pour PNG et TIFF ; JPEG, GIF et MP4 n'ont pas de canal alpha et reçoivent du blanc.",
         "es":    "Relleno utilizado donde habría estado la imagen de fondo, cuando «Mostrar imagen de fondo» está desactivado.\nLa transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal alfa y reciben blanco.",
     },
+    "What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.": {
+        "zh_CN": "背景隐藏时用什么替代图像。导出时 PNG 和 TIFF 会保留透明度，其他格式改用白色。",
+        "zh_TW": "背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。",
+        "ja":    "背景を非表示にしたとき、画像の代わりに何を表示するかです。書き出しでは PNG と TIFF が透明度を保持し、他の形式は白になります。",
+        "ko":    "배경을 숨겼을 때 이미지를 대신할 채우기입니다. 내보낼 때 PNG와 TIFF는 투명도를 유지하며, 다른 형식은 흰색이 됩니다.",
+        "de":    "Was das Bild ersetzt, wenn es ausgeblendet ist. Beim Export bleibt die Transparenz bei PNG und TIFF erhalten; andere Formate erhalten Weiß.",
+        "fr":    "Ce qui remplace l'image lorsqu'elle est masquée. À l'export, la transparence est conservée pour PNG et TIFF ; les autres formats reçoivent du blanc.",
+        "es":    "Lo que reemplaza a la imagen cuando está oculta. Al exportar, la transparencia se conserva para PNG y TIFF; los demás formatos reciben blanco.",
+    },
 }
 
 

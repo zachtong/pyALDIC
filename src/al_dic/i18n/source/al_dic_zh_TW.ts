@@ -370,7 +370,7 @@ Only relevant for the FFT init-guess mode.</source>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1379"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1382"/>
         <source>Opacity</source>
         <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>不透明度</translation>
@@ -547,21 +547,21 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1352"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1355"/>
         <source>Colormap</source>
         <translation>色彩對映</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1364"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1367"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1371"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1374"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
@@ -870,127 +870,127 @@ Tick labels update per frame when Auto range is enabled.</source>
         <translation>透明</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1330"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1333"/>
         <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
 Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
         <translation>關閉「顯示背景影像」時，用於填充原本顯示背景影像的區域。
 PNG 與 TIFF 會保留透明度；JPEG、GIF 和 MP4 沒有 alpha 通道，將改用白色。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1337"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1340"/>
         <source>Hidden background</source>
         <translation>隱藏背景填充</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1339"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1342"/>
         <source>Refresh preview</source>
         <translation>重新整理預覽</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1346"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
         <source>FIELD APPEARANCE</source>
         <translation>欄位外觀</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1357"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
         <source>Range</source>
         <translation>範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1381"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
         <source>Apply to all fields</source>
         <translation>套用到所有欄位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1383"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>將該欄位的 colormap、不透明度和自動範圍套用到所有已啟用欄位（每個欄位保留各自的 min/max）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1506"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
         <source>Preview failed: </source>
         <translation>預覽失敗：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1521"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>在 Images 頁啟用一個欄位以進行預覽。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1534"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
         <source>No data for this field/frame.</source>
         <translation>該欄位/影格沒有資料。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1600"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
         <source>FRAME RANGE</source>
         <translation>影格範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1606"/>
         <source>All frames</source>
         <translation>所有影格</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1609"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1612"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>從</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1617"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1620"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>到</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1648"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1651"/>
         <source>Select Output Folder</source>
         <translation>選擇輸出資料夾</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1707"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1710"/>
         <source>Exported %1 files → %2</source>
         <translation>已匯出 %1 個檔案 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1716"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1846"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1935"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1977"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
         <source>Error: %1</source>
         <translation>錯誤：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1741"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1874"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1744"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1877"/>
         <source>Starting…</source>
         <translation>開始中…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1819"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1897"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1822"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1900"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>正在繪製 %1 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1825"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1903"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1828"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1906"/>
         <source>Frame %1/%2</source>
         <translation>影格 %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1835"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1838"/>
         <source>Exported %1 images → %2</source>
         <translation>已匯出 %1 張影像 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1913"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1916"/>
         <source>No animation was written. See the log for details.</source>
         <translation>。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1970"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
         <source>Report saved → %1</source>
         <translation>報告已儲存 → %1</translation>
     </message>
@@ -1994,22 +1994,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="369"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="388"/>
         <source>Ready</source>
         <translation>就緒</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="371"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="448"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="390"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="481"/>
         <source>ELAPSED  %1</source>
         <translation>已用  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="373"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="456"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="460"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="493"/>
         <source>REMAINING  %1</source>
         <translation>剩餘  %1</translation>
     </message>
@@ -2039,57 +2039,77 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>將欄位繪製在變形後的節點位置，或繪製在其於參考幀中的位置。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="162"/>
         <source>Show background image</source>
         <translation>顯示背景影像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="165"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>取消勾選可僅顯示欄位，其後不顯示散斑影像。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="170"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <source>White</source>
+        <translation>白色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <source>Black</source>
+        <translation>黑色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
         <source>VISUALIZATION</source>
         <translation>可視化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
         <source>Colormap</source>
         <translation>色圖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
         <source>Opacity</source>
         <translation>透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="220"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>疊加圖透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="207"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="226"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理單位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="232"/>
         <source>LOG</source>
         <translation>日誌</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="219"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="238"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="338"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="357"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>運行前請在每個紅色區域放置至少一個種子點（紅色 = 需要種子點）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="431"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="464"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 幀</translation>
     </message>
@@ -2325,57 +2345,77 @@ Only applies when Method = Plane fitting.</source>
         <translation>顯示於</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="75"/>
         <source>Show background image</source>
         <translation>顯示背景影像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="78"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>取消勾選可僅顯示欄位，其後不顯示散斑影像。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
+        <source>White</source>
+        <translation>白色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
+        <source>Black</source>
+        <translation>黑色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="85"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="88"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="93"/>
         <source>Background</source>
         <translation>背景</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="86"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="100"/>
         <source>Colormap</source>
         <translation>色彩對映</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="90"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="104"/>
         <source>Range</source>
         <translation>範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="110"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="112"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="136"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="145"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>填充修剪的邊緣（僅顯示）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="135"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="149"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>從可靠的內部節點重新插值被邊緣修剪的應變帶。影響螢幕顯示與匯出的圖片/動畫；匯出的資料檔案始終將修剪的邊緣保留為 NaN。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="140"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="154"/>
         <source>Edges</source>
         <translation>邊緣</translation>
     </message>
