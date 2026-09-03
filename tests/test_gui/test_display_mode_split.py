@@ -189,3 +189,38 @@ def test_the_export_dialog_opens_on_the_stored_fill():
     dlg = ExportDialog(_result(), None, hint, image_files=[])
     assert dlg._pv_hidden_bg_combo.currentData() == "transparent"
     assert dlg.get_config().hidden_bg_color == "transparent"
+
+
+# --- the fill must not leak between windows -------------------------------
+
+def test_the_strain_window_starts_from_the_main_windows_fill():
+    """Opening it should not silently change what you already chose."""
+    from al_dic.gui.strain_window import StrainWindow
+
+    state = AppState()
+    state.hidden_bg_color = "black"
+    win = StrainWindow(state)
+    assert win._viz_panel.get_state()["hidden_bg_color"] == "black"
+
+
+def test_the_strain_window_never_writes_the_shared_fill():
+    """It used to write its panel's value into AppState on every refresh,
+    while never reading it -- so its own default (white) clobbered the main
+    window's choice on every frame change and every viz edit."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parents[1] / ".." / "src" / "al_dic"
+           / "gui" / "strain_window.py").resolve()
+    tree = ast.parse(src.read_text(encoding="utf-8"), str(src))
+    writes = [
+        node.lineno
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        for t in node.targets
+        if isinstance(t, ast.Attribute) and t.attr == "hidden_bg_color"
+    ]
+    assert not writes, (
+        f"strain_window.py assigns hidden_bg_color at line(s) {writes}; "
+        "its fill is panel-local, like its colormap and opacity"
+    )
