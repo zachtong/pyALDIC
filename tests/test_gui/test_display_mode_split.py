@@ -224,3 +224,19 @@ def test_the_strain_window_never_writes_the_shared_fill():
         f"strain_window.py assigns hidden_bg_color at line(s) {writes}; "
         "its fill is panel-local, like its colormap and opacity"
     )
+
+
+def test_the_background_checkbox_label_is_not_clipped(sidebar):
+    """It briefly shared a row with the fill combo and lost its tail.
+
+    German ("Hintergrundbild anzeigen") is longer still, so the two controls
+    get a row each rather than being squeezed into one.
+    """
+    panel, _ = sidebar
+    panel.resize(280, 900)          # about the real sidebar width
+    panel.show()
+    cb = panel._background_cb
+    assert cb.width() >= cb.sizeHint().width(), (
+        f"label needs {cb.sizeHint().width()} px, has {cb.width()}"
+    )
+    assert panel._hidden_bg_combo.y() > cb.y(), "still sharing one row"

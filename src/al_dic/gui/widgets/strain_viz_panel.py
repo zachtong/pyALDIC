@@ -70,15 +70,14 @@ class StrainVizPanel(QWidget):
         ))
         layout.addRow(self.tr("Show on"), self._geometry_combo)
 
-        bg_row = QHBoxLayout()
-        bg_row.setSpacing(4)
         self._background_check = QCheckBox(self.tr("Show background image"))
         self._background_check.setChecked(True)
         self._background_check.setToolTip(self.tr(
             "Uncheck to show the field on its own, with no speckle image "
             "behind it."
         ))
-        bg_row.addWidget(self._background_check)
+        layout.addRow(self.tr("Background"), self._background_check)
+
         self._hidden_bg_combo = QComboBox()
         for _lbl, _val in ((self.tr("White"), "white"),
                            (self.tr("Black"), "black"),
@@ -89,8 +88,7 @@ class StrainVizPanel(QWidget):
             "kept for PNG and TIFF on export; other formats get white."
         ))
         self._hidden_bg_combo.setEnabled(False)
-        bg_row.addWidget(self._hidden_bg_combo, 1)
-        layout.addRow(self.tr("Background"), bg_row)
+        layout.addRow(self.tr("Hidden background"), self._hidden_bg_combo)
 
         # --- Colormap ---
         self._cmap_combo = QComboBox()

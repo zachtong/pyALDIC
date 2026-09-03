@@ -157,8 +157,6 @@ class RightSidebar(QWidget):
         geom_row.addWidget(self._geometry_combo, 1)
         layout.addLayout(geom_row)
 
-        bg_row = QHBoxLayout()
-        bg_row.setSpacing(4)
         self._background_cb = QCheckBox(self.tr("Show background image"))
         self._background_cb.setChecked(True)
         self._background_cb.setToolTip(self.tr(
@@ -166,10 +164,16 @@ class RightSidebar(QWidget):
             "behind it."
         ))
         self._background_cb.stateChanged.connect(self._on_background_toggled)
-        bg_row.addWidget(self._background_cb)
+        layout.addWidget(self._background_cb)
 
-        # Right next to the checkbox that makes it matter. Disabled rather
+        # Its own row: sharing one with the checkbox clipped the label, and
+        # German runs about half again as long again (R5). Disabled rather
         # than hidden while the image is shown, so the row does not jump.
+        fill_row = QHBoxLayout()
+        fill_row.setSpacing(4)
+        fill_lbl = QLabel(self.tr("Hidden background"))
+        fill_lbl.setMinimumWidth(64)
+        fill_row.addWidget(fill_lbl)
         self._hidden_bg_combo = QComboBox()
         for _lbl, _val in ((self.tr("White"), "white"),
                            (self.tr("Black"), "black"),
@@ -182,8 +186,8 @@ class RightSidebar(QWidget):
         self._hidden_bg_combo.setEnabled(False)
         self._hidden_bg_combo.currentIndexChanged.connect(
             self._on_hidden_bg_changed)
-        bg_row.addWidget(self._hidden_bg_combo, 1)
-        layout.addLayout(bg_row)
+        fill_row.addWidget(self._hidden_bg_combo, 1)
+        layout.addLayout(fill_row)
 
         # --- Visualization section ---
         self._add_section_label(layout, self.tr("VISUALIZATION"))

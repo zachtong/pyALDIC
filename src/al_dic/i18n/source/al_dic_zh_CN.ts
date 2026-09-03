@@ -1994,22 +1994,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="388"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
         <source>Ready</source>
         <translation>就绪</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="390"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="481"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="394"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
         <translation>已用  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
         <location filename="../../gui/panels/right_sidebar.py" line="493"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
         <translation>剩余  %1</translation>
     </message>
@@ -2039,77 +2039,82 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>将字段绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="162"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
         <source>Show background image</source>
         <translation>显示背景图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="165"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>取消勾选可仅显示字段，其后不显示散斑图像。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <source>Hidden background</source>
+        <translation>隐藏背景填充</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
         <source>White</source>
         <translation>白色</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
         <source>Black</source>
         <translation>黑色</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
         <source>Transparent</source>
         <translation>透明</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>背景隐藏时用什么替代图像。导出时 PNG 和 TIFF 会保留透明度，其他格式改用白色。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="193"/>
         <source>VISUALIZATION</source>
         <translation>可视化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
         <translation>色图</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="217"/>
         <source>Opacity</source>
         <translation>透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="220"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="224"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>叠加图透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="226"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="230"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理单位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="232"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
         <source>LOG</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="238"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="357"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="361"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>运行前请在每个红色区域放置至少一个种子点（红色 = 需要种子点）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="464"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="468"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 帧</translation>
     </message>
@@ -2345,77 +2350,82 @@ Only applies when Method = Plane fitting.</source>
         <translation>显示于</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="75"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
         <source>Show background image</source>
         <translation>显示背景图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="78"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>取消勾选可仅显示字段，其后不显示散斑图像。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="82"/>
         <source>White</source>
         <translation>白色</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
         <source>Black</source>
         <translation>黑色</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="85"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
         <source>Transparent</source>
         <translation>透明</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="88"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="87"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>背景隐藏时用什么替代图像。导出时 PNG 和 TIFF 会保留透明度，其他格式改用白色。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="93"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
         <source>Background</source>
         <translation>背景</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="100"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="91"/>
+        <source>Hidden background</source>
+        <translation>隐藏背景填充</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="98"/>
         <source>Colormap</source>
         <translation>颜色映射</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="104"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="102"/>
         <source>Range</source>
         <translation>范围</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="136"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="134"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="145"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="143"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>填充修剪的边缘（仅显示）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="149"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="147"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>从可靠的内部节点重新插值被边缘修剪的应变带。影响屏幕显示和导出的图片/动画；导出的数据文件始终将修剪的边缘保留为 NaN。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="154"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="152"/>
         <source>Edges</source>
         <translation>边缘</translation>
     </message>
@@ -2488,53 +2498,53 @@ Only applies when Method = Plane fitting.</source>
         <translation>可视化</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="357"/>
+        <location filename="../../gui/strain_window.py" line="360"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理单位</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="366"/>
+        <location filename="../../gui/strain_window.py" line="369"/>
         <source>LOG</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="463"/>
+        <location filename="../../gui/strain_window.py" line="466"/>
         <source>Strain compute failed: %1: %2</source>
         <translation>应变计算失败：%1：%2</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="471"/>
-        <location filename="../../gui/strain_window.py" line="530"/>
+        <location filename="../../gui/strain_window.py" line="474"/>
+        <location filename="../../gui/strain_window.py" line="533"/>
         <source>Strain computation complete.</source>
         <translation>应变计算完成。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="482"/>
+        <location filename="../../gui/strain_window.py" line="485"/>
         <source>Strain window: no displacement results to post-process.</source>
         <translation>应变窗口：没有可后处理的位移结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="513"/>
+        <location filename="../../gui/strain_window.py" line="516"/>
         <source>Cancelling…</source>
         <translation>正在取消…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="547"/>
+        <location filename="../../gui/strain_window.py" line="550"/>
         <source>Strain computation cancelled.</source>
         <translation>应变计算已取消。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="556"/>
+        <location filename="../../gui/strain_window.py" line="559"/>
         <source>Strain compute failed: %1</source>
         <translation>应变计算失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="563"/>
+        <location filename="../../gui/strain_window.py" line="566"/>
         <source>Strain Computation Failed</source>
         <translation>应变计算失败</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="602"/>
+        <location filename="../../gui/strain_window.py" line="605"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ 参数已变更 — 请点击“计算应变”</translation>
     </message>
@@ -2554,12 +2564,12 @@ Only applies when Method = Plane fitting.</source>
         <translation>导出结果</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="493"/>
+        <location filename="../../gui/strain_window.py" line="496"/>
         <source>Starting…</source>
         <translation>启动中…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="526"/>
+        <location filename="../../gui/strain_window.py" line="529"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>

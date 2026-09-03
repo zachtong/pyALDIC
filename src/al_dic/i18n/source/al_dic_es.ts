@@ -1994,22 +1994,22 @@ Solo afecta a la inicialización de los puntos de inicio; los demás nodos usan 
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="388"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
         <source>Ready</source>
         <translation>Listo</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="390"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="481"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="394"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
         <translation>TRANSCURRIDO  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
         <location filename="../../gui/panels/right_sidebar.py" line="493"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
         <translation>RESTANTE  %1</translation>
     </message>
@@ -2039,77 +2039,82 @@ Solo afecta a la inicialización de los puntos de inicio; los demás nodos usan 
         <translation>Dibujar el campo en las posiciones deformadas de los nodos, o en sus posiciones en el fotograma de referencia.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="162"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
         <source>Show background image</source>
         <translation>Mostrar imagen de fondo</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="165"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>Desmarque para mostrar solo el campo, sin imagen de moteado detrás.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <source>Hidden background</source>
+        <translation>Fondo oculto</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
         <source>White</source>
         <translation>Blanco</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="175"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
         <source>Black</source>
         <translation>Negro</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="176"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
         <source>Transparent</source>
         <translation>Transparente</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>Lo que reemplaza a la imagen cuando está oculta. Al exportar, la transparencia se conserva para PNG y TIFF; los demás formatos reciben blanco.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="193"/>
         <source>VISUALIZATION</source>
         <translation>VISUALIZACIÓN</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="194"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
         <translation>Paleta de colores</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="213"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="217"/>
         <source>Opacity</source>
         <translation>Opacidad</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="220"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="224"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>Opacidad de la superposición (0 = transparente, 100 = opaco)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="226"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="230"/>
         <source>PHYSICAL UNITS</source>
         <translation>UNIDADES FÍSICAS</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="232"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
         <source>LOG</source>
         <translation>REGISTRO</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="238"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Clear</source>
         <translation>Limpiar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="357"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="361"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>Coloque al menos un punto de inicio en cada región roja antes de ejecutar (rojo = requiere punto de inicio).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="464"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="468"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  Fotograma %2</translation>
     </message>
@@ -2345,77 +2350,82 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <translation>Mostrar en</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="75"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
         <source>Show background image</source>
         <translation>Mostrar imagen de fondo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="78"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>Desmarque para mostrar solo el campo, sin imagen de moteado detrás.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="82"/>
         <source>White</source>
         <translation>Blanco</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
         <source>Black</source>
         <translation>Negro</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="85"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
         <source>Transparent</source>
         <translation>Transparente</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="88"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="87"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>Lo que reemplaza a la imagen cuando está oculta. Al exportar, la transparencia se conserva para PNG y TIFF; los demás formatos reciben blanco.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="93"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
         <source>Background</source>
         <translation>Fondo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="100"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="91"/>
+        <source>Hidden background</source>
+        <translation>Fondo oculto</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="98"/>
         <source>Colormap</source>
         <translation>Mapa de colores</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="104"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="102"/>
         <source>Range</source>
         <translation>Rango</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
         <source>Min</source>
         <translation>Mín</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
         <source>Max</source>
         <translation>Máx</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="136"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="134"/>
         <source>Opacity</source>
         <translation>Opacidad</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="145"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="143"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>Rellenar bordes recortados (solo visualización)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="149"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="147"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>Reinterpola la banda de deformación recortada en los bordes a partir de nodos interiores fiables. Afecta a la vista en pantalla y a las imágenes/animaciones exportadas; los archivos de datos exportados siempre mantienen el borde recortado como NaN.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="154"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="152"/>
         <source>Edges</source>
         <translation>Bordes</translation>
     </message>
@@ -2488,53 +2498,53 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <translation>VISUALIZACIÓN</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="357"/>
+        <location filename="../../gui/strain_window.py" line="360"/>
         <source>PHYSICAL UNITS</source>
         <translation>UNIDADES FÍSICAS</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="366"/>
+        <location filename="../../gui/strain_window.py" line="369"/>
         <source>LOG</source>
         <translation>REGISTRO</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="463"/>
+        <location filename="../../gui/strain_window.py" line="466"/>
         <source>Strain compute failed: %1: %2</source>
         <translation>Fallo en el cálculo de deformación: %1: %2</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="471"/>
-        <location filename="../../gui/strain_window.py" line="530"/>
+        <location filename="../../gui/strain_window.py" line="474"/>
+        <location filename="../../gui/strain_window.py" line="533"/>
         <source>Strain computation complete.</source>
         <translation>Cálculo de deformación completado.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="482"/>
+        <location filename="../../gui/strain_window.py" line="485"/>
         <source>Strain window: no displacement results to post-process.</source>
         <translation>Ventana de deformación: no hay resultados de desplazamiento para posprocesar.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="513"/>
+        <location filename="../../gui/strain_window.py" line="516"/>
         <source>Cancelling…</source>
         <translation>Cancelando…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="547"/>
+        <location filename="../../gui/strain_window.py" line="550"/>
         <source>Strain computation cancelled.</source>
         <translation>Cálculo de deformación cancelado.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="556"/>
+        <location filename="../../gui/strain_window.py" line="559"/>
         <source>Strain compute failed: %1</source>
         <translation>Fallo en el cálculo de deformación: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="563"/>
+        <location filename="../../gui/strain_window.py" line="566"/>
         <source>Strain Computation Failed</source>
         <translation>Fallo en el cálculo de deformación</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="602"/>
+        <location filename="../../gui/strain_window.py" line="605"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ Parámetros modificados — haga clic en «Calcular deformación»</translation>
     </message>
@@ -2554,12 +2564,12 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <translation>Exportar resultados</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="493"/>
+        <location filename="../../gui/strain_window.py" line="496"/>
         <source>Starting…</source>
         <translation>Iniciando…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="526"/>
+        <location filename="../../gui/strain_window.py" line="529"/>
         <source>Complete</source>
         <translation>Completado</translation>
     </message>
