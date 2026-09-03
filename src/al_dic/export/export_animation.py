@@ -213,10 +213,8 @@ def export_animation(
                         actual_vmin = float(finite.min()) if len(finite) > 0 else 0.0
                         actual_vmax = float(finite.max()) if len(finite) > 0 else 1.0
                     else:
+                        # Already in export units -- see export_png.
                         actual_vmin, actual_vmax = cfg.vmin, cfg.vmax
-                        if use_physical_units and cfg.field_name in _DISPLACEMENT_FIELDS:
-                            actual_vmin *= pixel_size
-                            actual_vmax *= pixel_size
                     render_cfg = replace(cfg, auto_range=False,
                                          vmin=actual_vmin, vmax=actual_vmax)
                 else:

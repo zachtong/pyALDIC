@@ -1562,10 +1562,9 @@ class ExportDialog(QDialog):
             vmin = float(finite.min()) if finite.size else 0.0
             vmax = float(finite.max()) if finite.size else 1.0
         else:
+            # Already in export units -- see export_png. The preview has
+            # to agree with the file, so it must not scale either.
             vmin, vmax = cfg.vmin, cfg.vmax
-            if use_phys and field in _DISPLACEMENT_FIELDS:
-                vmin *= self._pixel_size_spin.value()
-                vmax *= self._pixel_size_spin.value()
 
         render_cfg = replace(cfg, auto_range=False, vmin=vmin, vmax=vmax)
         out_shape = output_shape_for(img_shape, 512)

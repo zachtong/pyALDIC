@@ -696,11 +696,12 @@ def export_png(
                     actual_vmin = float(finite.min()) if len(finite) > 0 else 0.0
                     actual_vmax = float(finite.max()) if len(finite) > 0 else 1.0
                 else:
+                    # A fixed range is already in the units being exported:
+                    # the window stores what the user typed against the unit
+                    # label it was showing, and flipping that label does not
+                    # convert it. Scaling here made a +-200 um range export as
+                    # +-60000 um at 300 um/px.
                     actual_vmin, actual_vmax = cfg.vmin, cfg.vmax
-                    # Scale user-entered fixed range to physical units
-                    if use_physical_units and cfg.field_name in _DISPLACEMENT_FIELDS:
-                        actual_vmin *= pixel_size
-                        actual_vmax *= pixel_size
                 render_cfg = replace(cfg, auto_range=False,
                                      vmin=actual_vmin, vmax=actual_vmax)
             else:
