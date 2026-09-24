@@ -11,6 +11,13 @@ from al_dic.analysis.engine import (
     SampleStatus,
 )
 from al_dic.analysis.extract import extract_series, field_values, frame_count
+from al_dic.analysis.load_data import (
+    LoadData,
+    LoadSync,
+    LoadTable,
+    parse_load_table,
+    read_load_table,
+)
 from al_dic.analysis.probes import (
     AreaGeom,
     LineGeom,
@@ -29,6 +36,9 @@ __all__ = [
     "FrameStatus",
     "Kymograph",
     "LineGeom",
+    "LoadData",
+    "LoadSync",
+    "LoadTable",
     "PointGeom",
     "Probe",
     "ProbeSet",
@@ -39,4 +49,6 @@ __all__ = [
     "extract_series",
     "field_values",
     "frame_count",
+    "parse_load_table",
+    "read_load_table",
 ]
