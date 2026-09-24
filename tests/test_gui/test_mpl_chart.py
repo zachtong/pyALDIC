@@ -248,3 +248,13 @@ def test_the_frame_ring_stays_off_the_page(chart):
     assert [ln for ln in chart.figure.axes[0].get_lines() if ln.get_gid() == "frame_mark"]
     page = chart.publication_figure().axes[0]
     assert not [ln for ln in page.get_lines() if ln.get_gid() == "frame_mark"]
+
+
+def test_a_kymograph_legend_has_a_backing_to_read_over_the_image(chart):
+    """Dark type straight on a dark colormap could not be read on a page."""
+    chart.plot_kymograph(np.zeros((2, 2)), x=np.arange(1.0, 3.0),
+                         distance=np.array([0.0, 1.0]), x_label="f", y_label="d",
+                         value_label="u", consumed=np.ones((2, 2), bool),
+                         consumed_label="crack")
+    frame = chart.publication_figure().axes[0].get_legend().get_frame()
+    assert frame.get_alpha() >= 0.5

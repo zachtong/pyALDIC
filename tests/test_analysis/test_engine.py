@@ -497,3 +497,40 @@ def test_world_axes_flip_v_before_the_statistic():
     world_std = eng.series(region, "disp_v", "std", axes="world").values[1]
     assert world_std == pytest.approx(image_std), "a spread has no sign"
     assert eng.series(region, "disp_v", "mean", axes="world").axes == "world"
+
+
+# ---------------------------------------------------------------------------
+# Point location
+# ---------------------------------------------------------------------------
+
+def test_the_barycentric_transforms_are_scipys_own():
+    """Computed in numpy to skip scipy's slow lazy build -- the same numbers."""
+    from scipy.spatial import Delaunay
+
+    from al_dic.analysis.engine import _barycentric_transforms
+
+    rng = np.random.default_rng(7)
+    points = grid(extent=80.0) + rng.normal(0.0, 0.3, grid(extent=80.0).shape)
+    ours = _barycentric_transforms(points, Delaunay(points).simplices)
+    theirs = Delaunay(points).transform
+    np.testing.assert_allclose(ours, theirs, rtol=1e-9, atol=1e-12)
+
+
+def test_the_engine_locates_points_as_scipy_does():
+    rng = np.random.default_rng(7)
+    nodes = grid(extent=80.0) + rng.normal(0.0, 0.3, grid(extent=80.0).shape)
+    eng = AnalysisEngine(build(nodes, stretch(), 1, img=(84, 84)))
+    from scipy.spatial import Delaunay
+
+    fresh = Delaunay(nodes)                     # scipy's own, lazily built
+    xy = rng.uniform(-10.0, 95.0, size=(5000, 2))
+    assert np.array_equal(eng._tri.find_simplex(xy), fresh.find_simplex(xy))
+
+
+def test_a_first_plan_is_quick_on_a_large_mesh():
+    """The first probe on a 20,000-node run waited 0.5 s for scipy's lazy
+    transforms; on 78,000 nodes, 3 s."""
+    eng = AnalysisEngine(build(grid(extent=560.0), stretch(0.001), 1, img=(564, 564)))
+    t0 = time.perf_counter()
+    eng.plan(AreaGeom.rect(100.0, 100.0, 300.0, 300.0))
+    assert time.perf_counter() - t0 < 0.2

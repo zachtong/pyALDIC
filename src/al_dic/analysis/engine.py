@@ -201,6 +201,7 @@ class AnalysisEngine:
         # Triangulate the finite nodes; keep corners as global node ids.
         self._tri_ids = np.flatnonzero(finite)
         self._tri = Delaunay(nodes[finite])
+        _prime_transform(self._tri)
         self._simplices = self._tri_ids[self._tri.simplices]
 
         step = float(getattr(result.dic_para, "winstepsize", 0) or 0)
@@ -797,6 +798,43 @@ def _area_grid(geom: AreaGeom, spacing: float) -> NDArray[np.float64]:
             return pts
     cx, cy = _area_centroid(geom)
     return np.array([[cx, cy]], dtype=np.float64)
+
+
+def _barycentric_transforms(points: NDArray[np.float64],
+                            simplices: NDArray[np.int64]) -> NDArray[np.float64]:
+    """``Delaunay.transform``, computed with numpy.
+
+    For simplex i with corners r0, r1, r2: ``T[i, :2]`` inverts the matrix
+    whose columns are r0 - r2 and r1 - r2, and ``T[i, 2]`` is r2. A simplex
+    with no area gets NaN, as scipy gives it.
+    """
+    corner = points[simplices]                          # (S, 3, 2)
+    a = corner[:, 0] - corner[:, 2]
+    b = corner[:, 1] - corner[:, 2]
+    det = a[:, 0] * b[:, 1] - b[:, 0] * a[:, 1]
+    scale = np.hypot(a[:, 0], a[:, 1]) * np.hypot(b[:, 0], b[:, 1])
+    ok = np.abs(det) > 1e-12 * np.maximum(scale, np.finfo(np.float64).tiny)
+    transform = np.full((len(simplices), 3, 2), np.nan, dtype=np.float64)
+    d = det[ok]
+    transform[ok, 0, 0] = b[ok, 1] / d
+    transform[ok, 0, 1] = -b[ok, 0] / d
+    transform[ok, 1, 0] = -a[ok, 1] / d
+    transform[ok, 1, 1] = a[ok, 0] / d
+    transform[:, 2, :] = corner[:, 2]
+    return np.ascontiguousarray(transform)
+
+
+def _prime_transform(tri: Delaunay) -> None:
+    """Hand scipy the barycentric transforms it would build slowly.
+
+    scipy computes them lazily, simplex by simplex, on the first point
+    location: 3 s on a 78,000-node mesh -- the whole wait before a first probe
+    reads anything. The same numbers in numpy take 50 ms. Only filled in where
+    scipy keeps the lazy slot this way; any other scipy builds its own, slower
+    but correct.
+    """
+    if getattr(tri, "_transform", False) is None:
+        tri._transform = _barycentric_transforms(tri.points, tri.simplices)
 
 
 def _points_in_polygon(

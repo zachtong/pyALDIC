@@ -130,8 +130,11 @@ def new_axes(fig: Figure, theme: ChartTheme) -> Axes:
     return ax
 
 
-def _legend(ax: Axes, theme: ChartTheme, **kwargs) -> None:
-    legend = ax.legend(fontsize=theme.legend_size, framealpha=0.0, **kwargs)
+def _legend(ax: Axes, theme: ChartTheme, *, backed: bool = False, **kwargs) -> None:
+    """A legend in the theme's type; *backed* puts it on the axes colour, for
+    a legend that sits over an image rather than over empty axes."""
+    legend = ax.legend(fontsize=theme.legend_size, framealpha=0.85 if backed else 0.0,
+                       facecolor=theme.axes, edgecolor=theme.spine, **kwargs)
     for text in legend.get_texts():
         text.set_color(theme.legend)
 
@@ -251,7 +254,7 @@ def draw_kymograph(fig: Figure, theme: ChartTheme, values: np.ndarray, *,
                           extent=extent, interpolation="nearest", alpha=0.85)
         layer.set_gid("consumed")
         _legend(ax, theme, handles=[Patch(facecolor=theme.consumed, label=consumed_label)],
-                loc="upper left")
+                loc="upper left", backed=True)
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     if integer_x:
