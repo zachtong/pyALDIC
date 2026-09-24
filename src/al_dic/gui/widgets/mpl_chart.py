@@ -34,13 +34,23 @@ _GAP_ALPHA = 0.18
 
 
 def _status_label(status: FrameStatus) -> str:
-    """Short, translated explanation for a gap in a curve."""
-    ctx = "AnalysisChart"
-    if status is FrameStatus.CROSSES_CRACK:
-        return QCoreApplication.translate(ctx, "crosses a crack")
+    """Short, translated explanation for a marked frame.
+
+    Contexts are literals: lupdate cannot follow a context held in a variable,
+    and a string it cannot extract can never be translated.
+    """
+    if status is FrameStatus.CRACK:
+        return QCoreApplication.translate("AnalysisChart", "crack")
     if status is FrameStatus.BELOW_THRESHOLD:
-        return QCoreApplication.translate(ctx, "too few valid points")
-    return QCoreApplication.translate(ctx, "no data")
+        return QCoreApplication.translate("AnalysisChart", "too few valid points")
+    if status is FrameStatus.UNRELIABLE:
+        return QCoreApplication.translate(
+            "AnalysisChart", "unreliable (strain edge trim)")
+    if status is FrameStatus.ENDPOINT_LOST:
+        return QCoreApplication.translate("AnalysisChart", "gauge endpoint lost")
+    if status is FrameStatus.NOT_COMPUTED:
+        return QCoreApplication.translate("AnalysisChart", "not computed")
+    return QCoreApplication.translate("AnalysisChart", "no data")
 
 
 class MplChart(QWidget):

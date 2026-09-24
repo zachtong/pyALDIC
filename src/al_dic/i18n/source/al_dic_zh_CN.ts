@@ -40,21 +40,51 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="135"/>
-        <location filename="../../gui/widgets/mpl_chart.py" line="182"/>
-        <source>Frame</source>
+        <location filename="../../gui/widgets/mpl_chart.py" line="43"/>
+        <source>crack</source>
         <extracomment>Shading for frames a probe could not measure.</extracomment>
+        <translation>裂纹</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="45"/>
+        <source>too few valid points</source>
+        <translation>有效点过少</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="47"/>
+        <source>unreliable (strain edge trim)</source>
+        <translation>不可靠（应变边缘裁剪）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="50"/>
+        <source>gauge endpoint lost</source>
+        <translation>量规端点失效</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="52"/>
+        <source>not computed</source>
+        <translation>未计算</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="53"/>
+        <source>no data</source>
+        <translation>无数据</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="145"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="192"/>
+        <source>Frame</source>
         <translation>帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="148"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="158"/>
         <source>Shaded frames: %1</source>
-        <translation>1</translation>
+        <translation>阴影帧：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="184"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="194"/>
         <source>Distance along line (%1)</source>
-        <translation>）</translation>
+        <translation>沿线距离（%1）</translation>
     </message>
 </context>
 <context>
@@ -70,210 +100,210 @@ Only relevant for the FFT init-guess mode.</source>
         <location filename="../../gui/panels/analysis_tab.py" line="212"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
-        <translation>段</translation>
+        <translation>线段</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="213"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
-        <translation>形</translation>
+        <translation>矩形</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="214"/>
         <source>Circle</source>
         <comment>Placement tool</comment>
-        <translation>形</translation>
+        <translation>圆形</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="215"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
-        <translation>形</translation>
+        <translation>多边形</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="218"/>
         <source>Click once to place a point probe.</source>
-        <translation>。</translation>
+        <translation>单击一次放置点探针。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="219"/>
         <source>Click twice: start and end of the gauge.</source>
-        <translation>。</translation>
+        <translation>单击两次：标距的起点和终点。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="220"/>
         <source>Click twice: opposite corners.</source>
-        <translation>。</translation>
+        <translation>单击两次：对角两点。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="221"/>
         <source>Click twice: centre, then the edge.</source>
-        <translation>。</translation>
+        <translation>单击两次：先圆心，后边缘。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="223"/>
         <source>Click each vertex, then double-click to close.</source>
-        <translation>。</translation>
+        <translation>逐个单击顶点，双击闭合。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="231"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
-        <translation>示</translation>
+        <translation>显示</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="232"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
-        <translation>称</translation>
+        <translation>名称</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="233"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
-        <translation>型</translation>
+        <translation>类型</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="234"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
-        <translation>色</translation>
+        <translation>颜色</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="236"/>
         <source>Colour…</source>
-        <translation>…</translation>
+        <translation>颜色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="237"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
-        <translation>除</translation>
+        <translation>删除</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="238"/>
         <source>Clear All</source>
-        <translation>除</translation>
+        <translation>全部清除</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="239"/>
         <source>Compare:</source>
-        <translation>：</translation>
+        <translation>比较：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="240"/>
         <source>Field:</source>
-        <translation>：</translation>
+        <translation>字段：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="241"/>
         <source>Statistic:</source>
-        <translation>：</translation>
+        <translation>统计量：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="242"/>
         <source>Minimum valid fraction:</source>
-        <translation>：</translation>
+        <translation>最低有效比例：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="244"/>
         <source>A frame is left blank when fewer than this fraction of the probe&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
-        <translation>。</translation>
+        <translation>当探针中可靠点的比例低于此值时，该帧留空。用于防止曲线在样本量悄悄塌陷时依然平滑。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="248"/>
         <source>Export CSV…</source>
-        <translation>…</translation>
+        <translation>导出 CSV…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="249"/>
         <source>Export Chart…</source>
-        <translation>…</translation>
+        <translation>导出图表…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="250"/>
         <source>Esc cancels placement</source>
-        <translation>置</translation>
+        <translation>Esc 取消放置</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="265"/>
         <source>Point probes</source>
-        <translation>针</translation>
+        <translation>点探针</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="266"/>
         <source>Line probes</source>
-        <translation>针</translation>
+        <translation>线探针</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="267"/>
         <source>Region probes</source>
-        <translation>针</translation>
+        <translation>区域探针</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="294"/>
         <source>Value</source>
         <comment>Statistic: the sample itself, for a point probe</comment>
-        <translation>值</translation>
+        <translation>数值</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="295"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
-        <translation>值</translation>
+        <translation>平均值</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="296"/>
         <source>Median</source>
         <comment>Statistic</comment>
-        <translation>数</translation>
+        <translation>中位数</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="297"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
-        <translation>值</translation>
+        <translation>最大值</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="298"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
-        <translation>值</translation>
+        <translation>最小值</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="299"/>
         <source>Standard deviation</source>
-        <translation>差</translation>
+        <translation>标准差</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="300"/>
         <source>Valid fraction</source>
-        <translation>例</translation>
+        <translation>有效比例</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="301"/>
         <source>Engineering strain</source>
-        <translation>变</translation>
+        <translation>工程应变</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="302"/>
         <source>Crack opening</source>
-        <translation>移</translation>
+        <translation>裂纹张开位移</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="332"/>
         <source>Added probe &apos;%1&apos;.</source>
-        <translation>。</translation>
+        <translation>已添加探针「%1」。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="391"/>
         <source>Clear All Probes</source>
-        <translation>针</translation>
+        <translation>清除所有探针</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="392"/>
         <source>Delete every probe? This cannot be undone.</source>
-        <translation>。</translation>
+        <translation>删除所有探针？此操作无法撤销。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="432"/>
@@ -285,7 +315,7 @@ Only relevant for the FFT init-guess mode.</source>
         <location filename="../../gui/panels/analysis_tab.py" line="433"/>
         <source>Line</source>
         <comment>Probe type</comment>
-        <translation>段</translation>
+        <translation>线段</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="434"/>
@@ -296,33 +326,33 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="473"/>
         <source>Run a DIC analysis to plot probes.</source>
-        <translation>。</translation>
+        <translation>请先运行 DIC 分析，然后才能绘制探针曲线。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="484"/>
         <source>Place a probe on the reference image to begin.</source>
-        <translation>。</translation>
+        <translation>在参考图像上放置一个探针即可开始。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="502"/>
         <source>This statistic does not apply here.</source>
-        <translation>。</translation>
+        <translation>该统计量不适用于此处。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="538"/>
         <location filename="../../gui/panels/analysis_tab.py" line="543"/>
         <source>Export Probe Data</source>
-        <translation>据</translation>
+        <translation>导出探针数据</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="539"/>
         <source>There is nothing to export yet.</source>
-        <translation>。</translation>
+        <translation>目前没有可导出的内容。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
         <source>CSV Files</source>
-        <translation>件</translation>
+        <translation>CSV 文件</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
@@ -333,37 +363,37 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="557"/>
         <source>Probe export failed: %1</source>
-        <translation>1</translation>
+        <translation>探针导出失败：%1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="562"/>
         <source>Probe data written to %1</source>
-        <translation>1</translation>
+        <translation>探针数据已写入 %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="567"/>
         <source>Export Chart</source>
-        <translation>表</translation>
+        <translation>导出图表</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="568"/>
         <source>PNG Images</source>
-        <translation>像</translation>
+        <translation>PNG 图像</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="569"/>
         <source>PDF Documents</source>
-        <translation>档</translation>
+        <translation>PDF 文档</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="578"/>
         <source>Chart export failed: %1</source>
-        <translation>1</translation>
+        <translation>图表导出失败：%1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="583"/>
         <source>Chart written to %1</source>
-        <translation>1</translation>
+        <translation>图表已写入 %1</translation>
     </message>
 </context>
 <context>
@@ -384,27 +414,27 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/app.py" line="1094"/>
         <source>pyALDIC has hit an error</source>
-        <translation>误</translation>
+        <translation>pyALDIC 发生错误</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1095"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
-        <translation>。</translation>
+        <translation>发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1105"/>
         <source>Details were written to %1</source>
-        <translation>1</translation>
+        <translation>详细信息已写入 %1</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1209"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
-        <translation>。</translation>
+        <translation>正在后台准备计算内核。新安装后的首次分析会比之后的耗时更长。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1223"/>
         <source>Compute kernels ready (%1 s).</source>
-        <translation>。</translation>
+        <translation>计算内核已就绪（%1 秒）。</translation>
     </message>
 </context>
 <context>
@@ -1316,7 +1346,7 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
         <source>No animation was written. See the log for details.</source>
-        <translation>。</translation>
+        <translation>未写入任何动画。详情请查看日志。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
@@ -1832,12 +1862,12 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="793"/>
         <source>Save Region of Interest Mask</source>
-        <translation>模</translation>
+        <translation>保存感兴趣区域掩模</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="795"/>
         <source>PNG Images</source>
-        <translation>像</translation>
+        <translation>PNG 图像</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="804"/>
@@ -2271,7 +2301,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
         <source>Import Mask Image</source>
-        <translation>像</translation>
+        <translation>导入掩模图像</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
@@ -2839,12 +2869,12 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/strain_window.py" line="399"/>
         <source>Strain Field</source>
-        <translation>场</translation>
+        <translation>应变场</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="401"/>
         <source>Analysis</source>
-        <translation>析</translation>
+        <translation>分析</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="476"/>

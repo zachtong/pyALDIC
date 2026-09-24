@@ -383,34 +383,48 @@ def check_embedded_chart() -> str:
     matplotlib.use("QtAgg")
     from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 
-    from al_dic.analysis.probes import PointGeom, Probe
-    from al_dic.analysis.sampling import SampleSet
-    from al_dic.analysis.series import TimeSeries
-    from al_dic.gui.widgets.mpl_chart import MplChart
+    from types import SimpleNamespace
 
     import numpy as np
+
+    from al_dic.analysis.engine import AnalysisEngine
+    from al_dic.analysis.probes import LineGeom, Probe
+    from al_dic.core.data_structures import DICMesh, FrameResult, PipelineResult
+    from al_dic.gui.widgets.mpl_chart import MplChart
 
     chart = MplChart()
     if not isinstance(chart._canvas, FigureCanvasQTAgg):
         raise CheckFailed("the chart is not backed by matplotlib's Qt canvas")
 
-    samples = [
-        SampleSet(np.array([float(i)]), np.array([True]), frozenset())
-        for i in range(4)
-    ]
-    ts = TimeSeries.from_samples(
-        frames=[0, 1, 2, 3], samples=samples, reduction="value",
-        min_valid_fraction=0.0, unit="px",
+    # Read a real curve through the engine, so the bundle's triangulation and
+    # sampling path runs too -- not only the drawing of a hand-made series.
+    xs = np.arange(0.0, 40.0, 4.0)
+    gx, gy = np.meshgrid(xs, xs)
+    nodes = np.column_stack([gx.ravel(), gy.ravel()])
+    frames = []
+    for f in (1, 2, 3):
+        U = np.empty(2 * len(nodes))
+        U[0::2], U[1::2] = 0.01 * f * nodes[:, 0], 0.0
+        frames.append(FrameResult(U=U, U_accum=U))
+    result = PipelineResult(
+        dic_para=SimpleNamespace(winstepsize=4, img_size=(40, 40)),
+        dic_mesh=DICMesh(coordinates_fem=nodes,
+                         elements_fem=np.zeros((0, 4), np.int64)),
+        result_disp=frames, result_def_grad=[], result_strain=[],
+        result_fe_mesh_each_frame=[],
     )
-    chart.plot_series([("probe", "#ef4444", ts)], y_label="u (px)")
+    gauge = Probe(id=1, kind="line", geometry=LineGeom(4.0, 20.0, 32.0, 20.0),
+                  label="E1", color="#ef4444")
+    ts = AnalysisEngine(result).series(gauge, None, "strain")
+    if not np.allclose(ts.values, [0.0, 0.01, 0.02, 0.03], atol=1e-9):
+        raise CheckFailed(f"the extensometer read {ts.values.tolist()}")
+
+    chart.plot_series([("E1", "#ef4444", ts)], y_label="strain")
     chart.figure.canvas.draw()
     width, height = chart.figure.canvas.get_width_height()
     if width <= 0 or height <= 0:
         raise CheckFailed(f"the chart rendered at {width}x{height}")
-
-    _ = Probe(id=1, kind="point", geometry=PointGeom(0.0, 0.0),
-              label="p", color="#ef4444")
-    return f"QtAgg canvas renders at {width}x{height}"
+    return f"engine + QtAgg canvas render at {width}x{height}"
 
 
 CHECKS: list[tuple[str, Callable[[], str]]] = [

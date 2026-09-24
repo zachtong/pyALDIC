@@ -40,21 +40,51 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="135"/>
-        <location filename="../../gui/widgets/mpl_chart.py" line="182"/>
-        <source>Frame</source>
+        <location filename="../../gui/widgets/mpl_chart.py" line="43"/>
+        <source>crack</source>
         <extracomment>Shading for frames a probe could not measure.</extracomment>
+        <translation>균열</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="45"/>
+        <source>too few valid points</source>
+        <translation>유효한 점이 너무 적음</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="47"/>
+        <source>unreliable (strain edge trim)</source>
+        <translation>신뢰할 수 없음(변형률 가장자리 트림)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="50"/>
+        <source>gauge endpoint lost</source>
+        <translation>게이지 끝점 상실</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="52"/>
+        <source>not computed</source>
+        <translation>계산되지 않음</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="53"/>
+        <source>no data</source>
+        <translation>데이터 없음</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="145"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="192"/>
+        <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="148"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="158"/>
         <source>Shaded frames: %1</source>
-        <translation>1</translation>
+        <translation>음영 처리된 프레임: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="184"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="194"/>
         <source>Distance along line (%1)</source>
-        <translation>)</translation>
+        <translation>선을 따른 거리(%1)</translation>
     </message>
 </context>
 <context>
@@ -70,13 +100,13 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="212"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
-        <translation>분</translation>
+        <translation>선분</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="213"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
-        <translation>형</translation>
+        <translation>사각형</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="214"/>
@@ -88,127 +118,127 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="215"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
-        <translation>형</translation>
+        <translation>다각형</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="218"/>
         <source>Click once to place a point probe.</source>
-        <translation>.</translation>
+        <translation>한 번 클릭하여 점 프로브를 배치합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="219"/>
         <source>Click twice: start and end of the gauge.</source>
-        <translation>.</translation>
+        <translation>두 번 클릭: 게이지의 시작점과 끝점.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="220"/>
         <source>Click twice: opposite corners.</source>
-        <translation>.</translation>
+        <translation>두 번 클릭: 마주 보는 두 모서리.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="221"/>
         <source>Click twice: centre, then the edge.</source>
-        <translation>.</translation>
+        <translation>두 번 클릭: 중심, 그다음 가장자리.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="223"/>
         <source>Click each vertex, then double-click to close.</source>
-        <translation>.</translation>
+        <translation>각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="231"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
-        <translation>시</translation>
+        <translation>표시</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="232"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
-        <translation>름</translation>
+        <translation>이름</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="233"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
-        <translation>류</translation>
+        <translation>종류</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="234"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
-        <translation>상</translation>
+        <translation>색상</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="236"/>
         <source>Colour…</source>
-        <translation>…</translation>
+        <translation>색상…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="237"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
-        <translation>제</translation>
+        <translation>삭제</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="238"/>
         <source>Clear All</source>
-        <translation>기</translation>
+        <translation>모두 지우기</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="239"/>
         <source>Compare:</source>
-        <translation>:</translation>
+        <translation>비교:</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="240"/>
         <source>Field:</source>
-        <translation>:</translation>
+        <translation>필드:</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="241"/>
         <source>Statistic:</source>
-        <translation>:</translation>
+        <translation>통계량:</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="242"/>
         <source>Minimum valid fraction:</source>
-        <translation>:</translation>
+        <translation>최소 유효 비율:</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="244"/>
         <source>A frame is left blank when fewer than this fraction of the probe&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
-        <translation>.</translation>
+        <translation>프로브의 신뢰할 수 있는 점 비율이 이 값보다 낮은 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 보이는 것을 막습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="248"/>
         <source>Export CSV…</source>
-        <translation>…</translation>
+        <translation>CSV 내보내기…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="249"/>
         <source>Export Chart…</source>
-        <translation>…</translation>
+        <translation>차트 내보내기…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="250"/>
         <source>Esc cancels placement</source>
-        <translation>소</translation>
+        <translation>Esc 키로 배치 취소</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="265"/>
         <source>Point probes</source>
-        <translation>브</translation>
+        <translation>점 프로브</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="266"/>
         <source>Line probes</source>
-        <translation>브</translation>
+        <translation>선 프로브</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="267"/>
         <source>Region probes</source>
-        <translation>브</translation>
+        <translation>영역 프로브</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="294"/>
@@ -220,60 +250,60 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="295"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
-        <translation>균</translation>
+        <translation>평균</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="296"/>
         <source>Median</source>
         <comment>Statistic</comment>
-        <translation>값</translation>
+        <translation>중앙값</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="297"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
-        <translation>값</translation>
+        <translation>최댓값</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="298"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
-        <translation>값</translation>
+        <translation>최솟값</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="299"/>
         <source>Standard deviation</source>
-        <translation>차</translation>
+        <translation>표준편차</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="300"/>
         <source>Valid fraction</source>
-        <translation>율</translation>
+        <translation>유효 비율</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="301"/>
         <source>Engineering strain</source>
-        <translation>률</translation>
+        <translation>공칭 변형률</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="302"/>
         <source>Crack opening</source>
-        <translation>위</translation>
+        <translation>균열 열림 변위</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="332"/>
         <source>Added probe &apos;%1&apos;.</source>
-        <translation>.</translation>
+        <translation>프로브 &apos;%1&apos;을(를) 추가했습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="391"/>
         <source>Clear All Probes</source>
-        <translation>기</translation>
+        <translation>모든 프로브 지우기</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="392"/>
         <source>Delete every probe? This cannot be undone.</source>
-        <translation>.</translation>
+        <translation>모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="432"/>
@@ -285,7 +315,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="433"/>
         <source>Line</source>
         <comment>Probe type</comment>
-        <translation>분</translation>
+        <translation>선분</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="434"/>
@@ -296,33 +326,33 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="473"/>
         <source>Run a DIC analysis to plot probes.</source>
-        <translation>.</translation>
+        <translation>프로브를 그리려면 먼저 DIC 분석을 실행하세요.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="484"/>
         <source>Place a probe on the reference image to begin.</source>
-        <translation>.</translation>
+        <translation>기준 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="502"/>
         <source>This statistic does not apply here.</source>
-        <translation>.</translation>
+        <translation>이 통계량은 여기에 적용되지 않습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="538"/>
         <location filename="../../gui/panels/analysis_tab.py" line="543"/>
         <source>Export Probe Data</source>
-        <translation>기</translation>
+        <translation>프로브 데이터 내보내기</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="539"/>
         <source>There is nothing to export yet.</source>
-        <translation>.</translation>
+        <translation>아직 내보낼 내용이 없습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
         <source>CSV Files</source>
-        <translation>일</translation>
+        <translation>CSV 파일</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
@@ -333,37 +363,37 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="557"/>
         <source>Probe export failed: %1</source>
-        <translation>1</translation>
+        <translation>프로브 내보내기 실패: %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="562"/>
         <source>Probe data written to %1</source>
-        <translation>다</translation>
+        <translation>프로브 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="567"/>
         <source>Export Chart</source>
-        <translation>기</translation>
+        <translation>차트 내보내기</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="568"/>
         <source>PNG Images</source>
-        <translation>지</translation>
+        <translation>PNG 이미지</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="569"/>
         <source>PDF Documents</source>
-        <translation>서</translation>
+        <translation>PDF 문서</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="578"/>
         <source>Chart export failed: %1</source>
-        <translation>1</translation>
+        <translation>차트 내보내기 실패: %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="583"/>
         <source>Chart written to %1</source>
-        <translation>다</translation>
+        <translation>차트를 %1에 기록했습니다</translation>
     </message>
 </context>
 <context>
@@ -384,27 +414,27 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/app.py" line="1094"/>
         <source>pyALDIC has hit an error</source>
-        <translation>다</translation>
+        <translation>pyALDIC에서 오류가 발생했습니다</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1095"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
-        <translation>.</translation>
+        <translation>예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1105"/>
         <source>Details were written to %1</source>
-        <translation>다</translation>
+        <translation>자세한 내용을 %1에 기록했습니다</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1209"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
-        <translation>.</translation>
+        <translation>백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1223"/>
         <source>Compute kernels ready (%1 s).</source>
-        <translation>.</translation>
+        <translation>계산 커널 준비 완료(%1초).</translation>
     </message>
 </context>
 <context>
@@ -1316,7 +1346,7 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
         <source>No animation was written. See the log for details.</source>
-        <translation>.</translation>
+        <translation>애니메이션이 기록되지 않았습니다. 자세한 내용은 로그를 확인하세요.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
@@ -1832,12 +1862,12 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="793"/>
         <source>Save Region of Interest Mask</source>
-        <translation>장</translation>
+        <translation>관심 영역 마스크 저장</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="795"/>
         <source>PNG Images</source>
-        <translation>지</translation>
+        <translation>PNG 이미지</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="804"/>
@@ -2271,7 +2301,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
         <source>Import Mask Image</source>
-        <translation>기</translation>
+        <translation>마스크 이미지 가져오기</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
@@ -2839,12 +2869,12 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/strain_window.py" line="399"/>
         <source>Strain Field</source>
-        <translation>장</translation>
+        <translation>변형률 장</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="401"/>
         <source>Analysis</source>
-        <translation>석</translation>
+        <translation>분석</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="476"/>

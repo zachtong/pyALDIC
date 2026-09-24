@@ -97,19 +97,22 @@ def test_probe_rejects_malformed_colour():
 
 # --- reductions ----------------------------------------------------------
 
-def test_point_probes_take_only_the_identity_reduction():
-    """A point yields one sample, so averaging it is not a thing.
-
-    It still needs a name for the CSV column, hence "value". The reference
-    accepts any metric for a point and silently ignores it.
+def test_a_point_is_a_one_sample_region():
+    """It joins a chart of means, medians or extremes as its own value --
+    the same quantity on the same axis -- but not a spread or a coverage,
+    which one sample cannot have. The reference accepted any metric for a
+    point and silently ignored it.
     """
-    assert allowed_reductions("point") == frozenset({"value"})
+    assert allowed_reductions("point") == frozenset(
+        {"value", "mean", "median", "max", "min"}
+    )
 
 
 def test_line_reductions_include_gauge_measurements():
     red = allowed_reductions("line")
     assert {"mean", "median", "max", "min", "std", "valid_fraction"} <= red
-    assert {"strain", "cod"} <= red
+    assert {"strain", "true_strain", "elongation",
+            "cod", "cod_sliding", "cod_magnitude"} <= red
 
 
 def test_area_reductions_exclude_gauge_measurements():

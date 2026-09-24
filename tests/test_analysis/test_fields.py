@@ -82,4 +82,6 @@ def test_field_unit_distinguishes_length_from_dimensionless():
     assert field_unit("disp_u", "mm") == "mm"
     assert field_unit("strain_exx", "mm") == ""
     assert field_unit("strain_von_mises", "px") == ""
-    assert field_unit("strain_rotation", "mm") == "rad"
+    # compute_strain stores rotation via np.degrees. This line used to assert
+    # "rad", pinning the mislabel the chart and CSV then showed.
+    assert field_unit("strain_rotation", "mm") == "°"

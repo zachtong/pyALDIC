@@ -40,21 +40,51 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="135"/>
-        <location filename="../../gui/widgets/mpl_chart.py" line="182"/>
-        <source>Frame</source>
+        <location filename="../../gui/widgets/mpl_chart.py" line="43"/>
+        <source>crack</source>
         <extracomment>Shading for frames a probe could not measure.</extracomment>
+        <translation>き裂</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="45"/>
+        <source>too few valid points</source>
+        <translation>有効な点が少なすぎます</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="47"/>
+        <source>unreliable (strain edge trim)</source>
+        <translation>信頼できない（ひずみの端部トリミング）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="50"/>
+        <source>gauge endpoint lost</source>
+        <translation>ゲージ端点が無効</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="52"/>
+        <source>not computed</source>
+        <translation>未計算</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="53"/>
+        <source>no data</source>
+        <translation>データなし</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/mpl_chart.py" line="145"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="192"/>
+        <source>Frame</source>
         <translation>フレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="148"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="158"/>
         <source>Shaded frames: %1</source>
-        <translation>1</translation>
+        <translation>網掛けフレーム：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="184"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="194"/>
         <source>Distance along line (%1)</source>
-        <translation>）</translation>
+        <translation>線に沿った距離（%1）</translation>
     </message>
 </context>
 <context>
@@ -70,13 +100,13 @@ FFT 初期推定モードでのみ有効です。</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="212"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
-        <translation>分</translation>
+        <translation>線分</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="213"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
-        <translation>形</translation>
+        <translation>矩形</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="214"/>
@@ -88,50 +118,50 @@ FFT 初期推定モードでのみ有効です。</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="215"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
-        <translation>形</translation>
+        <translation>多角形</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="218"/>
         <source>Click once to place a point probe.</source>
-        <translation>。</translation>
+        <translation>1 回クリックして点プローブを配置します。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="219"/>
         <source>Click twice: start and end of the gauge.</source>
-        <translation>。</translation>
+        <translation>2 回クリック：標点間の始点と終点。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="220"/>
         <source>Click twice: opposite corners.</source>
-        <translation>。</translation>
+        <translation>2 回クリック：対角の 2 点。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="221"/>
         <source>Click twice: centre, then the edge.</source>
-        <translation>。</translation>
+        <translation>2 回クリック：中心、次に円周。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="223"/>
         <source>Click each vertex, then double-click to close.</source>
-        <translation>。</translation>
+        <translation>各頂点をクリックし、ダブルクリックで閉じます。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="231"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
-        <translation>示</translation>
+        <translation>表示</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="232"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
-        <translation>前</translation>
+        <translation>名前</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="233"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
-        <translation>類</translation>
+        <translation>種類</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="234"/>
@@ -142,73 +172,73 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="236"/>
         <source>Colour…</source>
-        <translation>…</translation>
+        <translation>色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="237"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
-        <translation>除</translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="238"/>
         <source>Clear All</source>
-        <translation>去</translation>
+        <translation>すべて消去</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="239"/>
         <source>Compare:</source>
-        <translation>：</translation>
+        <translation>比較：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="240"/>
         <source>Field:</source>
-        <translation>：</translation>
+        <translation>フィールド：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="241"/>
         <source>Statistic:</source>
-        <translation>：</translation>
+        <translation>統計量：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="242"/>
         <source>Minimum valid fraction:</source>
-        <translation>：</translation>
+        <translation>最小有効割合：</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="244"/>
         <source>A frame is left blank when fewer than this fraction of the probe&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
-        <translation>。</translation>
+        <translation>プローブの信頼できる点の割合がこの値を下回るフレームは空欄になります。標本数が減っていくのに曲線が滑らかなまま見えることを防ぎます。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="248"/>
         <source>Export CSV…</source>
-        <translation>…</translation>
+        <translation>CSV をエクスポート…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="249"/>
         <source>Export Chart…</source>
-        <translation>…</translation>
+        <translation>グラフをエクスポート…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="250"/>
         <source>Esc cancels placement</source>
-        <translation>ル</translation>
+        <translation>Esc で配置をキャンセル</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="265"/>
         <source>Point probes</source>
-        <translation>ブ</translation>
+        <translation>点プローブ</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="266"/>
         <source>Line probes</source>
-        <translation>ブ</translation>
+        <translation>線プローブ</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="267"/>
         <source>Region probes</source>
-        <translation>ブ</translation>
+        <translation>領域プローブ</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="294"/>
@@ -220,60 +250,60 @@ FFT 初期推定モードでのみ有効です。</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="295"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
-        <translation>均</translation>
+        <translation>平均</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="296"/>
         <source>Median</source>
         <comment>Statistic</comment>
-        <translation>値</translation>
+        <translation>中央値</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="297"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
-        <translation>値</translation>
+        <translation>最大値</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="298"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
-        <translation>値</translation>
+        <translation>最小値</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="299"/>
         <source>Standard deviation</source>
-        <translation>差</translation>
+        <translation>標準偏差</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="300"/>
         <source>Valid fraction</source>
-        <translation>合</translation>
+        <translation>有効割合</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="301"/>
         <source>Engineering strain</source>
-        <translation>み</translation>
+        <translation>公称ひずみ</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="302"/>
         <source>Crack opening</source>
-        <translation>位</translation>
+        <translation>き裂開口変位</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="332"/>
         <source>Added probe &apos;%1&apos;.</source>
-        <translation>。</translation>
+        <translation>プローブ「%1」を追加しました。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="391"/>
         <source>Clear All Probes</source>
-        <translation>去</translation>
+        <translation>すべてのプローブを消去</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="392"/>
         <source>Delete every probe? This cannot be undone.</source>
-        <translation>。</translation>
+        <translation>すべてのプローブを削除しますか？この操作は取り消せません。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="432"/>
@@ -285,7 +315,7 @@ FFT 初期推定モードでのみ有効です。</translation>
         <location filename="../../gui/panels/analysis_tab.py" line="433"/>
         <source>Line</source>
         <comment>Probe type</comment>
-        <translation>分</translation>
+        <translation>線分</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="434"/>
@@ -296,33 +326,33 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="473"/>
         <source>Run a DIC analysis to plot probes.</source>
-        <translation>。</translation>
+        <translation>プローブを描画するには、先に DIC 解析を実行してください。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="484"/>
         <source>Place a probe on the reference image to begin.</source>
-        <translation>。</translation>
+        <translation>参照画像にプローブを配置すると始まります。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="502"/>
         <source>This statistic does not apply here.</source>
-        <translation>。</translation>
+        <translation>この統計量はここでは適用できません。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="538"/>
         <location filename="../../gui/panels/analysis_tab.py" line="543"/>
         <source>Export Probe Data</source>
-        <translation>ト</translation>
+        <translation>プローブデータをエクスポート</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="539"/>
         <source>There is nothing to export yet.</source>
-        <translation>。</translation>
+        <translation>エクスポートできるものがまだありません。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
         <source>CSV Files</source>
-        <translation>ル</translation>
+        <translation>CSV ファイル</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="544"/>
@@ -333,37 +363,37 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="557"/>
         <source>Probe export failed: %1</source>
-        <translation>1</translation>
+        <translation>プローブのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="562"/>
         <source>Probe data written to %1</source>
-        <translation>た</translation>
+        <translation>プローブデータを %1 に書き込みました</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="567"/>
         <source>Export Chart</source>
-        <translation>ト</translation>
+        <translation>グラフをエクスポート</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="568"/>
         <source>PNG Images</source>
-        <translation>像</translation>
+        <translation>PNG 画像</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="569"/>
         <source>PDF Documents</source>
-        <translation>ト</translation>
+        <translation>PDF ドキュメント</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="578"/>
         <source>Chart export failed: %1</source>
-        <translation>1</translation>
+        <translation>グラフのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="583"/>
         <source>Chart written to %1</source>
-        <translation>た</translation>
+        <translation>グラフを %1 に書き込みました</translation>
     </message>
 </context>
 <context>
@@ -384,27 +414,27 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/app.py" line="1094"/>
         <source>pyALDIC has hit an error</source>
-        <translation>た</translation>
+        <translation>pyALDIC でエラーが発生しました</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1095"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
-        <translation>。</translation>
+        <translation>予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1105"/>
         <source>Details were written to %1</source>
-        <translation>た</translation>
+        <translation>詳細を %1 に書き込みました</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1209"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
-        <translation>。</translation>
+        <translation>バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="1223"/>
         <source>Compute kernels ready (%1 s).</source>
-        <translation>。</translation>
+        <translation>計算カーネルの準備が完了しました（%1 秒）。</translation>
     </message>
 </context>
 <context>
@@ -512,7 +542,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="490"/>
         <source>Clear All</source>
-        <translation>すべてクリア</translation>
+        <translation>すべて消去</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="535"/>
@@ -1316,7 +1346,7 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
         <source>No animation was written. See the log for details.</source>
-        <translation>。</translation>
+        <translation>アニメーションは書き込まれませんでした。詳細はログを参照してください。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
@@ -1832,12 +1862,12 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="793"/>
         <source>Save Region of Interest Mask</source>
-        <translation>存</translation>
+        <translation>関心領域マスクを保存</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="795"/>
         <source>PNG Images</source>
-        <translation>像</translation>
+        <translation>PNG 画像</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="804"/>
@@ -2271,7 +2301,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
         <source>Import Mask Image</source>
-        <translation>ト</translation>
+        <translation>マスク画像をインポート</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
@@ -2839,12 +2869,12 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/strain_window.py" line="399"/>
         <source>Strain Field</source>
-        <translation>場</translation>
+        <translation>ひずみ場</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="401"/>
         <source>Analysis</source>
-        <translation>析</translation>
+        <translation>解析</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="476"/>

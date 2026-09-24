@@ -25,14 +25,20 @@ from typing import Any, Iterator, Literal, Sequence
 ProbeKind = Literal["point", "line", "area"]
 AreaShape = Literal["rect", "circle", "polygon"]
 
-#: Spatial reductions available to any probe that yields more than one sample.
-_SPATIAL_REDUCTIONS = frozenset(
-    {"mean", "median", "max", "min", "std", "valid_fraction"}
+#: Statistics over a probe's samples on one frame, in display order.
+SPATIAL_STATISTICS: tuple[str, ...] = (
+    "mean", "median", "max", "min", "std", "valid_fraction",
 )
-#: The identity reduction, for probes that yield exactly one sample.
-_POINT_REDUCTIONS = frozenset({"value"})
-#: Reductions computed from a line's two endpoints rather than from samples.
-_GAUGE_REDUCTIONS = frozenset({"strain", "cod"})
+#: Quantities from a line's two endpoints, in display order. The field does
+#: not apply: engineering and true (log) strain, elongation, and the crack
+#: opening's components along and across the gauge and its magnitude.
+GAUGE_QUANTITIES: tuple[str, ...] = (
+    "strain", "true_strain", "elongation",
+    "cod", "cod_sliding", "cod_magnitude",
+)
+#: What a single point stands in for: a one-sample region. Not ``std`` or
+#: ``valid_fraction``, which say nothing about one sample.
+POINT_STATISTICS: tuple[str, ...] = ("value", "mean", "median", "max", "min")
 
 _COLOUR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
@@ -176,14 +182,13 @@ def allowed_reductions(kind: ProbeKind) -> frozenset[str]:
     silently, which is what the reference does.
     """
     if kind == "point":
-        # A point yields one sample, so the only meaningful "reduction" is the
-        # sample itself. Naming it rather than quietly accepting "mean" keeps
-        # the CSV column honest about what it holds.
-        return _POINT_REDUCTIONS
+        # A point is a one-sample region, so it can join a chart of region or
+        # line means -- the same quantity on the same axis.
+        return frozenset(POINT_STATISTICS)
     if kind == "line":
-        return _SPATIAL_REDUCTIONS | _GAUGE_REDUCTIONS
+        return frozenset(SPATIAL_STATISTICS) | frozenset(GAUGE_QUANTITIES)
     if kind == "area":
-        return _SPATIAL_REDUCTIONS
+        return frozenset(SPATIAL_STATISTICS)
     raise ValueError(f"Unknown probe kind {kind!r}.")
 
 
@@ -317,14 +322,46 @@ class ProbeSet:
     def to_list(self) -> list[dict[str, Any]]:
         return [probe_to_dict(p) for p in self._probes]
 
+    def to_payload(self) -> dict[str, Any]:
+        """What a session file stores: the probes and the id counter.
+
+        The counter matters: rebuilt from the surviving ids alone, a deleted
+        probe's id comes back after a reload.
+        """
+        return {"items": self.to_list(), "next_id": int(self._next_id)}
+
     @staticmethod
-    def from_list(items: Sequence[dict[str, Any]]) -> "ProbeSet":
-        probes = [probe_from_dict(d) for d in items]
-        next_id = max((p.id for p in probes), default=0) + 1
-        return ProbeSet(_probes=probes, _next_id=next_id)
+    def from_list(
+        items: Sequence[dict[str, Any]], next_id: int | None = None
+    ) -> "ProbeSet":
+        if not isinstance(items, (list, tuple)):
+            raise ValueError("Probe items must be a list.")
+        probes = []
+        for d in items:
+            if not isinstance(d, dict):
+                raise ValueError(f"A probe must be an object, got {d!r}.")
+            probes.append(probe_from_dict(d))
+        ids = [p.id for p in probes]
+        if len(ids) != len(set(ids)):
+            raise ValueError(f"Probe ids must be unique; duplicate in {ids}.")
+        floor = max(ids, default=0) + 1
+        start = max(int(next_id), floor) if next_id is not None else floor
+        return ProbeSet(_probes=probes, _next_id=start)
+
+    @staticmethod
+    def from_payload(payload: Any) -> "ProbeSet":
+        """Accept ``to_payload`` output, or the bare list early files used."""
+        if payload is None:
+            return ProbeSet()
+        if isinstance(payload, dict):
+            return ProbeSet.from_list(
+                payload.get("items", []), payload.get("next_id")
+            )
+        return ProbeSet.from_list(payload)
 
 
 __all__ = [
+    "GAUGE_QUANTITIES", "POINT_STATISTICS", "SPATIAL_STATISTICS",
     "AreaGeom", "AreaShape", "DEFAULT_COLOURS", "Geometry", "LineGeom",
     "PointGeom", "Probe", "ProbeKind", "ProbeSet", "allowed_reductions",
     "probe_from_dict", "probe_to_dict", "replace",

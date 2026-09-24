@@ -41,12 +41,13 @@ def field_unit(name: str, length_unit: str) -> str:
     """Unit string for *name* given the project's configured *length_unit*.
 
     Displacements take the length unit; strains are dimensionless and return an
-    empty string; rotation is an angle and returns ``"rad"`` whatever the length
-    unit is.
+    empty string; rotation is an angle in degrees whatever the length unit is
+    -- ``compute_strain`` stores it via ``np.degrees``. It was labelled "rad"
+    here, so a 2 degree rotation read as 2 radians on the chart and in the CSV.
     """
     validate_field(name)
     if name in _ANGLE_FIELDS:
-        return "rad"
+        return "°"
     if is_strain_field(name):
         return ""
     return length_unit

@@ -149,7 +149,9 @@ def test_reductions_offered_follow_the_probe_kind(tab):
         tab._reduction_box.itemData(i)
         for i in range(tab._reduction_box.count())
     }
-    assert point_reductions == {"value"}
+    # A point is a one-sample region: its value stands in for a mean, a
+    # median or an extreme, but not for a spread.
+    assert point_reductions == {"value", "mean", "median", "max", "min"}
 
     tab._kind_box.setCurrentIndex(tab._kind_box.findData("line"))
     tab._populate_reduction_box()

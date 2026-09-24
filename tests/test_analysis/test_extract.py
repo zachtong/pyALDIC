@@ -94,20 +94,24 @@ def test_point_probe_series():
     assert ts.unit == "px"
 
 
-def test_point_probe_rejects_a_reduction():
+def test_point_probe_rejects_a_statistic_one_sample_cannot_have():
+    """A point is a one-sample region: mean and median are its value, but a
+    standard deviation of one sample says nothing."""
     r = _result()
     p = Probe(id=1, kind="point", geometry=PointGeom(20.0, 20.0),
               label="p", color="#FF0000")
     with pytest.raises(ValueError, match="does not apply"):
-        extract_series(r, p, "disp_u", "median")
+        extract_series(r, p, "disp_u", "std")
+    median = extract_series(r, p, "disp_u", "median")
+    np.testing.assert_allclose(median.values, [0.0, 0.2, 0.4, 0.6], atol=1e-9)
 
 
-def test_area_probe_mean_over_nodes():
+def test_area_probe_mean_is_area_weighted():
     r = _result(strain_rate=0.01)
     p = Probe(id=1, kind="area", geometry=AreaGeom.rect(0.0, 0.0, 8.0, 8.0),
               label="a", color="#00FF00")
     ts = extract_series(r, p, "disp_u", "mean")
-    # x over {0, 4, 8} averages to 4 -> u = 0.01 * frame * 4
+    # Mean of x over the square [0, 8] is 4 -> u = 0.01 * frame * 4
     np.testing.assert_allclose(ts.values, [0.0, 0.04, 0.08, 0.12], atol=1e-9)
 
 
@@ -156,32 +160,48 @@ def _slit(size: int = 64) -> np.ndarray:
     return m
 
 
-def test_gauge_strain_across_a_crack_breaks_but_cod_does_not():
-    """The agreed asymmetry.
+def _opening_at(frame: int, r) -> list[np.ndarray]:
+    """Per-frame masks with the slit appearing on *frame*."""
+    clear = np.ones((64, 64), dtype=np.float64)
+    return [clear if f < frame else _slit() for f in range(frame_count(r))]
 
-    (L - L0)/L0 stops being strain once the gauge spans a discontinuity, but
-    the separation it measures is exactly what a crack-opening gauge is for.
+
+def test_a_gauge_keeps_reading_when_a_crack_opens_across_it():
+    """Elongation at break is a standard output; the frame is marked instead.
+
+    The first version blanked the strain from the frame the crack arrived.
     """
     r = _result(strain_rate=0.01)
-    masks = [_slit()] * frame_count(r)
     p = Probe(id=1, kind="line", geometry=LineGeom(4.0, 20.0, 36.0, 20.0),
               label="g", color="#0000FF")
+    masks = _opening_at(2, r)
+    strain = extract_series(r, p, None, "strain", masks=masks)
+    assert np.isfinite(strain.values).all()
+    assert strain.status[1] is FrameStatus.OK
+    assert strain.status[2] is FrameStatus.CRACK
 
-    strain = extract_series(r, p, "disp_u", "strain", masks=masks)
-    assert all(np.isnan(v) for v in strain.values)
-    assert strain.status[1] is FrameStatus.CROSSES_CRACK
-
-    cod = extract_series(r, p, "disp_u", "cod", masks=masks)
-    assert np.isfinite(cod.values[1:]).all()
+    cod = extract_series(r, p, None, "cod", masks=masks)
+    assert np.isfinite(cod.values).all()
 
 
-def test_area_probe_spanning_a_crack_breaks():
+def test_a_slit_present_from_frame_zero_is_part_of_the_specimen():
+    """A notch is geometry, not an event: no crack mark on any frame."""
     r = _result(strain_rate=0.01)
-    masks = [_slit()] * frame_count(r)
+    p = Probe(id=1, kind="line", geometry=LineGeom(4.0, 20.0, 36.0, 20.0),
+              label="g", color="#0000FF")
+    ts = extract_series(r, p, None, "strain", ref_mask=_slit())
+    assert np.isfinite(ts.values).all()
+    assert set(ts.status) == {FrameStatus.OK}
+
+
+def test_an_area_a_crack_opens_through_keeps_its_value_and_is_marked():
+    r = _result(strain_rate=0.01)
     p = Probe(id=1, kind="area", geometry=AreaGeom.rect(8.0, 8.0, 28.0, 28.0),
               label="a", color="#00FF00")
-    ts = extract_series(r, p, "disp_u", "mean", masks=masks)
-    assert all(s is FrameStatus.CROSSES_CRACK for s in ts.status)
+    ts = extract_series(r, p, "disp_u", "mean", masks=_opening_at(2, r))
+    assert ts.status[1] is FrameStatus.OK
+    assert ts.status[2] is FrameStatus.CRACK
+    assert np.isfinite(ts.values[2])
 
 
 def test_probe_away_from_the_crack_is_unaffected():
@@ -190,5 +210,6 @@ def test_probe_away_from_the_crack_is_unaffected():
               label="a", color="#00FF00")
     without = extract_series(r, p, "disp_u", "mean")
     with_mask = extract_series(r, p, "disp_u", "mean",
-                               masks=[_slit()] * frame_count(r))
+                               masks=_opening_at(1, r))
     np.testing.assert_array_equal(without.values, with_mask.values)
+    assert without.status == with_mask.status

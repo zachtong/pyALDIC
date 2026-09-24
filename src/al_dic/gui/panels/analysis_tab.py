@@ -490,6 +490,9 @@ class AnalysisTab(QWidget):
             try:
                 series = extract_series(
                     result, probe, field, reduction,
+                    # Holes and notches present from frame 0. Cracks need no
+                    # mask: consumed material has NaN U_accum.
+                    ref_mask=self._state.per_frame_rois.get(0),
                     pixel_size=self._pixel_size(),
                     length_unit=self._length_unit(),
                     min_valid_fraction=self._threshold.value(),

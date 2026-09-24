@@ -47,6 +47,12 @@ _RESULTS_NAME = "results.npz"
 ProgressFn = Callable[[float, str], None]
 
 
+def _empty_probes():
+    from al_dic.analysis.probes import ProbeSet
+
+    return ProbeSet()
+
+
 class SessionError(Exception):
     """Raised when a session file cannot be parsed or applied cleanly."""
 
@@ -68,8 +74,9 @@ class SessionData:
     physical_units: dict[str, Any] = field(default_factory=dict)
     view_state: dict[str, Any] = field(default_factory=dict)
     fingerprint: dict[str, Any] = field(default_factory=dict)
-    # Serialised probe definitions; empty for sessions written before schema 3.
-    probes: list[dict[str, Any]] = field(default_factory=list)
+    # Parsed probes; empty for sessions written before schema 3. Parsed when
+    # the file is read, so applying a session can no longer fail halfway.
+    probes: "ProbeSet" = field(default_factory=lambda: _empty_probes())
     results: PipelineResult | None = None
 
 
@@ -218,7 +225,7 @@ def _build_config(state: AppState, has_results: bool,
         # Post-processing probes. A probe someone placed and named is work,
         # and losing it on save/reopen would be as surprising as losing a
         # Region of Interest.
-        "probes": state.probes.to_list(),
+        "probes": state.probes.to_payload(),
         "params": {k: _get_state_field(state, k) for k in _PARAM_KEYS},
         "physical_units": {k: _get_state_field(state, k) for k in _PHYSICAL_KEYS},
         "view_state": _build_view_state(state),
@@ -420,11 +427,17 @@ def _parse_config(doc: Any) -> SessionData:
     brush_payload = doc.get("refine_brush_mask")
     brush = _decode_mask(brush_payload) if brush_payload else None
 
-    # Absent before schema 3. A malformed entry is worth reporting rather
-    # than dropping: the geometry is user work, not a derived cache.
-    probes_payload = doc.get("probes") or []
-    if not isinstance(probes_payload, list):
-        raise SessionError("Session 'probes' must be a list.")
+    # Absent before schema 3. Parsed here, before anything touches the
+    # running state: a malformed probe used to be discovered only after
+    # apply_session had already cleared the open project's results. Any
+    # failure is a SessionError -- an AttributeError from a non-dict entry
+    # used to escape the application's handler.
+    from al_dic.analysis.probes import ProbeSet
+
+    try:
+        probes = ProbeSet.from_payload(doc.get("probes"))
+    except (ValueError, KeyError, TypeError, AttributeError) as exc:
+        raise SessionError(f"Session contains an unreadable probe: {exc}") from exc
 
     return SessionData(
         schema_version=version,
@@ -432,7 +445,7 @@ def _parse_config(doc: Any) -> SessionData:
         image_files=list(doc.get("image_files") or []),
         per_frame_rois=rois,
         refine_brush_mask=brush,
-        probes=probes_payload,
+        probes=probes,
         params=dict(doc.get("params") or {}),
         physical_units=dict(doc.get("physical_units") or {}),
         view_state=dict(doc.get("view_state") or {}),
@@ -503,14 +516,8 @@ def apply_session(
     state.set_run_state(RunState.IDLE)
     state.results = None
 
-    # Probes first: they are plain geometry with no dependency on images or
-    # results, so restoring them cannot fail for reasons the user has to fix.
-    from al_dic.analysis.probes import ProbeSet
-
-    try:
-        state.probes = ProbeSet.from_list(session.probes)
-    except (ValueError, KeyError, TypeError) as exc:
-        raise SessionError(f"Session contains an unreadable probe: {exc}") from exc
+    # Already parsed and validated by load_session; assigning cannot fail.
+    state.probes = session.probes
 
     # Image folder re-load.  Locate the images (they may have moved with the
     # project) and load them BEFORE results are restored below: image loading

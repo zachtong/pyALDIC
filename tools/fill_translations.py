@@ -1730,6 +1730,477 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Ce qui remplace l'image lorsqu'elle est masquée. À l'export, la transparence est conservée pour PNG et TIFF ; les autres formats reçoivent du blanc.",
         "es":    "Lo que reemplaza a la imagen cuando está oculta. Al exportar, la transparencia se conserva para PNG y TIFF; los demás formatos reciben blanco.",
     },
+    # ===== Moved from NUMERUS_TRANSLATIONS (misfiled as plurals) =====
+    "Analysis": {
+        "zh_CN": "分析", "zh_TW": "分析", "ja": "解析", "ko": "분석",
+        "de": "Analyse", "fr": "Analyse", "es": "Análisis",
+    },
+    "Strain Field": {
+        "zh_CN": "应变场", "zh_TW": "應變場", "ja": "ひずみ場", "ko": "변형률 장",
+        "de": "Dehnungsfeld", "fr": "Champ de déformation",
+        "es": "Campo de deformación",
+    },
+    "Point": {
+        "zh_CN": "点", "zh_TW": "點", "ja": "点", "ko": "점",
+        "de": "Punkt", "fr": "Point", "es": "Punto",
+    },
+    "Line": {
+        "zh_CN": "线段", "zh_TW": "線段", "ja": "線分", "ko": "선분",
+        "de": "Linie", "fr": "Ligne", "es": "Línea",
+    },
+    "Rectangle": {
+        "zh_CN": "矩形", "zh_TW": "矩形", "ja": "矩形", "ko": "사각형",
+        "de": "Rechteck", "fr": "Rectangle", "es": "Rectángulo",
+    },
+    "Circle": {
+        "zh_CN": "圆形", "zh_TW": "圓形", "ja": "円", "ko": "원",
+        "de": "Kreis", "fr": "Cercle", "es": "Círculo",
+    },
+    "Polygon": {
+        "zh_CN": "多边形", "zh_TW": "多邊形", "ja": "多角形", "ko": "다각형",
+        "de": "Polygon", "fr": "Polygone", "es": "Polígono",
+    },
+    "Click once to place a point probe.": {
+        "zh_CN": "单击一次放置点探针。",
+        "zh_TW": "按一下放置點探針。",
+        "ja": "1 回クリックして点プローブを配置します。",
+        "ko": "한 번 클릭하여 점 프로브를 배치합니다.",
+        "de": "Einmal klicken, um eine Punktsonde zu setzen.",
+        "fr": "Cliquez une fois pour placer une sonde ponctuelle.",
+        "es": "Haga clic una vez para colocar una sonda puntual.",
+    },
+    "Click twice: start and end of the gauge.": {
+        "zh_CN": "单击两次：标距的起点和终点。",
+        "zh_TW": "按兩下：標距的起點與終點。",
+        "ja": "2 回クリック：標点間の始点と終点。",
+        "ko": "두 번 클릭: 게이지의 시작점과 끝점.",
+        "de": "Zweimal klicken: Anfang und Ende der Messlänge.",
+        "fr": "Cliquez deux fois : début et fin de la base de mesure.",
+        "es": "Haga clic dos veces: inicio y fin de la base de medida.",
+    },
+    "Click twice: opposite corners.": {
+        "zh_CN": "单击两次：对角两点。",
+        "zh_TW": "按兩下：對角兩點。",
+        "ja": "2 回クリック：対角の 2 点。",
+        "ko": "두 번 클릭: 마주 보는 두 모서리.",
+        "de": "Zweimal klicken: gegenüberliegende Ecken.",
+        "fr": "Cliquez deux fois : coins opposés.",
+        "es": "Haga clic dos veces: esquinas opuestas.",
+    },
+    "Click twice: centre, then the edge.": {
+        "zh_CN": "单击两次：先圆心，后边缘。",
+        "zh_TW": "按兩下：先圓心，後邊緣。",
+        "ja": "2 回クリック：中心、次に円周。",
+        "ko": "두 번 클릭: 중심, 그다음 가장자리.",
+        "de": "Zweimal klicken: Mittelpunkt, dann Rand.",
+        "fr": "Cliquez deux fois : centre, puis bord.",
+        "es": "Haga clic dos veces: centro y luego borde.",
+    },
+    "Click each vertex, then double-click to close.": {
+        "zh_CN": "逐个单击顶点，双击闭合。",
+        "zh_TW": "逐一按下頂點，按兩下閉合。",
+        "ja": "各頂点をクリックし、ダブルクリックで閉じます。",
+        "ko": "각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.",
+        "de": "Jeden Eckpunkt anklicken, dann per Doppelklick schließen.",
+        "fr": "Cliquez sur chaque sommet, puis double-cliquez pour fermer.",
+        "es": "Haga clic en cada vértice y doble clic para cerrar.",
+    },
+    "Esc cancels placement": {
+        "zh_CN": "Esc 取消放置",
+        "zh_TW": "Esc 取消放置",
+        "ja": "Esc で配置をキャンセル",
+        "ko": "Esc 키로 배치 취소",
+        "de": "Esc bricht das Setzen ab",
+        "fr": "Esc annule le placement",
+        "es": "Esc cancela la colocación",
+    },
+    "Show": {
+        "zh_CN": "显示", "zh_TW": "顯示", "ja": "表示", "ko": "표시",
+        "de": "Anzeigen", "fr": "Afficher", "es": "Mostrar",
+    },
+    "Name": {
+        "zh_CN": "名称", "zh_TW": "名稱", "ja": "名前", "ko": "이름",
+        "de": "Name", "fr": "Nom", "es": "Nombre",
+    },
+    "Type": {
+        "zh_CN": "类型", "zh_TW": "類型", "ja": "種類", "ko": "종류",
+        "de": "Typ", "fr": "Type", "es": "Tipo",
+    },
+    "Colour": {
+        "zh_CN": "颜色", "zh_TW": "顏色", "ja": "色", "ko": "색상",
+        "de": "Farbe", "fr": "Couleur", "es": "Color",
+    },
+    "Colour…": {
+        "zh_CN": "颜色…", "zh_TW": "顏色…", "ja": "色…", "ko": "색상…",
+        "de": "Farbe…", "fr": "Couleur…", "es": "Color…",
+    },
+    "Delete": {
+        "zh_CN": "删除", "zh_TW": "刪除", "ja": "削除", "ko": "삭제",
+        "de": "Löschen", "fr": "Supprimer", "es": "Eliminar",
+    },
+    "Clear All": {
+        "zh_CN": "全部清除", "zh_TW": "全部清除", "ja": "すべて消去",
+        "ko": "모두 지우기", "de": "Alle löschen", "fr": "Tout effacer",
+        "es": "Borrar todo",
+    },
+    "Clear All Probes": {
+        "zh_CN": "清除所有探针", "zh_TW": "清除所有探針",
+        "ja": "すべてのプローブを消去", "ko": "모든 프로브 지우기",
+        "de": "Alle Sonden löschen", "fr": "Effacer toutes les sondes",
+        "es": "Borrar todas las sondas",
+    },
+    "Delete every probe? This cannot be undone.": {
+        "zh_CN": "删除所有探针？此操作无法撤销。",
+        "zh_TW": "刪除所有探針？此操作無法復原。",
+        "ja": "すべてのプローブを削除しますか？この操作は取り消せません。",
+        "ko": "모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.",
+        "de": "Alle Sonden löschen? Das lässt sich nicht rückgängig machen.",
+        "fr": "Supprimer toutes les sondes ? Cette action est irréversible.",
+        "es": "¿Eliminar todas las sondas? Esta acción no se puede deshacer.",
+    },
+    "Added probe '%1'.": {
+        "zh_CN": "已添加探针「%1」。",
+        "zh_TW": "已新增探針「%1」。",
+        "ja": "プローブ「%1」を追加しました。",
+        "ko": "프로브 '%1'을(를) 추가했습니다.",
+        "de": "Sonde '%1' hinzugefügt.",
+        "fr": "Sonde « %1 » ajoutée.",
+        "es": "Sonda «%1» añadida.",
+    },
+    "Compare:": {
+        "zh_CN": "比较：", "zh_TW": "比較：", "ja": "比較：", "ko": "비교:",
+        "de": "Vergleichen:", "fr": "Comparer :", "es": "Comparar:",
+    },
+    "Field:": {
+        "zh_CN": "字段：", "zh_TW": "欄位：", "ja": "フィールド：", "ko": "필드:",
+        "de": "Feld:", "fr": "Champ :", "es": "Campo:",
+    },
+    "Statistic:": {
+        "zh_CN": "统计量：", "zh_TW": "統計量：", "ja": "統計量：", "ko": "통계량:",
+        "de": "Statistik:", "fr": "Statistique :", "es": "Estadístico:",
+    },
+    "Point probes": {
+        "zh_CN": "点探针", "zh_TW": "點探針", "ja": "点プローブ", "ko": "점 프로브",
+        "de": "Punktsonden", "fr": "Sondes ponctuelles", "es": "Sondas puntuales",
+    },
+    "Line probes": {
+        "zh_CN": "线探针", "zh_TW": "線探針", "ja": "線プローブ", "ko": "선 프로브",
+        "de": "Liniensonden", "fr": "Sondes linéaires", "es": "Sondas lineales",
+    },
+    "Region probes": {
+        "zh_CN": "区域探针", "zh_TW": "區域探針", "ja": "領域プローブ",
+        "ko": "영역 프로브", "de": "Bereichssonden",
+        "fr": "Sondes de région", "es": "Sondas de región",
+    },
+    "Value": {
+        "zh_CN": "数值", "zh_TW": "數值", "ja": "値", "ko": "값",
+        "de": "Wert", "fr": "Valeur", "es": "Valor",
+    },
+    "Mean": {
+        "zh_CN": "平均值", "zh_TW": "平均值", "ja": "平均", "ko": "평균",
+        "de": "Mittelwert", "fr": "Moyenne", "es": "Media",
+    },
+    "Median": {
+        "zh_CN": "中位数", "zh_TW": "中位數", "ja": "中央値", "ko": "중앙값",
+        "de": "Median", "fr": "Médiane", "es": "Mediana",
+    },
+    "Maximum": {
+        "zh_CN": "最大值", "zh_TW": "最大值", "ja": "最大値", "ko": "최댓값",
+        "de": "Maximum", "fr": "Maximum", "es": "Máximo",
+    },
+    "Minimum": {
+        "zh_CN": "最小值", "zh_TW": "最小值", "ja": "最小値", "ko": "최솟값",
+        "de": "Minimum", "fr": "Minimum", "es": "Mínimo",
+    },
+    "Standard deviation": {
+        "zh_CN": "标准差", "zh_TW": "標準差", "ja": "標準偏差", "ko": "표준편차",
+        "de": "Standardabweichung", "fr": "Écart-type", "es": "Desviación típica",
+    },
+    "Valid fraction": {
+        "zh_CN": "有效比例", "zh_TW": "有效比例", "ja": "有効割合",
+        "ko": "유효 비율", "de": "Gültiger Anteil", "fr": "Fraction valide",
+        "es": "Fracción válida",
+    },
+    "Engineering strain": {
+        "zh_CN": "工程应变", "zh_TW": "工程應變", "ja": "公称ひずみ",
+        "ko": "공칭 변형률", "de": "Technische Dehnung",
+        "fr": "Déformation nominale", "es": "Deformación ingenieril",
+    },
+    "Crack opening": {
+        "zh_CN": "裂纹张开位移", "zh_TW": "裂縫張開位移", "ja": "き裂開口変位",
+        "ko": "균열 열림 변위", "de": "Rissöffnung",
+        "fr": "Ouverture de fissure", "es": "Apertura de fisura",
+    },
+    "Minimum valid fraction:": {
+        "zh_CN": "最低有效比例：", "zh_TW": "最低有效比例：",
+        "ja": "最小有効割合：", "ko": "최소 유효 비율:",
+        "de": "Mindestanteil gültiger Punkte:",
+        "fr": "Fraction valide minimale :",
+        "es": "Fracción válida mínima:",
+    },
+    "A frame is left blank when fewer than this fraction of the probe's points are reliable. Guards against a curve that stays smooth while its sample shrinks away.": {
+        "zh_CN": "当探针中可靠点的比例低于此值时，该帧留空。用于防止曲线在样本量悄悄塌陷时依然平滑。",
+        "zh_TW": "當探針中可靠點的比例低於此值時，該影格留空。用於防止曲線在樣本量悄悄塌陷時依然平滑。",
+        "ja": "プローブの信頼できる点の割合がこの値を下回るフレームは空欄になります。標本数が減っていくのに曲線が滑らかなまま見えることを防ぎます。",
+        "ko": "프로브의 신뢰할 수 있는 점 비율이 이 값보다 낮은 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 보이는 것을 막습니다.",
+        "de": "Ein Bild bleibt leer, wenn weniger als dieser Anteil der Sondenpunkte zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe verschwindet.",
+        "fr": "Une image reste vide lorsque moins que cette fraction des points de la sonde est fiable. Évite une courbe qui reste lisse pendant que son échantillon disparaît.",
+        "es": "Un fotograma se deja vacío cuando menos de esta fracción de los puntos de la sonda es fiable. Evita una curva que sigue siendo suave mientras su muestra se reduce.",
+    },
+    "Run a DIC analysis to plot probes.": {
+        "zh_CN": "请先运行 DIC 分析，然后才能绘制探针曲线。",
+        "zh_TW": "請先執行 DIC 分析，才能繪製探針曲線。",
+        "ja": "プローブを描画するには、先に DIC 解析を実行してください。",
+        "ko": "프로브를 그리려면 먼저 DIC 분석을 실행하세요.",
+        "de": "Führen Sie eine DIC-Analyse aus, um Sonden darzustellen.",
+        "fr": "Lancez une analyse DIC pour tracer les sondes.",
+        "es": "Ejecute un análisis DIC para representar las sondas.",
+    },
+    "Place a probe on the reference image to begin.": {
+        "zh_CN": "在参考图像上放置一个探针即可开始。",
+        "zh_TW": "在參考影像上放置一個探針即可開始。",
+        "ja": "参照画像にプローブを配置すると始まります。",
+        "ko": "기준 이미지에 프로브를 배치하면 시작됩니다.",
+        "de": "Setzen Sie eine Sonde auf das Referenzbild, um zu beginnen.",
+        "fr": "Placez une sonde sur l'image de référence pour commencer.",
+        "es": "Coloque una sonda en la imagen de referencia para empezar.",
+    },
+    "This statistic does not apply here.": {
+        "zh_CN": "该统计量不适用于此处。",
+        "zh_TW": "此統計量不適用於此處。",
+        "ja": "この統計量はここでは適用できません。",
+        "ko": "이 통계량은 여기에 적용되지 않습니다.",
+        "de": "Diese Statistik ist hier nicht anwendbar.",
+        "fr": "Cette statistique ne s'applique pas ici.",
+        "es": "Este estadístico no se aplica aquí.",
+    },
+    "Shaded frames: %1": {
+        "zh_CN": "阴影帧：%1",
+        "zh_TW": "陰影影格：%1",
+        "ja": "網掛けフレーム：%1",
+        "ko": "음영 처리된 프레임: %1",
+        "de": "Schattierte Bilder: %1",
+        "fr": "Images grisées : %1",
+        "es": "Fotogramas sombreados: %1",
+    },
+    "crosses a crack": {
+        "zh_CN": "跨越裂纹", "zh_TW": "跨越裂縫", "ja": "き裂を横断",
+        "ko": "균열을 가로지름", "de": "kreuzt einen Riss",
+        "fr": "traverse une fissure", "es": "cruza una fisura",
+    },
+    "too few valid points": {
+        "zh_CN": "有效点过少", "zh_TW": "有效點過少", "ja": "有効な点が少なすぎます",
+        "ko": "유효한 점이 너무 적음", "de": "zu wenige gültige Punkte",
+        "fr": "trop peu de points valides", "es": "muy pocos puntos válidos",
+    },
+    "no data": {
+        "zh_CN": "无数据", "zh_TW": "無資料", "ja": "データなし",
+        "ko": "데이터 없음", "de": "keine Daten", "fr": "aucune donnée",
+        "es": "sin datos",
+    },
+    "Distance along line (%1)": {
+        "zh_CN": "沿线距离（%1）",
+        "zh_TW": "沿線距離（%1）",
+        "ja": "線に沿った距離（%1）",
+        "ko": "선을 따른 거리(%1)",
+        "de": "Abstand entlang der Linie (%1)",
+        "fr": "Distance le long de la ligne (%1)",
+        "es": "Distancia a lo largo de la línea (%1)",
+    },
+    "Export CSV…": {
+        "zh_CN": "导出 CSV…", "zh_TW": "匯出 CSV…", "ja": "CSV をエクスポート…",
+        "ko": "CSV 내보내기…", "de": "CSV exportieren…",
+        "fr": "Exporter en CSV…", "es": "Exportar CSV…",
+    },
+    "Export Chart…": {
+        "zh_CN": "导出图表…", "zh_TW": "匯出圖表…", "ja": "グラフをエクスポート…",
+        "ko": "차트 내보내기…", "de": "Diagramm exportieren…",
+        "fr": "Exporter le graphique…", "es": "Exportar gráfico…",
+    },
+    "Export Chart": {
+        "zh_CN": "导出图表", "zh_TW": "匯出圖表", "ja": "グラフをエクスポート",
+        "ko": "차트 내보내기", "de": "Diagramm exportieren",
+        "fr": "Exporter le graphique", "es": "Exportar gráfico",
+    },
+    "Export Probe Data": {
+        "zh_CN": "导出探针数据", "zh_TW": "匯出探針資料",
+        "ja": "プローブデータをエクスポート", "ko": "프로브 데이터 내보내기",
+        "de": "Sondendaten exportieren", "fr": "Exporter les données de sonde",
+        "es": "Exportar datos de sonda",
+    },
+    "There is nothing to export yet.": {
+        "zh_CN": "目前没有可导出的内容。",
+        "zh_TW": "目前沒有可匯出的內容。",
+        "ja": "エクスポートできるものがまだありません。",
+        "ko": "아직 내보낼 내용이 없습니다.",
+        "de": "Es gibt noch nichts zu exportieren.",
+        "fr": "Il n'y a encore rien à exporter.",
+        "es": "Todavía no hay nada que exportar.",
+    },
+    "Probe data written to %1": {
+        "zh_CN": "探针数据已写入 %1",
+        "zh_TW": "探針資料已寫入 %1",
+        "ja": "プローブデータを %1 に書き込みました",
+        "ko": "프로브 데이터를 %1에 기록했습니다",
+        "de": "Sondendaten nach %1 geschrieben",
+        "fr": "Données de sonde écrites dans %1",
+        "es": "Datos de sonda escritos en %1",
+    },
+    "Probe export failed: %1": {
+        "zh_CN": "探针导出失败：%1",
+        "zh_TW": "探針匯出失敗：%1",
+        "ja": "プローブのエクスポートに失敗しました：%1",
+        "ko": "프로브 내보내기 실패: %1",
+        "de": "Sondenexport fehlgeschlagen: %1",
+        "fr": "Échec de l'export de la sonde : %1",
+        "es": "Error al exportar la sonda: %1",
+    },
+    "Chart written to %1": {
+        "zh_CN": "图表已写入 %1",
+        "zh_TW": "圖表已寫入 %1",
+        "ja": "グラフを %1 に書き込みました",
+        "ko": "차트를 %1에 기록했습니다",
+        "de": "Diagramm nach %1 geschrieben",
+        "fr": "Graphique écrit dans %1",
+        "es": "Gráfico escrito en %1",
+    },
+    "Chart export failed: %1": {
+        "zh_CN": "图表导出失败：%1",
+        "zh_TW": "圖表匯出失敗：%1",
+        "ja": "グラフのエクスポートに失敗しました：%1",
+        "ko": "차트 내보내기 실패: %1",
+        "de": "Diagrammexport fehlgeschlagen: %1",
+        "fr": "Échec de l'export du graphique : %1",
+        "es": "Error al exportar el gráfico: %1",
+    },
+    "CSV Files": {
+        "zh_CN": "CSV 文件", "zh_TW": "CSV 檔案", "ja": "CSV ファイル",
+        "ko": "CSV 파일", "de": "CSV-Dateien", "fr": "Fichiers CSV",
+        "es": "Archivos CSV",
+    },
+    "PDF Documents": {
+        "zh_CN": "PDF 文档", "zh_TW": "PDF 文件", "ja": "PDF ドキュメント",
+        "ko": "PDF 문서", "de": "PDF-Dokumente", "fr": "Documents PDF",
+        "es": "Documentos PDF",
+    },
+    "pyALDIC has hit an error": {
+        "zh_CN": "pyALDIC 发生错误",
+        "zh_TW": "pyALDIC 發生錯誤",
+        "ja":    "pyALDIC でエラーが発生しました",
+        "ko":    "pyALDIC에서 오류가 발생했습니다",
+        "de":    "In pyALDIC ist ein Fehler aufgetreten",
+        "fr":    "pyALDIC a rencontré une erreur",
+        "es":    "pyALDIC ha encontrado un error",
+    },
+    "An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.": {
+        "zh_CN": "发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。",
+        "zh_TW": "發生了非預期的錯誤。應用程式之後的行為可能不正常，建議儲存會話並重新啟動。",
+        "ja":    "予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。",
+        "ko":    "예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.",
+        "de":    "Ein unerwarteter Fehler ist aufgetreten. Die Anwendung verhält sich möglicherweise nicht mehr korrekt; es wird empfohlen, die Sitzung zu speichern und neu zu starten.",
+        "fr":    "Une erreur inattendue s'est produite. L'application risque de ne plus fonctionner correctement ; il est recommandé d'enregistrer la session et de redémarrer.",
+        "es":    "Se ha producido un error inesperado. Es posible que la aplicación no funcione correctamente a partir de ahora; se recomienda guardar la sesión y reiniciar.",
+    },
+    "Details were written to %1": {
+        "zh_CN": "详细信息已写入 %1",
+        "zh_TW": "詳細資訊已寫入 %1",
+        "ja":    "詳細を %1 に書き込みました",
+        "ko":    "자세한 내용을 %1에 기록했습니다",
+        "de":    "Details wurden nach %1 geschrieben",
+        "fr":    "Les détails ont été écrits dans %1",
+        "es":    "Los detalles se han escrito en %1",
+    },
+    "Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.": {
+        "zh_CN": "正在后台准备计算内核。新安装后的首次分析会比之后的耗时更长。",
+        "zh_TW": "正在背景準備計算核心。新安裝後的首次分析會比之後的耗時更長。",
+        "ja":    "バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。",
+        "ko":    "백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.",
+        "de":    "Rechenkernel werden im Hintergrund vorbereitet. Die erste Analyse einer neuen Installation dauert länger als die folgenden.",
+        "fr":    "Préparation des noyaux de calcul en arrière-plan. La première analyse après une nouvelle installation prend plus de temps que les suivantes.",
+        "es":    "Preparando los núcleos de cálculo en segundo plano. El primer análisis tras una instalación nueva tarda más que los siguientes.",
+    },
+    "Compute kernels ready (%1 s).": {
+        "zh_CN": "计算内核已就绪（%1 秒）。",
+        "zh_TW": "計算核心已就緒（%1 秒）。",
+        "ja":    "計算カーネルの準備が完了しました（%1 秒）。",
+        "ko":    "계산 커널 준비 완료(%1초).",
+        "de":    "Rechenkernel bereit (%1 s).",
+        "fr":    "Noyaux de calcul prêts (%1 s).",
+        "es":    "Núcleos de cálculo listos (%1 s).",
+    },
+    "No animation was written. See the log for details.": {
+        "zh_CN": "未写入任何动画。详情请查看日志。",
+        "zh_TW": "未寫入任何動畫。詳情請查看日誌。",
+        "ja":    "アニメーションは書き込まれませんでした。詳細はログを参照してください。",
+        "ko":    "애니메이션이 기록되지 않았습니다. 자세한 내용은 로그를 확인하세요.",
+        "de":    "Es wurde keine Animation geschrieben. Einzelheiten siehe Protokoll.",
+        "fr":    "Aucune animation n'a été écrite. Consultez le journal pour plus de détails.",
+        "es":    "No se ha escrito ninguna animación. Consulte el registro para más detalles.",
+    },
+    "Save Region of Interest Mask": {
+        "zh_CN": "保存感兴趣区域掩模",
+        "zh_TW": "儲存感興趣區域遮罩",
+        "ja":    "関心領域マスクを保存",
+        "ko":    "관심 영역 마스크 저장",
+        "de":    "Region-of-Interest-Maske speichern",
+        "fr":    "Enregistrer le masque de région d'intérêt",
+        "es":    "Guardar máscara de región de interés",
+    },
+    "Import Mask Image": {
+        "zh_CN": "导入掩模图像",
+        "zh_TW": "匯入遮罩影像",
+        "ja":    "マスク画像をインポート",
+        "ko":    "마스크 이미지 가져오기",
+        "de":    "Maskenbild importieren",
+        "fr":    "Importer une image de masque",
+        "es":    "Importar imagen de máscara",
+    },
+    "PNG Images": {
+        "zh_CN": "PNG 图像",
+        "zh_TW": "PNG 影像",
+        "ja":    "PNG 画像",
+        "ko":    "PNG 이미지",
+        "de":    "PNG-Bilder",
+        "fr":    "Images PNG",
+        "es":    "Imágenes PNG",
+    },
+    # ===== Analysis chart: why a frame is marked ==========================
+    "crack": {
+        "zh_CN": "裂纹",
+        "zh_TW": "裂紋",
+        "ja":    "き裂",
+        "ko":    "균열",
+        "de":    "Riss",
+        "fr":    "fissure",
+        "es":    "grieta",
+    },
+    "gauge endpoint lost": {
+        "zh_CN": "量规端点失效",
+        "zh_TW": "量規端點失效",
+        "ja":    "ゲージ端点が無効",
+        "ko":    "게이지 끝점 상실",
+        "de":    "Endpunkt der Messstrecke verloren",
+        "fr":    "extrémité de jauge perdue",
+        "es":    "extremo del calibre perdido",
+    },
+    "not computed": {
+        "zh_CN": "未计算",
+        "zh_TW": "未計算",
+        "ja":    "未計算",
+        "ko":    "계산되지 않음",
+        "de":    "nicht berechnet",
+        "fr":    "non calculé",
+        "es":    "no calculado",
+    },
+    "unreliable (strain edge trim)": {
+        "zh_CN": "不可靠（应变边缘裁剪）",
+        "zh_TW": "不可靠（應變邊緣裁剪）",
+        "ja":    "信頼できない（ひずみの端部トリミング）",
+        "ko":    "신뢰할 수 없음(변형률 가장자리 트림)",
+        "de":    "unzuverlässig (Dehnungs-Randbeschnitt)",
+        "fr":    "non fiable (rognage des bords de la déformation)",
+        "es":    "no fiable (recorte de bordes de la deformación)",
+    },
 }
 
 
@@ -1829,465 +2300,24 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     },
 
     # === Post-processing analysis tab ====================================
-    "Analysis": {
-        "zh_CN": "分析", "zh_TW": "分析", "ja": "解析", "ko": "분석",
-        "de": "Analyse", "fr": "Analyse", "es": "Análisis",
-    },
-    "Strain Field": {
-        "zh_CN": "应变场", "zh_TW": "應變場", "ja": "ひずみ場", "ko": "변형률 장",
-        "de": "Dehnungsfeld", "fr": "Champ de déformation",
-        "es": "Campo de deformación",
-    },
 
     # --- placement tools --------------------------------------------------
-    "Point": {
-        "zh_CN": "点", "zh_TW": "點", "ja": "点", "ko": "점",
-        "de": "Punkt", "fr": "Point", "es": "Punto",
-    },
-    "Line": {
-        "zh_CN": "线段", "zh_TW": "線段", "ja": "線分", "ko": "선분",
-        "de": "Linie", "fr": "Ligne", "es": "Línea",
-    },
-    "Rectangle": {
-        "zh_CN": "矩形", "zh_TW": "矩形", "ja": "矩形", "ko": "사각형",
-        "de": "Rechteck", "fr": "Rectangle", "es": "Rectángulo",
-    },
-    "Circle": {
-        "zh_CN": "圆形", "zh_TW": "圓形", "ja": "円", "ko": "원",
-        "de": "Kreis", "fr": "Cercle", "es": "Círculo",
-    },
-    "Polygon": {
-        "zh_CN": "多边形", "zh_TW": "多邊形", "ja": "多角形", "ko": "다각형",
-        "de": "Polygon", "fr": "Polygone", "es": "Polígono",
-    },
-    "Region": {
-        "zh_CN": "区域", "zh_TW": "區域", "ja": "領域", "ko": "영역",
-        "de": "Bereich", "fr": "Région", "es": "Región",
-    },
-    "Click once to place a point probe.": {
-        "zh_CN": "单击一次放置点探针。",
-        "zh_TW": "按一下放置點探針。",
-        "ja": "1 回クリックして点プローブを配置します。",
-        "ko": "한 번 클릭하여 점 프로브를 배치합니다.",
-        "de": "Einmal klicken, um eine Punktsonde zu setzen.",
-        "fr": "Cliquez une fois pour placer une sonde ponctuelle.",
-        "es": "Haga clic una vez para colocar una sonda puntual.",
-    },
-    "Click twice: start and end of the gauge.": {
-        "zh_CN": "单击两次：标距的起点和终点。",
-        "zh_TW": "按兩下：標距的起點與終點。",
-        "ja": "2 回クリック：標点間の始点と終点。",
-        "ko": "두 번 클릭: 게이지의 시작점과 끝점.",
-        "de": "Zweimal klicken: Anfang und Ende der Messlänge.",
-        "fr": "Cliquez deux fois : début et fin de la base de mesure.",
-        "es": "Haga clic dos veces: inicio y fin de la base de medida.",
-    },
-    "Click twice: opposite corners.": {
-        "zh_CN": "单击两次：对角两点。",
-        "zh_TW": "按兩下：對角兩點。",
-        "ja": "2 回クリック：対角の 2 点。",
-        "ko": "두 번 클릭: 마주 보는 두 모서리.",
-        "de": "Zweimal klicken: gegenüberliegende Ecken.",
-        "fr": "Cliquez deux fois : coins opposés.",
-        "es": "Haga clic dos veces: esquinas opuestas.",
-    },
-    "Click twice: centre, then the edge.": {
-        "zh_CN": "单击两次：先圆心，后边缘。",
-        "zh_TW": "按兩下：先圓心，後邊緣。",
-        "ja": "2 回クリック：中心、次に円周。",
-        "ko": "두 번 클릭: 중심, 그다음 가장자리.",
-        "de": "Zweimal klicken: Mittelpunkt, dann Rand.",
-        "fr": "Cliquez deux fois : centre, puis bord.",
-        "es": "Haga clic dos veces: centro y luego borde.",
-    },
-    "Click each vertex, then double-click to close.": {
-        "zh_CN": "逐个单击顶点，双击闭合。",
-        "zh_TW": "逐一按下頂點，按兩下閉合。",
-        "ja": "各頂点をクリックし、ダブルクリックで閉じます。",
-        "ko": "각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.",
-        "de": "Jeden Eckpunkt anklicken, dann per Doppelklick schließen.",
-        "fr": "Cliquez sur chaque sommet, puis double-cliquez pour fermer.",
-        "es": "Haga clic en cada vértice y doble clic para cerrar.",
-    },
-    "Esc cancels placement": {
-        "zh_CN": "Esc 取消放置",
-        "zh_TW": "Esc 取消放置",
-        "ja": "Esc で配置をキャンセル",
-        "ko": "Esc 키로 배치 취소",
-        "de": "Esc bricht das Setzen ab",
-        "fr": "Esc annule le placement",
-        "es": "Esc cancela la colocación",
-    },
 
     # --- probe list -------------------------------------------------------
-    "Show": {
-        "zh_CN": "显示", "zh_TW": "顯示", "ja": "表示", "ko": "표시",
-        "de": "Anzeigen", "fr": "Afficher", "es": "Mostrar",
-    },
-    "Name": {
-        "zh_CN": "名称", "zh_TW": "名稱", "ja": "名前", "ko": "이름",
-        "de": "Name", "fr": "Nom", "es": "Nombre",
-    },
-    "Type": {
-        "zh_CN": "类型", "zh_TW": "類型", "ja": "種類", "ko": "종류",
-        "de": "Typ", "fr": "Type", "es": "Tipo",
-    },
-    "Colour": {
-        "zh_CN": "颜色", "zh_TW": "顏色", "ja": "色", "ko": "색상",
-        "de": "Farbe", "fr": "Couleur", "es": "Color",
-    },
-    "Colour…": {
-        "zh_CN": "颜色…", "zh_TW": "顏色…", "ja": "色…", "ko": "색상…",
-        "de": "Farbe…", "fr": "Couleur…", "es": "Color…",
-    },
-    "Delete": {
-        "zh_CN": "删除", "zh_TW": "刪除", "ja": "削除", "ko": "삭제",
-        "de": "Löschen", "fr": "Supprimer", "es": "Eliminar",
-    },
-    "Clear All": {
-        "zh_CN": "全部清除", "zh_TW": "全部清除", "ja": "すべて消去",
-        "ko": "모두 지우기", "de": "Alle löschen", "fr": "Tout effacer",
-        "es": "Borrar todo",
-    },
-    "Clear All Probes": {
-        "zh_CN": "清除所有探针", "zh_TW": "清除所有探針",
-        "ja": "すべてのプローブを消去", "ko": "모든 프로브 지우기",
-        "de": "Alle Sonden löschen", "fr": "Effacer toutes les sondes",
-        "es": "Borrar todas las sondas",
-    },
-    "Delete every probe? This cannot be undone.": {
-        "zh_CN": "删除所有探针？此操作无法撤销。",
-        "zh_TW": "刪除所有探針？此操作無法復原。",
-        "ja": "すべてのプローブを削除しますか？この操作は取り消せません。",
-        "ko": "모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.",
-        "de": "Alle Sonden löschen? Das lässt sich nicht rückgängig machen.",
-        "fr": "Supprimer toutes les sondes ? Cette action est irréversible.",
-        "es": "¿Eliminar todas las sondas? Esta acción no se puede deshacer.",
-    },
-    "Added probe '%1'.": {
-        "zh_CN": "已添加探针「%1」。",
-        "zh_TW": "已新增探針「%1」。",
-        "ja": "プローブ「%1」を追加しました。",
-        "ko": "프로브 '%1'을(를) 추가했습니다.",
-        "de": "Sonde '%1' hinzugefügt.",
-        "fr": "Sonde « %1 » ajoutée.",
-        "es": "Sonda «%1» añadida.",
-    },
 
     # --- chart controls ---------------------------------------------------
-    "Compare:": {
-        "zh_CN": "比较：", "zh_TW": "比較：", "ja": "比較：", "ko": "비교:",
-        "de": "Vergleichen:", "fr": "Comparer :", "es": "Comparar:",
-    },
-    "Field:": {
-        "zh_CN": "字段：", "zh_TW": "欄位：", "ja": "フィールド：", "ko": "필드:",
-        "de": "Feld:", "fr": "Champ :", "es": "Campo:",
-    },
-    "Statistic:": {
-        "zh_CN": "统计量：", "zh_TW": "統計量：", "ja": "統計量：", "ko": "통계량:",
-        "de": "Statistik:", "fr": "Statistique :", "es": "Estadístico:",
-    },
-    "Point probes": {
-        "zh_CN": "点探针", "zh_TW": "點探針", "ja": "点プローブ", "ko": "점 프로브",
-        "de": "Punktsonden", "fr": "Sondes ponctuelles", "es": "Sondas puntuales",
-    },
-    "Line probes": {
-        "zh_CN": "线探针", "zh_TW": "線探針", "ja": "線プローブ", "ko": "선 프로브",
-        "de": "Liniensonden", "fr": "Sondes linéaires", "es": "Sondas lineales",
-    },
-    "Region probes": {
-        "zh_CN": "区域探针", "zh_TW": "區域探針", "ja": "領域プローブ",
-        "ko": "영역 프로브", "de": "Bereichssonden",
-        "fr": "Sondes de région", "es": "Sondas de región",
-    },
-    "Value": {
-        "zh_CN": "数值", "zh_TW": "數值", "ja": "値", "ko": "값",
-        "de": "Wert", "fr": "Valeur", "es": "Valor",
-    },
-    "Mean": {
-        "zh_CN": "平均值", "zh_TW": "平均值", "ja": "平均", "ko": "평균",
-        "de": "Mittelwert", "fr": "Moyenne", "es": "Media",
-    },
-    "Median": {
-        "zh_CN": "中位数", "zh_TW": "中位數", "ja": "中央値", "ko": "중앙값",
-        "de": "Median", "fr": "Médiane", "es": "Mediana",
-    },
-    "Maximum": {
-        "zh_CN": "最大值", "zh_TW": "最大值", "ja": "最大値", "ko": "최댓값",
-        "de": "Maximum", "fr": "Maximum", "es": "Máximo",
-    },
-    "Minimum": {
-        "zh_CN": "最小值", "zh_TW": "最小值", "ja": "最小値", "ko": "최솟값",
-        "de": "Minimum", "fr": "Minimum", "es": "Mínimo",
-    },
-    "Standard deviation": {
-        "zh_CN": "标准差", "zh_TW": "標準差", "ja": "標準偏差", "ko": "표준편차",
-        "de": "Standardabweichung", "fr": "Écart-type", "es": "Desviación típica",
-    },
-    "Valid fraction": {
-        "zh_CN": "有效比例", "zh_TW": "有效比例", "ja": "有効割合",
-        "ko": "유효 비율", "de": "Gültiger Anteil", "fr": "Fraction valide",
-        "es": "Fracción válida",
-    },
-    "Engineering strain": {
-        "zh_CN": "工程应变", "zh_TW": "工程應變", "ja": "公称ひずみ",
-        "ko": "공칭 변형률", "de": "Technische Dehnung",
-        "fr": "Déformation nominale", "es": "Deformación ingenieril",
-    },
-    "Crack opening": {
-        "zh_CN": "裂纹张开位移", "zh_TW": "裂縫張開位移", "ja": "き裂開口変位",
-        "ko": "균열 열림 변위", "de": "Rissöffnung",
-        "fr": "Ouverture de fissure", "es": "Apertura de fisura",
-    },
-    "Minimum valid fraction:": {
-        "zh_CN": "最低有效比例：", "zh_TW": "最低有效比例：",
-        "ja": "最小有効割合：", "ko": "최소 유효 비율:",
-        "de": "Mindestanteil gültiger Punkte:",
-        "fr": "Fraction valide minimale :",
-        "es": "Fracción válida mínima:",
-    },
-    "A frame is left blank when fewer than this fraction of the probe's points are reliable. Guards against a curve that stays smooth while its sample shrinks away.": {
-        "zh_CN": "当探针中可靠点的比例低于此值时，该帧留空。用于防止曲线在样本量悄悄塌陷时依然平滑。",
-        "zh_TW": "當探針中可靠點的比例低於此值時，該影格留空。用於防止曲線在樣本量悄悄塌陷時依然平滑。",
-        "ja": "プローブの信頼できる点の割合がこの値を下回るフレームは空欄になります。標本数が減っていくのに曲線が滑らかなまま見えることを防ぎます。",
-        "ko": "프로브의 신뢰할 수 있는 점 비율이 이 값보다 낮은 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 보이는 것을 막습니다.",
-        "de": "Ein Bild bleibt leer, wenn weniger als dieser Anteil der Sondenpunkte zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe verschwindet.",
-        "fr": "Une image reste vide lorsque moins que cette fraction des points de la sonde est fiable. Évite une courbe qui reste lisse pendant que son échantillon disparaît.",
-        "es": "Un fotograma se deja vacío cuando menos de esta fracción de los puntos de la sonda es fiable. Evita una curva que sigue siendo suave mientras su muestra se reduce.",
-    },
 
     # --- chart messages ---------------------------------------------------
-    "Run a DIC analysis to plot probes.": {
-        "zh_CN": "请先运行 DIC 分析，然后才能绘制探针曲线。",
-        "zh_TW": "請先執行 DIC 分析，才能繪製探針曲線。",
-        "ja": "プローブを描画するには、先に DIC 解析を実行してください。",
-        "ko": "프로브를 그리려면 먼저 DIC 분석을 실행하세요.",
-        "de": "Führen Sie eine DIC-Analyse aus, um Sonden darzustellen.",
-        "fr": "Lancez une analyse DIC pour tracer les sondes.",
-        "es": "Ejecute un análisis DIC para representar las sondas.",
-    },
-    "Place a probe on the reference image to begin.": {
-        "zh_CN": "在参考图像上放置一个探针即可开始。",
-        "zh_TW": "在參考影像上放置一個探針即可開始。",
-        "ja": "参照画像にプローブを配置すると始まります。",
-        "ko": "기준 이미지에 프로브를 배치하면 시작됩니다.",
-        "de": "Setzen Sie eine Sonde auf das Referenzbild, um zu beginnen.",
-        "fr": "Placez une sonde sur l'image de référence pour commencer.",
-        "es": "Coloque una sonda en la imagen de referencia para empezar.",
-    },
-    "This statistic does not apply here.": {
-        "zh_CN": "该统计量不适用于此处。",
-        "zh_TW": "此統計量不適用於此處。",
-        "ja": "この統計量はここでは適用できません。",
-        "ko": "이 통계량은 여기에 적용되지 않습니다.",
-        "de": "Diese Statistik ist hier nicht anwendbar.",
-        "fr": "Cette statistique ne s'applique pas ici.",
-        "es": "Este estadístico no se aplica aquí.",
-    },
-    "Frame": {
-        "zh_CN": "帧", "zh_TW": "影格", "ja": "フレーム", "ko": "프레임",
-        "de": "Bild", "fr": "Image", "es": "Fotograma",
-    },
-    "Shaded frames: %1": {
-        "zh_CN": "阴影帧：%1",
-        "zh_TW": "陰影影格：%1",
-        "ja": "網掛けフレーム：%1",
-        "ko": "음영 처리된 프레임: %1",
-        "de": "Schattierte Bilder: %1",
-        "fr": "Images grisées : %1",
-        "es": "Fotogramas sombreados: %1",
-    },
-    "crosses a crack": {
-        "zh_CN": "跨越裂纹", "zh_TW": "跨越裂縫", "ja": "き裂を横断",
-        "ko": "균열을 가로지름", "de": "kreuzt einen Riss",
-        "fr": "traverse une fissure", "es": "cruza una fisura",
-    },
-    "too few valid points": {
-        "zh_CN": "有效点过少", "zh_TW": "有效點過少", "ja": "有効な点が少なすぎます",
-        "ko": "유효한 점이 너무 적음", "de": "zu wenige gültige Punkte",
-        "fr": "trop peu de points valides", "es": "muy pocos puntos válidos",
-    },
-    "no data": {
-        "zh_CN": "无数据", "zh_TW": "無資料", "ja": "データなし",
-        "ko": "데이터 없음", "de": "keine Daten", "fr": "aucune donnée",
-        "es": "sin datos",
-    },
-    "Distance along line (%1)": {
-        "zh_CN": "沿线距离（%1）",
-        "zh_TW": "沿線距離（%1）",
-        "ja": "線に沿った距離（%1）",
-        "ko": "선을 따른 거리(%1)",
-        "de": "Abstand entlang der Linie (%1)",
-        "fr": "Distance le long de la ligne (%1)",
-        "es": "Distancia a lo largo de la línea (%1)",
-    },
 
     # --- export -----------------------------------------------------------
-    "Export CSV…": {
-        "zh_CN": "导出 CSV…", "zh_TW": "匯出 CSV…", "ja": "CSV をエクスポート…",
-        "ko": "CSV 내보내기…", "de": "CSV exportieren…",
-        "fr": "Exporter en CSV…", "es": "Exportar CSV…",
-    },
-    "Export Chart…": {
-        "zh_CN": "导出图表…", "zh_TW": "匯出圖表…", "ja": "グラフをエクスポート…",
-        "ko": "차트 내보내기…", "de": "Diagramm exportieren…",
-        "fr": "Exporter le graphique…", "es": "Exportar gráfico…",
-    },
-    "Export Chart": {
-        "zh_CN": "导出图表", "zh_TW": "匯出圖表", "ja": "グラフをエクスポート",
-        "ko": "차트 내보내기", "de": "Diagramm exportieren",
-        "fr": "Exporter le graphique", "es": "Exportar gráfico",
-    },
-    "Export Probe Data": {
-        "zh_CN": "导出探针数据", "zh_TW": "匯出探針資料",
-        "ja": "プローブデータをエクスポート", "ko": "프로브 데이터 내보내기",
-        "de": "Sondendaten exportieren", "fr": "Exporter les données de sonde",
-        "es": "Exportar datos de sonda",
-    },
-    "There is nothing to export yet.": {
-        "zh_CN": "目前没有可导出的内容。",
-        "zh_TW": "目前沒有可匯出的內容。",
-        "ja": "エクスポートできるものがまだありません。",
-        "ko": "아직 내보낼 내용이 없습니다.",
-        "de": "Es gibt noch nichts zu exportieren.",
-        "fr": "Il n'y a encore rien à exporter.",
-        "es": "Todavía no hay nada que exportar.",
-    },
-    "Probe data written to %1": {
-        "zh_CN": "探针数据已写入 %1",
-        "zh_TW": "探針資料已寫入 %1",
-        "ja": "プローブデータを %1 に書き込みました",
-        "ko": "프로브 데이터를 %1에 기록했습니다",
-        "de": "Sondendaten nach %1 geschrieben",
-        "fr": "Données de sonde écrites dans %1",
-        "es": "Datos de sonda escritos en %1",
-    },
-    "Probe export failed: %1": {
-        "zh_CN": "探针导出失败：%1",
-        "zh_TW": "探針匯出失敗：%1",
-        "ja": "プローブのエクスポートに失敗しました：%1",
-        "ko": "프로브 내보내기 실패: %1",
-        "de": "Sondenexport fehlgeschlagen: %1",
-        "fr": "Échec de l'export de la sonde : %1",
-        "es": "Error al exportar la sonda: %1",
-    },
-    "Chart written to %1": {
-        "zh_CN": "图表已写入 %1",
-        "zh_TW": "圖表已寫入 %1",
-        "ja": "グラフを %1 に書き込みました",
-        "ko": "차트를 %1에 기록했습니다",
-        "de": "Diagramm nach %1 geschrieben",
-        "fr": "Graphique écrit dans %1",
-        "es": "Gráfico escrito en %1",
-    },
-    "Chart export failed: %1": {
-        "zh_CN": "图表导出失败：%1",
-        "zh_TW": "圖表匯出失敗：%1",
-        "ja": "グラフのエクスポートに失敗しました：%1",
-        "ko": "차트 내보내기 실패: %1",
-        "de": "Diagrammexport fehlgeschlagen: %1",
-        "fr": "Échec de l'export du graphique : %1",
-        "es": "Error al exportar el gráfico: %1",
-    },
-    "CSV Files": {
-        "zh_CN": "CSV 文件", "zh_TW": "CSV 檔案", "ja": "CSV ファイル",
-        "ko": "CSV 파일", "de": "CSV-Dateien", "fr": "Fichiers CSV",
-        "es": "Archivos CSV",
-    },
-    "PDF Documents": {
-        "zh_CN": "PDF 文档", "zh_TW": "PDF 文件", "ja": "PDF ドキュメント",
-        "ko": "PDF 문서", "de": "PDF-Dokumente", "fr": "Documents PDF",
-        "es": "Documentos PDF",
-    },
 
     # --- crash reporting (Application) -------------------------------------
-    "pyALDIC has hit an error": {
-        "zh_CN": "pyALDIC 发生错误",
-        "zh_TW": "pyALDIC 發生錯誤",
-        "ja":    "pyALDIC でエラーが発生しました",
-        "ko":    "pyALDIC에서 오류가 발생했습니다",
-        "de":    "In pyALDIC ist ein Fehler aufgetreten",
-        "fr":    "pyALDIC a rencontré une erreur",
-        "es":    "pyALDIC ha encontrado un error",
-    },
-    "An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.": {
-        "zh_CN": "发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。",
-        "zh_TW": "發生了非預期的錯誤。應用程式之後的行為可能不正常，建議儲存會話並重新啟動。",
-        "ja":    "予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。",
-        "ko":    "예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.",
-        "de":    "Ein unerwarteter Fehler ist aufgetreten. Die Anwendung verhält sich möglicherweise nicht mehr korrekt; es wird empfohlen, die Sitzung zu speichern und neu zu starten.",
-        "fr":    "Une erreur inattendue s'est produite. L'application risque de ne plus fonctionner correctement ; il est recommandé d'enregistrer la session et de redémarrer.",
-        "es":    "Se ha producido un error inesperado. Es posible que la aplicación no funcione correctamente a partir de ahora; se recomienda guardar la sesión y reiniciar.",
-    },
-    "Details were written to %1": {
-        "zh_CN": "详细信息已写入 %1",
-        "zh_TW": "詳細資訊已寫入 %1",
-        "ja":    "詳細を %1 に書き込みました",
-        "ko":    "자세한 내용을 %1에 기록했습니다",
-        "de":    "Details wurden nach %1 geschrieben",
-        "fr":    "Les détails ont été écrits dans %1",
-        "es":    "Los detalles se han escrito en %1",
-    },
 
     # --- kernel warm-up (Application) --------------------------------------
-    "Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.": {
-        "zh_CN": "正在后台准备计算内核。新安装后的首次分析会比之后的耗时更长。",
-        "zh_TW": "正在背景準備計算核心。新安裝後的首次分析會比之後的耗時更長。",
-        "ja":    "バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。",
-        "ko":    "백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.",
-        "de":    "Rechenkernel werden im Hintergrund vorbereitet. Die erste Analyse einer neuen Installation dauert länger als die folgenden.",
-        "fr":    "Préparation des noyaux de calcul en arrière-plan. La première analyse après une nouvelle installation prend plus de temps que les suivantes.",
-        "es":    "Preparando los núcleos de cálculo en segundo plano. El primer análisis tras una instalación nueva tarda más que los siguientes.",
-    },
-    "Compute kernels ready (%1 s).": {
-        "zh_CN": "计算内核已就绪（%1 秒）。",
-        "zh_TW": "計算核心已就緒（%1 秒）。",
-        "ja":    "計算カーネルの準備が完了しました（%1 秒）。",
-        "ko":    "계산 커널 준비 완료(%1초).",
-        "de":    "Rechenkernel bereit (%1 s).",
-        "fr":    "Noyaux de calcul prêts (%1 s).",
-        "es":    "Núcleos de cálculo listos (%1 s).",
-    },
 
     # --- export failure feedback (ExportDialog) ----------------------------
-    "No animation was written. See the log for details.": {
-        "zh_CN": "未写入任何动画。详情请查看日志。",
-        "zh_TW": "未寫入任何動畫。詳情請查看日誌。",
-        "ja":    "アニメーションは書き込まれませんでした。詳細はログを参照してください。",
-        "ko":    "애니메이션이 기록되지 않았습니다. 자세한 내용은 로그를 확인하세요.",
-        "de":    "Es wurde keine Animation geschrieben. Einzelheiten siehe Protokoll.",
-        "fr":    "Aucune animation n'a été écrite. Consultez le journal pour plus de détails.",
-        "es":    "No se ha escrito ninguna animación. Consulte el registro para más detalles.",
-    },
 
     # --- file dialogs that were previously raw literals --------------------
-    "Save Region of Interest Mask": {
-        "zh_CN": "保存感兴趣区域掩模",
-        "zh_TW": "儲存感興趣區域遮罩",
-        "ja":    "関心領域マスクを保存",
-        "ko":    "관심 영역 마스크 저장",
-        "de":    "Region-of-Interest-Maske speichern",
-        "fr":    "Enregistrer le masque de région d'intérêt",
-        "es":    "Guardar máscara de región de interés",
-    },
-    "Import Mask Image": {
-        "zh_CN": "导入掩模图像",
-        "zh_TW": "匯入遮罩影像",
-        "ja":    "マスク画像をインポート",
-        "ko":    "마스크 이미지 가져오기",
-        "de":    "Maskenbild importieren",
-        "fr":    "Importer une image de masque",
-        "es":    "Importar imagen de máscara",
-    },
-    "PNG Images": {
-        "zh_CN": "PNG 图像",
-        "zh_TW": "PNG 影像",
-        "ja":    "PNG 画像",
-        "ko":    "PNG 이미지",
-        "de":    "PNG-Bilder",
-        "fr":    "Images PNG",
-        "es":    "Imágenes PNG",
-    },
 }
 
 
@@ -2309,8 +2339,36 @@ UNFIN_NUMERUS = re.compile(
 )
 
 
+def check_tables() -> None:
+    """Refuse a malformed table instead of writing garbage into the catalogs.
+
+    ``NUMERUS_TRANSLATIONS`` values must be sequences of plural forms. A plain
+    string filed there is indexed like a sequence, and ``forms[-1]`` is its
+    last character: seventy entries shipped that way ("n" as the German title
+    of the fatal-error dialog) while every coverage check passed, because a
+    one-character translation still counts as translated.
+    """
+    for source, per_lang in NUMERUS_TRANSLATIONS.items():
+        for lang, forms in per_lang.items():
+            if isinstance(forms, str) or not all(isinstance(f, str) for f in forms):
+                raise TypeError(
+                    f"NUMERUS_TRANSLATIONS[{source!r}][{lang!r}] must be a "
+                    f"tuple of plural forms, got {forms!r}. A single string "
+                    "belongs in TRANSLATIONS; filed here, only its last "
+                    "character would be written."
+                )
+    for source, per_lang in TRANSLATIONS.items():
+        for lang, text in per_lang.items():
+            if not isinstance(text, str):
+                raise TypeError(
+                    f"TRANSLATIONS[{source!r}][{lang!r}] must be a string, "
+                    f"got {text!r}. Plural forms belong in NUMERUS_TRANSLATIONS."
+                )
+
+
 def fill_ts(lang: str) -> tuple[int, int]:
     """Return (filled, skipped) count for a single language."""
+    check_tables()
     ts_path = TS_DIR / f"al_dic_{lang}.ts"
     text = ts_path.read_text(encoding="utf-8")
     filled = 0
