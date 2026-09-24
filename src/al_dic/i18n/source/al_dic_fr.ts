@@ -1134,7 +1134,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
         <source>Frame rate</source>
-        <translation>Cadence</translation>
+        <translation>Fréquence d&apos;images</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
@@ -2094,12 +2094,12 @@ Par défaut (non coché) : lexicographique — idéal pour les noms avec zéros 
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="201"/>
         <source>Camera frame rate: %1 fps, from Physical Units.</source>
-        <translation>Cadence de la caméra : %1 fps, issue des « Unités physiques ».</translation>
+        <translation>Fréquence d&apos;images de la caméra : %1 fps, issue des « Unités physiques ».</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="204"/>
         <source>Set the camera frame rate under Physical Units to match by time.</source>
-        <translation>Définissez la cadence de la caméra dans « Unités physiques » pour associer par le temps.</translation>
+        <translation>Définissez la fréquence d&apos;images de la caméra dans « Unités physiques » pour associer par le temps.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="227"/>
@@ -2522,7 +2522,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="93"/>
         <source>Acquisition frame rate (used for velocity field)</source>
-        <translation>Cadence d&apos;acquisition (utilisée pour le champ de vitesse)</translation>
+        <translation>Fréquence d&apos;images d&apos;acquisition (utilisée pour le champ de vitesse)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="94"/>

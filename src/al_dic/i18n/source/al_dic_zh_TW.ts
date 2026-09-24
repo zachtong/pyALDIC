@@ -1134,7 +1134,7 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
         <source>Frame rate</source>
-        <translation>幀率</translation>
+        <translation>影格率</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
@@ -2094,12 +2094,12 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="201"/>
         <source>Camera frame rate: %1 fps, from Physical Units.</source>
-        <translation>相機幀率：%1 fps，取自「物理單位」。</translation>
+        <translation>相機影格率：%1 fps，取自「物理單位」。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="204"/>
         <source>Set the camera frame rate under Physical Units to match by time.</source>
-        <translation>請在「物理單位」中設定相機幀率，才能按時間對應。</translation>
+        <translation>請在「物理單位」中設定相機影格率，才能按時間對應。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="227"/>
@@ -2522,7 +2522,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="93"/>
         <source>Acquisition frame rate (used for velocity field)</source>
-        <translation>採集幀率（用於速度場）</translation>
+        <translation>採集影格率（用於速度場）</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="94"/>

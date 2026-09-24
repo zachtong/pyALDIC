@@ -1134,7 +1134,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
         <source>Frame rate</source>
-        <translation>Framerate</translation>
+        <translation>Bildrate</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
@@ -2094,12 +2094,12 @@ Standard (nicht aktiviert): lexikographisch — ideal für nullgefüllte Namen</
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="201"/>
         <source>Camera frame rate: %1 fps, from Physical Units.</source>
-        <translation>Kamera-Framerate: %1 fps, aus „Physikalische Einheiten“.</translation>
+        <translation>Kamera-Bildrate: %1 fps, aus „Physikalische Einheiten“.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="204"/>
         <source>Set the camera frame rate under Physical Units to match by time.</source>
-        <translation>Legen Sie unter „Physikalische Einheiten“ die Kamera-Framerate fest, um nach Zeit zuzuordnen.</translation>
+        <translation>Legen Sie unter „Physikalische Einheiten“ die Kamera-Bildrate fest, um nach Zeit zuzuordnen.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="227"/>
@@ -2522,7 +2522,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="93"/>
         <source>Acquisition frame rate (used for velocity field)</source>
-        <translation>Aufnahme-Framerate (für das Geschwindigkeitsfeld verwendet)</translation>
+        <translation>Aufnahme-Bildrate (für das Geschwindigkeitsfeld verwendet)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="94"/>
