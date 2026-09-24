@@ -40,32 +40,32 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="88"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="69"/>
         <source>crack</source>
         <translation>裂纹</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="90"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="71"/>
         <source>too few valid points</source>
         <translation>有效点过少</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="92"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="73"/>
         <source>unreliable (strain edge trim)</source>
         <translation>不可靠（应变边缘裁剪）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="95"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="76"/>
         <source>gauge endpoint lost</source>
         <translation>量规端点失效</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="97"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="78"/>
         <source>not computed</source>
         <translation>未计算</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="98"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>no data</source>
         <translation>无数据</translation>
     </message>
@@ -169,7 +169,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="163"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="170"/>
         <source>Statistic:</source>
         <translation>统计量：</translation>
     </message>
@@ -213,17 +213,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂纹张开位移</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="394"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="405"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>尚未计算应变。请在“应变场”页中计算，或改为绘制位移。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="416"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>量规类物理量需要线探针。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="413"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
         <source>No visible probe can show this quantity.</source>
         <translation>没有可见的探针能显示此物理量。</translation>
     </message>
@@ -268,17 +268,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未绘制</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="468"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="472"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>已添加探针「%1」。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="554"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="558"/>
         <source>Clear All Probes</source>
         <translation>清除所有探针</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="555"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="559"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>删除所有探针？此操作无法撤销。</translation>
     </message>
@@ -301,7 +301,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>区域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="385"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="396"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>请先运行 DIC 分析，然后才能绘制探针曲线。</translation>
     </message>
@@ -376,92 +376,102 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>用当前帧所绘物理量的场为参考图像着色。对于量规读数，显示“应变场”页中的场。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="161"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
         <source>Plot:</source>
         <translation>绘制：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="164"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="171"/>
         <source>X axis:</source>
         <translation>X 轴：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="165"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="172"/>
         <source>Strain as:</source>
         <translation>应变显示为：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="167"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="174"/>
         <source>Min. valid fraction:</source>
         <translation>最小有效比例：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>当线或区域中可靠点的比例低于此值时，该帧留空。避免样本逐渐缩小而曲线依然平滑的假象。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>随时间变化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="177"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>每个探针在各帧的读数。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>沿线分布</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>当前帧沿所选线的场分布，其它帧以灰色显示在下方。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>时空图</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>所选线在每一帧的场分布：距离对帧，数值以颜色表示。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="199"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Other frames</source>
         <translation>其它帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>在当前帧后方淡色绘制其它帧的分布（最多十二帧，均匀间隔）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Line data (CSV)…</source>
         <translation>线数据（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
         <source>Export</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
         <source>Probe data (CSV)…</source>
         <translation>探针数据（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="210"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="217"/>
         <source>Chart image…</source>
         <translation>图表图片…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="219"/>
+        <source>Copy chart</source>
+        <translation>复制图表</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="221"/>
+        <source>Copy plotted data</source>
+        <translation>复制所绘数据</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -504,25 +514,25 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂纹张开位移大小</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="352"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="253"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="363"/>
         <source>Frame</source>
         <translation>帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="244"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="351"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="255"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="362"/>
         <source>Time (s)</source>
         <translation>时间 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="252"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="263"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>比值</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="403"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="407"/>
         <source>Could not draw the field: %1</source>
         <translation>无法绘制场：%1</translation>
     </message>
@@ -537,7 +547,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>拖动可移动探针，拖动控制点可改变其形状。按 Delete 删除，按 F2 重命名。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="390"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="401"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>在参考图像上放置一个探针即可开始。</translation>
     </message>
@@ -557,22 +567,22 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>%1 沿线没有有效数据：它不在测量区域内。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="464"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="476"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>沿线视图显示的是场。请选择一个场来绘制。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="468"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>放置或选择一个线探针，即可查看沿线的场。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="486"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="498"/>
         <source>Distance along %1 (%2)</source>
         <translation>沿 %1 的距离（%2）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="495"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="507"/>
         <source>%1, frame %2</source>
         <translation>%1，第 %2 帧</translation>
     </message>
@@ -587,68 +597,83 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未绘制：量规端点不在测量区域内</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="622"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="626"/>
         <source>Export Probe Data</source>
         <translation>导出探针数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
         <source>CSV Files</source>
         <translation>CSV 文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="676"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="641"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="645"/>
         <source>Probe export failed: %1</source>
         <translation>探针导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="643"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="647"/>
         <source>Probe data written to %1</source>
         <translation>探针数据已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="651"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
         <source>Export Line Data</source>
         <translation>导出线数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="666"/>
         <source>Line export failed: %1</source>
         <translation>线数据导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="668"/>
         <source>Line data written to %1</source>
         <translation>线数据已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="670"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="674"/>
+        <source>SVG Images</source>
+        <translation>SVG 图像</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="685"/>
         <source>Export Chart</source>
         <translation>导出图表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="671"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="704"/>
+        <source>Chart copied to the clipboard.</source>
+        <translation>图表已复制到剪贴板。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <source>Plotted data copied to the clipboard.</source>
+        <translation>所绘数据已复制到剪贴板。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
         <source>PNG Images</source>
         <translation>PNG 图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="672"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="675"/>
         <source>PDF Documents</source>
         <translation>PDF 文档</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="680"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="696"/>
         <source>Chart export failed: %1</source>
         <translation>图表导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="682"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="698"/>
         <source>Chart written to %1</source>
         <translation>图表已写入 %1</translation>
     </message>

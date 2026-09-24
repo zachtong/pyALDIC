@@ -40,32 +40,32 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="88"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="69"/>
         <source>crack</source>
         <translation>균열</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="90"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="71"/>
         <source>too few valid points</source>
         <translation>유효한 점이 너무 적음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="92"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="73"/>
         <source>unreliable (strain edge trim)</source>
         <translation>신뢰할 수 없음(변형률 가장자리 트림)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="95"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="76"/>
         <source>gauge endpoint lost</source>
         <translation>게이지 끝점 상실</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="97"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="78"/>
         <source>not computed</source>
         <translation>계산되지 않음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="98"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>no data</source>
         <translation>데이터 없음</translation>
     </message>
@@ -169,7 +169,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>모두 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="163"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="170"/>
         <source>Statistic:</source>
         <translation>통계량:</translation>
     </message>
@@ -213,17 +213,17 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="394"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="405"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>변형률이 아직 계산되지 않았습니다. &apos;변형률장&apos; 탭에서 계산하거나 변위를 표시하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="416"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>게이지 양에는 선 프로브가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="413"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
         <source>No visible probe can show this quantity.</source>
         <translation>이 양을 표시할 수 있는 보이는 프로브가 없습니다.</translation>
     </message>
@@ -268,17 +268,17 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>표시 안 됨</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="468"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="472"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>프로브 &apos;%1&apos;을(를) 추가했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="554"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="558"/>
         <source>Clear All Probes</source>
         <translation>모든 프로브 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="555"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="559"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.</translation>
     </message>
@@ -301,7 +301,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>영역</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="385"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="396"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>프로브를 그리려면 먼저 DIC 분석을 실행하세요.</translation>
     </message>
@@ -376,92 +376,102 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>현재 프레임에서 표시 중인 양의 필드로 기준 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="161"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
         <source>Plot:</source>
         <translation>표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="164"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="171"/>
         <source>X axis:</source>
         <translation>X 축:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="165"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="172"/>
         <source>Strain as:</source>
         <translation>변형률 표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="167"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="174"/>
         <source>Min. valid fraction:</source>
         <translation>최소 유효 비율:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>선이나 영역에서 신뢰할 수 있는 점의 비율이 이 값보다 낮으면 해당 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 유지되는 것을 방지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>시간 변화</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="177"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>각 프로브의 모든 프레임에서의 판독값.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>선을 따른 분포</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>키모그래프</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>모든 프레임에서 선택한 선을 따른 필드: 거리 대 프레임, 값은 색으로 표시.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="199"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Other frames</source>
         <translation>다른 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>현재 프레임 뒤에 다른 프레임의 분포를 흐리게 그립니다(최대 12개, 균등 간격).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Line data (CSV)…</source>
         <translation>선 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
         <source>Probe data (CSV)…</source>
         <translation>프로브 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="210"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="217"/>
         <source>Chart image…</source>
         <translation>차트 이미지…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="219"/>
+        <source>Copy chart</source>
+        <translation>차트 복사</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="221"/>
+        <source>Copy plotted data</source>
+        <translation>표시된 데이터 복사</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -504,25 +514,25 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="352"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="253"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="363"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="244"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="351"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="255"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="362"/>
         <source>Time (s)</source>
         <translation>시간 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="252"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="263"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>비율</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="403"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="407"/>
         <source>Could not draw the field: %1</source>
         <translation>필드를 그릴 수 없습니다: %1</translation>
     </message>
@@ -537,7 +547,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>드래그하여 프로브를 이동하거나 핸들을 드래그하여 모양을 바꿉니다. Delete로 삭제하고 F2로 이름을 바꿉니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="390"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="401"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>기준 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
@@ -557,22 +567,22 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>%1을(를) 따라 유효한 데이터가 없습니다: 측정 영역 밖에 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="464"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="476"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>선 보기는 필드를 표시합니다. 표시할 필드를 선택하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="468"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>선 프로브를 배치하거나 선택하면 선을 따른 필드를 볼 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="486"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="498"/>
         <source>Distance along %1 (%2)</source>
         <translation>%1을(를) 따른 거리(%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="495"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="507"/>
         <source>%1, frame %2</source>
         <translation>%1, %2 프레임</translation>
     </message>
@@ -587,68 +597,83 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>표시 안 됨: 게이지 끝점이 측정 영역 밖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="622"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="626"/>
         <source>Export Probe Data</source>
         <translation>프로브 데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
         <source>CSV Files</source>
         <translation>CSV 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="676"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="641"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="645"/>
         <source>Probe export failed: %1</source>
         <translation>프로브 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="643"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="647"/>
         <source>Probe data written to %1</source>
         <translation>프로브 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="651"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
         <source>Export Line Data</source>
         <translation>선 데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="666"/>
         <source>Line export failed: %1</source>
         <translation>선 데이터 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="668"/>
         <source>Line data written to %1</source>
         <translation>선 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="670"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="674"/>
+        <source>SVG Images</source>
+        <translation>SVG 이미지</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="685"/>
         <source>Export Chart</source>
         <translation>차트 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="671"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="704"/>
+        <source>Chart copied to the clipboard.</source>
+        <translation>차트를 클립보드에 복사했습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <source>Plotted data copied to the clipboard.</source>
+        <translation>표시된 데이터를 클립보드에 복사했습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
         <source>PNG Images</source>
         <translation>PNG 이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="672"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="675"/>
         <source>PDF Documents</source>
         <translation>PDF 문서</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="680"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="696"/>
         <source>Chart export failed: %1</source>
         <translation>차트 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="682"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="698"/>
         <source>Chart written to %1</source>
         <translation>차트를 %1에 기록했습니다</translation>
     </message>

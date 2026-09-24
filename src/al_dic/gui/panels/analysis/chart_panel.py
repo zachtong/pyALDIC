@@ -71,6 +71,8 @@ class AnalysisChartPanel(QWidget):
     export_csv_requested = Signal()
     export_line_requested = Signal()
     export_chart_requested = Signal()
+    copy_chart_requested = Signal()
+    copy_data_requested = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -129,6 +131,11 @@ class AnalysisChartPanel(QWidget):
         self._export_line_action.triggered.connect(self.export_line_requested)
         self._export_chart_action = menu.addAction("")
         self._export_chart_action.triggered.connect(self.export_chart_requested)
+        menu.addSeparator()
+        self._copy_chart_action = menu.addAction("")
+        self._copy_chart_action.triggered.connect(self.copy_chart_requested)
+        self._copy_data_action = menu.addAction("")
+        self._copy_data_action.triggered.connect(self.copy_data_requested)
         self.export_btn.setMenu(menu)
         row.addWidget(self.export_btn)
         return row
@@ -208,6 +215,10 @@ class AnalysisChartPanel(QWidget):
             QCoreApplication.translate("AnalysisTab", "Probe data (CSV)…"))
         self._export_chart_action.setText(
             QCoreApplication.translate("AnalysisTab", "Chart image…"))
+        self._copy_chart_action.setText(
+            QCoreApplication.translate("AnalysisTab", "Copy chart"))
+        self._copy_data_action.setText(
+            QCoreApplication.translate("AnalysisTab", "Copy plotted data"))
         self._populate_quantities()
         self._populate_statistics()
         self._populate_x_axes()
@@ -433,6 +444,7 @@ class AnalysisChartPanel(QWidget):
             notes[probe.id] = note
             curves.append(Curve(
                 label=f"{probe.label} · {note}" if note else probe.label,
+                name=probe.label,
                 colour=probe.color, x=self.x_values(ts.frames),
                 y=ts.values * scale, status=ts.status,
                 emphasised=probe.id == selected_id,

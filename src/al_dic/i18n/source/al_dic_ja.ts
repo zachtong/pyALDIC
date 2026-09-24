@@ -40,32 +40,32 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="88"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="69"/>
         <source>crack</source>
         <translation>き裂</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="90"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="71"/>
         <source>too few valid points</source>
         <translation>有効な点が少なすぎます</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="92"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="73"/>
         <source>unreliable (strain edge trim)</source>
         <translation>信頼できない（ひずみの端部トリミング）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="95"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="76"/>
         <source>gauge endpoint lost</source>
         <translation>ゲージ端点が無効</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="97"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="78"/>
         <source>not computed</source>
         <translation>未計算</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="98"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>no data</source>
         <translation>データなし</translation>
     </message>
@@ -169,7 +169,7 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>すべて消去</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="163"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="170"/>
         <source>Statistic:</source>
         <translation>統計量：</translation>
     </message>
@@ -213,17 +213,17 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>き裂開口変位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="394"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="405"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>ひずみはまだ計算されていません。「ひずみ場」タブで計算するか、変位を表示してください。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="416"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>ゲージ量には線プローブが必要です。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="413"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
         <source>No visible probe can show this quantity.</source>
         <translation>この量を表示できる可視プローブがありません。</translation>
     </message>
@@ -268,17 +268,17 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>未表示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="468"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="472"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>プローブ「%1」を追加しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="554"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="558"/>
         <source>Clear All Probes</source>
         <translation>すべてのプローブを消去</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="555"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="559"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>すべてのプローブを削除しますか？この操作は取り消せません。</translation>
     </message>
@@ -301,7 +301,7 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>領域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="385"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="396"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>プローブを描画するには、先に DIC 解析を実行してください。</translation>
     </message>
@@ -376,92 +376,102 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>現在のフレームで表示中の量の場で参照画像を色付けします。ゲージの読み取り値では「ひずみ場」タブの場を表示します。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="161"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
         <source>Plot:</source>
         <translation>表示：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="164"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="171"/>
         <source>X axis:</source>
         <translation>X 軸：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="165"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="172"/>
         <source>Strain as:</source>
         <translation>ひずみの表示：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="167"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="174"/>
         <source>Min. valid fraction:</source>
         <translation>最小有効割合：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>線または領域の信頼できる点の割合がこの値を下回るフレームは空白になります。サンプルが減っていても曲線が滑らかに見えてしまうことを防ぎます。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>時間変化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="177"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>各プローブの全フレームでの読み取り値。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>線に沿った分布</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>現在のフレームにおける選択した線に沿った場。他のフレームは背後に灰色で表示されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>キモグラフ</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>選択した線に沿った全フレームの場：距離とフレームの関係を、値を色で表示します。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="199"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Other frames</source>
         <translation>他のフレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>現在のフレームの背後に他のフレームの分布を薄く描画します（最大 12 フレーム、等間隔）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Line data (CSV)…</source>
         <translation>線データ（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
         <source>Export</source>
         <translation>エクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
         <source>Probe data (CSV)…</source>
         <translation>プローブデータ（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="210"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="217"/>
         <source>Chart image…</source>
         <translation>グラフ画像…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="219"/>
+        <source>Copy chart</source>
+        <translation>グラフをコピー</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="221"/>
+        <source>Copy plotted data</source>
+        <translation>表示中のデータをコピー</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -504,25 +514,25 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>き裂開口変位の大きさ</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="352"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="253"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="363"/>
         <source>Frame</source>
         <translation>フレーム</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="244"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="351"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="255"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="362"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="252"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="263"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>比率</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="403"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="407"/>
         <source>Could not draw the field: %1</source>
         <translation>場を描画できませんでした：%1</translation>
     </message>
@@ -537,7 +547,7 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>ドラッグでプローブを移動、ハンドルのドラッグで形状を変更します。Delete で削除、F2 で名前を変更します。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="390"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="401"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>参照画像にプローブを配置すると始まります。</translation>
     </message>
@@ -557,22 +567,22 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>%1 に沿って有効なデータがありません：測定領域の外にあります。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="464"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="476"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>線のビューは場を表示します。表示する場を選んでください。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="468"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>線プローブを配置または選択すると、線に沿った場が表示されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="486"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="498"/>
         <source>Distance along %1 (%2)</source>
         <translation>%1 に沿った距離（%2）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="495"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="507"/>
         <source>%1, frame %2</source>
         <translation>%1、フレーム %2</translation>
     </message>
@@ -587,68 +597,83 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>未表示：ゲージの端点が測定領域の外</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="622"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="626"/>
         <source>Export Probe Data</source>
         <translation>プローブデータをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
         <source>CSV Files</source>
         <translation>CSV ファイル</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="615"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="676"/>
         <source>All Files</source>
         <translation>すべてのファイル</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="641"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="645"/>
         <source>Probe export failed: %1</source>
         <translation>プローブのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="643"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="647"/>
         <source>Probe data written to %1</source>
         <translation>プローブデータを %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="651"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
         <source>Export Line Data</source>
         <translation>線データをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="666"/>
         <source>Line export failed: %1</source>
         <translation>線データのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="668"/>
         <source>Line data written to %1</source>
         <translation>線データを %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="670"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="674"/>
+        <source>SVG Images</source>
+        <translation>SVG 画像</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="685"/>
         <source>Export Chart</source>
         <translation>グラフをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="671"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="704"/>
+        <source>Chart copied to the clipboard.</source>
+        <translation>グラフをクリップボードにコピーしました。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <source>Plotted data copied to the clipboard.</source>
+        <translation>表示中のデータをクリップボードにコピーしました。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
         <source>PNG Images</source>
         <translation>PNG 画像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="672"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="675"/>
         <source>PDF Documents</source>
         <translation>PDF ドキュメント</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="680"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="696"/>
         <source>Chart export failed: %1</source>
         <translation>グラフのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="682"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="698"/>
         <source>Chart written to %1</source>
         <translation>グラフを %1 に書き込みました</translation>
     </message>

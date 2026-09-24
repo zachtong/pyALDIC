@@ -2789,6 +2789,52 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'fr': 'Données de ligne écrites dans %1',
         'es': 'Datos de línea escritos en %1',
     },
+    # ===== Analysis publication output (P5) ================================
+    'Copy chart': {
+        'zh_CN': '复制图表',
+        'zh_TW': '複製圖表',
+        'ja': 'グラフをコピー',
+        'ko': '차트 복사',
+        'de': 'Diagramm kopieren',
+        'fr': 'Copier le graphique',
+        'es': 'Copiar el gráfico',
+    },
+    'Copy plotted data': {
+        'zh_CN': '复制所绘数据',
+        'zh_TW': '複製所繪資料',
+        'ja': '表示中のデータをコピー',
+        'ko': '표시된 데이터 복사',
+        'de': 'Dargestellte Daten kopieren',
+        'fr': 'Copier les données tracées',
+        'es': 'Copiar los datos representados',
+    },
+    'SVG Images': {
+        'zh_CN': 'SVG 图像',
+        'zh_TW': 'SVG 影像',
+        'ja': 'SVG 画像',
+        'ko': 'SVG 이미지',
+        'de': 'SVG-Bilder',
+        'fr': 'Images SVG',
+        'es': 'Imágenes SVG',
+    },
+    'Chart copied to the clipboard.': {
+        'zh_CN': '图表已复制到剪贴板。',
+        'zh_TW': '圖表已複製到剪貼簿。',
+        'ja': 'グラフをクリップボードにコピーしました。',
+        'ko': '차트를 클립보드에 복사했습니다.',
+        'de': 'Diagramm in die Zwischenablage kopiert.',
+        'fr': 'Graphique copié dans le presse-papiers.',
+        'es': 'Gráfico copiado al portapapeles.',
+    },
+    'Plotted data copied to the clipboard.': {
+        'zh_CN': '所绘数据已复制到剪贴板。',
+        'zh_TW': '所繪資料已複製到剪貼簿。',
+        'ja': '表示中のデータをクリップボードにコピーしました。',
+        'ko': '표시된 데이터를 클립보드에 복사했습니다.',
+        'de': 'Dargestellte Daten in die Zwischenablage kopiert.',
+        'fr': 'Données tracées copiées dans le presse-papiers.',
+        'es': 'Datos representados copiados al portapapeles.',
+    },
 }
 
 

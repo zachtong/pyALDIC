@@ -627,3 +627,33 @@ def test_the_canvas_colorbar_reads_strain_in_the_charts_unit(tab, state):
     assert tab._colorbar._vmax == pytest.approx(1.0)
     assert tab._colorbar._label == "εyy (%)"
     tab.close()
+
+
+# --- publication output -------------------------------------------------------------
+
+def test_the_chart_image_is_written_light_in_the_chosen_format(tab, state, tmp_path, monkeypatch):
+    """Picking the SVG filter and typing a bare name must still give SVG."""
+    _run(state)
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    _plot(tab, "disp_u")
+    bare = tmp_path / "figure"
+    monkeypatch.setattr(
+        "al_dic.gui.panels.analysis.tab.QFileDialog.getSaveFileName",
+        lambda *a, **k: (str(bare), tab._image_filters()[1]))
+    tab._on_export_chart()
+    written = tmp_path / "figure.svg"
+    assert written.exists()
+    assert "<svg" in written.read_text(encoding="utf-8")[:500]
+
+
+def test_the_chart_and_its_numbers_can_be_copied(tab, state):
+    _run(state)
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    _plot(tab, "disp_u")
+    clipboard = QApplication.clipboard()
+    tab._on_copy_data()
+    lines = clipboard.text().splitlines()
+    assert lines[0].startswith("Frame\tP1")
+    assert len(lines) == 1 + 4, "a header and the four frames"
+    tab._on_copy_chart()
+    assert not clipboard.image().isNull()

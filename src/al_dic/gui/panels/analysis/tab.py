@@ -20,10 +20,12 @@ the probe table -- and none of them writes application state.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
+    QApplication,
     QColorDialog,
     QFileDialog,
     QLabel,
@@ -157,6 +159,8 @@ class AnalysisTab(QWidget):
         chart.export_csv_requested.connect(self._on_export_csv)
         chart.export_line_requested.connect(self._on_export_line_csv)
         chart.export_chart_requested.connect(self._on_export_chart)
+        chart.copy_chart_requested.connect(self._on_copy_chart)
+        chart.copy_data_requested.connect(self._on_copy_data)
         self._chart.x_clicked.connect(self._on_chart_clicked)
 
         table = self._probe_table
@@ -663,23 +667,49 @@ class AnalysisTab(QWidget):
             return
         self._say(tr_args(self.tr("Line data written to %1"), path))
 
+    def _image_filters(self) -> list[str]:
+        """PNG, SVG, PDF, then anything; names translated, globs literal."""
+        return [
+            self.tr("PNG Images") + " (*.png)",
+            self.tr("SVG Images") + " (*.svg)",
+            self.tr("PDF Documents") + " (*.pdf)",
+            self.tr("All Files") + " (*)",
+        ]
+
     def _on_export_chart(self) -> None:
+        """The chart as a figure for a page: light, 300 dpi, text editable."""
         if not self._chart.has_data:
             return
-        path, _ = QFileDialog.getSaveFileName(
-            self, self.tr("Export Chart"), "probe_chart.png",
-            self.tr("PNG Images") + " (*.png);;"
-            + self.tr("PDF Documents") + " (*.pdf);;"
-            + self.tr("All Files") + " (*)",
-        )
+        filters = self._image_filters()
+        path, chosen = QFileDialog.getSaveFileName(
+            self, self.tr("Export Chart"), "probe_chart.png", ";;".join(filters))
         if not path:
             return
+        out = Path(path)
+        if not out.suffix:
+            # A bare name takes the format of the filter it was saved under.
+            suffixes = dict(zip(filters, (".png", ".svg", ".pdf")))
+            out = out.with_suffix(suffixes.get(chosen, ".png"))
         try:
-            self._chart.save_figure(path)
+            self._chart.export_figure(out)
         except (OSError, ValueError) as exc:
             self._say(tr_args(self.tr("Chart export failed: %1"), exc), "error")
             return
-        self._say(tr_args(self.tr("Chart written to %1"), path))
+        self._say(tr_args(self.tr("Chart written to %1"), str(out)))
+
+    def _on_copy_chart(self) -> None:
+        if not self._chart.has_data:
+            return
+        QApplication.clipboard().setImage(self._chart.publication_image())
+        self._say(self.tr("Chart copied to the clipboard."))
+
+    def _on_copy_data(self) -> None:
+        """What the chart shows, as tab-separated text for a spreadsheet."""
+        if not self._chart.has_data:
+            return
+        rows = self._chart.plotted_table()
+        QApplication.clipboard().setText("\n".join("\t".join(r) for r in rows))
+        self._say(self.tr("Plotted data copied to the clipboard."))
 
 
 __all__ = ["AnalysisTab"]
