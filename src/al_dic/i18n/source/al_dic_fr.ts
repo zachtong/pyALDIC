@@ -169,7 +169,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Tout effacer</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="178"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
         <source>Statistic:</source>
         <translation>Statistique :</translation>
     </message>
@@ -213,17 +213,17 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Ouverture de fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>La déformation n&apos;a pas encore été calculée. Calculez-la dans l&apos;onglet « Champ de déformation » ou affichez un déplacement.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>Les grandeurs de jauge nécessitent une sonde linéaire.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="525"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
         <source>No visible probe can show this quantity.</source>
         <translation>Aucune sonde visible ne peut afficher cette grandeur.</translation>
     </message>
@@ -301,7 +301,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Région</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="475"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>Lancez une analyse DIC pour tracer les sondes.</translation>
     </message>
@@ -376,126 +376,126 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Colore l&apos;image de référence avec le champ tracé à l&apos;image courante. Pour une lecture de jauge, le champ de l&apos;onglet « Champ de déformation » est affiché.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="176"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
         <source>Plot:</source>
         <translation>Tracer :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>X axis:</source>
         <translation>Axe X :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>Strain as:</source>
         <translation>Déformation en :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="185"/>
         <source>Min. valid fraction:</source>
         <translation>Fraction valide min. :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>Une image reste vide lorsque moins de cette fraction des points d&apos;une ligne ou d&apos;une région est fiable. Évite une courbe qui reste lisse alors que son échantillon se réduit.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="190"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>Évolution temporelle</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="192"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>La lecture de chaque sonde à chaque image.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="198"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>Le long de la ligne</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="197"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>Le champ le long de la ligne sélectionnée à l&apos;image courante, sur les autres images en gris.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="202"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>Kymographe</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="204"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>Le champ le long de la ligne sélectionnée à chaque image : distance en fonction de l&apos;image, valeur en couleur.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="209"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Stress–strain</source>
         <comment>Chart view: stress against strain</comment>
         <translation>Contrainte–déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="211"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="214"/>
         <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
         <translation>Contrainte (ou charge, sans A0) en fonction de la grandeur tracée, une courbe par sonde : contrainte-déformation avec un extensomètre, charge-ouverture avec une jauge de fissure. Nécessite des données de charge.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="222"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="225"/>
         <source>Other frames</source>
         <translation>Autres images</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="223"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>Tracer en pâle les profils des autres images derrière l&apos;image courante (au plus douze, régulièrement espacées).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="228"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
         <source>Line data (CSV)…</source>
         <translation>Données de ligne (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="229"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
         <source>Export</source>
         <translation>Exporter</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="230"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
         <source>Load data…</source>
         <translation>Données de charge…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
         <translation>Importer l&apos;enregistrement de charge d&apos;une machine d&apos;essai (CSV) pour tracer en fonction de la charge ou de la contrainte, et tracer des courbes contrainte-déformation.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="236"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
         <source>Probe data (CSV)…</source>
         <translation>Données des sondes (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="238"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
         <source>Chart image…</source>
         <translation>Image du graphique…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
         <source>Copy chart</source>
         <translation>Copier le graphique</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="245"/>
         <source>Copy plotted data</source>
         <translation>Copier les données tracées</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="554"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
         <translation>Importez l&apos;enregistrement de charge de la machine d&apos;essai via « Données de charge… » pour tracer des courbes contrainte-déformation.</translation>
     </message>
@@ -540,33 +540,33 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Norme de l&apos;ouverture de fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="274"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="277"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
         <source>Frame</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="276"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="279"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="426"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="572"/>
         <source>Load (N)</source>
         <translation>Charge (N)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="566"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="284"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="431"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
         <source>Stress (MPa)</source>
         <translation>Contrainte (MPa)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="290"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="293"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>rapport</translation>
@@ -587,7 +587,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Faites glisser pour déplacer la sonde, ou une poignée pour la remodeler. Suppr la supprime ; F2 la renomme.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>Placez une sonde sur l&apos;image de référence pour commencer.</translation>
     </message>
@@ -607,22 +607,22 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>Aucune donnée valide le long de %1 : elle est hors de la zone mesurée.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="605"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="608"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>Une vue de ligne affiche un champ. Choisissez un champ à tracer.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="612"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>Placez ou sélectionnez une sonde linéaire pour voir le champ le long de celle-ci.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="627"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="630"/>
         <source>Distance along %1 (%2)</source>
         <translation>Distance le long de %1 (%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="636"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="639"/>
         <source>%1, frame %2</source>
         <translation>%1, image %2</translation>
     </message>

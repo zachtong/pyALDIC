@@ -169,7 +169,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>모두 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="178"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
         <source>Statistic:</source>
         <translation>통계량:</translation>
     </message>
@@ -213,17 +213,17 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>변형률이 아직 계산되지 않았습니다. &apos;변형률장&apos; 탭에서 계산하거나 변위를 표시하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>게이지 양에는 선 프로브가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="525"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
         <source>No visible probe can show this quantity.</source>
         <translation>이 양을 표시할 수 있는 보이는 프로브가 없습니다.</translation>
     </message>
@@ -301,7 +301,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>영역</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="475"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>프로브를 그리려면 먼저 DIC 분석을 실행하세요.</translation>
     </message>
@@ -376,126 +376,126 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>현재 프레임에서 표시 중인 양의 필드로 기준 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="176"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
         <source>Plot:</source>
         <translation>표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>X axis:</source>
         <translation>X 축:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>Strain as:</source>
         <translation>변형률 표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="185"/>
         <source>Min. valid fraction:</source>
         <translation>최소 유효 비율:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>선이나 영역에서 신뢰할 수 있는 점의 비율이 이 값보다 낮으면 해당 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 유지되는 것을 방지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="190"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>시간 변화</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="192"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>각 프로브의 모든 프레임에서의 판독값.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="198"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>선을 따른 분포</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="197"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="202"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>키모그래프</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="204"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>모든 프레임에서 선택한 선을 따른 필드: 거리 대 프레임, 값은 색으로 표시.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="209"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Stress–strain</source>
         <comment>Chart view: stress against strain</comment>
         <translation>응력–변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="211"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="214"/>
         <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
         <translation>표시 중인 양에 대한 응력(A0가 없으면 하중) 곡선을 프로브마다 그립니다: 신율계면 응력–변형률, 균열 게이지면 하중–개구 곡선입니다. 하중 데이터가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="222"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="225"/>
         <source>Other frames</source>
         <translation>다른 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="223"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>현재 프레임 뒤에 다른 프레임의 분포를 흐리게 그립니다(최대 12개, 균등 간격).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="228"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
         <source>Line data (CSV)…</source>
         <translation>선 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="229"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="230"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
         <source>Load data…</source>
         <translation>하중 데이터…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
         <translation>시험기의 하중 기록(CSV)을 가져와 하중 또는 응력에 대해 그래프를 그리고 응력–변형률 곡선을 그립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="236"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
         <source>Probe data (CSV)…</source>
         <translation>프로브 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="238"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
         <source>Chart image…</source>
         <translation>차트 이미지…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
         <source>Copy chart</source>
         <translation>차트 복사</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="245"/>
         <source>Copy plotted data</source>
         <translation>표시된 데이터 복사</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="554"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
         <translation>응력–변형률 곡선을 그리려면 &apos;하중 데이터…&apos;로 시험기의 하중 기록을 가져오십시오.</translation>
     </message>
@@ -540,33 +540,33 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="274"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="277"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="276"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="279"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Time (s)</source>
         <translation>시간 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="426"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="572"/>
         <source>Load (N)</source>
         <translation>하중 (N)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="566"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="284"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="431"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
         <source>Stress (MPa)</source>
         <translation>응력 (MPa)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="290"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="293"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>비율</translation>
@@ -587,7 +587,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>드래그하여 프로브를 이동하거나 핸들을 드래그하여 모양을 바꿉니다. Delete로 삭제하고 F2로 이름을 바꿉니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>기준 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
@@ -607,22 +607,22 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>%1을(를) 따라 유효한 데이터가 없습니다: 측정 영역 밖에 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="605"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="608"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>선 보기는 필드를 표시합니다. 표시할 필드를 선택하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="612"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>선 프로브를 배치하거나 선택하면 선을 따른 필드를 볼 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="627"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="630"/>
         <source>Distance along %1 (%2)</source>
         <translation>%1을(를) 따른 거리(%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="636"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="639"/>
         <source>%1, frame %2</source>
         <translation>%1, %2 프레임</translation>
     </message>

@@ -169,7 +169,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="178"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
         <source>Statistic:</source>
         <translation>统计量：</translation>
     </message>
@@ -213,17 +213,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂纹张开位移</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>尚未计算应变。请在“应变场”页中计算，或改为绘制位移。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>量规类物理量需要线探针。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="525"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
         <source>No visible probe can show this quantity.</source>
         <translation>没有可见的探针能显示此物理量。</translation>
     </message>
@@ -301,7 +301,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>区域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="475"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>请先运行 DIC 分析，然后才能绘制探针曲线。</translation>
     </message>
@@ -376,126 +376,126 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>用当前帧所绘物理量的场为参考图像着色。对于量规读数，显示“应变场”页中的场。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="176"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
         <source>Plot:</source>
         <translation>绘制：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>X axis:</source>
         <translation>X 轴：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>Strain as:</source>
         <translation>应变显示为：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="185"/>
         <source>Min. valid fraction:</source>
         <translation>最小有效比例：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>当线或区域中可靠点的比例低于此值时，该帧留空。避免样本逐渐缩小而曲线依然平滑的假象。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="190"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>随时间变化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="192"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>每个探针在各帧的读数。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="198"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>沿线分布</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="197"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>当前帧沿所选线的场分布，其它帧以灰色显示在下方。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="202"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>时空图</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="204"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>所选线在每一帧的场分布：距离对帧，数值以颜色表示。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="209"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
         <source>Stress–strain</source>
         <comment>Chart view: stress against strain</comment>
         <translation>应力–应变</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="211"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="214"/>
         <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
         <translation>以所绘物理量为横轴的应力（无 A0 时为载荷）曲线，每个探针一条：配合引伸计为应力–应变曲线，配合裂纹量规为载荷–张开量曲线。需要载荷数据。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="222"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="225"/>
         <source>Other frames</source>
         <translation>其它帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="223"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>在当前帧后方淡色绘制其它帧的分布（最多十二帧，均匀间隔）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="228"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
         <source>Line data (CSV)…</source>
         <translation>线数据（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="229"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
         <source>Export</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="230"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
         <source>Load data…</source>
         <translation>载荷数据…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
         <translation>导入试验机的载荷记录（CSV），以载荷或应力为横轴绘图，并绘制应力–应变曲线。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="236"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
         <source>Probe data (CSV)…</source>
         <translation>探针数据（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="238"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
         <source>Chart image…</source>
         <translation>图表图片…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
         <source>Copy chart</source>
         <translation>复制图表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="245"/>
         <source>Copy plotted data</source>
         <translation>复制所绘数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="554"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
         <translation>请通过“载荷数据…”导入试验机的载荷记录，以绘制应力–应变曲线。</translation>
     </message>
@@ -540,33 +540,33 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂纹张开位移大小</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="274"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="277"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
         <source>Frame</source>
         <translation>帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="276"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="279"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
         <source>Time (s)</source>
         <translation>时间 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="426"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="572"/>
         <source>Load (N)</source>
         <translation>载荷 (N)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="566"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="284"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="431"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
         <source>Stress (MPa)</source>
         <translation>应力 (MPa)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="290"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="293"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>比值</translation>
@@ -587,7 +587,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>拖动可移动探针，拖动控制点可改变其形状。按 Delete 删除，按 F2 重命名。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>在参考图像上放置一个探针即可开始。</translation>
     </message>
@@ -607,22 +607,22 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>%1 沿线没有有效数据：它不在测量区域内。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="605"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="608"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>沿线视图显示的是场。请选择一个场来绘制。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="612"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>放置或选择一个线探针，即可查看沿线的场。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="627"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="630"/>
         <source>Distance along %1 (%2)</source>
         <translation>沿 %1 的距离（%2）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="636"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="639"/>
         <source>%1, frame %2</source>
         <translation>%1，第 %2 帧</translation>
     </message>

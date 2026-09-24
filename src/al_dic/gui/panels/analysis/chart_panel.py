@@ -153,6 +153,9 @@ class AnalysisChartPanel(QWidget):
         row.setSpacing(6)
         self._x_label = QLabel()
         self.x_box = QComboBox()
+        # Items arrive later (time, load, stress): grow to fit them, or
+        # "Spannung (MPa)" shows as "Spannu...".
+        self.x_box.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self._unit_label = QLabel()
         self.unit_box = QComboBox()
         self._threshold_label = QLabel()

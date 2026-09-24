@@ -237,3 +237,13 @@ def test_stress_strain_data_exports_with_the_load(gauge_tab, state):
     state.set_load_data(_machine(area=2.0))
     gauge_tab._refresh()
     assert gauge_tab._export_btn.isEnabled()
+
+
+def test_the_axis_box_grows_to_fit_axes_added_later(tab, state):
+    """German "Spannung (MPa)" was cut to "Spannu..." in a box sized for "Bild"."""
+    from PySide6.QtWidgets import QComboBox
+
+    assert tab._x_box.sizeAdjustPolicy() == QComboBox.SizeAdjustPolicy.AdjustToContents
+    before = tab._x_box.sizeHint().width()
+    state.set_load_data(_machine(area=2.0))
+    assert tab._x_box.sizeHint().width() >= before
