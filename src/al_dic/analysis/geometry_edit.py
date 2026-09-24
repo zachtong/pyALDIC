@@ -74,9 +74,18 @@ def move_control_point(geom: Geometry, index: int, x: float, y: float) -> Geomet
         return AreaGeom.circle(cx, cy, radius)
     vertices = control_points(geom)
     vertices[index] = (float(x), float(y))
-    if abs(_signed_area(vertices)) < _MIN_AREA:
+    if not encloses_area(vertices):
         return None
     return AreaGeom.polygon(vertices)
+
+
+def encloses_area(vertices: list[Point]) -> bool:
+    """True when a polygon through *vertices* covers at least a pixel.
+
+    The floor both placing and reshaping apply: below it the region is a
+    mis-click along a line, not something to measure.
+    """
+    return len(vertices) >= 3 and abs(_signed_area(vertices)) >= _MIN_AREA
 
 
 def translate(geom: Geometry, dx: float, dy: float) -> Geometry:
@@ -173,4 +182,7 @@ def _signed_area(vertices: list[Point]) -> float:
     )
 
 
-__all__ = ["control_points", "hit_test", "move_control_point", "translate"]
+__all__ = [
+    "control_points", "encloses_area", "hit_test", "move_control_point",
+    "translate",
+]

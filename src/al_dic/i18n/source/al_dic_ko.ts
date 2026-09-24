@@ -40,530 +40,621 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="55"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="88"/>
         <source>crack</source>
-        <extracomment>Above this many points a marker on every frame is noise; markers are kept only where a frame is flagged.</extracomment>
+        <extracomment>Above this many points a marker on every frame is noise; markers are kept only where a frame is flagged. The shade of consumed material, in a profile&apos;s spans and a kymograph&apos;s band.</extracomment>
         <translation>균열</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="57"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="90"/>
         <source>too few valid points</source>
         <translation>유효한 점이 너무 적음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="59"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="92"/>
         <source>unreliable (strain edge trim)</source>
         <translation>신뢰할 수 없음(변형률 가장자리 트림)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="62"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="95"/>
         <source>gauge endpoint lost</source>
         <translation>게이지 끝점 상실</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="64"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="97"/>
         <source>not computed</source>
         <translation>계산되지 않음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="65"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="98"/>
         <source>no data</source>
         <translation>데이터 없음</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="248"/>
-        <source>Frame</source>
-        <extracomment>Data-space x of a left click inside the axes.</extracomment>
-        <translation>프레임</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="250"/>
-        <source>Distance along line (%1)</source>
-        <translation>선을 따른 거리(%1)</translation>
     </message>
 </context>
 <context>
     <name>AnalysisTab</name>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="395"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="432"/>
         <source>Point</source>
         <comment>Placement tool: a single location</comment>
-        <extracomment>Placement tools in toolbar order, with their icons. What a gauge tool plots once it has placed its line, and the readings that already count as its own -- placing a second extensometer keeps a chart of elongation rather than resetting it to strain. Fields a probe can read, in the Strain Field tab&apos;s order. Gauge quantities that are strains (and so take the strain display unit). Display scale and unit for dimensionless strain. The user picked a frame here (navigator or a click on the chart).</extracomment>
+        <extracomment>Placement tools in toolbar order, with their icons. What a gauge tool plots once it has placed its line, and the readings that already count as its own -- placing a second extensometer keeps a chart of elongation rather than resetting it to strain. The chart&apos;s views, in tab order. A profile draws at most this many other frames: past a dozen grey lines the family stops being readable. Fields a probe can read, in the Strain Field tab&apos;s order. Gauge quantities that are strains (and so take the strain display unit). Display scale and unit for dimensionless strain. The user picked a frame here (navigator or a click on the chart).</extracomment>
         <translation>점</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="396"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="433"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
         <translation>선분</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="397"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="434"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
         <translation>사각형</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="398"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="435"/>
         <source>Circle</source>
         <comment>Placement tool</comment>
         <translation>원</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="399"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="436"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
         <translation>다각형</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="408"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="445"/>
         <source>Click once to place a point probe.</source>
         <translation>한 번 클릭하여 점 프로브를 배치합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="413"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="450"/>
         <source>Click twice: opposite corners.</source>
         <translation>두 번 클릭: 마주 보는 두 모서리.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="414"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="451"/>
         <source>Click twice: centre, then the edge.</source>
         <translation>두 번 클릭: 중심, 그다음 가장자리.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="416"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="453"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="456"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="493"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
         <translation>표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="457"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="494"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
         <translation>이름</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="458"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="495"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
         <translation>종류</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="459"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="496"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
         <translation>색상</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="460"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="497"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>비고</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="462"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="499"/>
         <source>Colour…</source>
         <translation>색상…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="463"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="500"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
         <translation>삭제</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="464"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="501"/>
         <source>Clear All</source>
         <translation>모두 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="466"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="503"/>
         <source>Statistic:</source>
         <translation>통계량:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="520"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="577"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
         <translation>평균</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="521"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="578"/>
         <source>Median</source>
         <comment>Statistic</comment>
         <translation>중앙값</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="522"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="579"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
         <translation>최댓값</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="523"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="580"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
         <translation>최솟값</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="524"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="581"/>
         <source>Standard deviation</source>
         <translation>표준편차</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="525"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="582"/>
         <source>Valid fraction</source>
         <translation>유효 비율</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="512"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="569"/>
         <source>Crack opening</source>
         <translation>균열 개구 변위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="844"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="931"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1057"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>변형률이 아직 계산되지 않았습니다. &apos;변형률장&apos; 탭에서 계산하거나 변위를 표시하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="854"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="941"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>게이지 양에는 선 프로브가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="857"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="944"/>
         <source>No visible probe can show this quantity.</source>
         <translation>이 양을 표시할 수 있는 보이는 프로브가 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="934"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1145"/>
         <source>no valid data: %1</source>
         <translation>유효한 데이터 없음: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="937"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1148"/>
         <source>crack from frame %1</source>
         <translation>%1 프레임부터 균열</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="940"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1151"/>
         <source>endpoint lost from frame %1</source>
         <translation>%1 프레임부터 끝점 상실</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="942"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1153"/>
         <source>gaps: too few valid points</source>
         <translation>공백: 유효 점이 너무 적음</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="944"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1155"/>
         <source>gaps: unreliable strain</source>
         <translation>공백: 변형률 신뢰 불가</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="950"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1161"/>
         <source>not plotted: gauges need a line</source>
         <translation>표시 안 됨: 게이지에는 선이 필요</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="952"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1163"/>
         <source>not plotted: one point has no spread or coverage</source>
         <translation>표시 안 됨: 한 점에는 분산이나 적용 범위가 없음</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="953"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1164"/>
         <source>not plotted</source>
         <translation>표시 안 됨</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1038"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1249"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>프로브 &apos;%1&apos;을(를) 추가했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1157"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1368"/>
         <source>Clear All Probes</source>
         <translation>모든 프로브 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1158"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1369"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1177"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1389"/>
         <source>Point</source>
         <comment>Probe type</comment>
         <translation>점</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1178"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1390"/>
         <source>Line</source>
         <comment>Probe type</comment>
         <translation>선분</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1179"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1391"/>
         <source>Region</source>
         <comment>Probe type: an enclosed area</comment>
         <translation>영역</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="831"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="918"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1046"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>프로브를 그리려면 먼저 DIC 분석을 실행하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="400"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="437"/>
         <source>Virtual extensometer</source>
         <comment>Placement tool</comment>
         <translation>가상 신율계</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="402"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="439"/>
         <source>Crack gauge</source>
         <comment>Placement tool: a line across a crack</comment>
         <translation>균열 게이지</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="410"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="447"/>
         <source>Click twice: start and end. A line is also a virtual extensometer and a crack-opening gauge.</source>
         <translation>두 번 클릭: 시작점과 끝점. 선은 가상 신율계이자 균열 개구 게이지이기도 합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="419"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="456"/>
         <source>Click the two gauge points. The chart then shows the strain between them.</source>
         <translation>두 개의 표점을 클릭하십시오. 차트에 두 점 사이의 변형률이 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="423"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="460"/>
         <source>Click one point on each side of the crack. The chart then shows how far it opens.</source>
         <translation>균열 양쪽에 한 점씩 클릭하십시오. 차트에 균열이 벌어진 정도가 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="437"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="474"/>
         <source>Fit</source>
         <comment>Zoom button: fit the image to the view</comment>
         <translation>맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="442"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="479"/>
         <source>Fit image to viewport</source>
         <translation>이미지를 뷰포트에 맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="443"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="480"/>
         <source>100%</source>
         <comment>Zoom button: one image pixel per screen pixel</comment>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="444"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="481"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>100%(1:1) 확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="445"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="482"/>
         <source>Zoom in</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="446"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="483"/>
         <source>Zoom out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="448"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="485"/>
         <source>Show field</source>
         <comment>Analysis canvas: colour the image by the field</comment>
         <translation>필드 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="450"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="487"/>
         <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>현재 프레임에서 표시 중인 양의 필드로 기준 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="465"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="502"/>
         <source>Plot:</source>
         <translation>표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="467"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="504"/>
         <source>X axis:</source>
         <translation>X 축:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="468"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="505"/>
         <source>Strain as:</source>
         <translation>변형률 표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="469"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="506"/>
         <source>Min. valid fraction:</source>
         <translation>최소 유효 비율:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="471"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="508"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>선이나 영역에서 신뢰할 수 있는 점의 비율이 이 값보다 낮으면 해당 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 유지되는 것을 방지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="475"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="513"/>
+        <source>Over time</source>
+        <comment>Chart view: every frame of each probe</comment>
+        <translation>시간 변화</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="514"/>
+        <source>Each probe&apos;s reading at every frame.</source>
+        <translation>각 프로브의 모든 프레임에서의 판독값.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="515"/>
+        <source>Along the line</source>
+        <comment>Chart view: a profile</comment>
+        <translation>선을 따른 분포</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="516"/>
+        <source>The field along the selected line at the current frame, over the other frames in grey.</source>
+        <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="518"/>
+        <source>Kymograph</source>
+        <comment>Chart view: distance against frame</comment>
+        <translation>키모그래프</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="519"/>
+        <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
+        <translation>모든 프레임에서 선택한 선을 따른 필드: 거리 대 프레임, 값은 색으로 표시.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="526"/>
+        <source>Other frames</source>
+        <translation>다른 프레임</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="528"/>
+        <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
+        <translation>현재 프레임 뒤에 다른 프레임의 분포를 흐리게 그립니다(최대 12개, 균등 간격).</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="531"/>
+        <source>Line data (CSV)…</source>
+        <translation>선 데이터(CSV)…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="532"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="476"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="533"/>
         <source>Probe data (CSV)…</source>
         <translation>프로브 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="477"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="534"/>
         <source>Chart image…</source>
         <translation>차트 이미지…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="493"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="550"/>
         <source>Displacement U</source>
         <translation>변위 U</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="494"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="551"/>
         <source>Displacement V</source>
         <translation>변위 V</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="495"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="552"/>
         <source>Displacement magnitude</source>
         <translation>변위 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="509"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="566"/>
         <source>Extensometer strain</source>
         <translation>신율계 변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="510"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="567"/>
         <source>Extensometer true strain</source>
         <translation>신율계 진변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="511"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="568"/>
         <source>Elongation ΔL</source>
         <translation>신장량 ΔL</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="513"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="570"/>
         <source>Crack sliding</source>
         <translation>균열 미끄럼</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="514"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="571"/>
         <source>Crack opening magnitude</source>
         <translation>균열 개구 변위 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="558"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="972"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="615"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1183"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="560"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="971"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="617"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1182"/>
         <source>Time (s)</source>
         <translation>시간 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="568"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="625"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>비율</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="738"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="804"/>
         <source>Could not draw the field: %1</source>
         <translation>필드를 그릴 수 없습니다: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="766"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="837"/>
         <source>Esc cancels placement</source>
         <translation>Esc 키로 배치 취소</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="776"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="847"/>
         <source>Drag to move the probe, or drag a handle to reshape it. Delete removes it; F2 renames it.</source>
         <translation>드래그하여 프로브를 이동하거나 핸들을 드래그하여 모양을 바꿉니다. Delete로 삭제하고 F2로 이름을 바꿉니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="839"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="926"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>기준 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="923"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1022"/>
+        <source>Nothing valid along %1: its strain is trimmed as low-confidence near an edge or a hole. Plot a displacement, or trim less on the Strain Field tab.</source>
+        <translation>%1을(를) 따라 유효한 데이터가 없습니다: 가장자리나 구멍 근처의 변형률이 저신뢰도로 잘려 나갔습니다. 변위를 표시하거나 &apos;변형률장&apos; 탭에서 잘라내기를 줄이십시오.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1027"/>
+        <source>Nothing valid along %1: a crack has consumed the material under it.</source>
+        <translation>%1을(를) 따라 유효한 데이터가 없습니다: 아래의 재료가 균열로 소실되었습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1030"/>
+        <source>Nothing valid along %1: it lies off the measured area.</source>
+        <translation>%1을(를) 따라 유효한 데이터가 없습니다: 측정 영역 밖에 있습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1053"/>
+        <source>A line view shows a field. Choose a field to plot.</source>
+        <translation>선 보기는 필드를 표시합니다. 표시할 필드를 선택하십시오.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1063"/>
+        <source>Place a line probe, or select one, to see the field along it.</source>
+        <translation>선 프로브를 배치하거나 선택하면 선을 따른 필드를 볼 수 있습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1076"/>
+        <source>Distance along %1 (%2)</source>
+        <translation>%1을(를) 따른 거리(%2)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1085"/>
+        <source>%1, frame %2</source>
+        <translation>%1, %2 프레임</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1134"/>
         <source>not plotted: off the measured area</source>
         <translation>표시 안 됨: 측정 영역 밖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="925"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1136"/>
         <source>not plotted: a gauge end is off the measured area</source>
         <translation>표시 안 됨: 게이지 끝점이 측정 영역 밖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1267"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1489"/>
         <source>Export Probe Data</source>
         <translation>프로브 데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1268"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1490"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1521"/>
         <source>CSV Files</source>
         <translation>CSV 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1268"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="1306"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1490"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1521"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1544"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1294"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1511"/>
         <source>Probe export failed: %1</source>
         <translation>프로브 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1297"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1513"/>
         <source>Probe data written to %1</source>
         <translation>프로브 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1303"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1520"/>
+        <source>Export Line Data</source>
+        <translation>선 데이터 내보내기</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1533"/>
+        <source>Line export failed: %1</source>
+        <translation>선 데이터 내보내기 실패: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1535"/>
+        <source>Line data written to %1</source>
+        <translation>선 데이터를 %1에 기록했습니다</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1541"/>
         <source>Export Chart</source>
         <translation>차트 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1304"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1542"/>
         <source>PNG Images</source>
         <translation>PNG 이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1305"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1543"/>
         <source>PDF Documents</source>
         <translation>PDF 문서</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1313"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1551"/>
         <source>Chart export failed: %1</source>
         <translation>차트 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1316"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1553"/>
         <source>Chart written to %1</source>
         <translation>차트를 %1에 기록했습니다</translation>
     </message>

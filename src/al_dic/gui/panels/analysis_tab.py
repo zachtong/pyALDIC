@@ -16,6 +16,11 @@ probe, and moving the frame cursor, redraw without reading the run again.
 
 The canvas shows the field under the probes, in the reference configuration
 their coordinates live in, drawn by the Strain Field tab's own renderer.
+
+Three views share the controls: every probe over time; the field along one
+line on the current frame, over the other frames in grey; and the same line
+on every frame at once as a kymograph. The line views read the selected line
+(or the newest one) and one field -- a gauge reading has no profile.
 """
 
 from __future__ import annotations
@@ -42,6 +47,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QSplitter,
+    QTabBar,
     QTableWidget,
     QTableWidgetItem,
     QToolButton,
@@ -49,7 +55,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from al_dic.analysis.engine import DEFAULT_MIN_VALID_FRACTION, AnalysisEngine
+from al_dic.analysis.engine import (
+    DEFAULT_MIN_VALID_FRACTION,
+    AnalysisEngine,
+    Kymograph,
+    SampleStatus,
+)
 from al_dic.analysis.probes import (
     GAUGE_QUANTITIES,
     SPATIAL_STATISTICS,
@@ -58,6 +69,7 @@ from al_dic.analysis.probes import (
 )
 from al_dic.analysis.series import FrameStatus, TimeSeries
 from al_dic.core.fields import is_strain_field
+from al_dic.export.export_line import export_line_csv
 from al_dic.export.export_probes import (
     ProbeSeries,
     export_probe_csv,
@@ -71,6 +83,7 @@ from al_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.mpl_chart import Curve, MplChart, status_label
 from al_dic.gui.widgets.strain_navigator import StrainNavigator
+from al_dic.i18n import tr_args
 from al_dic.utils.locale_format import format_number
 
 logger = logging.getLogger(__name__)
@@ -93,6 +106,13 @@ _GAUGE_TOOLS = {
     "extensometer": ("strain", frozenset({"strain", "true_strain", "elongation"})),
     "crack_gauge": ("cod", frozenset({"cod", "cod_sliding", "cod_magnitude"})),
 }
+
+#: The chart's views, in tab order.
+_VIEWS = ("time", "profile", "kymograph")
+
+#: A profile draws at most this many other frames: past a dozen grey lines
+#: the family stops being readable.
+_MAX_OTHER_FRAMES = 12
 
 #: Fields a probe can read, in the Strain Field tab's order.
 _FIELDS = (
@@ -153,6 +173,8 @@ class AnalysisTab(QWidget):
         self._engine: AnalysisEngine | None = None
         self._engine_key: tuple | None = None
         self._cache: dict[tuple, TimeSeries] = {}
+        self._kymo_cache: dict[tuple, Kymograph] = {}
+        self._line_shown: tuple[Probe, str] | None = None
         self._plotted: list[tuple[Probe, _Quantity, str]] = []
         self._notes: dict[int, str] = {}
         self._parameters_provider = None
@@ -286,6 +308,13 @@ class AnalysisTab(QWidget):
         column.setContentsMargins(0, 0, 0, 0)
         column.setSpacing(6)
 
+        self._view_bar = QTabBar()
+        self._view_bar.setExpanding(False)
+        self._view_bar.setDrawBase(False)
+        for key in _VIEWS:
+            self._view_bar.setTabData(self._view_bar.addTab(""), key)
+        column.addWidget(self._view_bar)
+
         row1 = QHBoxLayout()
         row1.setSpacing(6)
         self._quantity_label = QLabel()
@@ -305,6 +334,8 @@ class AnalysisTab(QWidget):
         self._export_menu = QMenu(self._export_btn)
         self._export_csv_action = self._export_menu.addAction("")
         self._export_csv_action.triggered.connect(self._on_export_csv)
+        self._export_line_action = self._export_menu.addAction("")
+        self._export_line_action.triggered.connect(self._on_export_line_csv)
         self._export_chart_action = self._export_menu.addAction("")
         self._export_chart_action.triggered.connect(self._on_export_chart)
         self._export_btn.setMenu(self._export_menu)
@@ -323,8 +354,10 @@ class AnalysisTab(QWidget):
         self._threshold.setRange(0.0, 1.0)
         self._threshold.setSingleStep(0.05)
         self._threshold.setValue(DEFAULT_MIN_VALID_FRACTION)
+        self._other_frames_box = QCheckBox()
+        self._other_frames_box.setChecked(True)
         for w in (self._x_label, self._x_box, self._unit_label, self._unit_box,
-                  self._threshold_label, self._threshold):
+                  self._threshold_label, self._threshold, self._other_frames_box):
             row2.addWidget(w)
         row2.addStretch()
         column.addLayout(row2)
@@ -350,6 +383,10 @@ class AnalysisTab(QWidget):
         self._x_box.currentIndexChanged.connect(self._request_refresh)
         self._unit_box.currentIndexChanged.connect(self._request_refresh)
         self._threshold.valueChanged.connect(self._request_refresh)
+        self._other_frames_box.toggled.connect(self._request_refresh)
+        # Last: addTab() above already emitted currentChanged, before the
+        # controls this slot touches existed.
+        self._view_bar.currentChanged.connect(self._on_view_changed)
         return holder
 
     def _build_probe_panel(self) -> QWidget:
@@ -472,6 +509,26 @@ class AnalysisTab(QWidget):
             "or region's points are reliable. Guards against a curve that "
             "stays smooth while its sample shrinks away."
         ))
+        views = {
+            "time": (self.tr("Over time", "Chart view: every frame of each probe"),
+                     self.tr("Each probe's reading at every frame.")),
+            "profile": (self.tr("Along the line", "Chart view: a profile"),
+                        self.tr("The field along the selected line at the "
+                                "current frame, over the other frames in grey.")),
+            "kymograph": (self.tr("Kymograph", "Chart view: distance against frame"),
+                          self.tr("The field along the selected line at every "
+                                  "frame: distance against frame, value as colour.")),
+        }
+        for index in range(self._view_bar.count()):
+            text, tip = views[self._view_bar.tabData(index)]
+            self._view_bar.setTabText(index, text)
+            self._view_bar.setTabToolTip(index, tip)
+        self._other_frames_box.setText(self.tr("Other frames"))
+        self._other_frames_box.setToolTip(self.tr(
+            "Draw the other frames' profiles faintly behind the current one "
+            "(at most twelve, evenly spaced)."
+        ))
+        self._export_line_action.setText(self.tr("Line data (CSV)…"))
         self._export_btn.setText(self.tr("Export"))
         self._export_csv_action.setText(self.tr("Probe data (CSV)…"))
         self._export_chart_action.setText(self.tr("Chart image…"))
@@ -578,8 +635,15 @@ class AnalysisTab(QWidget):
         """Follow the Strain Field tab's frame (no signal back)."""
         self._frame = max(0, int(frame))
         self._sync_navigator()
-        self._chart.set_cursor(self._x_of(self._frame))
-        self._request_overlay()
+        self._follow_frame()
+
+    def _follow_frame(self) -> None:
+        """Move the chart to ``self._frame``: a cursor, or a new profile."""
+        if self._view() == "profile":
+            self._request_refresh()
+        else:
+            self._chart.set_cursor(self._x_of(self._frame))
+            self._request_overlay()
 
     def set_default_field(self, name: str) -> None:
         """The Strain Field tab's field: where the chart starts until the user
@@ -654,6 +718,7 @@ class AnalysisTab(QWidget):
         self._engine = None
         self._engine_key = None
         self._cache.clear()
+        self._kymo_cache.clear()
         self._request_refresh()
 
     # -- engine and series ----------------------------------------------------
@@ -671,6 +736,7 @@ class AnalysisTab(QWidget):
             self._engine = AnalysisEngine(result, ref_mask=mask)
             self._engine_key = key
             self._cache.clear()
+            self._kymo_cache.clear()
         return self._engine
 
     def _series(self, probe: Probe, quantity: _Quantity, statistic: str,
@@ -735,8 +801,8 @@ class AnalysisTab(QWidget):
                 image = self._field_renderer(field, self._frame)
             except Exception as exc:  # the probes stay usable without it
                 logger.exception("Analysis canvas: drawing %s failed", field)
-                self._say(self.tr("Could not draw the field: %1")
-                          .replace("%1", str(exc)), "error")
+                self._say(tr_args(self.tr("Could not draw the field: %1"), exc),
+                          "error")
         if image is None:
             self._canvas.clear_overlay()
             self._colorbar.setVisible(False)
@@ -744,7 +810,12 @@ class AnalysisTab(QWidget):
         self._canvas.show_field(image)
         viewport = self._canvas.viewport()
         self._colorbar.setGeometry(0, 0, viewport.width(), viewport.height())
-        self._colorbar.update_params(image.cmap, image.vmin, image.vmax, image.label)
+        # Strain in the chart's unit (%, µε): the colorbar is only a legend,
+        # so its numbers can be rescaled without touching the picture.
+        scale, unit = self._display_scale(_Quantity("field", field), None)
+        label = f"{image.label} ({unit})" if scale != 1.0 else image.label
+        self._colorbar.update_params(
+            image.cmap, image.vmin * scale, image.vmax * scale, label)
         self._colorbar.setVisible(True)
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:  # noqa: N802
@@ -797,16 +868,25 @@ class AnalysisTab(QWidget):
         self._nav.set_state(n, min(self._frame, max(n - 1, 0)))
 
     def _update_control_visibility(self) -> None:
+        view = self._view()
+        over_time = view == "time"
         quantity = self._current_quantity()
         is_field = quantity is not None and not quantity.is_gauge
-        self._statistic_label.setVisible(is_field)
-        self._statistic_box.setVisible(is_field)
-        strainlike = self._is_strainlike(quantity, self._statistic_box.currentData())
+        statistic = self._statistic_box.currentData() if over_time else None
+        self._statistic_label.setVisible(is_field and over_time)
+        self._statistic_box.setVisible(is_field and over_time)
+        strainlike = self._is_strainlike(quantity, statistic)
         self._unit_label.setVisible(strainlike)
         self._unit_box.setVisible(strainlike)
-        threshold = is_field and self._statistic_box.currentData() != "valid_fraction"
+        threshold = (is_field and over_time
+                     and self._statistic_box.currentData() != "valid_fraction")
         self._threshold_label.setVisible(threshold)
         self._threshold.setVisible(threshold)
+        self._x_label.setVisible(view != "profile")
+        self._x_box.setVisible(view != "profile")
+        self._other_frames_box.setVisible(view == "profile")
+        self._export_csv_action.setVisible(over_time)
+        self._export_line_action.setVisible(not over_time)
 
     @staticmethod
     def _is_strainlike(quantity: _Quantity | None, statistic: str | None) -> bool:
@@ -824,6 +904,13 @@ class AnalysisTab(QWidget):
         self._notes = {}
 
     def _refresh_chart(self) -> None:
+        self._line_shown = None
+        if self._view() == "time":
+            self._refresh_time_chart()
+        else:
+            self._refresh_line_chart(self._view())
+
+    def _refresh_time_chart(self) -> None:
         result = self._state.results
         quantity = self._current_quantity()
         statistic = self._statistic_box.currentData() or "mean"
@@ -889,7 +976,131 @@ class AnalysisTab(QWidget):
         )
         self._plotted = plotted
 
-    def _display_scale(self, quantity: _Quantity, statistic: str) -> tuple[float, str]:
+    # -- line views -----------------------------------------------------------
+
+    def _view(self) -> str:
+        return self._view_bar.tabData(self._view_bar.currentIndex()) or "time"
+
+    def _view_bar_index(self, key: str) -> int:
+        for index in range(self._view_bar.count()):
+            if self._view_bar.tabData(index) == key:
+                return index
+        raise KeyError(key)
+
+    def _on_view_changed(self, _index: int) -> None:
+        self._update_control_visibility()
+        self._request_refresh()
+
+    def _line_probe(self) -> Probe | None:
+        """The selected line, else the newest visible one."""
+        selected = self._selected_probe()
+        if selected is not None and selected.kind == "line" and selected.visible:
+            return selected
+        lines = [p for p in self._state.probes if p.kind == "line" and p.visible]
+        return lines[-1] if lines else None
+
+    def _kymograph(self, probe: Probe, field: str, *, axes: str = "image") -> Kymograph:
+        engine = self._engine_for(self._state.results)
+        key = (probe.geometry, field, self._pixel_size(), self._length_unit(), axes)
+        cached = self._kymo_cache.get(key)
+        if cached is None:
+            cached = engine.kymograph(
+                probe, field, pixel_size=self._pixel_size(),
+                length_unit=self._length_unit(), axes=axes)
+            self._kymo_cache[key] = cached
+        return cached
+
+    def _empty_line_message(self, probe: Probe, status: np.ndarray) -> str:
+        """Why a line has nothing to show on any deformed frame.
+
+        The reason named is the one the user can act on, not the commonest:
+        a line over a hole and a trimmed ligament is mostly off the material,
+        but only the trim can be changed.
+        """
+        if (status == SampleStatus.UNRELIABLE).any():
+            text = self.tr(
+                "Nothing valid along %1: its strain is trimmed as low-confidence "
+                "near an edge or a hole. Plot a displacement, or trim less on "
+                "the Strain Field tab.")
+        elif (status == SampleStatus.CONSUMED).any():
+            text = self.tr(
+                "Nothing valid along %1: a crack has consumed the material "
+                "under it.")
+        else:
+            text = self.tr("Nothing valid along %1: it lies off the measured area.")
+        return tr_args(text, probe.label)
+
+    @staticmethod
+    def _other_frames(n: int, current: int) -> list[int]:
+        others = [i for i in range(n) if i != current]
+        if len(others) > _MAX_OTHER_FRAMES:
+            picks = np.linspace(0, len(others) - 1, _MAX_OTHER_FRAMES)
+            others = [others[i] for i in sorted(set(np.round(picks).astype(int)))]
+        return others
+
+    def _refresh_line_chart(self, view: str) -> None:
+        result = self._state.results
+        quantity = self._current_quantity()
+        self._plotted, self._notes = [], {}
+        if result is None:
+            self._placeholder(self.tr("Run a DIC analysis to plot probes."))
+            return
+        if quantity is None:
+            self._placeholder("")
+            return
+        if quantity.is_gauge:
+            self._placeholder(self.tr(
+                "A line view shows a field. Choose a field to plot."))
+            return
+        if is_strain_field(quantity.name) and not result.result_strain:
+            self._placeholder(self.tr(
+                "Strain has not been computed yet. Compute it on the Strain "
+                "Field tab, or plot a displacement."))
+            return
+        probe = self._line_probe()
+        if probe is None:
+            self._placeholder(self.tr(
+                "Place a line probe, or select one, to see the field along it."))
+            return
+
+        kymo = self._kymograph(probe, quantity.name)
+        deformed = slice(1, None) if len(kymo.frames) > 1 else slice(None)
+        if not np.isfinite(kymo.values[deformed]).any():
+            self._placeholder(self._empty_line_message(probe, kymo.status[deformed]))
+            return
+        scale, unit = self._display_scale(quantity, None)
+        values = kymo.values * scale                       # [frame, sample]
+        consumed = kymo.status == SampleStatus.CONSUMED
+        title = self._field_title(quantity.name)
+        value_label = f"{title} ({unit})" if unit else title
+        distance_label = tr_args(self.tr("Distance along %1 (%2)"),
+                                 probe.label, kymo.distance_unit)
+        crack = status_label(FrameStatus.CRACK)
+        if view == "profile":
+            frame = min(self._frame, len(kymo.frames) - 1)
+            others = ([values[i] for i in self._other_frames(len(kymo.frames), frame)]
+                      if self._other_frames_box.isChecked() else [])
+            self._chart.plot_profile(
+                kymo.distance, values[frame], colour=probe.color,
+                label=tr_args(self.tr("%1, frame %2"), probe.label, frame + 1),
+                x_label=distance_label, y_label=value_label,
+                others=others, consumed=consumed[frame], consumed_label=crack,
+            )
+        else:
+            state = self._state.get_field_state(quantity.name)
+            vmin = None if state.auto else float(state.vmin) * scale
+            vmax = None if state.auto else float(state.vmax) * scale
+            self._chart.plot_kymograph(
+                values.T, x=self._x_values(kymo.frames), distance=kymo.distance,
+                x_label=self._x_title(), y_label=distance_label,
+                value_label=value_label, colormap=state.colormap,
+                vmin=vmin, vmax=vmax, consumed=consumed.T, consumed_label=crack,
+                integer_x=self._x_box.currentData() != "time",
+                cursor_x=self._x_of(self._frame),
+            )
+        self._line_shown = (probe, quantity.name)
+
+    def _display_scale(self, quantity: _Quantity, statistic: str | None) -> tuple[float, str]:
         if self._is_strainlike(quantity, statistic):
             return _STRAIN_UNITS[self._unit_box.currentData() or "ratio"]
         if quantity.is_gauge:
@@ -931,13 +1142,13 @@ class AnalysisTab(QWidget):
             reasons = [st for st in statuses if st is not FrameStatus.OK]
             if reasons:
                 common = max(set(reasons), key=reasons.count)
-                return self.tr("no valid data: %1").replace("%1", status_label(common))
+                return tr_args(self.tr("no valid data: %1"), status_label(common))
         crack = ts.first_frame(FrameStatus.CRACK)
         if crack is not None:
-            return self.tr("crack from frame %1").replace("%1", str(crack + 1))
+            return tr_args(self.tr("crack from frame %1"), crack + 1)
         lost = ts.first_frame(FrameStatus.ENDPOINT_LOST)
         if lost is not None:
-            return self.tr("endpoint lost from frame %1").replace("%1", str(lost + 1))
+            return tr_args(self.tr("endpoint lost from frame %1"), lost + 1)
         if any(st is FrameStatus.BELOW_THRESHOLD for st in ts.status):
             return self.tr("gaps: too few valid points")
         if any(st is FrameStatus.UNRELIABLE for st in ts.status):
@@ -984,16 +1195,16 @@ class AnalysisTab(QWidget):
 
     def _on_nav_frame(self, frame: int) -> None:
         self._frame = int(frame)
-        self._chart.set_cursor(self._x_of(self._frame))
-        self._request_overlay()
+        self._follow_frame()
         self.frame_requested.emit(self._frame)
 
     def _on_chart_clicked(self, x: float) -> None:
+        if self._view() == "profile":
+            return                      # x is a distance there, not a frame
         frame = self._frame_from_x(x)
         self._frame = frame
         self._sync_navigator()
-        self._chart.set_cursor(self._x_of(frame))
-        self._request_overlay()
+        self._follow_frame()
         self.frame_requested.emit(frame)
 
     # -- quantity -----------------------------------------------------------
@@ -1035,7 +1246,7 @@ class AnalysisTab(QWidget):
         self._sync_tool_buttons()
         self._adopt_gauge_reading(tool)
         self._refresh()
-        self._say(self.tr("Added probe '%1'.").replace("%1", probe.label))
+        self._say(tr_args(self.tr("Added probe '%1'."), probe.label))
 
     def _adopt_gauge_reading(self, tool: str | None) -> None:
         """Plot what a gauge tool is for, unless the chart already shows a
@@ -1167,7 +1378,8 @@ class AnalysisTab(QWidget):
         self._colour_btn.setEnabled(has_selection)
         self._delete_btn.setEnabled(has_selection)
         self._clear_btn.setEnabled(len(self._state.probes) > 0)
-        self._export_btn.setEnabled(self._chart.has_data and bool(self._plotted))
+        shown = self._plotted if self._view() == "time" else self._line_shown
+        self._export_btn.setEnabled(self._chart.has_data and bool(shown))
 
     # -- table ----------------------------------------------------------------
 
@@ -1260,6 +1472,16 @@ class AnalysisTab(QWidget):
         self._status.setText(message)
         self._state.log_message.emit(message, level)
 
+    def _export_parameters(self) -> dict[str, str]:
+        """Run parameters for an export header, strain settings included."""
+        params = run_parameters(self._state.results)
+        if self._parameters_provider is not None:
+            try:
+                params.update(self._parameters_provider() or {})
+            except Exception:  # a header is not worth a failed export
+                logger.exception("Analysis export: strain parameters unavailable")
+        return params
+
     def _on_export_csv(self) -> None:
         if not (self._chart.has_data and self._plotted):
             return
@@ -1281,20 +1503,36 @@ class AnalysisTab(QWidget):
                     "value" if probe.kind == "point" else statistic),
                 series=ts,
             ))
-        params = run_parameters(self._state.results)
-        if self._parameters_provider is not None:
-            try:
-                params.update(self._parameters_provider() or {})
-            except Exception:  # pragma: no cover - a header is not worth a crash
-                pass
         rate = self._frame_rate() or None
         try:
-            export_probe_csv(path, entries, frame_rate=rate, parameters=params)
+            export_probe_csv(path, entries, frame_rate=rate,
+                             parameters=self._export_parameters())
         except (OSError, ValueError) as exc:
-            self._say(self.tr("Probe export failed: %1").replace("%1", str(exc)),
-                      "error")
+            self._say(tr_args(self.tr("Probe export failed: %1"), exc), "error")
             return
-        self._say(self.tr("Probe data written to %1").replace("%1", path))
+        self._say(tr_args(self.tr("Probe data written to %1"), path))
+
+    def _on_export_line_csv(self) -> None:
+        if not (self._chart.has_data and self._line_shown):
+            return
+        probe, field = self._line_shown
+        path, _ = QFileDialog.getSaveFileName(
+            self, self.tr("Export Line Data"), "line_profile.csv",
+            self.tr("CSV Files") + " (*.csv);;" + self.tr("All Files") + " (*)",
+        )
+        if not path:
+            return
+        # World axes, as the node export writes v; the chart keeps the screen's.
+        kymo = self._kymograph(probe, field, axes="world")
+        xy = self._engine_for(self._state.results).plan(probe.geometry).xy
+        try:
+            export_line_csv(path, probe, kymo, xy, field=field, axes="world",
+                            frame_rate=self._frame_rate() or None,
+                            parameters=self._export_parameters())
+        except (OSError, ValueError) as exc:
+            self._say(tr_args(self.tr("Line export failed: %1"), exc), "error")
+            return
+        self._say(tr_args(self.tr("Line data written to %1"), path))
 
     def _on_export_chart(self) -> None:
         if not self._chart.has_data:
@@ -1310,10 +1548,9 @@ class AnalysisTab(QWidget):
         try:
             self._chart.save_figure(path)
         except (OSError, ValueError) as exc:
-            self._say(self.tr("Chart export failed: %1").replace("%1", str(exc)),
-                      "error")
+            self._say(tr_args(self.tr("Chart export failed: %1"), exc), "error")
             return
-        self._say(self.tr("Chart written to %1").replace("%1", path))
+        self._say(tr_args(self.tr("Chart written to %1"), path))
 
 
 def _icon_button(icon: QIcon) -> QPushButton:

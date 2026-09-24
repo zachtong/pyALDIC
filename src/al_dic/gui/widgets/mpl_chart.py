@@ -16,6 +16,13 @@ hollow marker, so the reading is shown and flagged at once.
 
 The current frame is a separate artist, moved without redrawing the curves,
 and a click on the axes reports the x position so the caller can jump there.
+
+Along a line
+------------
+A profile draws the current frame in the probe's colour over the other frames
+in grey; a kymograph draws every frame at once, distance against frame. In
+both, material a crack consumed has its own shade: it is neither a zero nor
+a missing measurement, and looking like either would misread the crack.
 """
 
 from __future__ import annotations
@@ -32,7 +39,9 @@ from matplotlib.backends.backend_qtagg import (  # noqa: E402
     FigureCanvasQTAgg,
     NavigationToolbar2QT,
 )
+from matplotlib.colors import ListedColormap  # noqa: E402
 from matplotlib.figure import Figure  # noqa: E402
+from matplotlib.patches import Patch  # noqa: E402
 from matplotlib.ticker import MaxNLocator  # noqa: E402
 from PySide6.QtCore import QCoreApplication, Signal  # noqa: E402
 from PySide6.QtWidgets import QVBoxLayout, QWidget  # noqa: E402
@@ -43,6 +52,30 @@ from al_dic.gui.theme import COLORS  # noqa: E402
 #: Above this many points a marker on every frame is noise; markers are kept
 #: only where a frame is flagged.
 _MARKERS_UP_TO = 60
+
+#: The shade of consumed material, in a profile's spans and a kymograph's band.
+_CONSUMED = COLORS.TEXT_SECONDARY
+
+
+def _true_runs(mask: np.ndarray) -> list[tuple[int, int]]:
+    """Half-open index ranges where *mask* is True."""
+    runs, start = [], None
+    for i, on in enumerate(np.asarray(mask, dtype=bool)):
+        if on and start is None:
+            start = i
+        elif not on and start is not None:
+            runs.append((start, i))
+            start = None
+    if start is not None:
+        runs.append((start, len(mask)))
+    return runs
+
+
+def _edges(centres: np.ndarray) -> tuple[float, float]:
+    """Outer edges of evenly spaced cells around *centres*."""
+    c = np.asarray(centres, dtype=np.float64)
+    half = (c[1] - c[0]) / 2.0 if len(c) > 1 else 0.5
+    return float(c[0] - half), float(c[-1] + half)
 
 
 def status_label(status: FrameStatus) -> str:
@@ -222,41 +255,109 @@ class MplChart(QWidget):
         if event.button == 1 and event.xdata is not None and self._has_data:
             self.x_clicked.emit(float(event.xdata))
 
+    def plot_profile(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        *,
+        colour: str,
+        label: str,
+        x_label: str,
+        y_label: str,
+        others: Sequence[np.ndarray] = (),
+        consumed: np.ndarray | None = None,
+        consumed_label: str = "",
+    ) -> None:
+        """A field along a line on one frame, over the *others* in grey.
+
+        NaN breaks the line, so a gap stays a gap; where *consumed* is True,
+        the span is shaded and named in the legend.
+        """
+        self._figure.clear()
+        ax = self._figure.add_subplot(111)
+        self._style_axes(ax)
+        for other in others:
+            ax.plot(x, other, color=COLORS.TEXT_MUTED, linewidth=0.9, alpha=0.5,
+                    zorder=1, gid="other")
+        ax.plot(x, y, color=colour, linewidth=2.0, label=label, zorder=3,
+                gid="current")
+        if consumed is not None and len(x):
+            half = (x[1] - x[0]) / 2.0 if len(x) > 1 else 0.5
+            for i, (a, b) in enumerate(_true_runs(consumed)):
+                ax.axvspan(x[a] - half, x[b - 1] + half, color=_CONSUMED,
+                           alpha=0.18, linewidth=0, zorder=0,
+                           label=consumed_label if i == 0 else None)
+        if len(x) > 1:
+            ax.set_xlim(float(x[0]), float(x[-1]))   # the whole line, gaps too
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        legend = ax.legend(fontsize=9, framealpha=0.0)
+        for text in legend.get_texts():
+            text.set_color(COLORS.TEXT_SECONDARY)
+        self._ax, self._cursor, self._has_data = ax, None, True
+        self._canvas.draw_idle()
+
     def plot_kymograph(
         self,
-        data,
+        values: np.ndarray,
         *,
-        distance_unit: str,
-        length: float,
+        x: np.ndarray,
+        distance: np.ndarray,
+        x_label: str,
+        y_label: str,
         value_label: str,
         colormap: str = "jet",
+        vmin: float | None = None,
+        vmax: float | None = None,
+        consumed: np.ndarray | None = None,
+        consumed_label: str = "",
+        integer_x: bool = True,
+        cursor_x: float | None = None,
     ) -> None:
-        """Position along a line against frame, with the value as colour."""
+        """Distance along a line against frame, the value as colour.
+
+        *values* and *consumed* are ``[sample, frame]``; *x* places each frame
+        (frame number or time) and *distance* each sample. Cells without a
+        value show the axes behind them; consumed cells are a flat band.
+        """
         from al_dic.core.colormaps import resolve
 
         self._figure.clear()
         ax = self._figure.add_subplot(111)
         self._style_axes(ax)
         ax.grid(False)
-
-        n_points, n_frames = data.shape
+        extent = (*_edges(x), *_edges(distance))
+        cmap = resolve(colormap).with_extremes(bad=(0.0, 0.0, 0.0, 0.0))
         image = ax.imshow(
-            data, aspect="auto", origin="lower", cmap=resolve(colormap),
-            extent=(0.5, n_frames + 0.5, 0.0, length),
+            np.ma.masked_invalid(values), aspect="auto", origin="lower",
+            cmap=cmap, vmin=vmin, vmax=vmax, extent=extent,
             interpolation="nearest",
         )
-        ax.set_xlabel(QCoreApplication.translate("AnalysisChart", "Frame"))
-        ax.set_ylabel(
-            QCoreApplication.translate(
-                "AnalysisChart", "Distance along line (%1)"
-            ).replace("%1", distance_unit)
-        )
+        image.set_gid("values")
+        if consumed is not None and np.any(consumed):
+            band = np.ma.masked_where(~np.asarray(consumed, dtype=bool),
+                                      np.ones(np.shape(consumed)))
+            layer = ax.imshow(
+                band, aspect="auto", origin="lower",
+                cmap=ListedColormap([_CONSUMED]), vmin=0.0, vmax=1.0,
+                extent=extent, interpolation="nearest", alpha=0.85,
+            )
+            layer.set_gid("consumed")
+            legend = ax.legend(
+                handles=[Patch(facecolor=_CONSUMED, label=consumed_label)],
+                fontsize=9, framealpha=0.0, loc="upper left")
+            for text in legend.get_texts():
+                text.set_color(COLORS.TEXT_SECONDARY)
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        if integer_x:
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         bar = self._figure.colorbar(image, ax=ax)
         bar.set_label(value_label, color=COLORS.TEXT_PRIMARY, fontsize=9)
         bar.ax.tick_params(colors=COLORS.TEXT_SECONDARY, labelsize=8)
         bar.outline.set_edgecolor(COLORS.BORDER)
         self._ax, self._cursor, self._has_data = ax, None, True
-        self._canvas.draw_idle()
+        self.set_cursor(cursor_x)
 
     # -- export -----------------------------------------------------------
 

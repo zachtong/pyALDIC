@@ -140,10 +140,15 @@ class AreaGeom:
     def polygon(vertices: Sequence[tuple[float, float]]) -> "AreaGeom":
         if len(vertices) < 3:
             raise ValueError("Polygon probe needs at least three vertices.")
-        return AreaGeom(
-            shape="polygon",
-            data=tuple((float(x), float(y)) for x, y in vertices),
-        )
+        pts = tuple((float(x), float(y)) for x, y in vertices)
+        n = len(pts)
+        twice_area = sum(pts[i][0] * pts[(i + 1) % n][1]
+                         - pts[(i + 1) % n][0] * pts[i][1] for i in range(n))
+        if abs(twice_area) < 1e-9:
+            raise ValueError(
+                "Polygon probe encloses no area; its vertices lie on one line."
+            )
+        return AreaGeom(shape="polygon", data=pts)
 
     def to_dict(self) -> dict[str, Any]:
         if self.shape == "polygon":

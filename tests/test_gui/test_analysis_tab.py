@@ -607,3 +607,23 @@ def test_a_probe_placed_off_the_specimen_says_so(tab, state):
     _plot(tab, "strain", gauge=True)
     note = tab._table.item(1, 4).text()
     assert "gauge end" in note and "lost" not in note
+
+
+def test_the_canvas_colorbar_reads_strain_in_the_charts_unit(tab, state):
+    """The chart said 0.3 % while the colorbar under the probes said 3e-03."""
+    from PySide6.QtGui import QPixmap
+
+    from al_dic.gui.panels.strain_canvas import FieldImage
+
+    _run(state, strain=True)
+    tab.set_field_renderer(lambda field, frame: FieldImage(
+        pixmap=QPixmap(4, 4), x=0.0, y=0.0, scale=4.0, alpha=0.7, cmap="jet",
+        vmin=0.0, vmax=0.01, label="εyy"))
+    tab.show()
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    tab._unit_box.setCurrentIndex(tab._unit_box.findData("percent"))
+    _plot(tab, "strain_eyy")
+    _settle()
+    assert tab._colorbar._vmax == pytest.approx(1.0)
+    assert tab._colorbar._label == "εyy (%)"
+    tab.close()

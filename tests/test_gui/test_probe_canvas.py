@@ -259,3 +259,13 @@ def test_a_left_drag_on_empty_space_pans(qapp):
                        Qt.KeyboardModifier.NoModifier, start + QPoint(40, 0))
     assert c.horizontalScrollBar().value() == before - 40
     c.close()
+
+
+def test_a_polygon_clicked_along_a_line_is_discarded(canvas):
+    """Reshaping refused a polygon under a pixel of area; placing did not."""
+    placed = _record(canvas.probe_requested)
+    canvas.set_tool("area_polygon")
+    canvas._pending.extend([QPointF(0.0, 0.0), QPointF(10.0, 0.05), QPointF(20.0, 0.0)])
+    canvas._emit_polygon()
+    assert placed == []
+    assert canvas._pending == []

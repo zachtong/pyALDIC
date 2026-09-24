@@ -235,3 +235,11 @@ def test_probe_set_round_trip():
     assert [p.label for p in restored] == ["a", "b"]
     # The counter must survive, or a restored session reuses ids.
     assert restored.add("point", PointGeom(9.0, 9.0)).id == 3
+
+
+def test_a_polygon_on_one_line_is_refused():
+    """Three clicks in a row make no region; storing one measures nothing."""
+    import pytest as _pytest
+
+    with _pytest.raises(ValueError, match="area"):
+        AreaGeom.polygon([(0.0, 0.0), (10.0, 0.0), (5.0, 0.0)])

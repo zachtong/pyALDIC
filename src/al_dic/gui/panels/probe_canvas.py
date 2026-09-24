@@ -45,6 +45,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.analysis.geometry_edit import (
     control_points,
+    encloses_area,
     hit_test,
     move_control_point,
     translate,
@@ -360,8 +361,11 @@ class ProbeCanvas(StrainCanvas):
         super().mouseReleaseEvent(event)
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:  # noqa: N802
-        if self._tool == "area_polygon" and len(self._pending) >= 3:
-            self._emit_polygon()
+        if self._tool == "area_polygon":
+            # With fewer than three vertices there is nothing to close yet:
+            # the polygon stays open for more clicks.
+            if len(self._pending) >= 3:
+                self._emit_polygon()
             event.accept()
             return
         if self._tool == "none" and event.button() == Qt.MouseButton.LeftButton:
@@ -454,7 +458,15 @@ class ProbeCanvas(StrainCanvas):
 
     def _emit_polygon(self) -> None:
         pts = [(p.x(), p.y()) for p in self._pending]
-        self._emit_guarded("area", lambda: AreaGeom.polygon(pts))
+
+        def build() -> AreaGeom:
+            # The floor a reshape applies, so placing cannot store what
+            # editing would refuse.
+            if not encloses_area(pts):
+                raise ValueError("Polygon probe encloses less than a pixel.")
+            return AreaGeom.polygon(pts)
+
+        self._emit_guarded("area", build)
 
     def _emit_guarded(self, kind: str, build) -> None:
         """Build the geometry, discarding a degenerate one silently.
