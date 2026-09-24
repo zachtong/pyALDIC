@@ -36,7 +36,7 @@ established abbreviations stay literal English across all 8 languages:
 | Library names | `PySide6`, `NumPy`, `SciPy`, `Numba`, `Matplotlib` |
 | Math symbols | `α β σ ε γ ω π τ θ × ÷ ± ≤ ≥ ⚠ ∞` |
 | Strain components | `εxx εyy εxy ε₁ ε₂ γ max von Mises ω rot` |
-| Colormap names | `jet viridis turbo coolwarm plasma RdBu_r seismic inferno` |
+| Colormap names | `jet viridis turbo coolwarm plasma RdBu_r seismic inferno black_rainbow` |
 
 **Display-facing exceptions**:
 - `ADMM Iterations` → re-labeled `AL-DIC Iterations` for users (see

@@ -1,6 +1,10 @@
 # pyALDIC batch config — see batch_process.py
 #
-#   python batch_process.py batch_config.example.yaml    (needs pip install pyyaml)
+#   Run from the repository root:
+#   python examples/scripting/batch_process.py \
+#          examples/scripting/batch_config.example.yaml     (needs pip install pyyaml)
+#
+#   Sample paths below are relative to wherever you run the command from.
 #
 # Prefer no extra dependency? Use the JSON twin, batch_config.example.json —
 # identical keys, and json is in the standard library.
@@ -22,12 +26,20 @@ fields: [disp_u, disp_v, strain_exx, strain_eyy, strain_exy]
 
 # --- field-image options (only used when "images" is in export) ---
 image_fields: [disp_u, strain_eyy]
-colormap: jet                 # jet, viridis, turbo, coolwarm, plasma, RdBu_r, seismic
+colormap: jet                 # jet, viridis, turbo, coolwarm, plasma,
+                              # inferno, RdBu_r, seismic, black_rainbow
 image_format: png             # png, jpeg, tiff
 dpi: 150
 colorbar: true
-show_deformed: false
-bg_mode: ref_frame            # ref_frame | deformed_frame | none
+show_deformed: false          # draw the field at deformed node positions
+bg_mode: ref_frame            # ref_frame | current_frame | none
+                              #   ref_frame     = always frame 0 behind it
+                              #   current_frame = each frame's own photo
+                              #   none          = no image, field only
+hidden_bg_color: white        # white | black | transparent
+                              # used only when bg_mode is none; transparent
+                              # is kept for png and tiff, and written as
+                              # white for jpeg
 bg_alpha: 0.7
 
 # --- DIC parameters, applied to every sample (any DICPara field works) ---
@@ -51,19 +63,19 @@ params:
 # Required: images. Optional: name, pattern, roi / roi_dir, params (overrides).
 samples:
   - name: tension_without_holes
-    images: quickstart/01_tension_without_holes
+    images: examples/quickstart/01_tension_without_holes
     pattern: "*.png"
     # no roi given -> the whole image is correlated
 
   - name: tension_with_holes
-    images: quickstart/02_tension_with_holes
+    images: examples/quickstart/02_tension_with_holes
     pattern: "*.png"
     # roi: path/to/roi.png          # one mask for every frame
     # roi_dir: path/to/roi_folder   # one mask PER FRAME (growing crack / moving ROI)
     # roi_pattern: "*.png"
 
   - name: rotation
-    images: quickstart/03_rotation
+    images: examples/quickstart/03_rotation
     pattern: "*.png"
     params:                    # per-sample overrides win over the global block
       size_of_fft_search_region: 30

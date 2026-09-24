@@ -141,7 +141,15 @@ class AppState(QObject):
         self.results: PipelineResult | None = None
         # Display
         self.display_field: str = "disp_u"
+        #: Where the field is drawn: deformed node positions, or reference.
         self.show_deformed: bool = True
+        #: Whether an image sits behind the field at all.  Independent of
+        #: show_deformed -- which frame to use is only a question once you
+        #: have decided to show one.
+        self.show_background: bool = True
+        #: What replaces the image when it is hidden: "white", "black" or
+        #: "transparent".  See export_png.HIDDEN_BG_COLORS.
+        self.hidden_bg_color: str = "white"
         self.roi_editing: bool = False
         # Per-field color state (colormap + auto/manual range).
         # Access via get_field_state() or the proxy properties below.

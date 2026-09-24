@@ -17,10 +17,10 @@ Warped mask cache: deformed-coordinate ROI masks.
 
 from __future__ import annotations
 
+from al_dic.core.colormaps import resolve
 import numpy as np
 from numpy.typing import NDArray
 from PySide6.QtGui import QImage, QPixmap
-from matplotlib import colormaps
 from scipy.interpolate import NearestNDInterpolator
 
 from al_dic.utils.crack_barrier import crack_aware_nearest_fill
@@ -43,7 +43,7 @@ def apply_colormap(
     normalized = (data - vmin) / (vmax - vmin)
     normalized = np.clip(normalized, 0, 1)
 
-    cm = colormaps[cmap]
+    cm = resolve(cmap)
     rgba = (cm(normalized) * 255).astype(np.uint8)
 
     # NaN pixels -> transparent

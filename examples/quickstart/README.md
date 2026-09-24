@@ -3,9 +3,12 @@
 Small real-experiment speckle-image sequences so you can run pyALDIC right after
 cloning the repository. Each folder is one experiment: `image_0000.png` is the
 undeformed reference and `image_0001.png`–`image_0004.png` are successive loaded
-frames. These are downsampled crops of real datasets, chosen to cover a few
-typical displacement fields; the full-resolution datasets are archived on Zenodo
-(see the DOI in the main README).
+frames.
+
+**These images are everything you need.** They are downsampled crops of larger
+experiments, chosen to cover a few typical displacement fields, and all three
+examples below run on what is in this folder — there is nothing further to
+download. The full-resolution originals are not published.
 
 To run one: launch the GUI (`al-dic`), open the folder, draw a region of interest
 on the reference frame, set the parameters below, and press **Run**. The initial

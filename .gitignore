@@ -62,10 +62,9 @@ Figma_design_files/
 # Sample datasets (large binary files) -- ignore the big datasets, but keep
 # the small quick-start bundle and the example scripts/configs tracked.
 examples/*
+!examples/README.md
 !examples/quickstart/
-!examples/*.py
-!examples/*.example.json
-!examples/*.example.yaml
+!examples/scripting/
 
 # Validation / benchmark / fuzz datasets (downloaded or generated locally)
 datasets/

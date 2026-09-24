@@ -55,6 +55,7 @@ def export_animation(
     margin_ratio: float = 0.0,
     margin_color: str = "white",
     fill_trimmed_edges: bool = False,
+    hidden_bg_color: str = "black",
 ) -> list[Path]:
     """Export one animation file per enabled field.
 
@@ -94,7 +95,7 @@ def export_animation(
         render_field_frame, _extract_field_values, _load_frame_image,
         _compute_warped_mask, scale_field_values, colorbar_label,
         attach_colorbar, ColorbarStyle, add_margin, _DISPLACEMENT_FIELDS,
-        output_shape_for,
+        output_shape_for, hidden_bg_fill,
     )
 
     cb_style = colorbar_style if colorbar_style is not None else ColorbarStyle()
@@ -140,6 +141,12 @@ def export_animation(
         _load_frame_image(image_files, 0, "ref_frame")
         if bg_mode == "ref_frame" else None
     )
+
+    # Neither MP4 nor GIF carries a usable alpha channel here, so a request
+    # for transparency becomes the nearest thing that does render.
+    if hidden_bg_color == "transparent":
+        hidden_bg_color = "white"
+    blank_level = hidden_bg_fill(hidden_bg_color) if bg_mode == "none" else 0
 
     for cfg in enabled_configs:
         frames_done = 0
@@ -187,8 +194,10 @@ def export_animation(
 
             raw_values = _extract_field_values(cfg.field_name, t, results, fr)
             if raw_values is None:
-                # Blank frame (at output size) keeps timing consistent
-                img = np.zeros((*out_shape, 3), dtype=np.uint8)
+                # Blank frame (at output size) keeps timing consistent.
+                # It has to match the chosen fill, or a field that drops out
+                # for one frame flashes black in the middle of a white figure.
+                img = np.full((*out_shape, 3), blank_level, dtype=np.uint8)
             else:
                 # Physical-unit scaling
                 values = (scale_field_values(raw_values, cfg.field_name, pixel_size)
@@ -204,10 +213,8 @@ def export_animation(
                         actual_vmin = float(finite.min()) if len(finite) > 0 else 0.0
                         actual_vmax = float(finite.max()) if len(finite) > 0 else 1.0
                     else:
+                        # Already in export units -- see export_png.
                         actual_vmin, actual_vmax = cfg.vmin, cfg.vmax
-                        if use_physical_units and cfg.field_name in _DISPLACEMENT_FIELDS:
-                            actual_vmin *= pixel_size
-                            actual_vmax *= pixel_size
                     render_cfg = replace(cfg, auto_range=False,
                                          vmin=actual_vmin, vmax=actual_vmax)
                 else:
@@ -226,6 +233,7 @@ def export_animation(
                     render_max_dim=render_max_dim,
                     output_shape=out_shape,
                     blank_invalid_nodes=not fill_trimmed_edges,
+                    hidden_bg_color=hidden_bg_color,
                 )
 
                 # Append the styled colorbar

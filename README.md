@@ -260,6 +260,21 @@ al-dic
 python -m al_dic
 ```
 
+### Try it on the included examples
+
+Three short real-experiment sequences ship with the repository, under
+[`examples/quickstart/`](examples/quickstart/) — uniaxial tension, tension
+around holes, and a rigid-body rotation. Each folder holds a reference frame and
+four loaded frames, and
+[its README](examples/quickstart/README.md) gives the subset size, step and
+solver settings to start from for each one.
+
+Nothing else needs downloading: those images are complete as they stand.
+
+To drive pyALDIC from Python instead — batch-processing many samples from one
+config file, or replotting exported results without repeating the correlation —
+see [`examples/scripting/`](examples/scripting/).
+
 <details>
 <summary><b>Programmatic API</b></summary>
 

@@ -2,8 +2,12 @@
 
 Point it at a JSON or YAML config listing your samples and run:
 
-    python batch_process.py my_batch.json
-    python batch_process.py my_batch.yaml      # needs: pip install pyyaml
+    python examples/scripting/batch_process.py my_batch.json
+    python examples/scripting/batch_process.py my_batch.yaml   # needs pyyaml
+
+Paths inside the config are resolved against your working directory, not
+against the config file, so run the command from wherever those paths make
+sense. The bundled example expects the repository root.
 
 Each sample is loaded, correlated, strain-computed and exported on its own; a
 sample that fails is logged and the batch moves on to the next one. See
@@ -189,6 +193,7 @@ def export_results(
             configs=configs, image_files=image_files,
             bg_mode=cfg.get("bg_mode", "ref_frame"), roi_mask=roi_mask,
             dpi=cfg.get("dpi", 150), show_deformed=cfg.get("show_deformed", False),
+            hidden_bg_color=cfg.get("hidden_bg_color", "white"),
             frame_start=0, frame_end=len(result.result_disp) - 1,
             include_colorbar=cfg.get("colorbar", True),
             image_format=cfg.get("image_format", "png"),

@@ -40,6 +40,25 @@ _ZOOM_MIN = 0.10
 _ZOOM_MAX = 20.0
 
 
+def blank_pixmap(width: int, height: int, color: str = "white") -> QPixmap:
+    """A solid pixmap to stand in for a hidden background image.
+
+    "transparent" paints nothing, so the view's own background shows through
+    and the field appears to float -- which is what transparency means when
+    there is no file behind it to reveal.  Names match
+    ``export_png.HIDDEN_BG_COLORS`` so the canvas and the exporter cannot
+    disagree about what the user picked.
+    """
+    pm = QPixmap(width, height)
+    if color == "transparent":
+        pm.fill(Qt.GlobalColor.transparent)
+    elif color == "black":
+        pm.fill(Qt.GlobalColor.black)
+    else:
+        pm.fill(Qt.GlobalColor.white)
+    return pm
+
+
 class StrainCanvas(QGraphicsView):
     """Read-only zoomable image canvas with a single overlay layer."""
 
@@ -97,6 +116,14 @@ class StrainCanvas(QGraphicsView):
         # .copy() so QImage owns the data after numpy array may be freed
         self._bg_item.setPixmap(QPixmap.fromImage(qimg.copy()))
         self._scene.setSceneRect(QRectF(0, 0, w, h))
+
+    def set_blank(self, height: int, width: int,
+                  color: str = "white") -> None:
+        """Show a solid *color* instead of an image, at the given size."""
+        if height <= 0 or width <= 0:
+            return
+        self._bg_item.setPixmap(blank_pixmap(width, height, color))
+        self._scene.setSceneRect(QRectF(0, 0, width, height))
 
     def set_overlay_pixmap(self, pixmap: QPixmap) -> None:
         """Install *pixmap* on the overlay layer."""

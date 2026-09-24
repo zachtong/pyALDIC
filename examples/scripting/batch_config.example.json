@@ -16,6 +16,7 @@
   "colorbar": true,
   "show_deformed": false,
   "bg_mode": "ref_frame",
+  "hidden_bg_color": "white",
   "bg_alpha": 0.7,
 
   "params": {
@@ -34,17 +35,17 @@
   "samples": [
     {
       "name": "tension_without_holes",
-      "images": "quickstart/01_tension_without_holes",
+      "images": "examples/quickstart/01_tension_without_holes",
       "pattern": "*.png"
     },
     {
       "name": "tension_with_holes",
-      "images": "quickstart/02_tension_with_holes",
+      "images": "examples/quickstart/02_tension_with_holes",
       "pattern": "*.png"
     },
     {
       "name": "rotation",
-      "images": "quickstart/03_rotation",
+      "images": "examples/quickstart/03_rotation",
       "pattern": "*.png",
       "params": { "size_of_fft_search_region": 30 }
     }

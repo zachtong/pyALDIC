@@ -6,13 +6,13 @@ plot whenever you like, as often as you like, with whatever colormap and range
 you want — the correlation is never repeated.
 
     # what's in the file?
-    python plot_results.py results/specimen_01/specimen_01_results_2026...npz
+    python examples/scripting/plot_results.py results/specimen_01/specimen_01_results_2026...npz
 
     # one field, all frames -> PNGs next to the npz
-    python plot_results.py <file.npz> --field strain_eyy
+    python examples/scripting/plot_results.py <file.npz> --field strain_eyy
 
     # last frame only, fixed colour range, custom colormap, on screen
-    python plot_results.py <file.npz> --field disp_u --frame -1 \
+    python examples/scripting/plot_results.py <file.npz> --field disp_u --frame -1 \
         --vmin -2 --vmax 2 --cmap turbo --show
 
 The .npz holds ``coordinates`` (N, 2) plus one (N, T) matrix per field — N mesh

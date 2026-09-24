@@ -137,6 +137,8 @@ _VIEW_SCALAR_KEYS = (
     "current_frame",
     "display_field",
     "show_deformed",
+    "show_background",
+    "hidden_bg_color",
     "overlay_alpha",
     "show_mesh",
     "mesh_line_color",

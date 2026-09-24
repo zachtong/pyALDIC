@@ -28,6 +28,18 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   Crack opening is the deliberate exception -- separation across a crack is what
   that gauge is for, while `(L - L0)/L0` stops being a strain.
 
+### Changed
+
+- **`examples/` is split by audience.** `examples/quickstart/` holds the image
+  sequences for running the software; `examples/scripting/` holds the batch and
+  plotting examples for driving it from Python. They were mixed in one folder,
+  so someone opening `examples/` to find the tutorial images met four Python
+  files first. Scripts move to
+  `examples/scripting/batch_process.py` and
+  `examples/scripting/plot_results.py`; the example configs move with them and
+  their sample paths are now relative to the repository root, so the bundled
+  config runs as-is from there rather than only after changing directory.
+
 ## [0.8.0] — 2026-08-25
 
 pyALDIC now ships as a Windows application you unzip and double-click, and a

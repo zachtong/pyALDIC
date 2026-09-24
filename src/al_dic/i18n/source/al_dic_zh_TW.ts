@@ -60,6 +60,37 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>AnalysisTab</name>
     <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="211"/>
+        <source>Point</source>
+        <comment>Placement tool: a single location</comment>
+        <extracomment>Tool button label, tool token, and the probe kind it produces.</extracomment>
+        <translation>點</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="212"/>
+        <source>Line</source>
+        <comment>Placement tool: a two-point gauge</comment>
+        <translation>段</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="213"/>
+        <source>Rectangle</source>
+        <comment>Placement tool</comment>
+        <translation>形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="214"/>
+        <source>Circle</source>
+        <comment>Placement tool</comment>
+        <translation>形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="215"/>
+        <source>Polygon</source>
+        <comment>Placement tool</comment>
+        <translation>形</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis_tab.py" line="218"/>
         <source>Click once to place a point probe.</source>
         <translation>。</translation>
@@ -85,9 +116,39 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>。</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="231"/>
+        <source>Show</source>
+        <comment>Probe list column: visibility checkbox</comment>
+        <translation>示</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="232"/>
+        <source>Name</source>
+        <comment>Probe list column: the probe&apos;s label</comment>
+        <translation>稱</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="233"/>
+        <source>Type</source>
+        <comment>Probe list column: point, line or region</comment>
+        <translation>型</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="234"/>
+        <source>Colour</source>
+        <comment>Probe list column: colour swatch</comment>
+        <translation>色</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis_tab.py" line="236"/>
         <source>Colour…</source>
         <translation>…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="237"/>
+        <source>Delete</source>
+        <comment>Button: delete the selected probe</comment>
+        <translation>除</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="238"/>
@@ -150,6 +211,36 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>針</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="294"/>
+        <source>Value</source>
+        <comment>Statistic: the sample itself, for a point probe</comment>
+        <translation>值</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="295"/>
+        <source>Mean</source>
+        <comment>Statistic: arithmetic mean</comment>
+        <translation>值</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="296"/>
+        <source>Median</source>
+        <comment>Statistic</comment>
+        <translation>數</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="297"/>
+        <source>Maximum</source>
+        <comment>Statistic</comment>
+        <translation>值</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="298"/>
+        <source>Minimum</source>
+        <comment>Statistic</comment>
+        <translation>值</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis_tab.py" line="299"/>
         <source>Standard deviation</source>
         <translation>差</translation>
@@ -183,97 +274,6 @@ Only relevant for the FFT init-guess mode.</source>
         <location filename="../../gui/panels/analysis_tab.py" line="392"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="211"/>
-        <source>Point</source>
-        <comment>Placement tool: a single location</comment>
-        <extracomment>Tool button label, tool token, and the probe kind it produces.</extracomment>
-        <translation>點</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="212"/>
-        <source>Line</source>
-        <comment>Placement tool: a two-point gauge</comment>
-        <translation>段</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="213"/>
-        <source>Rectangle</source>
-        <comment>Placement tool</comment>
-        <translation>形</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="214"/>
-        <source>Circle</source>
-        <comment>Placement tool</comment>
-        <translation>形</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="215"/>
-        <source>Polygon</source>
-        <comment>Placement tool</comment>
-        <translation>形</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="231"/>
-        <source>Show</source>
-        <comment>Probe list column: visibility checkbox</comment>
-        <translation>示</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="232"/>
-        <source>Name</source>
-        <comment>Probe list column: the probe&apos;s label</comment>
-        <translation>稱</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="233"/>
-        <source>Type</source>
-        <comment>Probe list column: point, line or region</comment>
-        <translation>型</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="234"/>
-        <source>Colour</source>
-        <comment>Probe list column: colour swatch</comment>
-        <translation>色</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="237"/>
-        <source>Delete</source>
-        <comment>Button: delete the selected probe</comment>
-        <translation>除</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="294"/>
-        <source>Value</source>
-        <comment>Statistic: the sample itself, for a point probe</comment>
-        <translation>值</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="295"/>
-        <source>Mean</source>
-        <comment>Statistic: arithmetic mean</comment>
-        <translation>值</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="296"/>
-        <source>Median</source>
-        <comment>Statistic</comment>
-        <translation>數</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="297"/>
-        <source>Maximum</source>
-        <comment>Statistic</comment>
-        <translation>值</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="298"/>
-        <source>Minimum</source>
-        <comment>Statistic</comment>
-        <translation>值</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis_tab.py" line="432"/>
@@ -548,62 +548,62 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>CanvasArea</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1202"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1215"/>
         <source>Fit</source>
         <translation>適配</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1203"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1216"/>
         <source>Fit image to viewport</source>
         <translation>將影像適配到視口</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1208"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1209"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>縮放到 100%（1:1）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1213"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1226"/>
         <source>Zoom in</source>
         <translation>放大</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1219"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
         <source>–</source>
         <translation>–</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1220"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
         <source>Zoom out</source>
         <translation>縮小</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1246"/>
         <source>Show Grid</source>
         <translation>顯示網格</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1234"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1247"/>
         <source>Show/hide computational mesh grid</source>
         <translation>顯示/隱藏計算網格</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1237"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1250"/>
         <source>Show Subset</source>
         <translation>顯示子集</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1238"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1251"/>
         <source>Show subset window on hover (requires Grid)</source>
         <translation>懸停時顯示子集窗口（需要先開啟網格）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1492"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1505"/>
         <source>Placing Starting Points</source>
         <translation>正在放置種子點</translation>
     </message>
@@ -692,226 +692,227 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>ExportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="833"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="976"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
         <source>Auto</source>
         <translation>自動</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="455"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1332"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1382"/>
         <source>Opacity</source>
+        <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="457"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
         <translation>欄位不透明度（0 = 透明，1 = 完全不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="565"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
         <source>All</source>
         <translation>全選</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="567"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
         <source>None</source>
         <translation>全不選</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="596"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
         <source>Export Results</source>
         <translation>匯出結果</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="620"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="646"/>
         <source>OUTPUT FOLDER</source>
         <translation>輸出資料夾</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="628"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="654"/>
         <source>Select output folder…</source>
         <translation>選擇輸出資料夾…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="632"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="658"/>
         <source>Browse…</source>
         <translation>瀏覽…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="637"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="663"/>
         <source>Open Folder</source>
         <translation>開啟資料夾</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="645"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理單位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="649"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="675"/>
         <source>Enable physical units</source>
         <translation>啟用物理單位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="652"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
         <translation>按像素尺寸縮放位移值，並在色條標籤顯示物理單位。應變為無量綱，不受影響。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="669"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
         <source>/ pixel</source>
         <translation>/ 像素</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
         <source>Pixel size</source>
         <translation>像素尺寸</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="686"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="712"/>
         <source>fps</source>
         <translation>fps</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="688"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
         <source>Frame rate</source>
         <translation>幀率</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="696"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
         <source>Data</source>
         <translation>資料</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
         <source>Images</source>
         <translation>影像</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="698"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
         <source>Animation</source>
         <translation>動畫</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="699"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
         <source>Report</source>
         <translation>報告</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="701"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="727"/>
         <source>Preview &amp; Colorbar</source>
         <translation>預覽與色條</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="732"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
         <source>FORMAT</source>
         <translation>格式</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="734"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="760"/>
         <source>NumPy Archive (.npz)</source>
         <translation>NumPy 歸檔 (.npz)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="736"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="762"/>
         <source>MATLAB (.mat)</source>
         <translation>MATLAB (.mat)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="738"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="764"/>
         <source>CSV (per frame)</source>
         <translation>CSV（逐幀）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="741"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="767"/>
         <source>NPZ: one file per frame (default: single merged file)</source>
         <translation>NPZ：逐幀一個檔案（預設：合併為單個檔案）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="749"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="775"/>
         <source>DISPLACEMENT</source>
         <translation>位移</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="785"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="784"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="811"/>
         <source>Select:</source>
         <translation>選擇：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="773"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="799"/>
         <source>STRAIN</source>
         <translation>應變</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="776"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="802"/>
         <source>Run Compute Strain first.</source>
         <translation>請先運行“計算應變”。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="803"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="829"/>
         <source>✓ Parameters file (JSON) always exported</source>
         <translation>✓ 參數檔案（JSON）始終匯出</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="809"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
         <source>Export Data</source>
         <translation>匯出資料</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="830"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="973"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="856"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1005"/>
         <source>Export</source>
         <translation>匯出</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="831"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="974"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1218"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1253"/>
         <source>Field</source>
         <translation>欄位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="832"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="975"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1305"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1355"/>
         <source>Colormap</source>
         <translation>色彩對映</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="834"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="977"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1317"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1367"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="978"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1324"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1374"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="854"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="880"/>
         <source>IMAGE SETTINGS</source>
         <translation>影像設定</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="864"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="890"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1039"/>
         <source>Format</source>
         <translation>格式</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="872"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1015"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="898"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1047"/>
         <source>Full resolution</source>
         <translation>原始解析度</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="874"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="900"/>
         <source>Cap the exported image&apos;s long edge (the larger of width/height; aspect ratio is kept).
 Field detail is bounded by the mesh, so a smaller cap is near-lossless
 but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolution&apos; keeps the native size.</source>
@@ -920,378 +921,405 @@ but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolu
 但檔案更小、編碼更快。越低越快。「原始解析度」保持原生尺寸。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="881"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1022"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="907"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1054"/>
         <source>Resolution (long edge)</source>
         <translation>解析度（長邊）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1017"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="941"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1091"/>
+        <source>Deformed frame</source>
+        <translation>變形幀</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <source>Reference frame</source>
+        <translation>參考幀</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="946"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
+        <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
+Reference: drawn at the original node positions, over the first frame.</source>
+        <translation>變形幀：欄位繪製在位移後的節點位置（參考位置 + 位移），疊加在每一幀自己的照片上。
+參考幀：繪製在原始節點位置，疊加在第一幀上。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1102"/>
+        <source>Show background image</source>
+        <translation>顯示背景影像</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
+        <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
+        <translation>取消勾選可僅匯出欄位，其後不含散斑影像。填充色於 Preview &amp; Colorbar 頁選擇。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
         <source>Cap the animation&apos;s long edge (the larger of width/height).
 Lower = faster and much smaller. Strongly recommended for GIF, whose size explodes at native resolution.</source>
         <translation>限制動畫的長邊（寬與高中較大的一個）。
 越低越快、越小。強烈建議用於 GIF：其體積在原生解析度下會急劇膨脹。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="889"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="915"/>
         <source>JPEG quality (higher = larger file). Ignored for PNG/TIFF.</source>
         <translation>JPEG 品質（越高檔案越大）。對 PNG/TIFF 無效。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="892"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="918"/>
         <source>JPEG quality</source>
         <translation>JPEG 品質</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="901"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="927"/>
         <source>DPI</source>
         <translation>DPI</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="903"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1048"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="929"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1080"/>
         <source>Include colorbar</source>
         <translation>包含色條</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="906"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="932"/>
         <source>Append a vertical colorbar strip to the right of each image.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>在每張影像右側添加一條垂直色條。
 啟用自動範圍時，刻度標籤會依影格更新。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="913"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1058"/>
-        <source>Original (frame 1 background)</source>
-        <translation>原始配置（第 1 影格作背景）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="916"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1061"/>
-        <source>Field is drawn at the original (undeformed) node positions.
-Background image is always the first frame.</source>
-        <translation>欄位繪製在原始（未變形）節點位置。
-背景影像始終是第一影格。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="920"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1065"/>
-        <source>Deformed (current frame background)</source>
-        <translation>變形配置（當前影格作背景）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="924"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1069"/>
-        <source>Field is drawn at the displaced node positions (reference + displacement).
-Background image follows each frame&apos;s own photo.</source>
-        <translation>欄位繪製在位移後節點位置（參考位置 + 位移）。
-背景影像跟隨每影格自身的照片。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="931"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1076"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="963"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1111"/>
         <source>Render as</source>
         <translation>繪製為</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="949"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="981"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1127"/>
         <source>Cancel Export</source>
         <translation>取消匯出</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="986"/>
         <source>Export Images</source>
         <translation>匯出影像</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="997"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1029"/>
         <source>ANIMATION SETTINGS</source>
         <translation>動畫設定</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1031"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1063"/>
         <source>FPS</source>
         <translation>影格率</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1041"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>每 N 幀匯出一幀（1 = 每幀都匯出）。越大越快、越小，
 但看起來更卡頓。播放時長保持不變（上方 FPS 為抽幀前的幀率）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1046"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
         <source>Frame step</source>
         <translation>抽幀間隔</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1051"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1083"/>
         <source>Append a vertical colorbar strip to the right of each frame.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>在每一影格右側添加一條垂直色條。
 啟用自動範圍時，刻度標籤會依影格更新。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1097"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
+        <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
+        <translation>取消勾選可僅匯出欄位，其後不含散斑影像。GIF 與 MP4 無法儲存透明度，透明填充將寫為白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
         <source>Export Animation</source>
         <translation>匯出動畫</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1114"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1149"/>
         <source>CONTENT</source>
         <translation>內容</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1116"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1151"/>
         <source>Parameter summary table</source>
         <translation>參數摘要表</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1119"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1154"/>
         <source>Field statistics (min/max/mean/std per frame)</source>
         <translation>欄位統計（每影格 最小/最大/平均/標準差）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1122"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1157"/>
         <source>Sample field images</source>
         <translation>範例欄位影像</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1129"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1164"/>
         <source>Sample every</source>
         <translation>每隔</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1135"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1170"/>
         <source>frames</source>
         <comment>Report: sample every N frames</comment>
         <translation>影格</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1141"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1176"/>
         <source>FIELDS</source>
         <translation>欄位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1144"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1179"/>
         <source>Displacement:</source>
         <translation>位移：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1159"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1194"/>
         <source>Strain:</source>
         <translation>應變：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1181"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1216"/>
         <source>Format: HTML (self-contained, view in any browser)</source>
         <translation>格式：HTML（自包含，可在任意瀏覽器中檢視）</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1188"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1223"/>
         <source>Generate Report</source>
         <translation>產生報告</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1210"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
         <source>Open this tab to render a preview.</source>
         <translation>開啟此分頁以算繪預覽。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1226"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1261"/>
         <source>Frame</source>
         <translation>影格</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1238"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1273"/>
         <source>COLORBAR STYLE</source>
         <translation>色條樣式</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1241"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
         <source>Right</source>
         <translation>右</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1241"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
         <source>Left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1242"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Top</source>
         <translation>上</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1242"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Bottom</source>
         <translation>下</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1280"/>
         <source>Position</source>
         <translation>位置</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1251"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1286"/>
         <source>Font size</source>
         <translation>字級</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1257"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1292"/>
         <source>Font family</source>
         <translation>字型</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1265"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1300"/>
         <source>Bar thickness</source>
         <translation>色條粗細</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1268"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1284"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
         <source>Black</source>
         <translation>黑色</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1268"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1284"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1325"/>
         <source>White</source>
         <translation>白色</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1271"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1306"/>
         <source>Background</source>
         <translation>背景</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1313"/>
         <source>Add a blank border around the exported content, as a fraction of the long edge (0 = none).</source>
         <translation>在匯出內容外圍加一圈空白邊框，寬度為長邊的比例（0 = 無）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1281"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1316"/>
         <source>Margin</source>
         <translation>邊距</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1287"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1322"/>
         <source>Margin color</source>
         <translation>邊距顏色</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1289"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1333"/>
+        <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
+Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
+        <translation>關閉「顯示背景影像」時，用於填充原本顯示背景影像的區域。
+PNG 與 TIFF 會保留透明度；JPEG、GIF 和 MP4 沒有 alpha 通道，將改用白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1340"/>
+        <source>Hidden background</source>
+        <translation>隱藏背景填充</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1342"/>
         <source>Refresh preview</source>
         <translation>重新整理預覽</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1296"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
         <source>FIELD APPEARANCE</source>
         <translation>欄位外觀</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1310"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
         <source>Range</source>
         <translation>範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1334"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
         <source>Apply to all fields</source>
         <translation>套用到所有欄位</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1336"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>將該欄位的 colormap、不透明度和自動範圍套用到所有已啟用欄位（每個欄位保留各自的 min/max）。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1459"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
         <source>Preview failed: </source>
         <translation>預覽失敗：</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1474"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>在 Images 頁啟用一個欄位以進行預覽。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1487"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
         <source>No data for this field/frame.</source>
         <translation>該欄位/影格沒有資料。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1545"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1602"/>
         <source>FRAME RANGE</source>
         <translation>影格範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1548"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1605"/>
         <source>All frames</source>
         <translation>所有影格</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1554"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1611"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>從</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1562"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1619"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>到</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1593"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1650"/>
         <source>Select Output Folder</source>
         <translation>選擇輸出資料夾</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1652"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1709"/>
         <source>Exported %1 files → %2</source>
         <translation>已匯出 %1 個檔案 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1661"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1791"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1880"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1922"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1718"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1848"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1937"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1979"/>
         <source>Error: %1</source>
         <translation>錯誤：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1686"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1819"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1743"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1876"/>
         <source>Starting…</source>
         <translation>開始中…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1764"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1842"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1821"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1899"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>正在繪製 %1 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1770"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1848"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1827"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1905"/>
         <source>Frame %1/%2</source>
         <translation>影格 %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1780"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1837"/>
         <source>Exported %1 images → %2</source>
         <translation>已匯出 %1 張影像 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
         <source>No animation was written. See the log for details.</source>
         <translation>。</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
         <source>Report saved → %1</source>
         <translation>報告已儲存 → %1</translation>
     </message>
@@ -1363,12 +1391,12 @@ Tick labels update per frame when Auto range is enabled.</source>
 <context>
     <name>ImageCanvas</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1048"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1061"/>
         <source>Load images first before drawing a Region of Interest.</source>
         <translation>請先載入影像，再繪製感興趣區域。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1067"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1080"/>
         <source>The three points are nearly collinear — pick points spread around the circle&apos;s edge.</source>
         <translation>三個點幾乎共線 — 請在圓周上分散地選取三個點。</translation>
     </message>
@@ -2259,118 +2287,163 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="58"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="59"/>
         <source>Run DIC Analysis</source>
         <translation>運行 DIC 分析</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="71"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="72"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="76"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
         <source>Cancel the current analysis. Frames already computed are kept so you can review or export the partial run.</source>
         <translation>取消當前分析。已計算的影格會被保留，你可以檢視或匯出這部分結果。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="84"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="85"/>
         <source>Export Results</source>
         <translation>匯出結果</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="92"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="93"/>
         <source>Open Strain Window</source>
         <translation>開啟應變窗口</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="95"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>在獨立的後處理窗口中計算並可視化應變。需先完成一次運行以獲得位移結果。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="104"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="105"/>
         <source>PROGRESS</source>
         <translation>進度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="113"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="350"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="114"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
         <source>Ready</source>
         <translation>就緒</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="121"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="352"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="406"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="122"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="394"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
         <translation>已用  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="126"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="354"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="127"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="493"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
         <translation>剩餘  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="134"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="135"/>
         <source>FIELD</source>
         <translation>場變量</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
-        <source>Show on deformed frame</source>
-        <translation>在變形幀上顯示</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/right_sidebar.py" line="144"/>
-        <source>When checked, overlay results on the deformed (current) frame instead of the reference frame</source>
-        <translation>勾選後，將結果疊加在變形（當前）幀上，而非參考幀</translation>
+        <source>Show on</source>
+        <translation>顯示於</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="151"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="149"/>
+        <source>Deformed frame</source>
+        <translation>變形幀</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <source>Reference frame</source>
+        <translation>參考幀</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="152"/>
+        <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
+        <translation>將欄位繪製在變形後的節點位置，或繪製在其於參考幀中的位置。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <source>Show background image</source>
+        <translation>顯示背景影像</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
+        <translation>取消勾選可僅顯示欄位，其後不顯示散斑影像。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <source>Hidden background</source>
+        <translation>隱藏背景填充</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
+        <source>White</source>
+        <translation>白色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <source>Black</source>
+        <translation>黑色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/right_sidebar.py" line="193"/>
         <source>VISUALIZATION</source>
         <translation>可視化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
         <translation>色圖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="177"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="217"/>
         <source>Opacity</source>
         <translation>透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="224"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>疊加圖透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="190"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="230"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理單位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="196"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
         <source>LOG</source>
         <translation>日誌</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="202"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="319"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="361"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>運行前請在每個紅色區域放置至少一個種子點（紅色 = 需要種子點）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="389"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="468"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 幀</translation>
     </message>
@@ -2585,52 +2658,103 @@ Only applies when Method = Plane fitting.</source>
 <context>
     <name>StrainVizPanel</name>
     <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="65"/>
+        <source>Deformed frame</source>
+        <extracomment>Alias so existing references read unchanged; the list itself lives in al_dic.core.colormaps, so every chooser offers the same options.</extracomment>
+        <translation>變形幀</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="66"/>
+        <source>Reference frame</source>
+        <translation>參考幀</translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="68"/>
-        <source>Show on deformed frame</source>
-        <translation>在變形幀上顯示</translation>
+        <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
+        <translation>將欄位繪製在變形後的節點位置，或繪製在其於參考幀中的位置。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="70"/>
-        <source>Deformed</source>
-        <translation>變形後</translation>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="71"/>
+        <source>Show on</source>
+        <translation>顯示於</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="77"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="73"/>
+        <source>Show background image</source>
+        <translation>顯示背景影像</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
+        <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
+        <translation>取消勾選可僅顯示欄位，其後不顯示散斑影像。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="82"/>
+        <source>White</source>
+        <translation>白色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="83"/>
+        <source>Black</source>
+        <translation>黑色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="84"/>
+        <source>Transparent</source>
+        <translation>透明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="87"/>
+        <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
+        <translation>背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
+        <source>Background</source>
+        <translation>背景</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="91"/>
+        <source>Hidden background</source>
+        <translation>隱藏背景填充</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="98"/>
         <source>Colormap</source>
         <translation>色彩對映</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="81"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="102"/>
         <source>Range</source>
         <translation>範圍</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="101"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
         <source>Min</source>
         <translation>最小</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="103"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="124"/>
         <source>Max</source>
         <translation>最大</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="113"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="134"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="122"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="143"/>
         <source>Fill trimmed edges (display only)</source>
         <translation>填充修剪的邊緣（僅顯示）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="126"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="147"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
         <translation>從可靠的內部節點重新插值被邊緣修剪的應變帶。影響螢幕顯示與匯出的圖片/動畫；匯出的資料檔案始終將修剪的邊緣保留為 NaN。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_viz_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_viz_panel.py" line="152"/>
         <source>Edges</source>
         <translation>邊緣</translation>
     </message>
@@ -2703,63 +2827,63 @@ Only applies when Method = Plane fitting.</source>
         <translation>可視化</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="358"/>
+        <location filename="../../gui/strain_window.py" line="361"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理單位</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="367"/>
+        <location filename="../../gui/strain_window.py" line="370"/>
         <source>LOG</source>
         <translation>日誌</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="396"/>
+        <location filename="../../gui/strain_window.py" line="399"/>
         <source>Strain Field</source>
         <translation>場</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="398"/>
+        <location filename="../../gui/strain_window.py" line="401"/>
         <source>Analysis</source>
         <translation>析</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="473"/>
+        <location filename="../../gui/strain_window.py" line="476"/>
         <source>Strain compute failed: %1: %2</source>
         <translation>應變計算失敗：%1：%2</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="481"/>
-        <location filename="../../gui/strain_window.py" line="540"/>
+        <location filename="../../gui/strain_window.py" line="484"/>
+        <location filename="../../gui/strain_window.py" line="543"/>
         <source>Strain computation complete.</source>
         <translation>應變計算完成。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="492"/>
+        <location filename="../../gui/strain_window.py" line="495"/>
         <source>Strain window: no displacement results to post-process.</source>
         <translation>應變視窗：沒有可後處理的位移結果。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="523"/>
+        <location filename="../../gui/strain_window.py" line="526"/>
         <source>Cancelling…</source>
         <translation>正在取消…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="557"/>
+        <location filename="../../gui/strain_window.py" line="560"/>
         <source>Strain computation cancelled.</source>
         <translation>應變計算已取消。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="566"/>
+        <location filename="../../gui/strain_window.py" line="569"/>
         <source>Strain compute failed: %1</source>
         <translation>應變計算失敗：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="573"/>
+        <location filename="../../gui/strain_window.py" line="576"/>
         <source>Strain Computation Failed</source>
         <translation>應變計算失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="610"/>
+        <location filename="../../gui/strain_window.py" line="615"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ 參數已變更 — 請點擊“計算應變”</translation>
     </message>
@@ -2779,12 +2903,12 @@ Only applies when Method = Plane fitting.</source>
         <translation>匯出結果</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="503"/>
+        <location filename="../../gui/strain_window.py" line="506"/>
         <source>Starting…</source>
         <translation>啟動中…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="536"/>
+        <location filename="../../gui/strain_window.py" line="539"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>

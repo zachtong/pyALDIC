@@ -33,19 +33,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from al_dic.core.colormaps import COLORMAP_NAMES
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.range_mode import AutoFixedSelector
 
-_COLORMAP_OPTIONS: tuple[str, ...] = (
-    "jet",
-    "viridis",
-    "turbo",
-    "coolwarm",
-    "plasma",
-    "inferno",
-    "RdBu_r",
-    "seismic",
-)
+#: Alias so existing references read unchanged; the list itself lives in
+#: al_dic.core.colormaps, so every chooser offers the same options.
+_COLORMAP_OPTIONS: tuple[str, ...] = COLORMAP_NAMES
 
 
 class StrainVizPanel(QWidget):
@@ -64,10 +58,37 @@ class StrainVizPanel(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
 
-        # --- Show on deformed (first: sets rendering mode before other controls) ---
-        self._deformed_check = QCheckBox(self.tr("Show on deformed frame"))
-        self._deformed_check.setChecked(True)
-        layout.addRow(self.tr("Deformed"), self._deformed_check)
+        # --- Where the field goes (first: sets rendering mode before the
+        # styling controls).  Geometry and background are separate questions;
+        # this mirrors the main window's sidebar exactly.
+        self._geometry_combo = QComboBox()
+        self._geometry_combo.addItem(self.tr("Deformed frame"), True)
+        self._geometry_combo.addItem(self.tr("Reference frame"), False)
+        self._geometry_combo.setToolTip(self.tr(
+            "Plot the field at the deformed node positions, or at their "
+            "positions in the reference frame."
+        ))
+        layout.addRow(self.tr("Show on"), self._geometry_combo)
+
+        self._background_check = QCheckBox(self.tr("Show background image"))
+        self._background_check.setChecked(True)
+        self._background_check.setToolTip(self.tr(
+            "Uncheck to show the field on its own, with no speckle image "
+            "behind it."
+        ))
+        layout.addRow(self.tr("Background"), self._background_check)
+
+        self._hidden_bg_combo = QComboBox()
+        for _lbl, _val in ((self.tr("White"), "white"),
+                           (self.tr("Black"), "black"),
+                           (self.tr("Transparent"), "transparent")):
+            self._hidden_bg_combo.addItem(_lbl, _val)
+        self._hidden_bg_combo.setToolTip(self.tr(
+            "What replaces the image when it is hidden. Transparency is "
+            "kept for PNG and TIFF on export; other formats get white."
+        ))
+        self._hidden_bg_combo.setEnabled(False)
+        layout.addRow(self.tr("Hidden background"), self._hidden_bg_combo)
 
         # --- Colormap ---
         self._cmap_combo = QComboBox()
@@ -136,7 +157,9 @@ class StrainVizPanel(QWidget):
         self._vmin_spin.valueChanged.connect(self._emit_changed)
         self._vmax_spin.valueChanged.connect(self._emit_changed)
         self._opacity_slider.valueChanged.connect(self._emit_changed)
-        self._deformed_check.toggled.connect(self._emit_changed)
+        self._geometry_combo.currentIndexChanged.connect(self._emit_changed)
+        self._background_check.toggled.connect(self._on_background_toggled)
+        self._hidden_bg_combo.currentIndexChanged.connect(self._emit_changed)
         self._fill_edges_check.toggled.connect(self._emit_changed)
 
     # ------------------------------------------------------------------
@@ -151,9 +174,24 @@ class StrainVizPanel(QWidget):
             "vmin": float(self._vmin_spin.value()),
             "vmax": float(self._vmax_spin.value()),
             "alpha": float(self._opacity_slider.value()) / 100.0,
-            "show_deformed": self._deformed_check.isChecked(),
+            "show_deformed": bool(self._geometry_combo.currentData()),
+            "show_background": self._background_check.isChecked(),
+            "hidden_bg_color": str(self._hidden_bg_combo.currentData()),
             "fill_trimmed_edges": self._fill_edges_check.isChecked(),
         }
+
+    def _on_background_toggled(self, shown: bool) -> None:
+        self._hidden_bg_combo.setEnabled(not shown)
+        self._emit_changed()
+
+    def set_hidden_bg_color(self, color: str) -> None:
+        """Adopt the shared fill without re-emitting a change."""
+        idx = self._hidden_bg_combo.findData(color)
+        if idx < 0 or idx == self._hidden_bg_combo.currentIndex():
+            return
+        self._hidden_bg_combo.blockSignals(True)
+        self._hidden_bg_combo.setCurrentIndex(idx)
+        self._hidden_bg_combo.blockSignals(False)
 
     def set_range(self, vmin: float, vmax: float) -> None:
         """Populate vmin/vmax spinboxes programmatically without extra signal.

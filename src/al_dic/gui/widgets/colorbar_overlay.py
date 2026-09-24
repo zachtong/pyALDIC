@@ -7,7 +7,7 @@ events so it does not interfere with canvas pan/zoom/drawing.
 from __future__ import annotations
 
 import numpy as np
-from matplotlib import colormaps
+from al_dic.core.colormaps import resolve
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import (
     QColor,
@@ -57,6 +57,38 @@ def _format_tick(val: float) -> str:
     if abs(val) < 1:
         return f"{val:.3f}"
     return f"{val:.2f}"
+
+
+def panel_layout(
+    width: int, bar_x: float, tick_w: float, label_w: float,
+) -> tuple[float, float]:
+    """Left edge of the background panel, and where the label starts.
+
+    The panel used to begin a hard-coded 50 px left of the bar, which clipped
+    two different things: any label longer than a short field name, and any
+    tick in scientific notation. It is now sized from what it has to hold.
+
+    The bar sits against the right edge, so a label centred on it runs off the
+    *widget* long before it runs off the panel -- hence the clamp on both
+    sides, computed before the panel rather than after it.
+
+    Args:
+        width:    widget width in px.
+        bar_x:    left edge of the gradient bar.
+        tick_w:   width of the widest tick label.
+        label_w:  width of the (already elided) top label; 0 if there is none.
+    Returns:
+        (panel_x, label_x), both in widget coordinates.
+    """
+    label_x = bar_x + _BAR_WIDTH / 2 - label_w / 2
+    label_x = min(label_x, width - _RIGHT_MARGIN - label_w)
+    label_x = max(4.0, label_x)
+
+    panel_x = min(
+        bar_x - max(50.0, tick_w + _LABEL_MARGIN + 8.0),
+        label_x - 8.0 if label_w else float("inf"),
+    )
+    return max(0.0, panel_x), label_x
 
 
 class ColorbarOverlay(QWidget):
@@ -117,8 +149,36 @@ class ColorbarOverlay(QWidget):
             p.end()
             return
 
-        # --- Draw semi-transparent background panel ---
-        panel_x = bar_x - 50
+        # --- Size the panel to its contents, then draw it ---
+        # The left edge used to be a hard-coded 50 px, which elided any label
+        # longer than a short field name ("von Mises strain" -> "von M...")
+        # and was also narrower than a tick in scientific notation.
+        label_font = QFont("Segoe UI", 10)
+        label_font.setBold(True)
+        tick_font = QFont("Consolas", 9)
+        tick_font.setStyleHint(QFont.StyleHint.Monospace)
+
+        ticks = _nice_ticks(self._vmin, self._vmax, n=5)
+        tick_texts = [_format_tick(v) for v in ticks]
+        p.setFont(tick_font)
+        tick_w = max(
+            (p.fontMetrics().horizontalAdvance(t) for t in tick_texts),
+            default=0,
+        )
+
+        p.setFont(label_font)
+        fm_label = p.fontMetrics()
+        # A long label may still be elided, but only once it would take more
+        # than half the canvas -- at that point it is the image that suffers.
+        label_cap = max(60, int(w * 0.5))
+        display_label = (
+            fm_label.elidedText(
+                self._label, Qt.TextElideMode.ElideRight, label_cap)
+            if self._label else ""
+        )
+        label_w = fm_label.horizontalAdvance(display_label)
+
+        panel_x, label_x = panel_layout(w, bar_x, tick_w, label_w)
         panel_w = w - panel_x
         p.setPen(Qt.PenStyle.NoPen)
         p.setBrush(QColor(11, 15, 26, 180))  # BG_DARKEST with alpha
@@ -128,10 +188,7 @@ class ColorbarOverlay(QWidget):
         )
 
         # --- Build gradient from matplotlib colormap ---
-        try:
-            cm = colormaps[self._cmap_name]
-        except KeyError:
-            cm = colormaps["jet"]
+        cm = resolve(self._cmap_name)
 
         gradient = QLinearGradient(bar_x, bar_bottom, bar_x, bar_top)
         for i in range(_N_STOPS):
@@ -145,13 +202,10 @@ class ColorbarOverlay(QWidget):
         bar_rect = QRectF(bar_x, bar_top, _BAR_WIDTH, bar_height)
         p.drawRect(bar_rect)
 
-        # --- Ticks and labels ---
-        tick_font = QFont("Consolas", 9)
-        tick_font.setStyleHint(QFont.StyleHint.Monospace)
+        # --- Ticks and labels (measured above) ---
         p.setFont(tick_font)
         p.setPen(QPen(QColor(COLORS.TEXT_PRIMARY), 1))
 
-        ticks = _nice_ticks(self._vmin, self._vmax, n=5)
         for val in ticks:
             if self._vmax > self._vmin:
                 frac = (val - self._vmin) / (self._vmax - self._vmin)
@@ -174,23 +228,11 @@ class ColorbarOverlay(QWidget):
             ty = y + text_rect.height() / 2 - 2
             p.drawText(int(tx), int(ty), text)
 
-        # --- Label at top ---
-        if self._label:
-            label_font = QFont("Segoe UI", 10)
-            label_font.setBold(True)
+        # --- Label at top (the panel was widened to fit it) ---
+        if display_label:
             p.setFont(label_font)
             p.setPen(QPen(QColor(COLORS.TEXT_SECONDARY), 1))
-            fm = p.fontMetrics()
-            # Elide if label is wider than the background panel
-            panel_x_val = float(bar_x - 50)
-            available = int(w - panel_x_val - 4)
-            display_label = fm.elidedText(
-                self._label, Qt.TextElideMode.ElideRight, available
-            )
-            label_w = fm.horizontalAdvance(display_label)
-            lx = bar_x + _BAR_WIDTH / 2 - label_w / 2
-            lx = max(panel_x_val + 4, lx)  # never overflow panel left edge
             ly = bar_top - 6
-            p.drawText(int(lx), int(ly), display_label)
+            p.drawText(int(label_x), int(ly), display_label)
 
         p.end()
