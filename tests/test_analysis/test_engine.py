@@ -507,11 +507,11 @@ def test_the_barycentric_transforms_are_scipys_own():
     """Computed in numpy to skip scipy's slow lazy build -- the same numbers."""
     from scipy.spatial import Delaunay
 
-    from al_dic.analysis.engine import _barycentric_transforms
+    from al_dic.analysis.geometry_sampling import barycentric_transforms
 
     rng = np.random.default_rng(7)
     points = grid(extent=80.0) + rng.normal(0.0, 0.3, grid(extent=80.0).shape)
-    ours = _barycentric_transforms(points, Delaunay(points).simplices)
+    ours = barycentric_transforms(points, Delaunay(points).simplices)
     theirs = Delaunay(points).transform
     np.testing.assert_allclose(ours, theirs, rtol=1e-9, atol=1e-12)
 
