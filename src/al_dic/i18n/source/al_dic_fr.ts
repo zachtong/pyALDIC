@@ -40,32 +40,32 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="69"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="70"/>
         <source>crack</source>
         <translation>fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="71"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="72"/>
         <source>too few valid points</source>
         <translation>trop peu de points valides</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="73"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
         <source>unreliable (strain edge trim)</source>
         <translation>non fiable (rognage des bords de la déformation)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="76"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
         <source>gauge endpoint lost</source>
         <translation>extrémité de jauge perdue</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="78"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>not computed</source>
         <translation>non calculé</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="80"/>
         <source>no data</source>
         <translation>aucune donnée</translation>
     </message>

@@ -40,32 +40,32 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="69"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="70"/>
         <source>crack</source>
         <translation>균열</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="71"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="72"/>
         <source>too few valid points</source>
         <translation>유효한 점이 너무 적음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="73"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
         <source>unreliable (strain edge trim)</source>
         <translation>신뢰할 수 없음(변형률 가장자리 트림)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="76"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
         <source>gauge endpoint lost</source>
         <translation>게이지 끝점 상실</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="78"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>not computed</source>
         <translation>계산되지 않음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="80"/>
         <source>no data</source>
         <translation>데이터 없음</translation>
     </message>
