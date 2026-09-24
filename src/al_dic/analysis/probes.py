@@ -296,10 +296,22 @@ class ProbeSet:
             kind=kind,
             geometry=geometry,
             label=label if label else f"P{probe_id}",
-            color=color or DEFAULT_COLOURS[(probe_id - 1) % len(DEFAULT_COLOURS)],
+            color=color or self._free_colour(probe_id),
         )
         self._probes.append(probe)
         return probe
+
+    def _free_colour(self, probe_id: int) -> str:
+        """First palette colour no current probe uses; cycle once all are.
+
+        Following the id counter instead made colours repeat on one chart as
+        soon as probes had been deleted.
+        """
+        used = {p.color.lower() for p in self._probes}
+        for colour in DEFAULT_COLOURS:
+            if colour.lower() not in used:
+                return colour
+        return DEFAULT_COLOURS[(probe_id - 1) % len(DEFAULT_COLOURS)]
 
     def replace(self, probe: Probe) -> None:
         """Swap the probe with the same id for *probe*, keeping its position."""

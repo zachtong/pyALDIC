@@ -40,49 +40,44 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="43"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="55"/>
         <source>crack</source>
-        <extracomment>Shading for frames a probe could not measure.</extracomment>
+        <extracomment>Above this many points a marker on every frame is noise; markers are kept only where a frame is flagged.</extracomment>
         <translation>裂纹</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="45"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="57"/>
         <source>too few valid points</source>
         <translation>有效点过少</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="47"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="59"/>
         <source>unreliable (strain edge trim)</source>
         <translation>不可靠（应变边缘裁剪）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="50"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="62"/>
         <source>gauge endpoint lost</source>
         <translation>量规端点失效</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="52"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="64"/>
         <source>not computed</source>
         <translation>未计算</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="53"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="65"/>
         <source>no data</source>
         <translation>无数据</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="145"/>
-        <location filename="../../gui/widgets/mpl_chart.py" line="192"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="248"/>
         <source>Frame</source>
+        <extracomment>Data-space x of a left click inside the axes.</extracomment>
         <translation>帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="158"/>
-        <source>Shaded frames: %1</source>
-        <translation>阴影帧：%1</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="194"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="250"/>
         <source>Distance along line (%1)</source>
         <translation>沿线距离（%1）</translation>
     </message>
@@ -90,308 +85,400 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>AnalysisTab</name>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="211"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="318"/>
         <source>Point</source>
         <comment>Placement tool: a single location</comment>
-        <extracomment>Tool button label, tool token, and the probe kind it produces.</extracomment>
+        <extracomment>Tool token and the probe kind it produces. Fields a probe can read, in the Strain Field tab&apos;s order. Gauge quantities that are strains (and so take the strain display unit). Display scale and unit for dimensionless strain. The user picked a frame here (navigator or a click on the chart).</extracomment>
         <translation>点</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="212"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="319"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
         <translation>线段</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="213"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="320"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
         <translation>矩形</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="214"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="321"/>
         <source>Circle</source>
         <comment>Placement tool</comment>
         <translation>圆形</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="215"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="322"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
         <translation>多边形</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="218"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="325"/>
         <source>Click once to place a point probe.</source>
         <translation>单击一次放置点探针。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="219"/>
-        <source>Click twice: start and end of the gauge.</source>
-        <translation>单击两次：标距的起点和终点。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="220"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="330"/>
         <source>Click twice: opposite corners.</source>
         <translation>单击两次：对角两点。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="221"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="331"/>
         <source>Click twice: centre, then the edge.</source>
         <translation>单击两次：先圆心，后边缘。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="223"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="333"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>逐个单击顶点，双击闭合。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="231"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="342"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
         <translation>显示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="232"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="343"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="233"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="344"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="234"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="345"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
         <translation>颜色</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="236"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="346"/>
+        <source>Note</source>
+        <comment>Probe list column: why a probe shows gaps</comment>
+        <translation>说明</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="348"/>
         <source>Colour…</source>
         <translation>颜色…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="237"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="349"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="238"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="350"/>
         <source>Clear All</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="239"/>
-        <source>Compare:</source>
-        <translation>比较：</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="240"/>
-        <source>Field:</source>
-        <translation>字段：</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="241"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="352"/>
         <source>Statistic:</source>
         <translation>统计量：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="242"/>
-        <source>Minimum valid fraction:</source>
-        <translation>最低有效比例：</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="244"/>
-        <source>A frame is left blank when fewer than this fraction of the probe&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
-        <translation>当探针中可靠点的比例低于此值时，该帧留空。用于防止曲线在样本量悄悄塌陷时依然平滑。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="248"/>
-        <source>Export CSV…</source>
-        <translation>导出 CSV…</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="249"/>
-        <source>Export Chart…</source>
-        <translation>导出图表…</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="250"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="339"/>
         <source>Esc cancels placement</source>
         <translation>Esc 取消放置</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="265"/>
-        <source>Point probes</source>
-        <translation>点探针</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="266"/>
-        <source>Line probes</source>
-        <translation>线探针</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="267"/>
-        <source>Region probes</source>
-        <translation>区域探针</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="294"/>
-        <source>Value</source>
-        <comment>Statistic: the sample itself, for a point probe</comment>
-        <translation>数值</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="295"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="406"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
         <translation>平均值</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="296"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="407"/>
         <source>Median</source>
         <comment>Statistic</comment>
         <translation>中位数</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="297"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="408"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
         <translation>最大值</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="298"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="409"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
         <translation>最小值</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="299"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="410"/>
         <source>Standard deviation</source>
         <translation>标准差</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="300"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="411"/>
         <source>Valid fraction</source>
         <translation>有效比例</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="301"/>
-        <source>Engineering strain</source>
-        <translation>工程应变</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="302"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="398"/>
         <source>Crack opening</source>
         <translation>裂纹张开位移</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="332"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="629"/>
+        <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
+        <translation>尚未计算应变。请在“应变场”页中计算，或改为绘制位移。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="639"/>
+        <source>Gauge quantities need a line probe.</source>
+        <translation>量规类物理量需要线探针。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="642"/>
+        <source>No visible probe can show this quantity.</source>
+        <translation>没有可见的探针能显示此物理量。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="712"/>
+        <source>no valid data: %1</source>
+        <translation>无有效数据：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="715"/>
+        <source>crack from frame %1</source>
+        <translation>第 %1 帧起出现裂纹</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="718"/>
+        <source>endpoint lost from frame %1</source>
+        <translation>第 %1 帧起端点失效</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="720"/>
+        <source>gaps: too few valid points</source>
+        <translation>有缺口：有效点过少</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="722"/>
+        <source>gaps: unreliable strain</source>
+        <translation>有缺口：应变不可靠</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="728"/>
+        <source>not plotted: gauges need a line</source>
+        <translation>未绘制：量规需要线探针</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="730"/>
+        <source>not plotted: one point has no spread or coverage</source>
+        <translation>未绘制：单个点没有离散度或覆盖率</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="731"/>
+        <source>not plotted</source>
+        <translation>未绘制</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="803"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>已添加探针「%1」。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="391"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="864"/>
         <source>Clear All Probes</source>
         <translation>清除所有探针</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="392"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="865"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>删除所有探针？此操作无法撤销。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="432"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="884"/>
         <source>Point</source>
         <comment>Probe type</comment>
         <translation>点</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="433"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="885"/>
         <source>Line</source>
         <comment>Probe type</comment>
         <translation>线段</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="434"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="886"/>
         <source>Region</source>
         <comment>Probe type: an enclosed area</comment>
         <translation>区域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="473"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="616"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>请先运行 DIC 分析，然后才能绘制探针曲线。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="484"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="327"/>
+        <source>Click twice: start and end. A line is also a virtual extensometer and a crack-opening gauge.</source>
+        <translation>点击两次：起点和终点。线探针同时也是虚拟引伸计和裂纹张开量规。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="351"/>
+        <source>Plot:</source>
+        <translation>绘制：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="353"/>
+        <source>X axis:</source>
+        <translation>X 轴：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="354"/>
+        <source>Strain as:</source>
+        <translation>应变显示为：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="355"/>
+        <source>Min. valid fraction:</source>
+        <translation>最小有效比例：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="357"/>
+        <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
+        <translation>当线或区域中可靠点的比例低于此值时，该帧留空。避免样本逐渐缩小而曲线依然平滑的假象。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="361"/>
+        <source>Export</source>
+        <translation>导出</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="362"/>
+        <source>Probe data (CSV)…</source>
+        <translation>探针数据（CSV）…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="363"/>
+        <source>Chart image…</source>
+        <translation>图表图片…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="379"/>
+        <source>Displacement U</source>
+        <translation>位移 U</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="380"/>
+        <source>Displacement V</source>
+        <translation>位移 V</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="381"/>
+        <source>Displacement magnitude</source>
+        <translation>位移大小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="395"/>
+        <source>Extensometer strain</source>
+        <translation>引伸计应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="396"/>
+        <source>Extensometer true strain</source>
+        <translation>引伸计真应变</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="397"/>
+        <source>Elongation ΔL</source>
+        <translation>伸长量 ΔL</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="399"/>
+        <source>Crack sliding</source>
+        <translation>裂纹滑移</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="400"/>
+        <source>Crack opening magnitude</source>
+        <translation>裂纹张开位移大小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="444"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="750"/>
+        <source>Frame</source>
+        <translation>帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="446"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="749"/>
+        <source>Time (s)</source>
+        <translation>时间 (s)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="454"/>
+        <source>ratio</source>
+        <comment>Strain display unit: plain number</comment>
+        <translation>比值</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="624"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>在参考图像上放置一个探针即可开始。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="502"/>
-        <source>This statistic does not apply here.</source>
-        <translation>该统计量不适用于此处。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="538"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="543"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="965"/>
         <source>Export Probe Data</source>
         <translation>导出探针数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="539"/>
-        <source>There is nothing to export yet.</source>
-        <translation>目前没有可导出的内容。</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="544"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="966"/>
         <source>CSV Files</source>
         <translation>CSV 文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="544"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="570"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="966"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1004"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="557"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="992"/>
         <source>Probe export failed: %1</source>
         <translation>探针导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="562"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="995"/>
         <source>Probe data written to %1</source>
         <translation>探针数据已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="567"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1001"/>
         <source>Export Chart</source>
         <translation>导出图表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="568"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1002"/>
         <source>PNG Images</source>
         <translation>PNG 图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="569"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1003"/>
         <source>PDF Documents</source>
         <translation>PDF 文档</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="578"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1011"/>
         <source>Chart export failed: %1</source>
         <translation>图表导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="583"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1014"/>
         <source>Chart written to %1</source>
         <translation>图表已写入 %1</translation>
     </message>
@@ -2877,43 +2964,43 @@ Only applies when Method = Plane fitting.</source>
         <translation>分析</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="476"/>
+        <location filename="../../gui/strain_window.py" line="510"/>
         <source>Strain compute failed: %1: %2</source>
         <translation>应变计算失败：%1：%2</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="484"/>
-        <location filename="../../gui/strain_window.py" line="543"/>
+        <location filename="../../gui/strain_window.py" line="519"/>
+        <location filename="../../gui/strain_window.py" line="581"/>
         <source>Strain computation complete.</source>
         <translation>应变计算完成。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="495"/>
+        <location filename="../../gui/strain_window.py" line="530"/>
         <source>Strain window: no displacement results to post-process.</source>
         <translation>应变窗口：没有可后处理的位移结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="526"/>
+        <location filename="../../gui/strain_window.py" line="561"/>
         <source>Cancelling…</source>
         <translation>正在取消…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="560"/>
+        <location filename="../../gui/strain_window.py" line="598"/>
         <source>Strain computation cancelled.</source>
         <translation>应变计算已取消。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="569"/>
+        <location filename="../../gui/strain_window.py" line="607"/>
         <source>Strain compute failed: %1</source>
         <translation>应变计算失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="576"/>
+        <location filename="../../gui/strain_window.py" line="614"/>
         <source>Strain Computation Failed</source>
         <translation>应变计算失败</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="615"/>
+        <location filename="../../gui/strain_window.py" line="653"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ 参数已变更 — 请点击“计算应变”</translation>
     </message>
@@ -2933,12 +3020,12 @@ Only applies when Method = Plane fitting.</source>
         <translation>导出结果</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="506"/>
+        <location filename="../../gui/strain_window.py" line="541"/>
         <source>Starting…</source>
         <translation>启动中…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="539"/>
+        <location filename="../../gui/strain_window.py" line="577"/>
         <source>Complete</source>
         <translation>完成</translation>
     </message>

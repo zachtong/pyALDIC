@@ -206,6 +206,19 @@ def test_colours_cycle_without_immediate_repeats():
     assert len(set(colours)) == 4
 
 
+def test_a_new_probe_takes_a_colour_nobody_is_using():
+    """Colours followed the id counter, so after deletions P4 and P12 were
+    both yellow on one chart. A free colour is picked while one exists."""
+    s = ProbeSet()
+    probes = [s.add("point", PointGeom(float(i), 0.0)) for i in range(8)]
+    for p in probes[:3]:
+        s.remove(p.id)
+    in_use = {p.color for p in s}
+    fresh = [s.add("point", PointGeom(9.0 + i, 0.0)).color for i in range(3)]
+    assert not (set(fresh) & in_use)
+    assert len(set(fresh)) == 3
+
+
 def test_replace_updates_in_place_by_id():
     s = ProbeSet()
     p = s.add("point", PointGeom(1.0, 1.0))

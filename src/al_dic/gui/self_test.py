@@ -419,7 +419,13 @@ def check_embedded_chart() -> str:
     if not np.allclose(ts.values, [0.0, 0.01, 0.02, 0.03], atol=1e-9):
         raise CheckFailed(f"the extensometer read {ts.values.tolist()}")
 
-    chart.plot_series([("E1", "#ef4444", ts)], y_label="strain")
+    from al_dic.gui.widgets.mpl_chart import Curve
+
+    chart.plot_curves(
+        [Curve(label="E1", colour="#ef4444", x=ts.frames + 1.0, y=ts.values,
+               status=ts.status)],
+        x_label="frame", y_label="strain",
+    )
     chart.figure.canvas.draw()
     width, height = chart.figure.canvas.get_width_height()
     if width <= 0 or height <= 0:

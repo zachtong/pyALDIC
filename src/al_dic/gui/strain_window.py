@@ -400,6 +400,12 @@ class StrainWindow(QMainWindow):
         self._analysis_tab = AnalysisTab(state, self)
         self._tabs.addTab(self._analysis_tab, self.tr("Analysis"))
         self.setCentralWidget(self._tabs)
+        # One frame across both tabs; the chart's cursor and a click on it
+        # move the field view too.
+        self._analysis_tab.frame_requested.connect(self.set_strain_frame)
+        self._analysis_tab.set_frame(self._strain_current_frame)
+        self._analysis_tab.set_default_field(self._field_selector.current_field())
+        self._analysis_tab.set_parameters_provider(self._strain_parameters)
 
         # Track external pipeline runs and shared display settings
         self._state.results_changed.connect(self._on_state_results_changed)
@@ -445,9 +451,38 @@ class StrainWindow(QMainWindow):
         self._strain_current_frame = clamped
         self._frame_nav.set_state(n, clamped)
         self._render_current()
+        if hasattr(self, "_analysis_tab"):
+            self._analysis_tab.set_frame(clamped)
 
     def current_field(self) -> str:
         return self._field_selector.current_field()
+
+    def _strain_parameters(self) -> dict[str, str]:
+        """The last Compute Strain's settings, for an export header.
+
+        Empty until strain has been computed in this window: after a session
+        is reopened the settings that produced the stored strain are unknown,
+        and stating the panel's current values would claim something false.
+        """
+        o = getattr(self, "_last_strain_override", None)
+        if not o:
+            return {}
+        method = o.get("method_to_compute_strain")
+        out = {"strain method": {2: "plane fitting", 3: "FEM nodal"}.get(
+            method, f"method {method}")}
+        if method == 2:
+            rad = float(o.get("strain_plane_fit_rad", 0.0))
+            out["strain window"] = (
+                f"{2 * rad + 1:g} px (VSG as set in pyALDIC; plane-fit radius "
+                f"{rad:g} px)")
+        out["strain type"] = {
+            0: "infinitesimal", 1: "Eulerian-Almansi", 2: "Green-Lagrangian",
+        }.get(o.get("strain_type"), str(o.get("strain_type")))
+        if o.get("strain_smoothness") is not None:
+            out["strain smoothing"] = f"{float(o['strain_smoothness']):g}"
+        if o.get("strain_edge_trim_alpha") is not None:
+            out["strain edge trim alpha"] = f"{float(o['strain_edge_trim_alpha']):g}"
+        return out
 
     def set_current_field(self, name: str) -> None:
         self._field_selector.set_current_field(name)
@@ -465,10 +500,9 @@ class StrainWindow(QMainWindow):
         """Synchronous compute — used by tests (blocking, no progress bar)."""
         if self._state.results is None:
             return
+        override = self._param_panel.get_override()
         try:
-            self._strain_ctrl.compute_and_store(
-                override=self._param_panel.get_override(),
-            )
+            self._strain_ctrl.compute_and_store(override=override)
         except Exception as exc:
             from al_dic.i18n import tr_args
             self._log(
@@ -479,6 +513,7 @@ class StrainWindow(QMainWindow):
                 "error",
             )
             return
+        self._last_strain_override = dict(override)
         self._param_panel.mark_clean()
         self._stale_label.setText("")
         self._log(self.tr("Strain computation complete."), "success")
@@ -530,6 +565,9 @@ class StrainWindow(QMainWindow):
         self._strain_progress_label.setText(message)
 
     def _on_strain_finished(self, new_strain: list) -> None:
+        worker = self._strain_worker
+        if worker is not None:
+            self._last_strain_override = dict(worker._override)
         current = self._state.results
         self._state.results = _dc_replace(current, result_strain=new_strain)
         self._state.results_changed.emit()
@@ -616,6 +654,8 @@ class StrainWindow(QMainWindow):
 
     def _on_field_changed(self, name: str) -> None:
         """Switch the active display field: restore its remembered color state first."""
+        if hasattr(self, "_analysis_tab"):
+            self._analysis_tab.set_default_field(name)
         self._load_field_state_into_panel()
         self._viz_ctrl.clear_pixmap_cache()
         self._render_current()
@@ -699,6 +739,7 @@ class StrainWindow(QMainWindow):
     def _on_frame_nav_changed(self, value: int) -> None:
         self._strain_current_frame = int(value)
         self._render_current()
+        self._analysis_tab.set_frame(self._strain_current_frame)
 
     # ------------------------------------------------------------------
     # Field extraction
@@ -859,6 +900,8 @@ class StrainWindow(QMainWindow):
         if self._strain_current_frame > max_idx:
             self._strain_current_frame = max_idx
         self._frame_nav.set_state(n, self._strain_current_frame)
+        if hasattr(self, "_analysis_tab"):
+            self._analysis_tab.set_frame(self._strain_current_frame)
 
     def _try_load_background(self, img_idx: int = 0) -> None:
         """Best-effort background image fetch -- silent on failure."""
