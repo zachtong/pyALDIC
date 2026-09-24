@@ -16,11 +16,17 @@ import sys
 import tempfile
 
 if getattr(sys, "frozen", False):
-    _base = (
-        os.environ.get("LOCALAPPDATA")
-        or os.path.expanduser("~")
-        or tempfile.gettempdir()
-    )
+    # The same per-user base as al_dic.gui.app.user_data_dir(), which cannot
+    # be imported this early: a platform's own place, never a bare folder in
+    # the home directory.
+    _home = os.path.expanduser("~") or tempfile.gettempdir()
+    if sys.platform == "win32":
+        _base = os.environ.get("LOCALAPPDATA") or _home
+    elif sys.platform == "darwin":
+        _base = os.path.join(_home, "Library", "Application Support")
+    else:
+        _base = os.environ.get("XDG_DATA_HOME") or os.path.join(
+            _home, ".local", "share")
 
     # Pin matplotlib's config/cache directory. Without a writable one it falls
     # back to a fresh temp dir per launch, which re-runs the full system font

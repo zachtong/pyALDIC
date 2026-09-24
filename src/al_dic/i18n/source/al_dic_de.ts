@@ -739,27 +739,27 @@ Nur relevant für den FFT-Anfangsschätzungsmodus.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1094"/>
+        <location filename="../../gui/app.py" line="1103"/>
         <source>pyALDIC has hit an error</source>
         <translation>In pyALDIC ist ein Fehler aufgetreten</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1095"/>
+        <location filename="../../gui/app.py" line="1104"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>Ein unerwarteter Fehler ist aufgetreten. Die Anwendung verhält sich möglicherweise nicht mehr korrekt; es wird empfohlen, die Sitzung zu speichern und neu zu starten.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1105"/>
+        <location filename="../../gui/app.py" line="1114"/>
         <source>Details were written to %1</source>
         <translation>Details wurden nach %1 geschrieben</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1209"/>
+        <location filename="../../gui/app.py" line="1218"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>Rechenkernel werden im Hintergrund vorbereitet. Die erste Analyse einer neuen Installation dauert länger als die folgenden.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1223"/>
+        <location filename="../../gui/app.py" line="1232"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>Rechenkernel bereit (%1 s).</translation>
     </message>

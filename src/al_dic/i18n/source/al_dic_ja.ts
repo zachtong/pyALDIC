@@ -739,27 +739,27 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1094"/>
+        <location filename="../../gui/app.py" line="1103"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC でエラーが発生しました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1095"/>
+        <location filename="../../gui/app.py" line="1104"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1105"/>
+        <location filename="../../gui/app.py" line="1114"/>
         <source>Details were written to %1</source>
         <translation>詳細を %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1209"/>
+        <location filename="../../gui/app.py" line="1218"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1223"/>
+        <location filename="../../gui/app.py" line="1232"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>計算カーネルの準備が完了しました（%1 秒）。</translation>
     </message>

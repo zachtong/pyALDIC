@@ -34,9 +34,11 @@ pip install -e ".[dev]"
 pytest
 ```
 
-## Building the Windows Bundle
+## Building the Desktop Bundles
 
-CI builds and verifies this on every tag, so you rarely need to. When you do:
+CI builds and verifies them on every tag -- the Windows installer and
+portable zip on `windows-latest`, the macOS disk image on `macos-14`
+(Apple silicon) -- so you rarely need to. When you do, on Windows:
 
 ```bash
 # A CLEAN venv, not conda -- see the warning below
@@ -46,8 +48,13 @@ pip install -r packaging/requirements-build.txt
 pip install -e . --no-deps
 
 python tools/i18n.py compile     # the .qm catalogs are build products
-python tools/build_exe.py        # -> dist-exe/pyALDIC/ and a release zip
+python tools/build_exe.py        # -> dist-exe/pyALDIC/ and the portable zip
+python tools/build_exe.py --installer   # ... and the installer (Inno Setup 6)
 ```
+
+On a Mac the same `python tools/build_exe.py` produces `dist-exe/pyALDIC.app`
+and `pyALDIC-macOS.dmg`; point `PYALDIC_FROZEN_EXE` at
+`dist-exe/pyALDIC.app/Contents/MacOS/pyALDIC` to verify it.
 
 Then verify it — and do verify it, because almost everything that goes wrong
 here goes wrong quietly:

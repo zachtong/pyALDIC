@@ -1,13 +1,18 @@
-name: Build Windows Bundle
+name: Build Desktop Bundles
 
-# Builds the portable Windows bundle a user unzips and double-clicks, then
-# proves it works before attaching it to the release.
+# Builds what a student downloads from the release page -- the Windows
+# installer and portable zip, and the macOS (Apple silicon) disk image -- then
+# proves each one works before attaching it to the release.
 #
-# The bundle is never committed. It lives only as a release asset, which does
-# not count against repository size and is not fetched by `git clone`.
+# The bundles are never committed. They live only as release assets, which do
+# not count against repository size and are not fetched by `git clone`.
 #
 # Kept out of publish.yml on purpose: a bundle failure must never block the
-# PyPI release. The two run independently off the same tag.
+# PyPI release. The two run independently off the same tag, and each platform
+# attaches its own assets, so one platform failing does not hold back the other.
+#
+# Asset names carry no version: README and course handouts link to
+# releases/latest/download/<name>, which only resolves while names stay fixed.
 #
 # Three ways in:
 #   * push a v* tag        -> build, test, attach to that tag's release
@@ -23,8 +28,8 @@ on:
     inputs:
       tag:
         description: >-
-          Existing tag whose release should receive the bundle
-          (e.g. v0.7.3). Leave empty to build and test without uploading.
+          Existing tag whose release should receive the bundles
+          (e.g. v0.9.0). Leave empty to build and test without uploading.
         required: false
         default: ""
 
@@ -36,8 +41,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-exe:
-    name: Build the onedir bundle
+  build-windows:
+    name: Windows installer and portable zip
     runs-on: windows-latest
 
     steps:
@@ -78,13 +83,20 @@ jobs:
           fi
 
       - name: Compile translation catalogs
-        # The .qm files are build products and are not in the repository. The
-        # spec asserts all seven are present, so this must run first or the
-        # build fails rather than shipping a monolingual application.
+        # The spec asserts all seven .qm catalogs are present, so recompiling
+        # here means a stale catalog in the repository cannot ship.
         run: python tools/i18n.py compile
 
+      - name: Make sure Inno Setup is available
+        # The runner image normally carries Inno Setup 6; install it when an
+        # image update has dropped it rather than failing the release.
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup --no-progress -y }
+
       - name: Build
-        run: python tools/build_exe.py
+        run: python tools/build_exe.py --installer
 
       - name: Self-test the bundle
         # Not a launch check: the application guards eleven optional pieces
@@ -94,36 +106,137 @@ jobs:
           PYALDIC_FROZEN_EXE: dist-exe/pyALDIC/pyALDIC-console.exe
         run: python -m pytest tests/test_frozen_bundle.py -v
 
+      - name: Install as a student would, then self-test the installed app
+        # The installer changes where the app lives and what it may write, so
+        # the installed copy is tested, not only the build folder. The path has
+        # a space in it on purpose.
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "pyALDIC installed"
+          $log = Join-Path $env:RUNNER_TEMP "setup.log"
+          $p = Start-Process -FilePath "dist-exe\pyALDIC-Windows-Setup.exe" -Wait -PassThru `
+               -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", `
+                             "/DIR=`"$dir`"", "/LOG=`"$log`""
+          if ($p.ExitCode -ne 0) { Get-Content $log; throw "setup exited $($p.ExitCode)" }
+
+          $lnk = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\pyALDIC.lnk"
+          if (-not (Test-Path $lnk)) { throw "no Start menu shortcut at $lnk" }
+          $prog = (Get-ItemProperty "HKCU:\Software\Classes\.aldic")."(default)"
+          $cmd = (Get-ItemProperty "HKCU:\Software\Classes\pyALDIC.Session\shell\open\command")."(default)"
+          if ($prog -ne "pyALDIC.Session") { throw ".aldic maps to '$prog'" }
+          if ($cmd -ne "`"$dir\pyALDIC.exe`" `"%1`"") { throw "open command is '$cmd'" }
+
+          $env:PYALDIC_FROZEN_EXE = Join-Path $dir "pyALDIC-console.exe"
+          python -m pytest tests/test_frozen_bundle.py -v
+          if ($LASTEXITCODE -ne 0) { throw "the installed app failed its self-test" }
+
+          # Uninstall. The uninstaller re-launches itself from %TEMP% and
+          # returns at once, so wait for the folder to go instead.
+          Start-Process -FilePath (Join-Path $dir "unins000.exe") -Wait `
+            -ArgumentList "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART"
+          $deadline = (Get-Date).AddSeconds(120)
+          while ((Test-Path (Join-Path $dir "pyALDIC.exe")) -and (Get-Date) -lt $deadline) { Start-Sleep 2 }
+          if (Test-Path (Join-Path $dir "pyALDIC.exe")) { throw "uninstall left the app behind" }
+          if (Test-Path $lnk) { throw "uninstall left the Start menu shortcut" }
+          if (Test-Path "HKCU:\Software\Classes\pyALDIC.Session") { throw "uninstall left the file type" }
+
       - name: Test the .aldic file association
         # These registry round-trip tests have never run in CI -- every other
         # job is ubuntu-latest and they are skipif(not is_supported()). The
-        # double-click association is the headline feature of this
+        # double-click association is a headline feature of this
         # distribution, so this is the one place it can be covered.
         env:
           QT_QPA_PLATFORM: offscreen
         run: python -m pytest tests/test_gui/test_session_launch.py -v
 
-      - name: Upload the bundle as a workflow artifact
+      - name: Upload the Windows assets as a workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pyALDIC-win64
-          path: dist-exe/*.zip
+          name: pyALDIC-windows
+          path: |
+            dist-exe/pyALDIC-Windows-Setup.exe
+            dist-exe/pyALDIC-Windows-Portable.zip
           retention-days: 14
 
-  attach-exe:
-    name: Attach the bundle to the GitHub Release
-    needs: build-exe
+  build-macos:
+    name: macOS disk image (Apple silicon)
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install the pinned build environment
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r packaging/requirements-build.txt
+          pip install -e . --no-deps
+
+      - name: Verify the tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != ''
+        run: |
+          REF="${{ github.event.inputs.tag || github.ref_name }}"
+          TAG="${REF#v}"
+          PKG=$(python -c "import al_dic; print(al_dic.__version__)")
+          echo "tag=$TAG  al_dic.__version__=$PKG"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::Tag v$TAG does not match al_dic.__version__ $PKG"
+            exit 1
+          fi
+
+      - name: Compile translation catalogs
+        run: python tools/i18n.py compile
+
+      - name: Build
+        run: python tools/build_exe.py
+
+      - name: Check the ad-hoc signature is intact
+        # A bundle whose signature no longer matches its contents is reported
+        # to the user as "damaged and can't be opened" -- worse than the
+        # ordinary first-launch prompt, and it has no Open Anyway.
+        run: codesign --verify --deep --strict --verbose=2 dist-exe/pyALDIC.app
+
+      - name: Self-test the app
+        env:
+          PYALDIC_FROZEN_EXE: dist-exe/pyALDIC.app/Contents/MacOS/pyALDIC
+        run: python -m pytest tests/test_frozen_bundle.py -v
+
+      - name: Self-test the app straight from the disk image
+        # Proves the image is whole, and covers the student who double-clicks
+        # the app inside the mounted image instead of dragging it out first.
+        run: |
+          MNT="$RUNNER_TEMP/pyALDIC-dmg"
+          hdiutil attach -nobrowse -readonly -mountpoint "$MNT" dist-exe/pyALDIC-macOS.dmg
+          ls -la "$MNT"
+          PYALDIC_FROZEN_EXE="$MNT/pyALDIC.app/Contents/MacOS/pyALDIC" \
+            python -m pytest tests/test_frozen_bundle.py -v
+          hdiutil detach "$MNT"
+
+      - name: Upload the macOS disk image as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyALDIC-macos
+          path: dist-exe/pyALDIC-macOS.dmg
+          retention-days: 14
+
+  attach-windows:
+    name: Attach the Windows assets to the release
+    needs: build-windows
     if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: pyALDIC-win64
+          name: pyALDIC-windows
           path: dist-exe/
-
       - name: Upload to the release for this tag
         env:
           GH_TOKEN: ${{ github.token }}
@@ -137,6 +250,33 @@ jobs:
                  "first, then re-run this workflow with tag=$TAG."
             exit 1
           fi
-          gh release upload "$TAG" dist-exe/*.zip \
-            --clobber --repo "$GITHUB_REPOSITORY"
+          gh release upload "$TAG" dist-exe/* --clobber --repo "$GITHUB_REPOSITORY"
+          echo "Attached to https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"
+
+  attach-macos:
+    name: Attach the macOS disk image to the release
+    needs: build-macos
+    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pyALDIC-macos
+          path: dist-exe/
+      - name: Upload to the release for this tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          # `gh release upload` needs the release to already exist. Releases
+          # here are written by hand -- the notes are prose, not a changelog
+          # dump -- so say plainly what to do rather than creating an empty one.
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::No release exists for $TAG. Publish the release" \
+                 "first, then re-run this workflow with tag=$TAG."
+            exit 1
+          fi
+          gh release upload "$TAG" dist-exe/* --clobber --repo "$GITHUB_REPOSITORY"
           echo "Attached to https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG"

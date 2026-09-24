@@ -1048,10 +1048,19 @@ def user_data_dir() -> Path:
 
     Deliberately not next to the executable: a onedir bundle is routinely
     unzipped into Program Files, onto a network share, or anywhere else the
-    user has no write permission.
+    user has no write permission -- and a macOS app bundle must not change
+    once signed. Each platform's own place, never a bare folder in the home
+    directory: %LOCALAPPDATA% on Windows, Application Support on macOS,
+    $XDG_DATA_HOME on Linux. packaging/rthook_pyaldic.py mirrors this.
     """
-    base = os.environ.get("LOCALAPPDATA") or os.path.expanduser("~")
-    return Path(base) / "pyALDIC"
+    home = Path(os.path.expanduser("~"))
+    if sys.platform == "win32":
+        base = Path(os.environ.get("LOCALAPPDATA") or home)
+    elif sys.platform == "darwin":
+        base = home / "Library" / "Application Support"
+    else:
+        base = Path(os.environ.get("XDG_DATA_HOME") or home / ".local" / "share")
+    return base / "pyALDIC"
 
 
 # Path of the log file, once one has been opened. None when not frozen.

@@ -739,27 +739,27 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1094"/>
+        <location filename="../../gui/app.py" line="1103"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC에서 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1095"/>
+        <location filename="../../gui/app.py" line="1104"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1105"/>
+        <location filename="../../gui/app.py" line="1114"/>
         <source>Details were written to %1</source>
         <translation>자세한 내용을 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1209"/>
+        <location filename="../../gui/app.py" line="1218"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1223"/>
+        <location filename="../../gui/app.py" line="1232"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>계산 커널 준비 완료(%1초).</translation>
     </message>
