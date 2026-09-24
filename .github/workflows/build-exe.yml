@@ -216,7 +216,9 @@ jobs:
           ls -la "$MNT"
           PYALDIC_FROZEN_EXE="$MNT/pyALDIC.app/Contents/MacOS/pyALDIC" \
             python -m pytest tests/test_frozen_bundle.py -v
-          hdiutil detach "$MNT"
+          # The disk-image helper can still hold the volume for a moment after
+          # the app has exited ("Resource busy"); that is not a test failure.
+          hdiutil detach "$MNT" || { sleep 5; hdiutil detach -force "$MNT"; }
 
       - name: Upload the macOS disk image as a workflow artifact
         uses: actions/upload-artifact@v4
