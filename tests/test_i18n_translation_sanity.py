@@ -98,3 +98,23 @@ def test_no_translation_call_hides_inside_an_f_string():
                         for a in literal):
                     hits.append(f"{path.relative_to(ROOT)}:{sub.lineno}")
     assert not hits, "tr() inside an f-string, invisible to lupdate: " + ", ".join(hits)
+
+
+def test_no_translation_function_is_aliased():
+    """lupdate matches ``tr(`` and ``QCoreApplication.translate(`` by name.
+
+    ``tr = QCoreApplication.translate`` followed by ``tr("Ctx", "...")`` runs
+    and translates, yet nothing is extracted, and the catalog drops the
+    entries as obsolete on the next extract.
+    """
+    import ast
+
+    hits = []
+    for path in sorted((ROOT / "src" / "al_dic" / "gui").rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Assign, ast.AnnAssign)):
+                value = node.value
+                if isinstance(value, ast.Attribute) and value.attr in ("translate", "tr"):
+                    hits.append(f"{path.relative_to(ROOT)}:{node.lineno}")
+    assert not hits, "aliased translate/tr, invisible to lupdate: " + ", ".join(hits)

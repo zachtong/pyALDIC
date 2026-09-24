@@ -394,7 +394,7 @@ class StrainWindow(QMainWindow):
         # The field view becomes the first tab; probe analysis is the second.
         # Wrapping rather than rebuilding keeps this window's behaviour exactly
         # as it was -- the tab is additive.
-        from al_dic.gui.panels.analysis_tab import AnalysisTab
+        from al_dic.gui.panels.analysis import AnalysisTab
 
         self._tabs = QTabWidget(self)
         self._tabs.addTab(central, self.tr("Strain Field"))

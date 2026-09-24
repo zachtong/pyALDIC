@@ -1,6 +1,6 @@
 """Probe-based post-processing analysis.
 
-Core layer: no Qt, no ``tr()``. The GUI in ``al_dic.gui.panels.analysis_tab``
+Core layer: no Qt, no ``tr()``. The GUI in ``al_dic.gui.panels.analysis``
 is one consumer; a batch script using the ``run_aldic`` API is another.
 """
 

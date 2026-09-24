@@ -9,7 +9,7 @@ from PySide6.QtWidgets import QApplication
 
 from al_dic.analysis.probes import AreaGeom, LineGeom, PointGeom
 from al_dic.gui.app_state import AppState
-from al_dic.gui.panels.analysis_tab import AnalysisTab
+from al_dic.gui.panels.analysis import AnalysisTab
 from al_dic.gui.panels.probe_canvas import ProbeCanvas
 
 
@@ -170,7 +170,7 @@ def _run(state, *, strain: bool = False, n_frames: int = 3):
 
 
 def _plot(tab, name: str, *, gauge: bool = False, statistic: str = "mean"):
-    from al_dic.gui.panels.analysis_tab import _Quantity
+    from al_dic.gui.panels.analysis.quantities import Quantity as _Quantity
 
     tab._quantity_box.setCurrentIndex(
         tab._quantity_box.findData(
@@ -194,9 +194,9 @@ def test_chart_says_what_to_do_before_a_run(tab):
 
 def test_every_probe_field_is_offered_in_the_field_tabs_order(tab):
     from al_dic.core.fields import ALL_FIELDS
-    from al_dic.gui.panels.analysis_tab import _FIELDS
+    from al_dic.gui.panels.analysis.quantities import FIELDS as _FIELDS
 
-    from al_dic.gui.panels.analysis_tab import _Quantity
+    from al_dic.gui.panels.analysis.quantities import Quantity as _Quantity
 
     offered = [
         _Quantity.from_key(tab._quantity_box.itemData(i))
@@ -369,7 +369,7 @@ def test_export_writes_what_is_plotted_now(tab, state, tmp_path, monkeypatch):
     tab._on_delete()
     out = tmp_path / "probes.csv"
     monkeypatch.setattr(
-        "al_dic.gui.panels.analysis_tab.QFileDialog.getSaveFileName",
+        "al_dic.gui.panels.analysis.tab.QFileDialog.getSaveFileName",
         lambda *a, **k: (str(out), ""),
     )
     tab._on_export_csv()

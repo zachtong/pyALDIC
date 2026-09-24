@@ -49,11 +49,11 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget  # noqa: E402
 from al_dic.analysis.series import FrameStatus  # noqa: E402
 from al_dic.gui.theme import COLORS  # noqa: E402
 
-#: Above this many points a marker on every frame is noise; markers are kept
-#: only where a frame is flagged.
+# Above this many points a marker on every frame is noise; markers are kept
+# only where a frame is flagged.
 _MARKERS_UP_TO = 60
 
-#: The shade of consumed material, in a profile's spans and a kymograph's band.
+# The shade of consumed material, in a profile's spans and a kymograph's band.
 _CONSUMED = COLORS.TEXT_SECONDARY
 
 
@@ -113,7 +113,7 @@ class Curve:
 class MplChart(QWidget):
     """A figure with a navigation toolbar, styled for the dark theme."""
 
-    #: Data-space x of a left click inside the axes.
+    # Data-space x of a left click inside the axes.
     x_clicked = Signal(float)
 
     def __init__(self, parent: QWidget | None = None) -> None:

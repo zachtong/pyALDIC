@@ -199,7 +199,7 @@ def test_analysis_tab_constructs(qapp, lang):
     several translated sentences -- it must come out in the loaded language.
     """
     from al_dic.gui.app_state import AppState
-    from al_dic.gui.panels.analysis_tab import AnalysisTab
+    from al_dic.gui.panels.analysis import AnalysisTab
     from al_dic.i18n import LanguageManager
 
     mgr = LanguageManager(qapp)

@@ -15,7 +15,7 @@ from PySide6.QtWidgets import QApplication
 
 from al_dic.analysis.probes import LineGeom, PointGeom
 from al_dic.gui.app_state import AppState
-from al_dic.gui.panels.analysis_tab import AnalysisTab
+from al_dic.gui.panels.analysis import AnalysisTab
 from tests.test_gui.test_analysis_tab import _plot, _run
 
 
@@ -221,7 +221,7 @@ def test_line_data_is_one_row_per_sample_and_a_column_per_frame(
     _view(tab, "profile")
     out = tmp_path / "line.csv"
     monkeypatch.setattr(
-        "al_dic.gui.panels.analysis_tab.QFileDialog.getSaveFileName",
+        "al_dic.gui.panels.analysis.tab.QFileDialog.getSaveFileName",
         lambda *a, **k: (str(out), ""))
     tab._on_export_line_csv()
     comments, header, rows = _read(out)
@@ -242,7 +242,7 @@ def test_line_data_writes_v_in_world_axes(tab, state, tmp_path, monkeypatch):
     _view(tab, "profile")
     out = tmp_path / "line_v.csv"
     monkeypatch.setattr(
-        "al_dic.gui.panels.analysis_tab.QFileDialog.getSaveFileName",
+        "al_dic.gui.panels.analysis.tab.QFileDialog.getSaveFileName",
         lambda *a, **k: (str(out), ""))
     tab._on_export_line_csv()
     comments, _, rows = _read(out)
