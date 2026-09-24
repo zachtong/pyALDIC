@@ -186,9 +186,10 @@ excludes = [
     # Rival Qt bindings must never co-exist in one bundle.
     "PyQt5", "PyQt6", "PySide2", "shiboken2",
 
-    # Declared in pyproject.toml but imported nowhere in src/, tests/, tools/
-    # or examples/. Excluding it keeps a future stray import from dragging in
-    # 25 MB plus scikit-image's seventeen collect-everything hooks.
+    # Imported nowhere in src/, tests/, tools/ or examples/, and no longer a
+    # dependency (dropped from pyproject.toml in 0.9.0). Excluding it keeps a
+    # stray import in a build environment that happens to have it from
+    # dragging in 25 MB plus scikit-image's seventeen collect-everything hooks.
     "skimage",
 
     # imageio plugins that are unreachable: only "GIF" (-> pillow) is used.

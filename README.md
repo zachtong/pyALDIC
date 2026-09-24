@@ -126,6 +126,10 @@ Full-field displacement and strain overlay with configurable colormaps, alpha bl
   <i>GUI visualization and export — demo coming soon</i>
 </p>
 
+### Post-processing Analysis: Probes, Virtual Extensometers, Stress–Strain
+
+The field maps raise the next question — *how much did this point, this line, this area strain?* — and the **Analysis** tab of the strain window answers it without leaving the app. Place point, line and region probes on the reference image and plot any field over time, along a line (a profile, with the other frames in grey behind it) or as a kymograph (distance × frame). A line is also a **virtual extensometer** (engineering or true strain, elongation over its gauge length) and a **crack gauge** (opening, sliding and total separation across a crack). Import the testing machine's load record — a CSV matched to the frames by frame number or by time — to plot against load or stress and draw **stress–strain curves** directly. Every sample is judged on its own, so a probe a growing crack cuts through keeps reading the material that is left, and says so, instead of silently averaging a shrinking sample; region means are area-weighted. Each plot exports as a publication-ready PNG/SVG/PDF or as CSV, and the probes and load record are saved with the session.
+
 ### Save & Resume Sessions
 
 Save a whole project to a single `.aldic` file — the image list, ROIs, parameters, the current view, **and the computed displacement/strain results** — then reopen it later to land back exactly where you left off, without recomputing (source images are re-linked from their original folder). Double-click a `.aldic` file (after a one-click Windows file association) or pass it on the command line to launch straight into that session.
