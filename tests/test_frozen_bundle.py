@@ -37,7 +37,11 @@ def frozen_exe() -> Path:
     raw = os.environ.get(EXE_ENV)
     if not raw:
         pytest.skip(f"{EXE_ENV} is not set")
-    exe = Path(raw)
+    # Absolute, because the bundle is run with cwd= a temp directory: POSIX
+    # resolves a relative executable path against the child's new working
+    # directory (Windows against the parent's), so a relative path that
+    # passes is_file() here is "not found" there.
+    exe = Path(raw).resolve()
     if not exe.is_file():
         pytest.fail(f"{EXE_ENV} points at {exe}, which does not exist")
     return exe

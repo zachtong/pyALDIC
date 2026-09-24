@@ -295,6 +295,11 @@ AMBIENT_DENY = (
 # Dropping the extension leaves 'omp' (vcomp140.dll, bundled above) with
 # 'workqueue' behind it, which is what the source install uses.
 DEAD_EXTENSIONS = ("tbbpool", "tbb12")
+# macOS: numba's wheel carries omppool built against a libomp it does not
+# ship, so the extension can never load there (PyInstaller warns that
+# @rpath/libomp.dylib cannot be resolved) and workqueue is the layer anyway.
+if IS_MAC:
+    DEAD_EXTENSIONS += ("omppool",)
 
 # Qt libraries that no reachable code loads. Excluding the Python modules is
 # not enough: PyInstaller's Qt hook collects the shared libraries anyway, and
