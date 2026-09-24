@@ -6,39 +6,92 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-09-24
+
+pyALDIC now installs like any other program on Windows and macOS, and gains
+an Analysis tab for the question a field map raises next: how much did this
+point, this line, this area strain -- and against what load.
+
 ### Added
 
-- **Post-processing analysis.** A second tab in the strain window: place point,
-  line and region probes on the reference image and plot how a quantity evolves
-  across the sequence. Several probes of the same kind chart together, and the
-  series export to a self-describing CSV.
-  - Statistics: value, mean, median, maximum, minimum, standard deviation, and
-    the fraction of the probe's points that were reliable. A line probe adds
-    engineering strain and crack opening, measured from its two endpoints --
-    a virtual extensometer and a crack-opening gauge.
-  - Probes are saved with the session (schema 3). Sessions written by older
-    versions still open, with no probes.
-  - Everything is available from Python as well as the interface:
-    `from al_dic.analysis import Probe, extract_series`.
-- **Curves stop where the data does.** A probe that a growing crack cuts
-  reports nothing from that frame on, shaded on the chart and labelled in the
-  CSV with the reason. A region whose reliable points fall below an adjustable
-  fraction is left blank rather than averaged: a region losing three quarters
-  of its nodes otherwise keeps drawing a smooth, entirely plausible curve.
-  Crack opening is the deliberate exception -- separation across a crack is what
-  that gauge is for, while `(L - L0)/L0` stops being a strain.
+- **A Windows installer and a macOS app.** From the release page,
+  `pyALDIC-Windows-Setup.exe` installs for the current user -- no
+  administrator rights, so it works on lab computers -- with a Start menu
+  entry, an optional desktop shortcut, the `.aldic` file association and a
+  clean uninstall. `pyALDIC-macOS.dmg` holds `pyALDIC.app` for Apple silicon
+  Macs on macOS 14 or later; it is not notarized, so a downloaded copy's first
+  launch goes through *System Settings > Privacy & Security > Open Anyway*,
+  which a note on the disk image explains. The portable zip stays, now named
+  `pyALDIC-Windows-Portable.zip`. Release file names no longer carry the
+  version, so `releases/latest/download/<name>` always fetches the newest.
+- **Post-processing analysis.** A second tab in the strain window.
+  - Point, line and region probes are placed, selected, moved and reshaped on
+    the field they measure. The chart follows the frame on show, and clicking
+    the chart jumps to a frame.
+  - Three views: a quantity over time; the field along a line, with the other
+    frames in grey behind the current one; and a kymograph, distance against
+    frame.
+  - A line is also a **virtual extensometer** -- engineering strain, true
+    strain, elongation -- and a **crack gauge**: opening, sliding and total
+    separation. The Extensometer and Crack gauge tools place one and switch
+    the chart to its reading.
+  - Region statistics (mean, median, maximum, minimum, standard deviation)
+    are area-weighted. Every frame reports the fraction of the probe that was
+    reliable, and a line or region below an adjustable threshold (0.5 by
+    default) is left blank rather than averaged over what is left.
+  - A probe that a growing crack cuts keeps reading the material that
+    remains, and says so: *crack from frame N*.
+  - **Load data.** Import a testing machine's record (CSV with comma,
+    semicolon or tab; decimal commas; a units row), match it to the frames by
+    frame number or by time with an offset, and plot against load or stress
+    (N or kN; stress from the initial cross-section) -- including
+    **stress-strain curves**.
+  - Charts export for a page -- PNG, SVG or PDF, light theme, 16 x 10 cm at
+    300 dpi, text left editable -- or copy to the clipboard; the numbers export
+    as self-describing CSV.
+  - Probes and the load record are saved with the session; sessions from 0.8.0
+    open unchanged.
+  - All of it is scriptable: `from al_dic.analysis import AnalysisEngine,
+    Probe, LoadData, extract_series`.
+- **Display geometry and background, chosen separately.** *Show on*
+  (deformed / reference) and *Show background image* replace the single
+  *Show on deformed frame* checkbox, in both windows and the export dialog, so
+  the field can be shown or exported on its own, in either geometry.
+- **The black_rainbow colormap**, ported from MATLAB: jet with the green band
+  replaced by black, so the middle of the range reads as background.
 
 ### Changed
 
+- **One term per concept in all eight languages.** The translation glossary
+  contradicted itself -- Traditional Chinese gave "frame" as 影格 in one row
+  and 幀 in the next, and "Field" was rendered as a form field -- and 449
+  translations followed whichever row their translator read. Each term now
+  reads the same everywhere, and `tests/test_i18n_glossary_terms.py` keeps it
+  so. The Starting Points search label reads **Starting Point Search** (was
+  "Initial Seed Search"), like the rest of the interface.
+- **`pip install al-dic` is lighter.** scikit-image is no longer a dependency:
+  nothing imported it. Python 3.13 and 3.14 are now tested.
 - **`examples/` is split by audience.** `examples/quickstart/` holds the image
   sequences for running the software; `examples/scripting/` holds the batch and
-  plotting examples for driving it from Python. They were mixed in one folder,
-  so someone opening `examples/` to find the tutorial images met four Python
-  files first. Scripts move to
+  plotting examples for driving it from Python. Scripts move to
   `examples/scripting/batch_process.py` and
   `examples/scripting/plot_results.py`; the example configs move with them and
-  their sample paths are now relative to the repository root, so the bundled
-  config runs as-is from there rather than only after changing directory.
+  their sample paths are now relative to the repository root.
+- The desktop app keeps its logs in each platform's own place:
+  `%LOCALAPPDATA%\pyALDIC\logs` on Windows, `~/Library/Application
+  Support/pyALDIC/logs` on macOS.
+
+### Fixed
+
+- **A fixed colour range was scaled twice on export** with physical units on:
+  a range typed as +-200 um exported as +-60000 um.
+- **The hidden-background fill could not be set**, and once it could, the
+  strain window reverted it on the next frame change.
+- **Clipped and untranslated labels.** "Show background image" in German, the
+  colorbar's top label and scientific-notation ticks, and the parameter labels
+  in French and Spanish ("Niveau de raffineme...") no longer lose their tails;
+  the Region of Interest *Add* and *Cut* shape menus were English in every
+  language.
 
 ## [0.8.0] — 2026-08-25
 

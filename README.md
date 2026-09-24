@@ -29,6 +29,14 @@
   <img src="https://img.shields.io/badge/Español-✓-22c55e?style=flat-square" alt="Spanish"/>
 </p>
 
+<p align="center">
+  <a href="https://github.com/zachtong/pyALDIC/releases/latest/download/pyALDIC-Windows-Setup.exe"><img src="https://img.shields.io/badge/Download-Windows%2010%2F11-0078D6?style=for-the-badge" alt="Download pyALDIC for Windows"/></a>
+  &nbsp;
+  <a href="https://github.com/zachtong/pyALDIC/releases/latest/download/pyALDIC-macOS.dmg"><img src="https://img.shields.io/badge/Download-macOS%20(Apple%20silicon)-333333?style=for-the-badge" alt="Download pyALDIC for macOS"/></a>
+  <br/>
+  <sub>Free and open source · no Python needed · <a href="#installation">installation notes</a> · or <code>python -m pip install al-dic</code></sub>
+</p>
+
 ---
 
 ## Why pyALDIC?
@@ -62,8 +70,8 @@ A complete desktop application built with PySide6. Three-column layout with imag
 
 <p align="center">
   <b>📘 User manual (PDF)</b> &nbsp;|&nbsp;
-  <a href="docs/pyALDIC_v0.8.0_user_guide.pdf">Full user guide</a> ·
-  <a href="docs/pyALDIC_v0.8.0_quick_guide.pdf">Quick reference</a>
+  <a href="docs/pyALDIC_v0.9.0_user_guide.pdf">Full user guide</a> ·
+  <a href="docs/pyALDIC_v0.9.0_quick_guide.pdf">Quick reference</a>
 </p>
 
 ### Adaptive Spatial Refinement
@@ -132,7 +140,7 @@ The field maps raise the next question — *how much did this point, this line, 
 
 ### Save & Resume Sessions
 
-Save a whole project to a single `.aldic` file — the image list, ROIs, parameters, the current view, **and the computed displacement/strain results** — then reopen it later to land back exactly where you left off, without recomputing (source images are re-linked from their original folder). Double-click a `.aldic` file (after a one-click Windows file association) or pass it on the command line to launch straight into that session.
+Save a whole project to a single `.aldic` file — the image list, ROIs, parameters, the current view, **and the computed displacement/strain results** — then reopen it later to land back exactly where you left off, without recomputing (source images are re-linked from their original folder). Double-click a `.aldic` file (the Windows installer sets this up; on Windows the portable zip and a pip install offer it in one click) or pass it on the command line to launch straight into that session.
 
 ---
 
@@ -188,52 +196,78 @@ The AL-DIC method was also independently evaluated in the community benchmark **
 
 ### Installation
 
-**On Windows, with no Python?** Download the bundle — unzip and double-click.
-**On macOS or Linux,** or anywhere you want the Python API, install from PyPI.
+| You have | Do this |
+|---|---|
+| **Windows 10 or 11** | Download [**pyALDIC-Windows-Setup.exe**](https://github.com/zachtong/pyALDIC/releases/latest/download/pyALDIC-Windows-Setup.exe), double-click, **Install** |
+| **A Mac with Apple silicon** (M1 or later, macOS 14+) | Download [**pyALDIC-macOS.dmg**](https://github.com/zachtong/pyALDIC/releases/latest/download/pyALDIC-macOS.dmg), drag pyALDIC to Applications, allow it once in Privacy & Security |
+| **Python 3.10 – 3.14**, on any system | `python -m pip install al-dic`, then `python -m al_dic` |
 
-#### Windows: the standalone bundle
+All three give you the same application; the downloads need no Python at all.
+Every version is on the [releases page](https://github.com/zachtong/pyALDIC/releases).
 
-Nothing to install, no administrator rights, no interpreter.
+#### Windows
 
-1. Download `pyALDIC-<version>-win64.zip` from the
-   [releases page](https://github.com/zachtong/pyALDIC/releases/latest).
-2. Unzip it anywhere you can write — your Desktop or Documents folder is fine.
-3. Open the folder and run `pyALDIC.exe`.
+1. Download **pyALDIC-Windows-Setup.exe** from the
+   [latest release](https://github.com/zachtong/pyALDIC/releases/latest).
+2. Double-click it. It installs for your own user account, so it asks for no
+   administrator password — it works on a lab computer too. Keep or untick
+   the desktop shortcut and click **Install**.
+3. Start **pyALDIC** from the Start menu or the desktop.
 
-Windows 10 (1703 or later) and Windows 11, 64-bit. Roughly 500 MB unzipped.
-The bundle is not code-signed, so SmartScreen shows a "Windows protected your
-PC" notice on first launch: choose **More info → Run anyway**. Keep the folder
-together — the executable needs the files beside it.
+pyALDIC is not code-signed, so Windows may check with you first, once:
+your browser may say the file *isn't commonly downloaded* — choose **Keep**
+(in Edge: **⋯ → Keep → Keep anyway**) — and SmartScreen may show *Windows
+protected your PC* — click **More info → Run anyway**. The installer also
+makes `.aldic` session files open in pyALDIC with a double-click. To remove it:
+**Settings → Apps → Installed apps → pyALDIC → Uninstall**.
 
-The first analysis after unzipping takes noticeably longer than the rest while
-the compute kernels compile; pyALDIC starts that in the background as soon as
-it opens, and caches the result, so it happens once per installation. If
-something goes wrong there is a log at
+**Not allowed to install anything?** Download
+[**pyALDIC-Windows-Portable.zip**](https://github.com/zachtong/pyALDIC/releases/latest/download/pyALDIC-Windows-Portable.zip),
+right-click it → **Extract All**, and double-click `pyALDIC.exe` in the
+extracted folder. Extract it first: run from inside the zip, it cannot find
+the files it needs.
+
+The first analysis takes noticeably longer than the rest while the compute
+kernels compile; pyALDIC starts that in the background as soon as it opens,
+and caches the result. If something goes wrong there is a log at
 `%LOCALAPPDATA%\pyALDIC\logs\pyALDIC.log`, and `pyALDIC-console.exe` in the
 same folder runs the identical application with a console window attached.
 
-#### macOS, Linux, and anyone who has Python
+#### macOS (Apple silicon)
 
-There is no macOS or Linux bundle yet — packaging one for macOS means working
-through Apple's notarization, which is a separate piece of work. Installing
-from PyPI takes one command and gets you the identical application:
+1. Download **pyALDIC-macOS.dmg** from the
+   [latest release](https://github.com/zachtong/pyALDIC/releases/latest).
+2. Open it and drag **pyALDIC** onto **Applications**.
+3. Double-click pyALDIC in Applications. The first time, macOS stops it with
+   *"Apple could not verify 'pyALDIC' is free of malware"*: pyALDIC is free,
+   open-source software that is not notarized by Apple. Click **Done**, open
+   **System Settings → Privacy & Security**, scroll down to the line about
+   pyALDIC, click **Open Anyway** and confirm with your password. From then on
+   it opens like any other app
+   ([Apple's guide](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac)).
+
+Needs macOS 14 (Sonoma) or later on an M1 or newer Mac; Intel Macs are not
+supported. Logs are in `~/Library/Application Support/pyALDIC/logs`.
+
+#### With pip
+
+If you use Python already, install pyALDIC into a virtual environment so its
+dependencies cannot collide with anything else you have:
 
 ```bash
-pip install al-dic
-al-dic
+python -m venv pyaldic-env
+pyaldic-env\Scripts\activate        # Windows
+source pyaldic-env/bin/activate     # macOS / Linux
+python -m pip install al-dic
+python -m al_dic                    # starts the application
 ```
 
-If you do not maintain Python environments, `pipx` is the friendlier route: it
-creates an isolated environment for pyALDIC so its dependencies cannot collide
-with anything else you have installed.
-
-```bash
-pipx install al-dic     # brew install pipx, if you do not have it
-al-dic
-```
-
-Requires Python >= 3.10. Both are also how you get the programmatic API
-documented further down.
+`python -m al_dic` works even when pip's script folder is not on your PATH;
+when it is, plain `al-dic` does the same. The virtual environment also avoids
+Homebrew Python's *externally-managed-environment* refusal on macOS. For an
+isolated, app-like install instead, `pipx install al-dic` or
+`uv tool install al-dic` give you an `al-dic` command. Python 3.10 – 3.14;
+this is also how you get the programmatic API documented further down.
 
 #### Other install paths
 
