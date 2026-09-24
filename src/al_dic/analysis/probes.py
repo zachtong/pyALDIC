@@ -1,9 +1,10 @@
 """Probe geometry and identity.
 
 A probe is a shape placed on the reference image plus the metadata needed to
-show it and tell it apart. It carries no results: extracting a series is
-``al_dic.analysis.series``, and knowing which samples are valid is
-``al_dic.analysis.sampling``.
+show it and tell it apart. It carries no results: reading a probe -- which
+samples are valid, and the series they give -- is
+``al_dic.analysis.engine``; editing one on screen is
+``al_dic.analysis.geometry_edit``.
 
 Coordinates are frame-0 (reference) image pixels, origin top-left, x = column,
 y = row -- the same system as ``DICMesh.coordinates_fem``, so no probe ever

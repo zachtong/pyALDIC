@@ -191,6 +191,31 @@ def test_widget_constructs(qapp, lang, widget_path):
     assert w is not None
 
 
+@pytest.mark.parametrize("lang", SHIPPED_LANGS)
+def test_analysis_tab_constructs(qapp, lang):
+    """The Analysis tab needs a state, so discovery cannot reach it.
+
+    Arming a tool builds the canvas banner, the one string assembled from
+    several translated sentences -- it must come out in the loaded language.
+    """
+    from al_dic.gui.app_state import AppState
+    from al_dic.gui.panels.analysis_tab import AnalysisTab
+    from al_dic.i18n import LanguageManager
+
+    mgr = LanguageManager(qapp)
+    mgr.load(lang)
+    tab = AnalysisTab(AppState())
+    tab._on_tool_clicked("extensometer", True)
+    text = tab._banner.text()
+    assert text
+    if lang != "en":
+        # Each sentence separately: one tr() call hidden in an f-string
+        # dropped out of the catalog while the others still translated.
+        for english in ("Virtual extensometer", "Click the two gauge points",
+                        "Esc cancels placement"):
+            assert english not in text, text
+
+
 def test_widget_discovery_finds_at_least_curated_set():
     """Sanity: auto-discovery should pick up every widget in the
     curated list (otherwise something's wrong with the walker).

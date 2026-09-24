@@ -85,400 +85,485 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
 <context>
     <name>AnalysisTab</name>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="318"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="395"/>
         <source>Point</source>
         <comment>Placement tool: a single location</comment>
-        <extracomment>Tool token and the probe kind it produces. Fields a probe can read, in the Strain Field tab&apos;s order. Gauge quantities that are strains (and so take the strain display unit). Display scale and unit for dimensionless strain. The user picked a frame here (navigator or a click on the chart).</extracomment>
+        <extracomment>Placement tools in toolbar order, with their icons. What a gauge tool plots once it has placed its line, and the readings that already count as its own -- placing a second extensometer keeps a chart of elongation rather than resetting it to strain. Fields a probe can read, in the Strain Field tab&apos;s order. Gauge quantities that are strains (and so take the strain display unit). Display scale and unit for dimensionless strain. The user picked a frame here (navigator or a click on the chart).</extracomment>
         <translation>Point</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="319"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="396"/>
         <source>Line</source>
         <comment>Placement tool: a two-point gauge</comment>
         <translation>Ligne</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="320"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="397"/>
         <source>Rectangle</source>
         <comment>Placement tool</comment>
         <translation>Rectangle</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="321"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="398"/>
         <source>Circle</source>
         <comment>Placement tool</comment>
         <translation>Cercle</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="322"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="399"/>
         <source>Polygon</source>
         <comment>Placement tool</comment>
         <translation>Polygone</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="325"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="408"/>
         <source>Click once to place a point probe.</source>
         <translation>Cliquez une fois pour placer une sonde ponctuelle.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="330"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="413"/>
         <source>Click twice: opposite corners.</source>
         <translation>Cliquez deux fois : coins opposés.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="331"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="414"/>
         <source>Click twice: centre, then the edge.</source>
         <translation>Cliquez deux fois : centre, puis bord.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="333"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="416"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>Cliquez sur chaque sommet, puis double-cliquez pour fermer.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="342"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="456"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
         <translation>Afficher</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="343"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="457"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="344"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="458"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
         <translation>Type</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="345"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="459"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
         <translation>Couleur</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="346"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="460"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>Remarque</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="348"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="462"/>
         <source>Colour…</source>
         <translation>Couleur…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="349"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="463"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="350"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="464"/>
         <source>Clear All</source>
         <translation>Tout effacer</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="352"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="466"/>
         <source>Statistic:</source>
         <translation>Statistique :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="339"/>
-        <source>Esc cancels placement</source>
-        <translation>Esc annule le placement</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="406"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="520"/>
         <source>Mean</source>
         <comment>Statistic: arithmetic mean</comment>
         <translation>Moyenne</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="407"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="521"/>
         <source>Median</source>
         <comment>Statistic</comment>
         <translation>Médiane</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="408"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="522"/>
         <source>Maximum</source>
         <comment>Statistic</comment>
         <translation>Maximum</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="409"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="523"/>
         <source>Minimum</source>
         <comment>Statistic</comment>
         <translation>Minimum</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="410"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="524"/>
         <source>Standard deviation</source>
         <translation>Écart-type</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="411"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="525"/>
         <source>Valid fraction</source>
         <translation>Fraction valide</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="398"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="512"/>
         <source>Crack opening</source>
         <translation>Ouverture de fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="629"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="844"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>La déformation n&apos;a pas encore été calculée. Calculez-la dans l&apos;onglet « Champ de déformation » ou affichez un déplacement.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="639"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="854"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>Les grandeurs de jauge nécessitent une sonde linéaire.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="642"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="857"/>
         <source>No visible probe can show this quantity.</source>
         <translation>Aucune sonde visible ne peut afficher cette grandeur.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="934"/>
         <source>no valid data: %1</source>
         <translation>aucune donnée valide : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="715"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="937"/>
         <source>crack from frame %1</source>
         <translation>fissure dès l&apos;image %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="718"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="940"/>
         <source>endpoint lost from frame %1</source>
         <translation>extrémité perdue dès l&apos;image %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="720"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="942"/>
         <source>gaps: too few valid points</source>
         <translation>lacunes : trop peu de points valides</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="722"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="944"/>
         <source>gaps: unreliable strain</source>
         <translation>lacunes : déformation non fiable</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="728"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="950"/>
         <source>not plotted: gauges need a line</source>
         <translation>non tracée : les jauges nécessitent une ligne</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="730"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="952"/>
         <source>not plotted: one point has no spread or coverage</source>
         <translation>non tracée : un seul point n&apos;a ni dispersion ni couverture</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="731"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="953"/>
         <source>not plotted</source>
         <translation>non tracée</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="803"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1038"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>Sonde « %1 » ajoutée.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="864"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1157"/>
         <source>Clear All Probes</source>
         <translation>Effacer toutes les sondes</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="865"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1158"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>Supprimer toutes les sondes ? Cette action est irréversible.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="884"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1177"/>
         <source>Point</source>
         <comment>Probe type</comment>
         <translation>Point</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="885"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1178"/>
         <source>Line</source>
         <comment>Probe type</comment>
         <translation>Ligne</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="886"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1179"/>
         <source>Region</source>
         <comment>Probe type: an enclosed area</comment>
         <translation>Région</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="616"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="831"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>Lancez une analyse DIC pour tracer les sondes.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="327"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="400"/>
+        <source>Virtual extensometer</source>
+        <comment>Placement tool</comment>
+        <translation>Extensomètre virtuel</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="402"/>
+        <source>Crack gauge</source>
+        <comment>Placement tool: a line across a crack</comment>
+        <translation>Jauge de fissure</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="410"/>
         <source>Click twice: start and end. A line is also a virtual extensometer and a crack-opening gauge.</source>
         <translation>Cliquez deux fois : début et fin. Une ligne est aussi un extensomètre virtuel et une jauge d&apos;ouverture de fissure.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="351"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="419"/>
+        <source>Click the two gauge points. The chart then shows the strain between them.</source>
+        <translation>Cliquez sur les deux points de mesure. Le graphique affiche alors la déformation entre eux.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="423"/>
+        <source>Click one point on each side of the crack. The chart then shows how far it opens.</source>
+        <translation>Cliquez sur un point de chaque côté de la fissure. Le graphique affiche alors son ouverture.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="437"/>
+        <source>Fit</source>
+        <comment>Zoom button: fit the image to the view</comment>
+        <translation>Ajuster</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="442"/>
+        <source>Fit image to viewport</source>
+        <translation>Ajuster l&apos;image à la vue</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="443"/>
+        <source>100%</source>
+        <comment>Zoom button: one image pixel per screen pixel</comment>
+        <translation>100%</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="444"/>
+        <source>Zoom to 100% (1:1)</source>
+        <translation>Zoomer à 100% (1:1)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="445"/>
+        <source>Zoom in</source>
+        <translation>Zoom avant</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="446"/>
+        <source>Zoom out</source>
+        <translation>Zoom arrière</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="448"/>
+        <source>Show field</source>
+        <comment>Analysis canvas: colour the image by the field</comment>
+        <translation>Afficher le champ</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="450"/>
+        <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
+        <translation>Colore l&apos;image de référence avec le champ tracé à l&apos;image courante. Pour une lecture de jauge, le champ de l&apos;onglet « Champ de déformation » est affiché.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="465"/>
         <source>Plot:</source>
         <translation>Tracer :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="353"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="467"/>
         <source>X axis:</source>
         <translation>Axe X :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="354"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="468"/>
         <source>Strain as:</source>
         <translation>Déformation en :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="355"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="469"/>
         <source>Min. valid fraction:</source>
         <translation>Fraction valide min. :</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="357"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="471"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>Une image reste vide lorsque moins de cette fraction des points d&apos;une ligne ou d&apos;une région est fiable. Évite une courbe qui reste lisse alors que son échantillon se réduit.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="361"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="475"/>
         <source>Export</source>
         <translation>Exporter</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="362"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="476"/>
         <source>Probe data (CSV)…</source>
         <translation>Données des sondes (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="363"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="477"/>
         <source>Chart image…</source>
         <translation>Image du graphique…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="379"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="493"/>
         <source>Displacement U</source>
         <translation>Déplacement U</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="380"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="494"/>
         <source>Displacement V</source>
         <translation>Déplacement V</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="381"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="495"/>
         <source>Displacement magnitude</source>
         <translation>Norme du déplacement</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="395"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="509"/>
         <source>Extensometer strain</source>
         <translation>Déformation d&apos;extensomètre</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="396"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="510"/>
         <source>Extensometer true strain</source>
         <translation>Déformation vraie d&apos;extensomètre</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="397"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="511"/>
         <source>Elongation ΔL</source>
         <translation>Allongement ΔL</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="399"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="513"/>
         <source>Crack sliding</source>
         <translation>Glissement de fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="400"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="514"/>
         <source>Crack opening magnitude</source>
         <translation>Norme de l&apos;ouverture de fissure</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="444"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="750"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="558"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="972"/>
         <source>Frame</source>
         <translation>Image</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="446"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="749"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="560"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="971"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="454"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="568"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>rapport</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="624"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="738"/>
+        <source>Could not draw the field: %1</source>
+        <translation>Impossible de dessiner le champ : %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="766"/>
+        <source>Esc cancels placement</source>
+        <translation>Esc annule le placement</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="776"/>
+        <source>Drag to move the probe, or drag a handle to reshape it. Delete removes it; F2 renames it.</source>
+        <translation>Faites glisser pour déplacer la sonde, ou une poignée pour la remodeler. Suppr la supprime ; F2 la renomme.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="839"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>Placez une sonde sur l&apos;image de référence pour commencer.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="965"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="923"/>
+        <source>not plotted: off the measured area</source>
+        <translation>non tracée : hors de la zone mesurée</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="925"/>
+        <source>not plotted: a gauge end is off the measured area</source>
+        <translation>non tracée : une extrémité de la jauge est hors de la zone mesurée</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis_tab.py" line="1267"/>
         <source>Export Probe Data</source>
         <translation>Exporter les données de sonde</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="966"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1268"/>
         <source>CSV Files</source>
         <translation>Fichiers CSV</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="966"/>
-        <location filename="../../gui/panels/analysis_tab.py" line="1004"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1268"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1306"/>
         <source>All Files</source>
         <translation>Tous les fichiers</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="992"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1294"/>
         <source>Probe export failed: %1</source>
         <translation>Échec de l&apos;export de la sonde : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="995"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1297"/>
         <source>Probe data written to %1</source>
         <translation>Données de sonde écrites dans %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1001"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1303"/>
         <source>Export Chart</source>
         <translation>Exporter le graphique</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1002"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1304"/>
         <source>PNG Images</source>
         <translation>Images PNG</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1003"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1305"/>
         <source>PDF Documents</source>
         <translation>Documents PDF</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1011"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1313"/>
         <source>Chart export failed: %1</source>
         <translation>Échec de l&apos;export du graphique : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis_tab.py" line="1014"/>
+        <location filename="../../gui/panels/analysis_tab.py" line="1316"/>
         <source>Chart written to %1</source>
         <translation>Graphique écrit dans %1</translation>
     </message>
@@ -2879,153 +2964,153 @@ Ne s&apos;applique que lorsque Méthode = Ajustement de plan.</translation>
 <context>
     <name>StrainWindow</name>
     <message>
-        <location filename="../../gui/strain_window.py" line="154"/>
+        <location filename="../../gui/strain_window.py" line="155"/>
         <source>Strain Post-Processing</source>
         <translation>Post-traitement de la déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="202"/>
+        <location filename="../../gui/strain_window.py" line="203"/>
         <source>Fit</source>
         <translation>Ajuster</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="203"/>
+        <location filename="../../gui/strain_window.py" line="204"/>
         <source>Fit image to viewport</source>
         <translation>Ajuster l&apos;image à la vue</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="209"/>
+        <location filename="../../gui/strain_window.py" line="210"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="210"/>
+        <location filename="../../gui/strain_window.py" line="211"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>Zoomer à 100% (1:1)</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="213"/>
+        <location filename="../../gui/strain_window.py" line="214"/>
         <source>Zoom in</source>
         <translation>Zoom avant</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="218"/>
+        <location filename="../../gui/strain_window.py" line="219"/>
         <source>–</source>
         <translation>–</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="271"/>
+        <location filename="../../gui/strain_window.py" line="272"/>
         <source>STRAIN PARAMETERS</source>
         <translation>PARAMÈTRES DE DÉFORMATION</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="290"/>
+        <location filename="../../gui/strain_window.py" line="291"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="294"/>
+        <location filename="../../gui/strain_window.py" line="295"/>
         <source>Cancel the running strain computation. The previous strain result is kept.</source>
         <translation>Annuler le calcul de déformation en cours. Le résultat de déformation précédent est conservé.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="306"/>
+        <location filename="../../gui/strain_window.py" line="307"/>
         <source>Export displacement and strain results to NPZ / MAT / CSV / PNG</source>
         <translation>Exporter les résultats de déplacement et de déformation en NPZ / MAT / CSV / PNG</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="339"/>
+        <location filename="../../gui/strain_window.py" line="340"/>
         <source>FIELD</source>
         <translation>CHAMP</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="348"/>
+        <location filename="../../gui/strain_window.py" line="349"/>
         <source>VISUALIZATION</source>
         <translation>VISUALISATION</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="361"/>
+        <location filename="../../gui/strain_window.py" line="362"/>
         <source>PHYSICAL UNITS</source>
         <translation>UNITÉS PHYSIQUES</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="370"/>
+        <location filename="../../gui/strain_window.py" line="371"/>
         <source>LOG</source>
         <translation>JOURNAL</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="399"/>
+        <location filename="../../gui/strain_window.py" line="400"/>
         <source>Strain Field</source>
         <translation>Champ de déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="401"/>
+        <location filename="../../gui/strain_window.py" line="402"/>
         <source>Analysis</source>
         <translation>Analyse</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="510"/>
+        <location filename="../../gui/strain_window.py" line="516"/>
         <source>Strain compute failed: %1: %2</source>
         <translation>Échec du calcul de déformation : %1 : %2</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="519"/>
-        <location filename="../../gui/strain_window.py" line="581"/>
+        <location filename="../../gui/strain_window.py" line="525"/>
+        <location filename="../../gui/strain_window.py" line="587"/>
         <source>Strain computation complete.</source>
         <translation>Calcul de déformation terminé.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="530"/>
+        <location filename="../../gui/strain_window.py" line="536"/>
         <source>Strain window: no displacement results to post-process.</source>
         <translation>Fenêtre de déformation : aucun résultat de déplacement à post-traiter.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="561"/>
+        <location filename="../../gui/strain_window.py" line="567"/>
         <source>Cancelling…</source>
         <translation>Annulation…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="598"/>
+        <location filename="../../gui/strain_window.py" line="604"/>
         <source>Strain computation cancelled.</source>
         <translation>Calcul de déformation annulé.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="607"/>
+        <location filename="../../gui/strain_window.py" line="613"/>
         <source>Strain compute failed: %1</source>
         <translation>Échec du calcul de déformation : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="614"/>
+        <location filename="../../gui/strain_window.py" line="620"/>
         <source>Strain Computation Failed</source>
         <translation>Échec du calcul de déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="653"/>
+        <location filename="../../gui/strain_window.py" line="659"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ Paramètres modifiés — cliquez sur « Calculer la déformation »</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="219"/>
+        <location filename="../../gui/strain_window.py" line="220"/>
         <source>Zoom out</source>
         <translation>Zoom arrière</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="281"/>
+        <location filename="../../gui/strain_window.py" line="282"/>
         <source>Compute Strain</source>
         <translation>Calculer la déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="303"/>
+        <location filename="../../gui/strain_window.py" line="304"/>
         <source>Export Results</source>
         <translation>Exporter les résultats</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="541"/>
+        <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
         <translation>Démarrage…</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="577"/>
+        <location filename="../../gui/strain_window.py" line="583"/>
         <source>Complete</source>
         <translation>Terminé</translation>
     </message>

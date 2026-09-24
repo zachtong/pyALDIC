@@ -13,28 +13,34 @@ singleton that is never destroyed, and the first version extracted curves on
 every results change even while the window was closed. Curves are cached per
 probe geometry and quantity, so renaming, recolouring, hiding or showing a
 probe, and moving the frame cursor, redraw without reading the run again.
+
+The canvas shows the field under the probes, in the reference configuration
+their coordinates live in, drawn by the Strain Field tab's own renderer.
 """
 
 from __future__ import annotations
 
+import html
+import logging
 import math
 from dataclasses import dataclass
 
 import numpy as np
-from PySide6.QtCore import QEvent, QSize, Qt, Signal
+from PySide6.QtCore import QEvent, QObject, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QIcon, QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QAbstractItemView,
+    QCheckBox,
     QColorDialog,
     QComboBox,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QMenu,
     QMessageBox,
     QPushButton,
-    QSizePolicy,
     QSplitter,
     QTableWidget,
     QTableWidgetItem,
@@ -57,21 +63,36 @@ from al_dic.export.export_probes import (
     export_probe_csv,
     run_parameters,
 )
+from al_dic.gui import icons
 from al_dic.gui.app_state import AppState
 from al_dic.gui.panels.probe_canvas import ProbeCanvas
 from al_dic.gui.theme import COLORS
+from al_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.mpl_chart import Curve, MplChart, status_label
 from al_dic.gui.widgets.strain_navigator import StrainNavigator
+from al_dic.utils.locale_format import format_number
 
-#: Tool token and the probe kind it produces.
+logger = logging.getLogger(__name__)
+
+#: Placement tools in toolbar order, with their icons.
 _TOOLS = (
-    ("point", "point"),
-    ("line", "line"),
-    ("area_rect", "area"),
-    ("area_circle", "area"),
-    ("area_polygon", "area"),
+    ("point", icons.icon_probe_point),
+    ("line", icons.icon_probe_line),
+    ("area_rect", icons.icon_probe_rect),
+    ("area_circle", icons.icon_probe_circle),
+    ("area_polygon", icons.icon_probe_polygon),
+    ("extensometer", icons.icon_extensometer),
+    ("crack_gauge", icons.icon_crack_gauge),
 )
+
+#: What a gauge tool plots once it has placed its line, and the readings that
+#: already count as its own -- placing a second extensometer keeps a chart of
+#: elongation rather than resetting it to strain.
+_GAUGE_TOOLS = {
+    "extensometer": ("strain", frozenset({"strain", "true_strain", "elongation"})),
+    "crack_gauge": ("cod", frozenset({"cod", "cod_sliding", "cod_magnitude"})),
+}
 
 #: Fields a probe can read, in the Strain Field tab's order.
 _FIELDS = (
@@ -135,10 +156,23 @@ class AnalysisTab(QWidget):
         self._plotted: list[tuple[Probe, _Quantity, str]] = []
         self._notes: dict[int, str] = {}
         self._parameters_provider = None
+        self._field_renderer = None
+        self._strain_tab_field: str | None = None
+        self._armed_tool: str | None = None
 
         from al_dic.gui.controllers.image_controller import ImageController
 
         self._image_ctrl = ImageController(state)
+
+        # Field renders wait for the event loop. The renderer's cache is
+        # flushed by the strain window's own slots on results and unit
+        # changes, and those may run after ours: drawing at once could paint
+        # the previous run's values. It also folds a burst of requests into
+        # one render.
+        self._overlay_timer = QTimer(self)
+        self._overlay_timer.setSingleShot(True)
+        self._overlay_timer.setInterval(0)
+        self._overlay_timer.timeout.connect(self._refresh_overlay)
 
         splitter = QSplitter(Qt.Orientation.Horizontal, self)
         splitter.addWidget(self._build_canvas_side())
@@ -155,10 +189,22 @@ class AnalysisTab(QWidget):
         self._status.setWordWrap(True)
         root.addWidget(self._status)
 
+        # On the whole tab, not the table: a probe picked on the canvas must
+        # answer Delete and F2 too. Text fields still get the keys first.
+        self._delete_shortcut = QShortcut(
+            QKeySequence(QKeySequence.StandardKey.Delete), self)
+        self._delete_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self._delete_shortcut.activated.connect(self._on_delete)
+        self._rename_shortcut = QShortcut(QKeySequence(Qt.Key.Key_F2), self)
+        self._rename_shortcut.setContext(Qt.ShortcutContext.WidgetWithChildrenShortcut)
+        self._rename_shortcut.activated.connect(
+            lambda: self._on_rename(self._selected_id))
+
         state.results_changed.connect(self._on_results_changed)
         state.images_changed.connect(self._on_images_changed)
         state.physical_units_changed.connect(self._on_units_changed)
         state.roi_changed.connect(self._drop_engine)
+        state.display_changed.connect(self._request_overlay)
 
         self.retranslate_ui()
 
@@ -175,25 +221,59 @@ class AnalysisTab(QWidget):
         row = QHBoxLayout(bar)
         row.setContentsMargins(6, 2, 6, 2)
         row.setSpacing(4)
+        # Icons, named by tooltip: seven text buttons do not fit beside the
+        # chart in German. The armed tool's name and instructions show on
+        # the canvas while it is armed.
         self._tool_buttons: dict[str, QPushButton] = {}
-        for tool, _kind in _TOOLS:
-            button = QPushButton()
+        for tool, icon in _TOOLS:
+            if tool == "extensometer":
+                row.addWidget(_separator())
+            button = _icon_button(icon())
             button.setCheckable(True)
             button.clicked.connect(
                 lambda checked, t=tool: self._on_tool_clicked(t, checked)
             )
             row.addWidget(button)
             self._tool_buttons[tool] = button
+        row.addWidget(_separator())
+        self._fit_btn = _icon_button(icons.icon_maximize())
+        self._zoom_100_btn = QPushButton()
+        self._zoom_in_btn = _icon_button(icons.icon_zoom_in())
+        self._zoom_out_btn = _icon_button(icons.icon_zoom_out())
+        for button in (self._fit_btn, self._zoom_100_btn,
+                       self._zoom_in_btn, self._zoom_out_btn):
+            row.addWidget(button)
         row.addStretch()
-        self._hint = QLabel()
-        self._hint.setStyleSheet(f"color: {COLORS.TEXT_MUTED}; font-size: 11px;")
-        row.addWidget(self._hint)
+        self._show_field_box = QCheckBox()
+        self._show_field_box.setChecked(True)
+        self._show_field_box.toggled.connect(self._request_overlay)
+        row.addWidget(self._show_field_box)
         column.addWidget(bar)
 
         self._canvas = ProbeCanvas()
         self._canvas.probe_requested.connect(self._on_probe_placed)
-        self._canvas.placement_cancelled.connect(self._sync_tool_buttons)
+        self._canvas.placement_cancelled.connect(self._on_placement_cancelled)
+        self._canvas.probe_selected.connect(self._on_canvas_selected)
+        self._canvas.probe_edited.connect(self._on_probe_edited)
+        self._canvas.probe_activated.connect(self._on_rename)
+        self._canvas.set_length_format(self._format_length)
+        self._fit_btn.clicked.connect(self._canvas.fit_to_view)
+        self._zoom_100_btn.clicked.connect(self._canvas.zoom_to_100)
+        self._zoom_in_btn.clicked.connect(self._canvas.zoom_in)
+        self._zoom_out_btn.clicked.connect(self._canvas.zoom_out)
         column.addWidget(self._canvas, 1)
+
+        viewport = self._canvas.viewport()
+        self._colorbar = ColorbarOverlay(viewport)
+        self._banner = QLabel(viewport)
+        self._banner.setTextFormat(Qt.TextFormat.RichText)
+        self._banner.setWordWrap(True)
+        self._banner.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self._banner.setStyleSheet(
+            f"background: rgba(20, 25, 41, 215); color: {COLORS.TEXT_PRIMARY};"
+            " border-radius: 4px; padding: 4px 8px; font-size: 11px;")
+        self._banner.hide()
+        viewport.installEventFilter(self)
 
         self._nav = StrainNavigator()
         self._nav.frame_changed.connect(self._on_nav_frame)
@@ -292,9 +372,6 @@ class AnalysisTab(QWidget):
         header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
         self._table.itemSelectionChanged.connect(self._on_selection_changed)
         self._table.itemChanged.connect(self._on_item_changed)
-        self._delete_shortcut = QShortcut(
-            QKeySequence(QKeySequence.StandardKey.Delete), self._table)
-        self._delete_shortcut.activated.connect(self._on_delete)
         column.addWidget(self._table, 1)
 
         buttons = QHBoxLayout()
@@ -313,15 +390,21 @@ class AnalysisTab(QWidget):
 
     # -- translation ------------------------------------------------------
 
-    def retranslate_ui(self) -> None:
-        labels = {
+    def _tool_name(self, tool: str) -> str:
+        names = {
             "point": self.tr("Point", "Placement tool: a single location"),
             "line": self.tr("Line", "Placement tool: a two-point gauge"),
             "area_rect": self.tr("Rectangle", "Placement tool"),
             "area_circle": self.tr("Circle", "Placement tool"),
             "area_polygon": self.tr("Polygon", "Placement tool"),
+            "extensometer": self.tr("Virtual extensometer", "Placement tool"),
+            "crack_gauge": self.tr(
+                "Crack gauge", "Placement tool: a line across a crack"),
         }
-        tips = {
+        return names.get(tool, tool)
+
+    def _tool_instruction(self, tool: str) -> str:
+        instructions = {
             "point": self.tr("Click once to place a point probe."),
             "line": self.tr(
                 "Click twice: start and end. A line is also a virtual "
@@ -332,11 +415,42 @@ class AnalysisTab(QWidget):
             "area_polygon": self.tr(
                 "Click each vertex, then double-click to close."
             ),
+            "extensometer": self.tr(
+                "Click the two gauge points. The chart then shows the strain "
+                "between them."
+            ),
+            "crack_gauge": self.tr(
+                "Click one point on each side of the crack. The chart then "
+                "shows how far it opens."
+            ),
         }
+        return instructions.get(tool, "")
+
+    def retranslate_ui(self) -> None:
         for tool, button in self._tool_buttons.items():
-            button.setText(labels[tool])
-            button.setToolTip(tips[tool])
-        self._hint.setText(self.tr("Esc cancels placement"))
+            # Name and instructions are two sentences, one per line.
+            button.setToolTip(
+                f"{self._tool_name(tool)}\n{self._tool_instruction(tool)}")
+            if button.icon().isNull():          # no SVG support: say it
+                button.setText(self._tool_name(tool))
+        for button, text in (
+            (self._fit_btn, self.tr("Fit", "Zoom button: fit the image to the view")),
+            (self._zoom_in_btn, "+"), (self._zoom_out_btn, "–"),
+        ):
+            if button.icon().isNull():
+                button.setText(text)
+        self._fit_btn.setToolTip(self.tr("Fit image to viewport"))
+        self._zoom_100_btn.setText(self.tr("100%", "Zoom button: one image pixel per screen pixel"))
+        self._zoom_100_btn.setToolTip(self.tr("Zoom to 100% (1:1)"))
+        self._zoom_in_btn.setToolTip(self.tr("Zoom in"))
+        self._zoom_out_btn.setToolTip(self.tr("Zoom out"))
+        self._show_field_box.setText(
+            self.tr("Show field", "Analysis canvas: colour the image by the field"))
+        self._show_field_box.setToolTip(self.tr(
+            "Colour the reference image with the plotted field at the current "
+            "frame. For a gauge reading, the Strain Field tab's field is shown."
+        ))
+        self._update_banner()
 
         self._table.setHorizontalHeaderLabels([
             self.tr("Show", "Probe list column: visibility checkbox"),
@@ -465,9 +579,15 @@ class AnalysisTab(QWidget):
         self._frame = max(0, int(frame))
         self._sync_navigator()
         self._chart.set_cursor(self._x_of(self._frame))
+        self._request_overlay()
 
     def set_default_field(self, name: str) -> None:
-        """Start on the field the Strain Field tab shows, until the user picks."""
+        """The Strain Field tab's field: where the chart starts until the user
+        picks, and what the canvas shows under a gauge reading."""
+        self._strain_tab_field = name
+        quantity = self._current_quantity()
+        if quantity is not None and quantity.is_gauge:
+            self._request_overlay()
         if self._field_chosen or name not in _FIELDS:
             return
         index = self._quantity_box.findData(_Quantity("field", name).key)
@@ -481,6 +601,12 @@ class AnalysisTab(QWidget):
     def set_parameters_provider(self, provider) -> None:
         """``() -> dict[str, str]`` of the settings of the last Compute Strain."""
         self._parameters_provider = provider
+
+    def set_field_renderer(self, renderer) -> None:
+        """``(field, frame) -> FieldImage | None``: the field in the reference
+        configuration, as the Strain Field tab would draw it."""
+        self._field_renderer = renderer
+        self._request_overlay()
 
     # -- visibility gating ------------------------------------------------
 
@@ -496,6 +622,14 @@ class AnalysisTab(QWidget):
             return
         if self.isVisible():
             self._refresh()
+        else:
+            self._dirty = True
+
+    def _request_overlay(self, *_args) -> None:
+        if self._updating:
+            return
+        if self.isVisible():
+            self._overlay_timer.start()
         else:
             self._dirty = True
 
@@ -575,6 +709,87 @@ class AnalysisTab(QWidget):
         self._canvas.set_probes(self._state.probes, self._selected_id)
         self._sync_navigator()
         self._update_actions()
+        self._update_banner()
+        self._request_overlay()
+
+    # -- the field under the probes ------------------------------------------
+
+    def _overlay_field(self) -> str | None:
+        """The field the canvas shows: the plotted one, or for a gauge
+        reading -- which has no field -- the Strain Field tab's."""
+        quantity = self._current_quantity()
+        if quantity is None:
+            return None
+        return self._strain_tab_field if quantity.is_gauge else quantity.name
+
+    def _refresh_overlay(self) -> None:
+        if not self.isVisible():
+            self._dirty = True
+            return
+        image = None
+        field = self._overlay_field()
+        if (field is not None and self._show_field_box.isChecked()
+                and self._field_renderer is not None
+                and self._state.results is not None):
+            try:
+                image = self._field_renderer(field, self._frame)
+            except Exception as exc:  # the probes stay usable without it
+                logger.exception("Analysis canvas: drawing %s failed", field)
+                self._say(self.tr("Could not draw the field: %1")
+                          .replace("%1", str(exc)), "error")
+        if image is None:
+            self._canvas.clear_overlay()
+            self._colorbar.setVisible(False)
+            return
+        self._canvas.show_field(image)
+        viewport = self._canvas.viewport()
+        self._colorbar.setGeometry(0, 0, viewport.width(), viewport.height())
+        self._colorbar.update_params(image.cmap, image.vmin, image.vmax, image.label)
+        self._colorbar.setVisible(True)
+
+    def eventFilter(self, obj: QObject, event: QEvent) -> bool:  # noqa: N802
+        if obj is self._canvas.viewport() and event.type() == QEvent.Type.Resize:
+            viewport = self._canvas.viewport()
+            self._colorbar.setGeometry(0, 0, viewport.width(), viewport.height())
+            self._place_banner()
+        return super().eventFilter(obj, event)
+
+    # -- the banner over the canvas -------------------------------------------
+
+    def _update_banner(self) -> None:
+        """Say what the canvas is waiting for: the armed tool's clicks, or how
+        to edit the selected probe."""
+        tool = self._canvas.tool
+        if tool != "none":
+            # Not inside the f-string below: lupdate cannot see a tr() call
+            # there, and dropped the translation as obsolete.
+            cancel = self.tr("Esc cancels placement")
+            # Three sentences, a line each; nothing is spliced into another.
+            text = "<br>".join((
+                f"<b>{html.escape(self._tool_name(tool))}</b>",
+                html.escape(self._tool_instruction(tool)),
+                f"<span style='color:{COLORS.TEXT_MUTED}'>"
+                f"{html.escape(cancel)}</span>",
+            ))
+        elif self._selected_probe() is not None:
+            text = html.escape(self.tr(
+                "Drag to move the probe, or drag a handle to reshape it. "
+                "Delete removes it; F2 renames it."
+            ))
+        else:
+            text = ""
+        self._banner.setText(text)
+        self._banner.setVisible(bool(text))
+        self._place_banner()
+
+    def _place_banner(self) -> None:
+        if self._banner.isHidden():
+            return
+        viewport = self._canvas.viewport()
+        # Clear of the colorbar on the right.
+        width = max(160, min(460, viewport.width() - 130))
+        self._banner.setGeometry(8, 8, width, self._banner.heightForWidth(width))
+        self._banner.raise_()
 
     def _sync_navigator(self) -> None:
         result = self._state.results
@@ -701,6 +916,13 @@ class AnalysisTab(QWidget):
 
     def _series_note(self, ts: TimeSeries) -> str:
         """Why a curve has gaps or marks, for the legend and the probe list."""
+        # Nothing to measure even on the reference frame: the probe was put
+        # off the specimen. Say that, rather than blame the run.
+        first = ts.status[0] if len(ts.status) else None
+        if first is FrameStatus.NO_DATA:
+            return self.tr("not plotted: off the measured area")
+        if first is FrameStatus.ENDPOINT_LOST:
+            return self.tr("not plotted: a gauge end is off the measured area")
         # Frame 0 is the reference: a displacement is 0 there by definition,
         # so it says nothing about whether the probe ever measures.
         values = ts.values[1:] if len(ts.values) > 1 else ts.values
@@ -763,6 +985,7 @@ class AnalysisTab(QWidget):
     def _on_nav_frame(self, frame: int) -> None:
         self._frame = int(frame)
         self._chart.set_cursor(self._x_of(self._frame))
+        self._request_overlay()
         self.frame_requested.emit(self._frame)
 
     def _on_chart_clicked(self, x: float) -> None:
@@ -770,6 +993,7 @@ class AnalysisTab(QWidget):
         self._frame = frame
         self._sync_navigator()
         self._chart.set_cursor(self._x_of(frame))
+        self._request_overlay()
         self.frame_requested.emit(frame)
 
     # -- quantity -----------------------------------------------------------
@@ -787,8 +1011,17 @@ class AnalysisTab(QWidget):
     # -- probe lifecycle ------------------------------------------------------
 
     def _on_tool_clicked(self, tool: str, checked: bool) -> None:
+        # Remembered here: the canvas reports a gauge tool's line as a plain
+        # "line", and what to plot next depends on which tool drew it.
+        self._armed_tool = tool if checked else None
         self._canvas.set_tool(tool if checked else "none")  # type: ignore[arg-type]
         self._sync_tool_buttons()
+        self._update_banner()
+
+    def _on_placement_cancelled(self) -> None:
+        self._armed_tool = None
+        self._sync_tool_buttons()
+        self._update_banner()
 
     def _sync_tool_buttons(self) -> None:
         active = self._canvas.tool
@@ -796,11 +1029,70 @@ class AnalysisTab(QWidget):
             button.setChecked(tool == active)
 
     def _on_probe_placed(self, kind: str, geometry) -> None:
+        tool, self._armed_tool = self._armed_tool, None
         probe = self._state.probes.add(kind, geometry)  # type: ignore[arg-type]
         self._selected_id = probe.id
         self._sync_tool_buttons()
+        self._adopt_gauge_reading(tool)
         self._refresh()
         self._say(self.tr("Added probe '%1'.").replace("%1", probe.label))
+
+    def _adopt_gauge_reading(self, tool: str | None) -> None:
+        """Plot what a gauge tool is for, unless the chart already shows a
+        reading of that family."""
+        if tool not in _GAUGE_TOOLS:
+            return
+        default, family = _GAUGE_TOOLS[tool]
+        current = self._current_quantity()
+        if current is not None and current.is_gauge and current.name in family:
+            return
+        index = self._quantity_box.findData(_Quantity("gauge", default).key)
+        if index < 0:
+            return
+        self._updating = True
+        self._quantity_box.setCurrentIndex(index)
+        self._updating = False
+        self._field_chosen = True
+        self._update_control_visibility()
+
+    def _on_canvas_selected(self, probe_id) -> None:
+        self._selected_id = probe_id
+        self._select_row(probe_id)
+        self._update_actions()
+        self._update_banner()
+        # Emphasis only: every series is cached, so this is a redraw.
+        self._refresh_chart()
+
+    def _select_row(self, probe_id: int | None) -> None:
+        self._updating = True
+        self._table.clearSelection()
+        for row in range(self._table.rowCount()):
+            item = self._table.item(row, 1)
+            if item is not None and item.data(Qt.ItemDataRole.UserRole) == probe_id:
+                self._table.selectRow(row)
+                self._table.scrollToItem(item)
+                break
+        self._updating = False
+
+    def _on_probe_edited(self, probe_id: int, geometry) -> None:
+        try:
+            probe = self._state.probes.get(probe_id)
+        except KeyError:
+            return
+        self._state.probes.replace(replace(probe, geometry=geometry))
+        self._selected_id = probe_id
+        self._refresh()
+
+    def _on_rename(self, probe_id: int | None) -> None:
+        """Open the name for editing -- from a double-click or F2."""
+        if probe_id is None:
+            return
+        for row in range(self._table.rowCount()):
+            item = self._table.item(row, 1)
+            if item is not None and item.data(Qt.ItemDataRole.UserRole) == probe_id:
+                self._table.setCurrentItem(item)
+                self._table.editItem(item)
+                return
 
     def _selected_probe(self) -> Probe | None:
         if self._selected_id is None:
@@ -820,6 +1112,7 @@ class AnalysisTab(QWidget):
         )
         self._canvas.set_probes(self._state.probes, self._selected_id)
         self._update_actions()
+        self._update_banner()
         # Emphasis only: every series is cached, so this is a redraw.
         self._refresh_chart()
 
@@ -952,6 +1245,15 @@ class AnalysisTab(QWidget):
         state = self._state
         return state.pixel_unit if state.use_physical_units else "px"
 
+    def _format_length(self, px: float) -> str:
+        """A gauge length for its label: three significant figures, at least
+        one decimal, in the display unit."""
+        value = px * self._pixel_size()
+        decimals = 1
+        if value != 0.0 and math.isfinite(value):
+            decimals = max(1, 2 - int(math.floor(math.log10(abs(value)))))
+        return f"{format_number(value, decimals)} {self._length_unit()}"
+
     # -- export -------------------------------------------------------------
 
     def _say(self, message: str, level: str = "success") -> None:
@@ -1012,6 +1314,22 @@ class AnalysisTab(QWidget):
                       "error")
             return
         self._say(self.tr("Chart written to %1").replace("%1", path))
+
+
+def _icon_button(icon: QIcon) -> QPushButton:
+    button = QPushButton()
+    button.setIcon(icon)
+    button.setIconSize(QSize(18, 18))
+    if not icon.isNull():
+        button.setFixedWidth(32)        # an icon alone has nothing to translate
+    return button
+
+
+def _separator() -> QFrame:
+    line = QFrame()
+    line.setFrameShape(QFrame.Shape.VLine)
+    line.setStyleSheet(f"color: {COLORS.BORDER};")
+    return line
 
 
 __all__ = ["AnalysisTab"]

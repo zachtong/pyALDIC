@@ -150,6 +150,63 @@ def icon_maximize() -> QIcon:
     )
 
 
+# -- Probe tools (Analysis tab) ---------------------------------------------
+
+def _stroke_icon(body: str) -> QIcon:
+    return _svg_to_icon(
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
+        f'fill="none" stroke="{_STROKE}" stroke-width="2" '
+        f'stroke-linecap="round" stroke-linejoin="round">{body}</svg>'
+    )
+
+
+def icon_probe_point() -> QIcon:
+    """Ringed cross, open at the centre -- the canvas's point marker."""
+    return _stroke_icon(
+        '<circle cx="12" cy="12" r="4"/>'
+        '<line x1="12" y1="2" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="22"/>'
+        '<line x1="2" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22" y2="12"/>'
+    )
+
+
+def icon_probe_line() -> QIcon:
+    """A segment between two end points."""
+    return _stroke_icon(
+        '<line x1="6.5" y1="17.5" x2="17.5" y2="6.5"/>'
+        '<circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/>'
+    )
+
+
+def icon_probe_rect() -> QIcon:
+    return _stroke_icon('<rect x="3" y="5" width="18" height="14" rx="1"/>')
+
+
+def icon_probe_circle() -> QIcon:
+    return _stroke_icon('<circle cx="12" cy="12" r="9"/>')
+
+
+def icon_probe_polygon() -> QIcon:
+    return _stroke_icon('<polygon points="12 3 21 10 17.5 20 6.5 20 3 10"/>')
+
+
+def icon_extensometer() -> QIcon:
+    """Two knife edges with the gauge length between them."""
+    return _stroke_icon(
+        '<line x1="4" y1="5" x2="4" y2="19"/><line x1="20" y1="5" x2="20" y2="19"/>'
+        '<line x1="5" y1="12" x2="19" y2="12"/>'
+        '<polyline points="8 9 5 12 8 15"/><polyline points="16 9 19 12 16 15"/>'
+    )
+
+
+def icon_crack_gauge() -> QIcon:
+    """A crack with its faces opening apart."""
+    return _stroke_icon(
+        '<polyline points="12 2 10 7 13 11 10.5 15 13 19 11.5 22"/>'
+        '<polyline points="6 9 3 12 6 15"/><line x1="3" y1="12" x2="8" y2="12"/>'
+        '<polyline points="18 9 21 12 18 15"/><line x1="16" y1="12" x2="21" y2="12"/>'
+    )
+
+
 # -- Application icon -------------------------------------------------------
 
 def app_icon_file(name: str = "pyALDIC.ico"):

@@ -91,6 +91,20 @@ established abbreviations stay literal English across all 8 languages:
 
 ---
 
+## Post-processing analysis (probes)
+
+| English | zh_CN | zh_TW | ja | ko | de | fr | es |
+|---|---|---|---|---|---|---|---|
+| Probe | 探针 | 探針 | プローブ | 프로브 | Sonde | Sonde | Sonda |
+| Region (probe type) | 区域 | 區域 | 領域 | 영역 | Bereich | Région | Región |
+| Virtual extensometer | 虚拟引伸计 | 虛擬引伸計 | 仮想伸び計 | 가상 신율계 | Virtueller Dehnungsaufnehmer | Extensomètre virtuel | Extensómetro virtual |
+| Gauge (line reading) | 量规 | 量規 | ゲージ | 게이지 | Messstrecke | Jauge | Calibre |
+| Crack | 裂纹 | 裂紋 | き裂 | 균열 | Riss | Fissure | Grieta |
+| Crack opening | 裂纹张开位移 | 裂紋張開位移 | き裂開口変位 | 균열 개구 변위 | Rissöffnung | Ouverture de fissure | Apertura de grieta |
+| Crack gauge | 裂纹量规 | 裂紋量規 | き裂ゲージ | 균열 게이지 | Riss-Messstrecke | Jauge de fissure | Calibre de grieta |
+
+---
+
 ## GUI common verbs / labels
 
 | English | zh_CN | zh_TW | ja | ko | de | fr | es |

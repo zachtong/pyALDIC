@@ -69,3 +69,32 @@ def test_no_word_is_translated_to_a_single_character(lang):
         f"{len(bad)} {lang} translation(s) are a single character, e.g. "
         + ", ".join(f"{s!r} -> {t!r}" for s, t in bad[:5])
     )
+
+
+def test_no_translation_call_hides_inside_an_f_string():
+    """lupdate does not look inside f-string expressions.
+
+    A ``self.tr("...")`` written inside ``f"{...}"`` still runs, so the
+    English shows, but the string is never extracted -- and an entry that
+    used to be extracted is dropped from every catalog as obsolete, taking
+    its translations with it. Bind the call to a name first.
+    """
+    import ast
+
+    hits = []
+    for path in sorted((ROOT / "src" / "al_dic" / "gui").rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), str(path))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FormattedValue):
+                continue
+            for sub in ast.walk(node.value):
+                if not isinstance(sub, ast.Call):
+                    continue
+                func = sub.func
+                name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
+                literal = sub.args[:2] if name == "translate" else sub.args[:1]
+                if name in ("tr", "translate") and any(
+                        isinstance(a, ast.Constant) and isinstance(a.value, str)
+                        for a in literal):
+                    hits.append(f"{path.relative_to(ROOT)}:{sub.lineno}")
+    assert not hits, "tr() inside an f-string, invisible to lupdate: " + ", ".join(hits)

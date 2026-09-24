@@ -377,3 +377,233 @@ def test_export_writes_what_is_plotted_now(tab, state, tmp_path, monkeypatch):
         header = next(csv.reader(ln for ln in fh if not ln.startswith("#")))
     assert any(h.startswith("P2_") for h in header)
     assert not any(h.startswith("P1_") for h in header)
+
+
+# --- the canvas: tools, picking, editing --------------------------------------
+
+def _place(tab, tool, *points):
+    tab._on_tool_clicked(tool, True)
+    tab._canvas._pending.extend(QPointF(*p) for p in points)
+    tab._canvas._commit_if_complete()
+
+
+def _quantity(tab):
+    return tab._quantity_box.currentData()
+
+
+def test_the_extensometer_tool_plots_extensometer_strain(tab, state):
+    _run(state)
+    _place(tab, "extensometer", (4.0, 20.0), (36.0, 20.0))
+    assert [p.kind for p in state.probes] == ["line"]
+    assert _quantity(tab) == "gauge:strain"
+
+
+def test_the_crack_gauge_tool_plots_the_opening(tab, state):
+    _run(state)
+    _place(tab, "crack_gauge", (20.0, 4.0), (20.0, 36.0))
+    assert _quantity(tab) == "gauge:cod"
+
+
+def test_a_gauge_tool_keeps_a_reading_of_its_own_family(tab, state):
+    """A second extensometer must not undo a choice of elongation."""
+    _run(state)
+    _plot(tab, "elongation", gauge=True)
+    _place(tab, "extensometer", (4.0, 20.0), (36.0, 20.0))
+    assert _quantity(tab) == "gauge:elongation"
+
+
+def test_the_plain_line_tool_leaves_the_quantity_alone(tab, state):
+    _run(state)
+    _plot(tab, "disp_u")
+    _place(tab, "line", (4.0, 20.0), (36.0, 20.0))
+    assert _quantity(tab) == "field:disp_u"
+
+
+def test_an_armed_tool_says_what_to_do_and_how_to_stop(tab):
+    tab._on_tool_clicked("extensometer", True)
+    assert tab._tool_buttons["extensometer"].isChecked()
+    assert not tab._banner.isHidden()
+    assert "Esc" in tab._banner.text()
+    tab._canvas.cancel_placement()
+    assert not tab._tool_buttons["extensometer"].isChecked()
+    assert tab._banner.isHidden()
+
+
+def test_a_probe_picked_on_the_canvas_is_selected_in_the_list(tab, state):
+    _run(state)
+    tab._on_probe_placed("point", PointGeom(8.0, 8.0))
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    tab._canvas.probe_selected.emit(1)
+    assert tab._selected_id == 1
+    assert [r.row() for r in tab._table.selectionModel().selectedRows()] == [0]
+    tab._canvas.probe_selected.emit(None)
+    assert tab._selected_id is None
+    assert tab._table.selectionModel().selectedRows() == []
+
+
+def test_moving_a_probe_on_the_canvas_remeasures_it(tab, state):
+    _run(state)
+    tab._on_probe_placed("point", PointGeom(8.0, 20.0))
+    _plot(tab, "disp_u")
+    before = tab._chart.figure.axes[0].get_lines()[0].get_ydata()[-1]
+    tab._canvas.probe_edited.emit(1, PointGeom(32.0, 20.0))
+    assert state.probes.get(1).geometry == PointGeom(32.0, 20.0)
+    after = tab._chart.figure.axes[0].get_lines()[0].get_ydata()[-1]
+    assert (before, after) == pytest.approx((0.24, 0.96)), "u = 0.03 x at the end"
+
+
+def test_double_clicking_a_probe_starts_renaming_it(tab, state):
+    from PySide6.QtWidgets import QAbstractItemView
+
+    tab.show()
+    tab._on_probe_placed("point", PointGeom(8.0, 8.0))
+    tab._canvas.probe_activated.emit(1)
+    assert tab._table.state() == QAbstractItemView.State.EditingState
+    assert tab._table.currentColumn() == 1
+    tab.close()
+
+
+def test_delete_and_f2_reach_the_probe_picked_on_the_canvas(tab, state):
+    """Bound to the table alone, Delete did nothing after a pick on the canvas."""
+    from PySide6.QtGui import QKeySequence
+
+    for shortcut in (tab._delete_shortcut, tab._rename_shortcut):
+        assert shortcut.parent() is tab
+        assert shortcut.context() == Qt.ShortcutContext.WidgetWithChildrenShortcut
+    assert tab._rename_shortcut.key() == QKeySequence(Qt.Key.Key_F2)
+    tab._on_probe_placed("point", PointGeom(8.0, 8.0))
+    tab._canvas.probe_selected.emit(1)
+    tab._delete_shortcut.activated.emit()
+    assert len(state.probes) == 0
+
+
+def test_a_line_is_labelled_with_its_length_in_the_display_unit(tab, state):
+    from al_dic.gui.panels.probe_canvas import ProbeLabel
+
+    state.use_physical_units, state.pixel_size, state.pixel_unit = True, 0.5, "mm"
+    tab._on_probe_placed("line", LineGeom(0.0, 0.0, 30.0, 40.0))
+    labels = [i.text() for i in tab._canvas.scene().items()
+              if isinstance(i, ProbeLabel)]
+    assert labels == ["P1 · 25.0 mm"]
+
+
+# --- the field under the probes -------------------------------------------------
+
+def _fake_renderer(calls):
+    from PySide6.QtGui import QPixmap
+
+    from al_dic.gui.panels.strain_canvas import FieldImage
+
+    def render(field, frame):
+        calls.append((field, frame))
+        return FieldImage(pixmap=QPixmap(4, 4), x=0.0, y=0.0, scale=4.0,
+                          alpha=0.7, cmap="jet", vmin=0.0, vmax=1.0, label="u")
+    return render
+
+
+def _settle():
+    QApplication.processEvents()
+
+
+def test_the_canvas_shows_the_plotted_field_at_the_current_frame(tab, state):
+    calls = []
+    _run(state)
+    tab.set_field_renderer(_fake_renderer(calls))
+    tab.show()
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    _plot(tab, "disp_v")
+    tab.set_frame(2)
+    _settle()
+    assert calls[-1] == ("disp_v", 2)
+    assert not tab._canvas._overlay_item.pixmap().isNull()
+    assert not tab._colorbar.isHidden()
+    tab.close()
+
+
+def test_a_gauge_chart_shows_the_strain_field_tabs_field(tab, state):
+    calls = []
+    _run(state)
+    tab.set_field_renderer(_fake_renderer(calls))
+    tab.set_default_field("strain_eyy")
+    tab.show()
+    tab._on_probe_placed("line", LineGeom(4.0, 20.0, 36.0, 20.0))
+    _plot(tab, "cod", gauge=True)
+    _settle()
+    assert calls[-1][0] == "strain_eyy"
+    tab.close()
+
+
+def test_the_field_can_be_switched_off(tab, state):
+    calls = []
+    _run(state)
+    tab.set_field_renderer(_fake_renderer(calls))
+    tab.show()
+    tab._on_probe_placed("point", PointGeom(20.0, 20.0))
+    _plot(tab, "disp_u")
+    _settle()
+    tab._show_field_box.setChecked(False)
+    _settle()
+    assert tab._canvas._overlay_item.pixmap().isNull()
+    assert tab._colorbar.isHidden()
+    tab.close()
+
+
+def test_no_field_is_drawn_while_the_tab_is_hidden(tab, state):
+    calls = []
+    _run(state)
+    tab.set_field_renderer(_fake_renderer(calls))
+    tab.set_frame(1)
+    state.display_changed.emit()
+    _settle()
+    assert calls == []
+
+
+def test_the_analysis_canvas_is_drawn_in_the_reference_configuration(state, monkeypatch):
+    """Probe coordinates are frame-0 pixels: a deformed field under them would
+    put every probe beside the material it measures."""
+    from PySide6.QtGui import QPixmap
+
+    from al_dic.gui.strain_window import StrainWindow
+
+    _run(state)
+    win = StrainWindow(state)
+    combo = win._viz_panel._geometry_combo
+    combo.setCurrentIndex(combo.findData(True))           # Strain Field: deformed
+    seen = []
+    monkeypatch.setattr(
+        win._viz_ctrl, "render_field",
+        lambda **kw: seen.append(kw) or (QPixmap(2, 2), None, None, 4))
+    image = win.reference_field_image("disp_u", 2)
+    assert image is not None and image.scale == 4
+    assert seen[-1]["deformed"] is False
+    assert seen[-1]["frame_idx"] == 2
+
+
+def test_the_hidden_strain_field_tab_waits_for_its_turn(state, monkeypatch):
+    """Scrubbing frames on the Analysis tab re-rendered the unseen field view
+    as well: two renders per frame for one visible picture."""
+    from al_dic.gui.strain_window import StrainWindow
+
+    _run(state)
+    win = StrainWindow(state)
+    shown = []
+    monkeypatch.setattr(win._canvas, "show_field", lambda image: shown.append(image))
+    win._tabs.setCurrentWidget(win._analysis_tab)
+    win.set_strain_frame(2)
+    win.set_strain_frame(1)
+    assert shown == []
+    win._tabs.setCurrentIndex(0)
+    assert len(shown) == 1, "caught up once, on return"
+
+
+def test_a_probe_placed_off_the_specimen_says_so(tab, state):
+    """'no valid data: gauge endpoint lost' blamed the run for a misplaced
+    click: the end was never on the material to be lost."""
+    _run(state)                                            # nodes span 0..40
+    tab._on_probe_placed("point", PointGeom(80.0, 80.0))
+    tab._on_probe_placed("line", LineGeom(20.0, 20.0, 80.0, 20.0))
+    _plot(tab, "disp_u")
+    assert "off the measured area" in tab._table.item(0, 4).text()
+    _plot(tab, "strain", gauge=True)
+    note = tab._table.item(1, 4).text()
+    assert "gauge end" in note and "lost" not in note

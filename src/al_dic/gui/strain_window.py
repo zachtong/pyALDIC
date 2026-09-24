@@ -26,6 +26,7 @@ Field routing:
 from __future__ import annotations
 
 import traceback as _tb
+from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -57,7 +58,7 @@ from al_dic.gui.controllers.strain_controller import (
 )
 from al_dic.gui.controllers.viz_controller import VizController
 from al_dic.gui.panels.canvas_area import visible_values
-from al_dic.gui.panels.strain_canvas import StrainCanvas
+from al_dic.gui.panels.strain_canvas import FieldImage, StrainCanvas
 from al_dic.gui.widgets.collapsible_section import CollapsibleSection
 from al_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from al_dic.gui.widgets.console_log import ConsoleLog
@@ -406,6 +407,11 @@ class StrainWindow(QMainWindow):
         self._analysis_tab.set_frame(self._strain_current_frame)
         self._analysis_tab.set_default_field(self._field_selector.current_field())
         self._analysis_tab.set_parameters_provider(self._strain_parameters)
+        self._analysis_tab.set_field_renderer(self.reference_field_image)
+        # The field view renders only while it is the page on show; a render
+        # asked for meanwhile is made once, on return.
+        self._render_pending = False
+        self._tabs.currentChanged.connect(self._on_tab_changed)
 
         # Track external pipeline runs and shared display settings
         self._state.results_changed.connect(self._on_state_results_changed)
@@ -947,7 +953,16 @@ class StrainWindow(QMainWindow):
                 int(np.count_nonzero(~sv)), int(sv.size),
             )
 
+    def _on_tab_changed(self, _index: int) -> None:
+        if self._render_pending and self._tabs.currentWidget() is not self._analysis_tab:
+            self._render_pending = False
+            self._render_current()
+
     def _render_current(self) -> None:
+        tabs = getattr(self, "_tabs", None)
+        if tabs is not None and tabs.currentWidget() is self._analysis_tab:
+            self._render_pending = True
+            return
         try:
             result = self._state.results
             if result is None:
@@ -964,12 +979,6 @@ class StrainWindow(QMainWindow):
             show_background = bool(viz.get("show_background", True))
             hidden_bg = str(viz.get("hidden_bg_color", "white"))
 
-            # Trim frame follows the display frame: reference view -> frame-0
-            # geometry (matches the main window's displacement), deformed view
-            # -> current-frame crack.
-            values = self._get_field_values(
-                field_name, frame, result, show_deformed,
-            )
             self._update_trim_readout(field_name, frame, result, show_deformed)
 
             # Background image: frame is now the image-file index (0=ref, 1..N=deformed).
@@ -982,98 +991,29 @@ class StrainWindow(QMainWindow):
             else:
                 self._try_load_background(0)
 
-            if values is None:
+            image = self._field_image(
+                field_name, frame, result,
+                deformed=show_deformed,
+                cmap=str(viz["colormap"]),
+                alpha=float(viz["alpha"]),
+                fill_trimmed=bool(viz.get("fill_trimmed_edges", False)),
+                range_of=self._resolve_range,
+            )
+            if image is None:
                 self._canvas.clear_overlay()
                 self._colorbar.setVisible(False)
                 return
 
-            # Use dic_mesh (canonical mesh = result_fe_mesh_each_frame[0]) as
-            # reference node positions — mirrors main window's approach.
-            ref_nodes = result.dic_mesh.coordinates_fem
-            mesh_step = result.dic_para.winstepsize
-            img_shape = result.dic_para.img_size
-            roi_mask = self._state.per_frame_rois.get(0)
-
-            # Deformed rendering: shift node positions by accumulated
-            # displacement, then let VizController warp the ROI mask.
-            # Matches main window _refresh_overlay exactly:
-            #   nodes = ref_nodes + column_stack([u, v])
-            #   ref_uv = (u, v)   -- raw pixel displacements for inverse warp
-            #   deformed_mask = per_frame_rois.get(frame + 1)
-            deformed = False
-            ref_uv = None
-            deformed_mask = None
-            nodes = ref_nodes
-
-            # frame is the image-file index (0=reference, 1..N=deformed).
-            # result_disp index = frame - 1.
-            disp_idx = frame - 1
-            if show_deformed and frame >= 1 and disp_idx < len(result.result_disp):
-                fr_d = result.result_disp[disp_idx]
-                U = fr_d.U_accum if fr_d.U_accum is not None else fr_d.U
-                if U is not None:
-                    u, v = U[0::2], U[1::2]
-                    nodes = ref_nodes + np.column_stack([u, v])
-                    deformed = True
-                    ref_uv = (u, v)
-                    # Per-frame deformed ROI: use per_frame_rois[frame] (image index)
-                    deformed_mask = self._state.per_frame_rois.get(frame)
-
-            # Auto-range uses only the nodes visible within the (possibly
-            # trimmed) deformed mask -- prevents out-of-view nodes from
-            # pulling the colorbar range out of sync with what the user sees.
-            range_values = visible_values(
-                values, nodes, deformed_mask if deformed else None,
-            )
-            vmin, vmax = self._resolve_range(range_values)
             # Cache so that Auto→Manual switch can populate spinboxes with the
             # exact same range that was just rendered (matches visible nodes only).
-            self._last_rendered_vmin = vmin
-            self._last_rendered_vmax = vmax
+            self._last_rendered_vmin = image.vmin
+            self._last_rendered_vmax = image.vmax
 
-            pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
-                frame_idx=frame,
-                field_name=f"{_FIELD_NS}:{field_name}",
-                nodes=nodes,
-                values=values,
-                img_shape=img_shape,
-                mesh_step=mesh_step,
-                cmap=str(viz["colormap"]),
-                vmin=vmin,
-                vmax=vmax,
-                roi_mask=roi_mask,
-                deformed=deformed,
-                ref_uv=ref_uv,
-                deformed_mask=deformed_mask,
-                # Strain fields carry NaN at edge-trimmed / plane-fit-failed
-                # nodes; blank those cells so the trim is visible instead of
-                # interpolator-backfilled.  Displacement fields are not trimmed.
-                # "Fill trimmed edges" (viz panel, off by default) skips the
-                # blanking so the interpolator re-fills the band from reliable
-                # interior nodes -- display only; data export stays NaN.
-                blank_invalid_nodes=(
-                    field_name not in DISP_FIELD_NAMES
-                    and not bool(viz.get("fill_trimmed_edges", False))
-                ),
-            )
-            self._canvas.set_overlay_pixmap(pixmap)
-            self._canvas.set_overlay_alpha(float(viz["alpha"]))
-            self._canvas._overlay_item.setScale(float(out_step))
-            if xg is not None and yg is not None:
-                self._canvas.set_overlay_pos(
-                    float(xg.min()), float(yg.min()),
-                )
-
-            cmap_name = str(viz["colormap"])
-            colorbar_label = field_colorbar_label(
-                field_name,
-                self._state.use_physical_units,
-                self._state.pixel_unit,
-                self._state.frame_rate,
-            )
+            self._canvas.show_field(image)
             vp = self._canvas.viewport()
             self._colorbar.setGeometry(0, 0, vp.width(), vp.height())
-            self._colorbar.update_params(cmap_name, vmin, vmax, colorbar_label)
+            self._colorbar.update_params(
+                image.cmap, image.vmin, image.vmax, image.label)
             self._colorbar.setVisible(True)
 
         except Exception as exc:  # pragma: no cover
@@ -1082,6 +1022,143 @@ class StrainWindow(QMainWindow):
             self._log(f"Render error: {type(exc).__name__}: {exc}", "error")
             self._canvas.clear_overlay()
             self._colorbar.setVisible(False)
+
+    def reference_field_image(
+        self, field_name: str, frame: int,
+    ) -> FieldImage | None:
+        """*field_name* at *frame* in the reference configuration.
+
+        What the Analysis tab lays under its probes: probe coordinates are
+        frame-0 pixels, so the field is drawn where they are, whatever this
+        tab's own view shows. Colormap and range are the field's own (the
+        state the Strain Field tab and the main window share); opacity and the
+        trimmed-edge fill are this window's.
+        """
+        result = self._state.results
+        if result is None:
+            return None
+        fs = self._state.get_field_state(field_name)
+        viz = self._viz_panel.get_state()
+
+        def range_of(values: NDArray[np.float64]) -> tuple[float, float]:
+            if not fs.auto:
+                return float(fs.vmin), float(fs.vmax)
+            finite = values[np.isfinite(values)]
+            if finite.size == 0:
+                return 0.0, 1.0
+            return float(finite.min()), float(finite.max())
+
+        return self._field_image(
+            field_name, frame, result,
+            deformed=False,
+            cmap=str(fs.colormap),
+            alpha=float(viz["alpha"]),
+            fill_trimmed=bool(viz.get("fill_trimmed_edges", False)),
+            range_of=range_of,
+        )
+
+    def _field_image(
+        self,
+        field_name: str,
+        frame: int,
+        result: PipelineResult,
+        *,
+        deformed: bool,
+        cmap: str,
+        alpha: float,
+        fill_trimmed: bool,
+        range_of: Callable[[NDArray[np.float64]], tuple[float, float]],
+    ) -> FieldImage | None:
+        """Render *field_name* at *frame*: the one path both tabs draw through.
+
+        *deformed* asks for the deformed configuration; the reference is used
+        where there is none (frame 0, or no displacement for the frame).
+        *range_of* maps the visible values to (vmin, vmax).
+        """
+        # Trim frame follows the display frame: reference view -> frame-0
+        # geometry (matches the main window's displacement), deformed view
+        # -> current-frame crack.
+        values = self._get_field_values(field_name, frame, result, deformed)
+        if values is None:
+            return None
+
+        # Use dic_mesh (canonical mesh = result_fe_mesh_each_frame[0]) as
+        # reference node positions — mirrors main window's approach.
+        ref_nodes = result.dic_mesh.coordinates_fem
+
+        # Deformed rendering: shift node positions by accumulated
+        # displacement, then let VizController warp the ROI mask.
+        # Matches main window _refresh_overlay exactly:
+        #   nodes = ref_nodes + column_stack([u, v])
+        #   ref_uv = (u, v)   -- raw pixel displacements for inverse warp
+        #   deformed_mask = per_frame_rois.get(frame + 1)
+        is_deformed = False
+        ref_uv = None
+        deformed_mask = None
+        nodes = ref_nodes
+
+        # frame is the image-file index (0=reference, 1..N=deformed).
+        # result_disp index = frame - 1.
+        disp_idx = frame - 1
+        if deformed and frame >= 1 and disp_idx < len(result.result_disp):
+            fr_d = result.result_disp[disp_idx]
+            U = fr_d.U_accum if fr_d.U_accum is not None else fr_d.U
+            if U is not None:
+                u, v = U[0::2], U[1::2]
+                nodes = ref_nodes + np.column_stack([u, v])
+                is_deformed = True
+                ref_uv = (u, v)
+                # Per-frame deformed ROI: use per_frame_rois[frame] (image index)
+                deformed_mask = self._state.per_frame_rois.get(frame)
+
+        # Auto-range uses only the nodes visible within the (possibly
+        # trimmed) deformed mask -- prevents out-of-view nodes from
+        # pulling the colorbar range out of sync with what the user sees.
+        vmin, vmax = range_of(visible_values(
+            values, nodes, deformed_mask if is_deformed else None,
+        ))
+
+        pixmap, xg, yg, out_step = self._viz_ctrl.render_field(
+            frame_idx=frame,
+            field_name=f"{_FIELD_NS}:{field_name}",
+            nodes=nodes,
+            values=values,
+            img_shape=result.dic_para.img_size,
+            mesh_step=result.dic_para.winstepsize,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            roi_mask=self._state.per_frame_rois.get(0),
+            deformed=is_deformed,
+            ref_uv=ref_uv,
+            deformed_mask=deformed_mask,
+            # Strain fields carry NaN at edge-trimmed / plane-fit-failed
+            # nodes; blank those cells so the trim is visible instead of
+            # interpolator-backfilled.  Displacement fields are not trimmed.
+            # "Fill trimmed edges" (viz panel, off by default) skips the
+            # blanking so the interpolator re-fills the band from reliable
+            # interior nodes -- display only; data export stays NaN.
+            blank_invalid_nodes=(
+                field_name not in DISP_FIELD_NAMES and not fill_trimmed
+            ),
+        )
+        has_grid = xg is not None and yg is not None
+        return FieldImage(
+            pixmap=pixmap,
+            x=float(xg.min()) if has_grid else None,
+            y=float(yg.min()) if has_grid else None,
+            scale=float(out_step),
+            alpha=alpha,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            label=field_colorbar_label(
+                field_name,
+                self._state.use_physical_units,
+                self._state.pixel_unit,
+                self._state.frame_rate,
+            ),
+        )
 
     def _resolve_range(
         self, values: NDArray[np.float64],

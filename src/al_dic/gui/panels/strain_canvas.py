@@ -13,6 +13,8 @@ window never edits its inputs, it only views them.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 from numpy.typing import NDArray
 from PySide6.QtCore import QPointF, QRectF, Qt, Signal
@@ -38,6 +40,21 @@ from al_dic.gui.theme import COLORS
 _ZOOM_FACTOR = 1.15
 _ZOOM_MIN = 0.10
 _ZOOM_MAX = 20.0
+
+
+@dataclass(frozen=True)
+class FieldImage:
+    """A rendered field, ready for a canvas and its colorbar."""
+
+    pixmap: QPixmap
+    x: float | None             # scene position of the top-left; None: keep
+    y: float | None
+    scale: float                # scene pixels per pixmap pixel
+    alpha: float
+    cmap: str
+    vmin: float
+    vmax: float
+    label: str                  # colorbar title
 
 
 def blank_pixmap(width: int, height: int, color: str = "white") -> QPixmap:
@@ -141,6 +158,14 @@ class StrainCanvas(QGraphicsView):
     def clear_overlay(self) -> None:
         """Drop the overlay pixmap (back to a null pixmap)."""
         self._overlay_item.setPixmap(QPixmap())
+
+    def show_field(self, image: FieldImage) -> None:
+        """Install a rendered field on the overlay layer."""
+        self.set_overlay_pixmap(image.pixmap)
+        self.set_overlay_alpha(image.alpha)
+        self._overlay_item.setScale(float(image.scale))
+        if image.x is not None and image.y is not None:
+            self.set_overlay_pos(image.x, image.y)
 
     def zoom_in(self) -> None:
         self._apply_zoom(_ZOOM_FACTOR)
