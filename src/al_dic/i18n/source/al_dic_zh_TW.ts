@@ -169,7 +169,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>全部清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="170"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="178"/>
         <source>Statistic:</source>
         <translation>統計量：</translation>
     </message>
@@ -213,17 +213,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂紋張開位移</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="405"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>尚未計算應變。請在「應變場」頁中計算，或改為繪製位移。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>量規類物理量需要線探針。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="525"/>
         <source>No visible probe can show this quantity.</source>
         <translation>沒有可見的探針能顯示此物理量。</translation>
     </message>
@@ -268,17 +268,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未繪製</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="472"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>已新增探針「%1」。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="558"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
         <source>Clear All Probes</source>
         <translation>清除所有探針</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="559"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>刪除所有探針？此操作無法復原。</translation>
     </message>
@@ -301,7 +301,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>區域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="396"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="475"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>請先執行 DIC 分析，才能繪製探針曲線。</translation>
     </message>
@@ -376,102 +376,128 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>以目前影格所繪物理量的場為參考影像著色。對於量規讀數，顯示「應變場」頁中的場。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="176"/>
         <source>Plot:</source>
         <translation>繪製：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="171"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
         <source>X axis:</source>
         <translation>X 軸：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="172"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
         <source>Strain as:</source>
         <translation>應變顯示為：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="174"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Min. valid fraction:</source>
         <translation>最小有效比例：</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>當線或區域中可靠點的比例低於此值時，該影格留空。避免樣本逐漸縮小而曲線依然平滑的假象。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="190"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>隨時間變化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="192"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>每個探針在各影格的讀數。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>沿線分佈</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="197"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>目前影格沿所選線的場分佈，其他影格以灰色顯示在下方。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="202"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>時空圖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="204"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>所選線在每一影格的場分佈：距離對影格，數值以顏色表示。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="209"/>
+        <source>Stress–strain</source>
+        <comment>Chart view: stress against strain</comment>
+        <translation>應力–應變</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="211"/>
+        <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
+        <translation>以所繪物理量為橫軸的應力（無 A0 時為載荷）曲線，每個探針一條：搭配引伸計為應力–應變曲線，搭配裂紋量規為載荷–張開量曲線。需要載荷資料。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="222"/>
         <source>Other frames</source>
         <translation>其他影格</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="223"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>在目前影格後方以淡色繪製其他影格的分佈（最多十二個，均勻間隔）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="228"/>
         <source>Line data (CSV)…</source>
         <translation>線資料（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="229"/>
         <source>Export</source>
         <translation>匯出</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="230"/>
+        <source>Load data…</source>
+        <translation>載荷資料…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
+        <translation>匯入試驗機的載荷記錄（CSV），以載荷或應力為橫軸繪圖，並繪製應力–應變曲線。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="236"/>
         <source>Probe data (CSV)…</source>
         <translation>探針資料（CSV）…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="217"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="238"/>
         <source>Chart image…</source>
         <translation>圖表圖片…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="219"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
         <source>Copy chart</source>
         <translation>複製圖表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="221"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
         <source>Copy plotted data</source>
         <translation>複製所繪資料</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="554"/>
+        <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
+        <translation>請透過「載荷資料…」匯入試驗機的載荷記錄，以繪製應力–應變曲線。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -514,25 +540,39 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>裂紋張開位移大小</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="253"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="363"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="274"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
         <source>Frame</source>
         <translation>影格</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="255"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="362"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="276"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="263"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="426"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <source>Load (N)</source>
+        <translation>載荷 (N)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="566"/>
+        <source>Stress (MPa)</source>
+        <translation>應力 (MPa)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="290"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>比值</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="407"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="417"/>
         <source>Could not draw the field: %1</source>
         <translation>無法繪製場：%1</translation>
     </message>
@@ -547,7 +587,7 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>拖曳可移動探針，拖曳控制點可改變其形狀。按 Delete 刪除，按 F2 重新命名。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="401"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>在參考影像上放置一個探針即可開始。</translation>
     </message>
@@ -567,22 +607,22 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>%1 沿線沒有有效資料：它不在量測區域內。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="476"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="605"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>沿線視圖顯示的是場。請選擇一個場來繪製。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>放置或選擇一個線探針，即可查看沿線的場。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="498"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="627"/>
         <source>Distance along %1 (%2)</source>
         <translation>沿 %1 的距離（%2）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="507"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="636"/>
         <source>%1, frame %2</source>
         <translation>%1，第 %2 影格</translation>
     </message>
@@ -597,83 +637,88 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未繪製：量規端點不在量測區域內</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="626"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
         <source>Export Probe Data</source>
         <translation>匯出探針資料</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
         <source>CSV Files</source>
         <translation>CSV 檔案</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="676"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="439"/>
+        <source>The load data cannot be matched to the frames: %1</source>
+        <translation>載荷資料無法與影格對應：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>All Files</source>
         <translation>所有檔案</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="645"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
         <source>Probe export failed: %1</source>
         <translation>探針匯出失敗：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="647"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe data written to %1</source>
         <translation>探針資料已寫入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
         <source>Export Line Data</source>
         <translation>匯出線資料</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="666"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
         <source>Line export failed: %1</source>
         <translation>線資料匯出失敗：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="668"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line data written to %1</source>
         <translation>線資料已寫入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="674"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
         <source>SVG Images</source>
         <translation>SVG 影像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="685"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
         <source>Export Chart</source>
         <translation>匯出圖表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="704"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
         <source>Chart copied to the clipboard.</source>
         <translation>圖表已複製到剪貼簿。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>所繪資料已複製到剪貼簿。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
         <source>PNG Images</source>
         <translation>PNG 影像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="675"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PDF Documents</source>
         <translation>PDF 文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="696"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
         <source>Chart export failed: %1</source>
         <translation>圖表匯出失敗：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="698"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart written to %1</source>
         <translation>圖表已寫入 %1</translation>
     </message>
@@ -1967,6 +2012,130 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <location filename="../../gui/panels/left_sidebar.py" line="297"/>
         <source>ADVANCED</source>
         <translation>高級</translation>
+    </message>
+</context>
+<context>
+    <name>LoadDataDialog</name>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="103"/>
+        <source>Load Data</source>
+        <translation>載荷資料</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="115"/>
+        <source>No file chosen.</source>
+        <translation>未選擇檔案。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="117"/>
+        <source>Choose file…</source>
+        <translation>選擇檔案…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="137"/>
+        <source>Load column:</source>
+        <translation>載荷欄：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="139"/>
+        <source>By time</source>
+        <translation>按時間</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="140"/>
+        <source>By frame number</source>
+        <translation>按影格編號</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="144"/>
+        <source>Match rows to frames:</source>
+        <translation>列與影格的對應方式：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="147"/>
+        <source>Time column:</source>
+        <translation>時間欄：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="153"/>
+        <source>The machine&apos;s time at the reference image. If the camera started 2 s after the machine, enter 2.</source>
+        <translation>參考影像時刻對應的試驗機時間。若相機比試驗機晚 2 s 啟動，則輸入 2。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="155"/>
+        <source>Offset:</source>
+        <translation>偏移：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="163"/>
+        <source>Frame column:</source>
+        <translation>影格欄：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="167"/>
+        <source>The first image is numbered:</source>
+        <translation>第一張影像的編號：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="174"/>
+        <source>Initial cross-section, for engineering stress F / A0 in MPa. Leave at 0 for load only.</source>
+        <translation>初始橫截面積，用於計算工程應力 F / A0（MPa）。僅需載荷時保持為 0。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="176"/>
+        <source>Cross-section A0:</source>
+        <translation>橫截面積 A0：</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="192"/>
+        <source>Remove Load Data</source>
+        <translation>移除載荷資料</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="201"/>
+        <source>Camera frame rate: %1 fps, from Physical Units.</source>
+        <translation>相機幀率：%1 fps，取自「物理單位」。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="204"/>
+        <source>Set the camera frame rate under Physical Units to match by time.</source>
+        <translation>請在「物理單位」中設定相機幀率，才能按時間對應。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="227"/>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="245"/>
+        <source>(unnamed)</source>
+        <translation>（未命名）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="324"/>
+        <source>No frame falls within the record: check the columns and the offset.</source>
+        <translation>沒有影格落在記錄範圍內：請檢查所選欄與偏移。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="328"/>
+        <source>Frames with a load: %1 of %2.</source>
+        <translation>有載荷值的影格：%1 / %2。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="334"/>
+        <source>Open Load Data</source>
+        <translation>開啟載荷資料</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="335"/>
+        <source>CSV Files</source>
+        <translation>CSV 檔案</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="335"/>
+        <source>All Files</source>
+        <translation>所有檔案</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="341"/>
+        <source>Could not read %1: %2</source>
+        <translation>無法讀取 %1：%2</translation>
     </message>
 </context>
 <context>

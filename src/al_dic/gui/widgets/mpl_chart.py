@@ -175,8 +175,10 @@ class MplChart(QWidget):
             raise ValueError("Nothing is plotted to export.")
         draw, args, kwargs = self._last
         if draw is draw_curves:
-            # Emphasis marks the on-screen selection; a page has none.
-            args = ([replace(c, emphasised=False) for c in args[0]], *args[1:])
+            # Emphasis marks the on-screen selection, a ring the frame on
+            # screen; a page has neither.
+            args = ([replace(c, emphasised=False, mark=None) for c in args[0]],
+                    *args[1:])
         width, height = PUBLICATION_SIZE_CM
         fig = Figure(figsize=(width / 2.54, height / 2.54), dpi=PUBLICATION_DPI,
                      layout="constrained")

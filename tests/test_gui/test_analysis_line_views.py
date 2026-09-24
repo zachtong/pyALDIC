@@ -65,9 +65,9 @@ def _placeholder(tab) -> str:
 
 # --- the views -----------------------------------------------------------------
 
-def test_three_views_are_offered(tab):
+def test_the_views_are_offered_in_order(tab):
     keys = [tab._view_bar.tabData(i) for i in range(tab._view_bar.count())]
-    assert keys == ["time", "profile", "kymograph"]
+    assert keys == ["time", "profile", "kymograph", "stress_strain"]
     assert tab._view_bar.currentIndex() == 0, "over time stays the default"
 
 

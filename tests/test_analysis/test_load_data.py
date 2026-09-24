@@ -167,3 +167,25 @@ def test_a_session_keeps_the_columns_in_use_and_the_mapping():
 def test_a_malformed_payload_is_a_value_error():
     with pytest.raises(ValueError):
         LoadData.from_payload({"sync": {"mode": "sideways"}})
+
+
+# --- describing it in an export header -------------------------------------------
+
+def test_the_description_says_where_the_load_came_from_and_how_it_was_matched():
+    data = LoadData(_table(t=[0.0, 1.0], F=[0.0, 1.0]),
+                    LoadSync(mode="time", load_column="F", time_column="t",
+                             offset_s=0.25, load_unit="kN"),
+                    area_mm2=12.5, source="run7.csv")
+    text = "\n".join(data.describe(frame_rate=2.0))
+    assert "run7.csv" in text and "'F'" in text and "kN" in text
+    assert "0.25" in text and "2 fps" in text
+    assert "12.5 mm" in text
+
+
+def test_the_description_of_a_frame_match_names_the_numbering():
+    data = LoadData(_table(idx=[0.0], F=[1.0]),
+                    LoadSync(mode="frame", load_column="F", frame_column="idx",
+                             frame_base=0))
+    text = "\n".join(data.describe(frame_rate=0.0))
+    assert "'idx'" in text and "0" in text
+    assert "stress" not in text.lower()

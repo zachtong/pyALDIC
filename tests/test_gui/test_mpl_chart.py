@@ -220,3 +220,31 @@ def test_a_selected_probe_is_not_emphasised_on_the_page(chart):
     page = {ln.get_label(): ln.get_linewidth()
             for ln in chart.publication_figure().axes[0].get_lines()}
     assert page["P1"] == page["P2"]
+
+
+def test_curves_on_their_own_x_copy_as_column_pairs(chart):
+    """Two probes in a stress-strain chart do not share their strains."""
+    from al_dic.analysis.series import FrameStatus
+    from al_dic.gui.widgets.mpl_chart import Curve
+
+    chart.plot_curves(
+        [Curve(label="E1", colour="#ef4444", x=np.array([0.0, 1.0]),
+               y=np.array([0.0, 5.0]), status=[FrameStatus.OK] * 2),
+         Curve(label="E2", colour="#22c55e", x=np.array([0.0, 2.0, 3.0]),
+               y=np.array([0.0, 5.0, 7.5]), status=[FrameStatus.OK] * 3)],
+        x_label="ε (%)", y_label="Stress (MPa)", integer_x=False)
+    assert chart.plotted_table() == [
+        ["E1 — ε (%)", "E1 — Stress (MPa)", "E2 — ε (%)", "E2 — Stress (MPa)"],
+        ["0", "0", "0", "0"], ["1", "5", "2", "5"], ["", "", "3", "7.5"]]
+
+
+def test_the_frame_ring_stays_off_the_page(chart):
+    from al_dic.analysis.series import FrameStatus
+    from al_dic.gui.widgets.mpl_chart import Curve
+
+    chart.plot_curves([Curve(label="E1", colour="#ef4444", x=np.array([0.0, 1.0]),
+                             y=np.array([0.0, 5.0]), status=[FrameStatus.OK] * 2,
+                             mark=1)], x_label="ε", y_label="σ", integer_x=False)
+    assert [ln for ln in chart.figure.axes[0].get_lines() if ln.get_gid() == "frame_mark"]
+    page = chart.publication_figure().axes[0]
+    assert not [ln for ln in page.get_lines() if ln.get_gid() == "frame_mark"]

@@ -77,6 +77,9 @@ class SessionData:
     # Parsed probes; empty for sessions written before schema 3. Parsed when
     # the file is read, so applying a session can no longer fail halfway.
     probes: "ProbeSet" = field(default_factory=lambda: _empty_probes())
+    # The testing machine's load record, matched to the frames; None when the
+    # session has none (and in every session written before it existed).
+    load_data: "LoadData | None" = None
     results: PipelineResult | None = None
 
 
@@ -226,6 +229,11 @@ def _build_config(state: AppState, has_results: bool,
         # and losing it on save/reopen would be as surprising as losing a
         # Region of Interest.
         "probes": state.probes.to_payload(),
+        # Only the columns the mapping uses travel with the session, so it
+        # does not depend on the machine's CSV staying where it was.
+        "load_data": (
+            state.load_data.to_payload() if state.load_data is not None else None
+        ),
         "params": {k: _get_state_field(state, k) for k in _PARAM_KEYS},
         "physical_units": {k: _get_state_field(state, k) for k in _PHYSICAL_KEYS},
         "view_state": _build_view_state(state),
@@ -439,6 +447,15 @@ def _parse_config(doc: Any) -> SessionData:
     except (ValueError, KeyError, TypeError, AttributeError) as exc:
         raise SessionError(f"Session contains an unreadable probe: {exc}") from exc
 
+    from al_dic.analysis.load_data import LoadData
+
+    load_payload = doc.get("load_data")
+    try:
+        load_data = (LoadData.from_payload(load_payload)
+                     if load_payload is not None else None)
+    except (ValueError, TypeError) as exc:
+        raise SessionError(f"Session contains unreadable load data: {exc}") from exc
+
     return SessionData(
         schema_version=version,
         image_folder=doc.get("image_folder"),
@@ -446,6 +463,7 @@ def _parse_config(doc: Any) -> SessionData:
         per_frame_rois=rois,
         refine_brush_mask=brush,
         probes=probes,
+        load_data=load_data,
         params=dict(doc.get("params") or {}),
         physical_units=dict(doc.get("physical_units") or {}),
         view_state=dict(doc.get("view_state") or {}),
@@ -545,6 +563,10 @@ def apply_session(
                 "must be re-selected manually.",
                 "warn",
             )
+
+    # After the images: loading them clears any load record, which belongs
+    # to one test.
+    state.set_load_data(session.load_data)
 
     # Per-frame ROIs, and the painted refinement zones that go with them.
     state.per_frame_rois = dict(session.per_frame_rois)

@@ -88,6 +88,7 @@ TRANSIENT = {
     "per_frame_rois": "top-level key",
     "refine_brush_mask": "top-level key",
     "probes": "top-level key",
+    "load_data": "top-level key",
 }
 
 
@@ -255,6 +256,31 @@ def test_probes_survive(tmp_path, qapp):
     assert state2.probes.to_list() == before
     # Ids must not restart, or a restored session collides with itself.
     assert state2.probes.add("point", PointGeom(1.0, 1.0)).id == 4
+
+
+def test_the_machine_load_record_survives(tmp_path, qapp):
+    """Mapping, A0 and the columns in use come back; the images reloading on
+    the way (which clears a load record) must not take it with them."""
+    import numpy as np
+
+    from al_dic.analysis.load_data import LoadData, LoadSync, LoadTable
+
+    win, state, folder, roi0, roi2, brush = _make_project(tmp_path, qapp)
+    table = LoadTable(("t", "F"), (np.array([0.0, 1.0, 2.0]),
+                                   np.array([0.0, 1.5, np.nan])), "run7.csv")
+    data = LoadData(table, LoadSync(mode="time", load_column="F", time_column="t",
+                                    offset_s=0.25, load_unit="kN"), area_mm2=12.5)
+    state.set_load_data(data)
+
+    path = tmp_path / "load.aldic"
+    save_session(path, state, include_results=False)
+    _, state2 = _reload(tmp_path, qapp, path)
+
+    back = state2.load_data
+    assert back is not None
+    assert back.sync == data.sync and back.area_mm2 == 12.5
+    assert back.source == "run7.csv"
+    np.testing.assert_array_equal(back.table.column("F"), table.column("F"))
 
 
 def test_a_session_without_probes_still_loads(tmp_path, qapp):

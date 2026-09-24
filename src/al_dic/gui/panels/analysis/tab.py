@@ -22,11 +22,14 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+import numpy as np
+
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication,
     QColorDialog,
+    QDialog,
     QFileDialog,
     QLabel,
     QMessageBox,
@@ -41,6 +44,7 @@ from al_dic.analysis.series import TimeSeries
 from al_dic.export.export_line import export_line_csv
 from al_dic.export.export_probes import ProbeSeries, export_probe_csv, run_parameters
 from al_dic.gui.app_state import AppState
+from al_dic.gui.dialogs.load_data_dialog import LoadDataDialog
 from al_dic.gui.panels.analysis.canvas_panel import AnalysisCanvasPanel
 from al_dic.gui.panels.analysis.chart_panel import AnalysisChartPanel, ChartContext
 from al_dic.gui.panels.analysis.probe_table import ProbeTable
@@ -116,7 +120,9 @@ class AnalysisTab(QWidget):
         state.physical_units_changed.connect(self._on_units_changed)
         state.roi_changed.connect(self._drop_engine)
         state.display_changed.connect(self._request_overlay)
+        state.load_data_changed.connect(self._on_load_data_changed)
 
+        self._chart_panel.set_load(*self._load_axes())
         self.retranslate_ui()
 
     # -- construction -----------------------------------------------------
@@ -161,6 +167,7 @@ class AnalysisTab(QWidget):
         chart.export_chart_requested.connect(self._on_export_chart)
         chart.copy_chart_requested.connect(self._on_copy_chart)
         chart.copy_data_requested.connect(self._on_copy_data)
+        chart.load_data_requested.connect(self._on_load_data)
         self._chart.x_clicked.connect(self._on_chart_clicked)
 
         table = self._probe_table
@@ -264,13 +271,16 @@ class AnalysisTab(QWidget):
 
     def _on_results_changed(self) -> None:
         self._chart_panel.set_frame_rate(self._frame_rate())
+        self._chart_panel.set_load(*self._load_axes())
         self._drop_engine()
 
     def _on_units_changed(self) -> None:
         # The frame rate lives with the physical units, and "Time" is only
-        # offered while there is one. Cached series are keyed on the pixel
-        # size, so the cache needs no flushing.
+        # offered while there is one; matching a load record by time uses it
+        # too. Cached series are keyed on the pixel size, so the cache needs
+        # no flushing.
         self._chart_panel.set_frame_rate(self._frame_rate())
+        self._chart_panel.set_load(*self._load_axes())
         self._request_refresh()
 
     def _on_images_changed(self) -> None:
@@ -415,13 +425,39 @@ class AnalysisTab(QWidget):
 
     # -- frame --------------------------------------------------------------
 
+    # -- the testing machine's record -----------------------------------------
+
+    def _load_axes(self) -> tuple[np.ndarray | None, np.ndarray | None]:
+        """Load (N) and stress (MPa) per frame, or None where there is none."""
+        data = self._state.load_data
+        if data is None:
+            return None, None
+        try:
+            n, rate = self._frame_count(), self._frame_rate()
+            return data.load_n(n, rate), data.stress_mpa(n, rate)
+        except ValueError as exc:
+            self._say(tr_args(self.tr("The load data cannot be matched to the "
+                                      "frames: %1"), exc), "warn")
+            return None, None
+
+    def _on_load_data_changed(self) -> None:
+        self._chart_panel.set_load(*self._load_axes())
+        self._request_refresh()
+
+    def _on_load_data(self) -> None:
+        dialog = LoadDataDialog(self._state.load_data, self._frame_count(),
+                                self._frame_rate(), self)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            self._state.set_load_data(dialog.load_data())
+
     def _frame_count(self) -> int:
         result = self._state.results
         return len(result.result_disp) + 1 if result is not None else 1
 
     def _follow_frame(self) -> None:
-        """Move the chart to ``self._frame``: a cursor, or a new profile."""
-        if self._chart_panel.view() == "profile":
+        """Move the chart to ``self._frame``: a cursor, or a redraw where the
+        frame is drawn into the curves (a profile, a stress-strain ring)."""
+        if self._chart_panel.view() in ("profile", "stress_strain"):
             self._request_refresh()
         else:
             self._chart_panel.set_cursor(self._frame)
@@ -433,8 +469,8 @@ class AnalysisTab(QWidget):
         self.frame_requested.emit(self._frame)
 
     def _on_chart_clicked(self, x: float) -> None:
-        if self._chart_panel.view() == "profile":
-            return                      # x is a distance there, not a frame
+        if self._chart_panel.view() in ("profile", "stress_strain"):
+            return          # x is a distance or a strain there, not a frame
         frame = self._chart_panel.frame_from_x(x, self._frame_count())
         self._frame = frame
         self._sync_navigator()
@@ -638,9 +674,19 @@ class AnalysisTab(QWidget):
                     "value" if probe.kind == "point" else statistic),
                 series=ts,
             ))
+        # The machine's load and stress travel with the curves they explain.
+        load, stress = self._load_axes()
+        extra: dict[str, np.ndarray] = {}
+        notes: list[str] = []
+        if load is not None:
+            extra["load_N"] = load
+            if stress is not None:
+                extra["stress_MPa"] = stress
+            notes = self._state.load_data.describe(self._frame_rate())
         try:
             export_probe_csv(path, entries, frame_rate=self._frame_rate() or None,
-                             parameters=self._export_parameters())
+                             parameters=self._export_parameters(),
+                             extra_columns=extra, notes=notes)
         except (OSError, ValueError) as exc:
             self._say(tr_args(self.tr("Probe export failed: %1"), exc), "error")
             return

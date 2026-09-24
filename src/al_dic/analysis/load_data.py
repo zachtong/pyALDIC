@@ -239,6 +239,29 @@ class LoadData:
             return None
         return self.load_n(n_frames, frame_rate) / self.area_mm2
 
+    def describe(self, frame_rate: float) -> list[str]:
+        """Plain lines for an export header: where the load came from, how it
+        was matched to the frames, and A0."""
+        sync = self.sync
+        converted = "" if sync.load_unit == "N" else f", converted from {sync.load_unit}"
+        lines = [f"load_N: column '{sync.load_column}' of "
+                 f"{self.source or 'the load file'}{converted}."]
+        if sync.mode == "time":
+            lines.append(
+                f"    Matched by time: frame N is machine time (N - 1) / "
+                f"{frame_rate:g} + {sync.offset_s:g} s (camera at {frame_rate:g} fps) "
+                f"in column '{sync.time_column}', interpolated; empty outside "
+                f"the record.")
+        else:
+            lines.append(
+                f"    Matched by frame number: column '{sync.frame_column}', which "
+                f"numbers the reference image {sync.frame_base}; repeated rows "
+                f"averaged.")
+        if self.area_mm2 is not None:
+            lines.append(f"stress_MPa = load_N / A0 with A0 = {self.area_mm2:g} mm² "
+                         f"(engineering stress).")
+        return lines
+
     # -- persistence ---------------------------------------------------------
 
     def to_payload(self) -> dict[str, Any]:

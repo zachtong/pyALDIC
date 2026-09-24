@@ -39,7 +39,7 @@ GAUGE_TOOLS = {
 }
 
 # The chart's views, in tab order.
-VIEWS = ("time", "profile", "kymograph")
+VIEWS = ("time", "profile", "kymograph", "stress_strain")
 
 # A profile draws at most this many other frames: past a dozen grey lines
 # the family stops being readable.

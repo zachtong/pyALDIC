@@ -72,3 +72,60 @@ def test_duplicate_ids_in_a_file_are_a_session_error():
     items = ps.to_payload()["items"] * 2
     with pytest.raises(SessionError):
         _parse_config(_doc({"items": items, "next_id": 3}))
+
+
+# --- the machine's load record -------------------------------------------------
+
+def _load_data():
+    import numpy as np
+
+    from al_dic.analysis.load_data import LoadData, LoadSync, LoadTable
+
+    table = LoadTable(("frame", "load"), (np.array([1.0, 2.0]), np.array([0.0, 5.0])),
+                      "machine.csv")
+    return LoadData(table, LoadSync(mode="frame", load_column="load",
+                                    frame_column="frame"), area_mm2=4.0)
+
+
+def test_load_data_is_parsed_with_the_session():
+    doc = _doc(ProbeSet().to_payload())
+    doc["load_data"] = _load_data().to_payload()
+    session = _parse_config(doc)
+    assert session.load_data is not None
+    assert session.load_data.area_mm2 == 4.0
+    assert session.load_data.source == "machine.csv"
+
+
+def test_a_session_without_load_data_has_none():
+    assert _parse_config(_doc(ProbeSet().to_payload())).load_data is None
+
+
+def test_malformed_load_data_is_a_session_error():
+    doc = _doc(ProbeSet().to_payload())
+    doc["load_data"] = {"sync": {"mode": "sideways"}, "columns": {}}
+    with pytest.raises(SessionError):
+        _parse_config(doc)
+
+
+def test_the_config_carries_the_load_data():
+    from al_dic.gui.app_state import AppState
+    from al_dic.gui.session import _build_config
+
+    state = AppState()
+    state.set_load_data(_load_data())
+    config = _build_config(state, has_results=False, fingerprint={})
+    assert config["load_data"]["sync"]["load_column"] == "load"
+    state.set_load_data(None)
+    assert _build_config(state, has_results=False, fingerprint={})["load_data"] is None
+
+
+def test_new_images_clear_the_load_data():
+    """A load record belongs to one test; pairing it with another is silent."""
+    from al_dic.gui.app_state import AppState
+
+    state = AppState()
+    state.set_load_data(_load_data())
+    seen = []
+    state.load_data_changed.connect(lambda: seen.append(True))
+    state.set_image_files(["a.tif", "b.tif"])
+    assert state.load_data is None and seen == [True]

@@ -131,6 +131,7 @@ def _header_lines(
     stems: Sequence[str],
     frame_rate: float | None,
     parameters: Mapping[str, str] | None,
+    notes: Sequence[str] = (),
 ) -> list[str]:
     lines = [
         f"pyALDIC {__version__} probe export",
@@ -148,6 +149,8 @@ def _header_lines(
     ]
     if frame_rate:
         lines.append(f"time_s = (frame - 1) / {frame_rate:g}")
+    lines.extend(_clean(note) if not note.startswith(" ") else note.rstrip()
+                 for note in notes)
     if parameters:
         lines.append("")
         lines.append("Run parameters (iDICs Good Practices Guide, ch. 6):")
@@ -177,6 +180,8 @@ def export_probe_csv(
     frame_rate: float | None = None,
     include_quality: bool = True,
     parameters: Mapping[str, str] | None = None,
+    extra_columns: Mapping[str, np.ndarray] | None = None,
+    notes: Sequence[str] = (),
 ) -> Path:
     """Write *entries* as one table and return the path written.
 
@@ -189,6 +194,11 @@ def export_probe_csv(
     parameters:
         Run parameters for the header, e.g. from ``run_parameters(result)``
         plus the strain settings of the last Compute Strain.
+    extra_columns:
+        Per-frame values written after ``frame`` (and ``time_s``), indexed by
+        frame -- a machine's load and stress. Empty where a frame has none.
+    notes:
+        Header lines describing the extra columns.
     """
     out = Path(path)
     if not entries:
@@ -203,9 +213,11 @@ def export_probe_csv(
     stems = _column_stems(entries)
     frames = entries[0].series.frames
 
+    extra = dict(extra_columns or {})
     header = ["frame"]
     if frame_rate:
         header.append("time_s")
+    header.extend(extra)
     for stem in stems:
         header.append(stem)
         if include_quality:
@@ -216,7 +228,7 @@ def export_probe_csv(
     # utf-8-sig like the node export: without the BOM, Excel reads the file
     # in the system code page and CJK probe labels arrive garbled.
     with open(out, "w", encoding="utf-8-sig", newline="") as fh:
-        for line in _header_lines(entries, stems, frame_rate, parameters):
+        for line in _header_lines(entries, stems, frame_rate, parameters, notes):
             fh.write(f"# {line}\n" if line else "#\n")
         writer = csv.writer(fh)
         writer.writerow(header)
@@ -224,6 +236,9 @@ def export_probe_csv(
             row: list[object] = [int(frame) + 1]      # 1-based in the file
             if frame_rate:
                 row.append(f"{int(frame) / frame_rate:.6g}")
+            for values in extra.values():
+                value = values[int(frame)] if int(frame) < len(values) else np.nan
+                row.append(_EMPTY if not np.isfinite(value) else f"{value:.9g}")
             for entry in entries:
                 value = entry.series.values[i]
                 row.append(_EMPTY if not np.isfinite(value) else f"{value:.9g}")

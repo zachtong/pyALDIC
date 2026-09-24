@@ -92,6 +92,8 @@ class AppState(QObject):
     # Emitted when state.seeds is mutated (add/remove/re-snap/clear).
     # Canvas overlay subscribes to redraw the seed markers.
     seeds_changed = Signal()
+    # Emitted when the testing machine's record for the analysis changes.
+    load_data_changed = Signal()
 
     def __init__(self) -> None:
         super().__init__()
@@ -177,6 +179,10 @@ class AppState(QObject):
         from al_dic.analysis.probes import ProbeSet
 
         self.probes: ProbeSet = ProbeSet()
+        # A testing machine's load record matched to the frames, for load and
+        # stress axes in the analysis (al_dic.analysis.load_data.LoadData).
+        # It belongs to one test, so new images clear it.
+        self.load_data = None
         # Refinement level: 1=light, 2=medium, 3=heavy.
         # min_element_size = max(4, subset_step // 2**level)
         self.refinement_level: int = 1
@@ -263,12 +269,21 @@ class AppState(QObject):
         self.elapsed_seconds = 0.0
         self.image_files = list(files)
         self.current_frame = 0
+        had_load = self.load_data is not None
+        self.load_data = None
+        if had_load:
+            self.load_data_changed.emit()
         if had_results:
             self.results_changed.emit()
             self.run_state_changed.emit(RunState.IDLE)
         if had_roi:
             self.roi_changed.emit()
         self.images_changed.emit()
+
+    def set_load_data(self, data) -> None:
+        """Set (or clear, with None) the machine record the analysis reads."""
+        self.load_data = data
+        self.load_data_changed.emit()
 
     def set_current_frame(self, idx: int) -> None:
         if not self.image_files:

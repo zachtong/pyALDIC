@@ -31,6 +31,19 @@ def qapp():
     yield app
 
 
+@pytest.fixture(autouse=True)
+def _english_afterwards(qapp):
+    """Leave the application in English for whatever test runs next.
+
+    A language loaded here stayed installed, and a later test in the same
+    session read "25,0 mm" where it expected "25.0 mm".
+    """
+    yield
+    from al_dic.i18n import LanguageManager
+
+    LanguageManager(qapp).load("en")
+
+
 # All shipped non-source languages. Must match SUPPORTED_LANGUAGES.
 SHIPPED_LANGS = ["en", "zh_CN", "zh_TW", "ja", "ko", "de", "fr", "es"]
 

@@ -90,6 +90,7 @@ class Curve:
     status: Sequence[FrameStatus]
     emphasised: bool = False
     name: str = ""      # the probe alone, for a table; the label if empty
+    mark: int | None = None     # index of the current frame, ringed
 
 
 def _true_runs(mask: np.ndarray) -> list[tuple[int, int]]:
@@ -177,6 +178,11 @@ def draw_curves(fig: Figure, theme: ChartTheme, curves: Sequence[Curve], *,
             ax.plot(c.x[flagged], c.y[flagged], linestyle="none", marker="o",
                     markersize=6, markerfacecolor="none", markeredgecolor=c.colour,
                     markeredgewidth=1.4, zorder=4)
+        if c.mark is not None and 0 <= c.mark < len(c.x) \
+                and np.isfinite(c.x[c.mark]) and np.isfinite(c.y[c.mark]):
+            ax.plot([c.x[c.mark]], [c.y[c.mark]], linestyle="none", marker="o",
+                    markersize=10, markerfacecolor="none", markeredgecolor=c.colour,
+                    markeredgewidth=2.0, zorder=5, gid="frame_mark")
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     if integer_x:
@@ -269,11 +275,28 @@ def _cell(value: float) -> str:
 
 def table_curves(curves: Sequence[Curve], *, x_label: str, y_label: str,
                  **_drawing) -> list[list[str]]:
-    header = [x_label] + [f"{c.name or c.label} — {y_label}" for c in curves]
-    xs = sorted({float(x) for c in curves for x in c.x})
-    by_x = [dict(zip((float(x) for x in c.x), c.y)) for c in curves]
-    rows = [[_cell(x)] + [_cell(values.get(x, np.nan)) for values in by_x]
-            for x in xs]
+    """Curves sharing their x (frames, time) as one x column; curves each on
+    their own x (strain in a stress-strain chart) as a column pair each."""
+    shared = all(len(c.x) == len(curves[0].x) and np.array_equal(c.x, curves[0].x,
+                                                                equal_nan=True)
+                 for c in curves)
+    if shared:
+        header = [x_label] + [f"{c.name or c.label} — {y_label}" for c in curves]
+        xs = sorted({float(x) for c in curves for x in c.x if np.isfinite(x)})
+        by_x = [dict(zip((float(x) for x in c.x), c.y)) for c in curves]
+        rows = [[_cell(x)] + [_cell(values.get(x, np.nan)) for values in by_x]
+                for x in xs]
+        return [header] + rows
+    header = []
+    for c in curves:
+        name = c.name or c.label
+        header += [f"{name} — {x_label}", f"{name} — {y_label}"]
+    rows = []
+    for i in range(max(len(c.x) for c in curves)):
+        row: list[str] = []
+        for c in curves:
+            row += ([_cell(c.x[i]), _cell(c.y[i])] if i < len(c.x) else ["", ""])
+        rows.append(row)
     return [header] + rows
 
 

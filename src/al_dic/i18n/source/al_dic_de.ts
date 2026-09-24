@@ -169,7 +169,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Alle löschen</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="170"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="178"/>
         <source>Statistic:</source>
         <translation>Statistik:</translation>
     </message>
@@ -213,17 +213,17 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Rissöffnung</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="405"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>Die Dehnung wurde noch nicht berechnet. Berechnen Sie sie im Reiter „Dehnungsfeld“ oder zeigen Sie eine Verschiebung an.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>Messstreckengrößen benötigen eine Liniensonde.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="525"/>
         <source>No visible probe can show this quantity.</source>
         <translation>Keine sichtbare Sonde kann diese Größe anzeigen.</translation>
     </message>
@@ -268,17 +268,17 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>nicht dargestellt</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="472"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>Sonde &apos;%1&apos; hinzugefügt.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="558"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
         <source>Clear All Probes</source>
         <translation>Alle Sonden löschen</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="559"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>Alle Sonden löschen? Das lässt sich nicht rückgängig machen.</translation>
     </message>
@@ -301,7 +301,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Bereich</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="396"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="475"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>Führen Sie eine DIC-Analyse aus, um Sonden darzustellen.</translation>
     </message>
@@ -376,102 +376,128 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Färbt das Referenzbild mit dem dargestellten Feld im aktuellen Bild ein. Bei einer Messstreckengröße wird das Feld des Reiters „Dehnungsfeld“ angezeigt.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="168"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="176"/>
         <source>Plot:</source>
         <translation>Darstellen:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="171"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
         <source>X axis:</source>
         <translation>X-Achse:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="172"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
         <source>Strain as:</source>
         <translation>Dehnung als:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="174"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Min. valid fraction:</source>
         <translation>Min. gültiger Anteil:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="175"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>Ein Bild bleibt leer, wenn weniger als dieser Anteil der Punkte einer Linie oder Region zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe schrumpft.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="190"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>Zeitverlauf</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="192"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>Der Messwert jeder Sonde in jedem Bild.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>Entlang der Linie</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="189"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="197"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>Das Feld entlang der ausgewählten Linie im aktuellen Bild, dahinter die übrigen Bilder in Grau.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="202"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>Kymogramm</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="204"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>Das Feld entlang der ausgewählten Linie in jedem Bild: Abstand über Bild, Wert als Farbe.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="209"/>
+        <source>Stress–strain</source>
+        <comment>Chart view: stress against strain</comment>
+        <translation>Spannung–Dehnung</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="211"/>
+        <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
+        <translation>Spannung (ohne A0 die Kraft) über der dargestellten Größe, eine Kurve je Sonde: Spannungs-Dehnungs-Kurve mit einem Dehnungsaufnehmer, Kraft über Rissöffnung mit einer Riss-Messstrecke. Benötigt Kraftdaten.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="222"/>
         <source>Other frames</source>
         <translation>Übrige Bilder</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="223"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>Die Profile der übrigen Bilder blass hinter dem aktuellen zeichnen (höchstens zwölf, gleichmäßig verteilt).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="228"/>
         <source>Line data (CSV)…</source>
         <translation>Liniendaten (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="229"/>
         <source>Export</source>
         <translation>Exportieren</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="230"/>
+        <source>Load data…</source>
+        <translation>Kraftdaten…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
+        <translation>Kraftaufzeichnung einer Prüfmaschine (CSV) importieren, um über Kraft oder Spannung darzustellen und Spannungs-Dehnungs-Kurven zu zeichnen.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="236"/>
         <source>Probe data (CSV)…</source>
         <translation>Sondendaten (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="217"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="238"/>
         <source>Chart image…</source>
         <translation>Diagrammbild…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="219"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
         <source>Copy chart</source>
         <translation>Diagramm kopieren</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="221"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
         <source>Copy plotted data</source>
         <translation>Dargestellte Daten kopieren</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="554"/>
+        <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
+        <translation>Importieren Sie die Kraftaufzeichnung der Prüfmaschine über „Kraftdaten…“, um Spannungs-Dehnungs-Kurven zu zeichnen.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -514,25 +540,39 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Betrag der Rissöffnung</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="253"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="363"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="274"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
         <source>Frame</source>
         <translation>Bild</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="255"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="362"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="276"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="424"/>
         <source>Time (s)</source>
         <translation>Zeit (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="263"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="426"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <source>Load (N)</source>
+        <translation>Kraft (N)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="566"/>
+        <source>Stress (MPa)</source>
+        <translation>Spannung (MPa)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="290"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>Verhältnis</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="407"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="417"/>
         <source>Could not draw the field: %1</source>
         <translation>Das Feld konnte nicht gezeichnet werden: %1</translation>
     </message>
@@ -547,7 +587,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Ziehen verschiebt die Sonde, Ziehen an einem Griff ändert ihre Form. Entf löscht sie, F2 benennt sie um.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="401"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>Setzen Sie eine Sonde auf das Referenzbild, um zu beginnen.</translation>
     </message>
@@ -567,22 +607,22 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>Keine gültigen Daten entlang %1: Die Linie liegt außerhalb des Messbereichs.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="476"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="605"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>Eine Linienansicht zeigt ein Feld. Wählen Sie ein Feld zum Darstellen.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="480"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>Setzen oder wählen Sie eine Liniensonde, um das Feld entlang der Linie zu sehen.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="498"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="627"/>
         <source>Distance along %1 (%2)</source>
         <translation>Abstand entlang %1 (%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="507"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="636"/>
         <source>%1, frame %2</source>
         <translation>%1, Bild %2</translation>
     </message>
@@ -597,83 +637,88 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
         <translation>nicht dargestellt: ein Messstreckenende liegt außerhalb des Messbereichs</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="626"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
         <source>Export Probe Data</source>
         <translation>Sondendaten exportieren</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
         <source>CSV Files</source>
         <translation>CSV-Dateien</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="619"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="676"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="439"/>
+        <source>The load data cannot be matched to the frames: %1</source>
+        <translation>Die Kraftdaten lassen sich den Bildern nicht zuordnen: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>All Files</source>
         <translation>Alle Dateien</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="645"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
         <source>Probe export failed: %1</source>
         <translation>Sondenexport fehlgeschlagen: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="647"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe data written to %1</source>
         <translation>Sondendaten nach %1 geschrieben</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
         <source>Export Line Data</source>
         <translation>Liniendaten exportieren</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="666"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
         <source>Line export failed: %1</source>
         <translation>Linienexport fehlgeschlagen: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="668"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line data written to %1</source>
         <translation>Liniendaten nach %1 geschrieben</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="674"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
         <source>SVG Images</source>
         <translation>SVG-Bilder</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="685"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
         <source>Export Chart</source>
         <translation>Diagramm exportieren</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="704"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
         <source>Chart copied to the clipboard.</source>
         <translation>Diagramm in die Zwischenablage kopiert.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>Dargestellte Daten in die Zwischenablage kopiert.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="673"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
         <source>PNG Images</source>
         <translation>PNG-Bilder</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="675"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PDF Documents</source>
         <translation>PDF-Dokumente</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="696"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
         <source>Chart export failed: %1</source>
         <translation>Diagrammexport fehlgeschlagen: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="698"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart written to %1</source>
         <translation>Diagramm nach %1 geschrieben</translation>
     </message>
@@ -1967,6 +2012,130 @@ Standard (nicht aktiviert): lexikographisch — ideal für nullgefüllte Namen</
         <location filename="../../gui/panels/left_sidebar.py" line="297"/>
         <source>ADVANCED</source>
         <translation>ERWEITERT</translation>
+    </message>
+</context>
+<context>
+    <name>LoadDataDialog</name>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="103"/>
+        <source>Load Data</source>
+        <translation>Kraftdaten</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="115"/>
+        <source>No file chosen.</source>
+        <translation>Keine Datei gewählt.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="117"/>
+        <source>Choose file…</source>
+        <translation>Datei wählen…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="137"/>
+        <source>Load column:</source>
+        <translation>Kraftspalte:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="139"/>
+        <source>By time</source>
+        <translation>Nach Zeit</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="140"/>
+        <source>By frame number</source>
+        <translation>Nach Bildnummer</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="144"/>
+        <source>Match rows to frames:</source>
+        <translation>Zeilen den Bildern zuordnen:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="147"/>
+        <source>Time column:</source>
+        <translation>Zeitspalte:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="153"/>
+        <source>The machine&apos;s time at the reference image. If the camera started 2 s after the machine, enter 2.</source>
+        <translation>Die Maschinenzeit beim Referenzbild. Startete die Kamera 2 s nach der Maschine, geben Sie 2 ein.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="155"/>
+        <source>Offset:</source>
+        <translation>Versatz:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="163"/>
+        <source>Frame column:</source>
+        <translation>Bildspalte:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="167"/>
+        <source>The first image is numbered:</source>
+        <translation>Das erste Bild hat die Nummer:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="174"/>
+        <source>Initial cross-section, for engineering stress F / A0 in MPa. Leave at 0 for load only.</source>
+        <translation>Anfangsquerschnitt für die technische Spannung F / A0 in MPa. Für nur Kraft bei 0 lassen.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="176"/>
+        <source>Cross-section A0:</source>
+        <translation>Querschnitt A0:</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="192"/>
+        <source>Remove Load Data</source>
+        <translation>Kraftdaten entfernen</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="201"/>
+        <source>Camera frame rate: %1 fps, from Physical Units.</source>
+        <translation>Kamera-Framerate: %1 fps, aus „Physikalische Einheiten“.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="204"/>
+        <source>Set the camera frame rate under Physical Units to match by time.</source>
+        <translation>Legen Sie unter „Physikalische Einheiten“ die Kamera-Framerate fest, um nach Zeit zuzuordnen.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="227"/>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="245"/>
+        <source>(unnamed)</source>
+        <translation>(unbenannt)</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="324"/>
+        <source>No frame falls within the record: check the columns and the offset.</source>
+        <translation>Kein Bild liegt im Aufzeichnungsbereich: Prüfen Sie die Spalten und den Versatz.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="328"/>
+        <source>Frames with a load: %1 of %2.</source>
+        <translation>Bilder mit Kraftwert: %1 von %2.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="334"/>
+        <source>Open Load Data</source>
+        <translation>Kraftdaten öffnen</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="335"/>
+        <source>CSV Files</source>
+        <translation>CSV-Dateien</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="335"/>
+        <source>All Files</source>
+        <translation>Alle Dateien</translation>
+    </message>
+    <message>
+        <location filename="../../gui/dialogs/load_data_dialog.py" line="341"/>
+        <source>Could not read %1: %2</source>
+        <translation>%1 konnte nicht gelesen werden: %2</translation>
     </message>
 </context>
 <context>

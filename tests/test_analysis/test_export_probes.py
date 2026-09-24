@@ -199,3 +199,15 @@ def test_the_file_opens_in_excel_with_cjk_labels(tmp_path):
     with open(p, "rb") as fh:
         assert fh.read(3) == b"\xef\xbb\xbf"
     assert _read(p)[1][1].startswith("试样中心")
+
+
+def test_extra_per_frame_columns_follow_the_frame(tmp_path):
+    p = export_probe_csv(tmp_path / "probes.csv", [_entry()],
+                         extra_columns={"load_N": np.array([0.0, 5.0]),
+                                        "stress_MPa": np.array([0.0, np.nan])},
+                         notes=["load_N: from machine.csv"])
+    comments, header, rows = _read(p)
+    assert header[:3] == ["frame", "load_N", "stress_MPa"]
+    assert [r[1] for r in rows] == ["0", "5", ""], "a missing frame is an empty cell"
+    assert [r[2] for r in rows] == ["0", "", ""]
+    assert "load_N: from machine.csv" in comments

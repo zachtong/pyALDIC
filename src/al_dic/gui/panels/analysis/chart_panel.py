@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QMenu,
+    QPushButton,
     QTabBar,
     QToolButton,
     QVBoxLayout,
@@ -73,11 +74,15 @@ class AnalysisChartPanel(QWidget):
     export_chart_requested = Signal()
     copy_chart_requested = Signal()
     copy_data_requested = Signal()
+    load_data_requested = Signal()
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._updating = False
         self._rate = 0.0
+        # The machine's load and stress per frame, when there is a record.
+        self._load: np.ndarray | None = None
+        self._stress: np.ndarray | None = None
         # Drawn by the last refresh: (probe, quantity, statistic) per curve.
         self.plotted: list[tuple[Probe, Quantity, str]] = []
         # Why each probe shows gaps, or is not plotted.
@@ -122,6 +127,9 @@ class AnalysisChartPanel(QWidget):
                   self._statistic_label, self.statistic_box):
             row.addWidget(w)
         row.addStretch()
+        self.load_btn = QPushButton()
+        self.load_btn.clicked.connect(self.load_data_requested)
+        row.addWidget(self.load_btn)
         self.export_btn = QToolButton()
         self.export_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
         menu = QMenu(self.export_btn)
@@ -197,6 +205,14 @@ class AnalysisChartPanel(QWidget):
                     "AnalysisTab",
                     "The field along the selected line at every frame: "
                     "distance against frame, value as colour.")),
+            "stress_strain": (
+                QCoreApplication.translate(
+                    "AnalysisTab", "Stress–strain", "Chart view: stress against strain"),
+                QCoreApplication.translate(
+                    "AnalysisTab",
+                    "Stress (or load, without A0) against the plotted quantity, "
+                    "one curve per probe: stress-strain with an extensometer, "
+                    "load against opening with a crack gauge. Needs load data.")),
         }
         for index in range(self.view_bar.count()):
             label, tip = views[self.view_bar.tabData(index)]
@@ -211,6 +227,11 @@ class AnalysisChartPanel(QWidget):
         self._export_line_action.setText(
             QCoreApplication.translate("AnalysisTab", "Line data (CSV)…"))
         self.export_btn.setText(QCoreApplication.translate("AnalysisTab", "Export"))
+        self.load_btn.setText(QCoreApplication.translate("AnalysisTab", "Load data…"))
+        self.load_btn.setToolTip(QCoreApplication.translate(
+            "AnalysisTab",
+            "Import a testing machine's load record (CSV) to plot against load "
+            "or stress, and to draw stress-strain curves."))
         self._export_csv_action.setText(
             QCoreApplication.translate("AnalysisTab", "Probe data (CSV)…"))
         self._export_chart_action.setText(
@@ -253,8 +274,14 @@ class AnalysisChartPanel(QWidget):
         self.x_box.addItem(QCoreApplication.translate("AnalysisTab", "Frame"), "frame")
         if self._rate > 0:
             self.x_box.addItem(QCoreApplication.translate("AnalysisTab", "Time (s)"), "time")
+        if self._load is not None:
+            self.x_box.addItem(QCoreApplication.translate("AnalysisTab", "Load (N)"), "load")
+        if self._stress is not None:
+            self.x_box.addItem(
+                QCoreApplication.translate("AnalysisTab", "Stress (MPa)"), "stress")
         self.x_box.setCurrentIndex(max(self.x_box.findData(current), 0))
         self._updating = False
+        self._enable_axes()
 
     def _populate_strain_units(self) -> None:
         self._updating = True
@@ -298,6 +325,11 @@ class AnalysisChartPanel(QWidget):
         self._rate = rate if rate > 0 else 0.0
         self._populate_x_axes()
 
+    def set_load(self, load: np.ndarray | None, stress: np.ndarray | None) -> None:
+        """The machine's load (N) and stress (MPa) per frame; None: absent."""
+        self._load, self._stress = load, stress
+        self._populate_x_axes()
+
     def display_scale(self, quantity: Quantity, statistic: str | None,
                       length_unit: str) -> tuple[float, str]:
         return display_scale(quantity, statistic,
@@ -306,7 +338,8 @@ class AnalysisChartPanel(QWidget):
 
     def has_output(self) -> bool:
         """Something is drawn that an export could write."""
-        shown = self.plotted if self.view() == "time" else self.line_shown
+        per_probe = self.view() in ("time", "stress_strain")
+        shown = self.plotted if per_probe else self.line_shown
         return self.chart.has_data and bool(shown)
 
     def _on_quantity_changed(self) -> None:
@@ -325,49 +358,92 @@ class AnalysisChartPanel(QWidget):
     def update_controls(self) -> None:
         """Show the controls that mean something for this view and quantity."""
         view = self.view()
-        over_time = view == "time"
+        # One curve per probe, from its series: over time, or against stress.
+        per_probe = view in ("time", "stress_strain")
         quantity = self.quantity()
         is_field = quantity is not None and not quantity.is_gauge
-        statistic = self.statistic_box.currentData() if over_time else None
-        self._statistic_label.setVisible(is_field and over_time)
-        self.statistic_box.setVisible(is_field and over_time)
+        statistic = self.statistic_box.currentData() if per_probe else None
+        self._statistic_label.setVisible(is_field and per_probe)
+        self.statistic_box.setVisible(is_field and per_probe)
         strainlike = is_strainlike(quantity, statistic)
         self._unit_label.setVisible(strainlike)
         self.unit_box.setVisible(strainlike)
-        threshold = (is_field and over_time
+        threshold = (is_field and per_probe
                      and self.statistic_box.currentData() != "valid_fraction")
         self._threshold_label.setVisible(threshold)
         self.threshold.setVisible(threshold)
-        self._x_label.setVisible(view != "profile")
-        self.x_box.setVisible(view != "profile")
+        # A stress-strain chart's x is the quantity itself; a profile's is
+        # the distance along the line.
+        self._x_label.setVisible(view in ("time", "kymograph"))
+        self.x_box.setVisible(view in ("time", "kymograph"))
         self.other_frames_box.setVisible(view == "profile")
-        self._export_csv_action.setVisible(over_time)
-        self._export_line_action.setVisible(not over_time)
+        self._export_csv_action.setVisible(per_probe)
+        self._export_line_action.setVisible(not per_probe)
+        self._enable_axes()
+
+    def _enable_axes(self) -> None:
+        """A kymograph's cells must be evenly spaced; load and stress are not."""
+        model = self.x_box.model()
+        for index in range(self.x_box.count()):
+            if self.x_box.itemData(index) in ("load", "stress"):
+                model.item(index).setEnabled(self.view() != "kymograph")
 
     # -- x axis -------------------------------------------------------------
 
-    def _time_axis(self) -> bool:
-        return self.x_box.currentData() == "time" and self._rate > 0
+    def axis(self) -> str:
+        """The x axis in force: the one chosen, if it can be drawn here."""
+        key = self.x_box.currentData() or "frame"
+        per_frame = {"load": self._load, "stress": self._stress}
+        if key == "time" and not self._rate > 0:
+            return "frame"
+        if key in per_frame and (per_frame[key] is None or self.view() == "kymograph"):
+            return "frame"
+        return key
+
+    def _per_frame(self, frames: np.ndarray, values: np.ndarray) -> np.ndarray:
+        idx = np.asarray(frames, dtype=np.int64)
+        inside = (idx >= 0) & (idx < len(values))
+        return np.where(inside, values[np.clip(idx, 0, max(len(values) - 1, 0))], np.nan)
 
     def x_values(self, frames: np.ndarray) -> np.ndarray:
-        if self._time_axis():
+        axis = self.axis()
+        if axis == "time":
             return frames.astype(float) / self._rate
+        if axis == "load":
+            return self._per_frame(frames, self._load)
+        if axis == "stress":
+            return self._per_frame(frames, self._stress)
         return frames.astype(float) + 1.0            # 1-based, as the navigator
 
     def x_of(self, frame: int) -> float:
         return float(self.x_values(np.array([frame]))[0])
 
     def x_title(self) -> str:
-        if self._time_axis():
+        axis = self.axis()
+        if axis == "time":
             return QCoreApplication.translate("AnalysisTab", "Time (s)")
+        if axis == "load":
+            return QCoreApplication.translate("AnalysisTab", "Load (N)")
+        if axis == "stress":
+            return QCoreApplication.translate("AnalysisTab", "Stress (MPa)")
         return QCoreApplication.translate("AnalysisTab", "Frame")
 
     def frame_from_x(self, x: float, n_frames: int) -> int:
-        frame = int(round(x * self._rate)) if self._time_axis() else int(round(x)) - 1
+        """The frame a click at *x* means; for load or stress, the nearest."""
+        axis = self.axis()
+        if axis in ("load", "stress"):
+            values = self.x_values(np.arange(max(n_frames, 1)))
+            finite = np.isfinite(values)
+            if not finite.any():
+                return 0
+            return int(np.nanargmin(np.where(finite, np.abs(values - x), np.nan)))
+        frame = int(round(x * self._rate)) if axis == "time" else int(round(x)) - 1
         return max(0, min(frame, max(n_frames, 1) - 1))
 
     def set_cursor(self, frame: int) -> None:
-        self.chart.set_cursor(self.x_of(frame))
+        """The frame as a line across the chart, where x is frame-like."""
+        if self.view() in ("time", "kymograph"):
+            self.chart.set_cursor(self.x_of(frame))
 
     # -- drawing --------------------------------------------------------------
 
@@ -378,10 +454,13 @@ class AnalysisChartPanel(QWidget):
 
     def refresh(self, ctx: ChartContext) -> None:
         self.line_shown = None
-        if self.view() == "time":
+        view = self.view()
+        if view == "time":
             self._draw_time(ctx)
+        elif view == "stress_strain":
+            self._draw_stress_strain(ctx)
         else:
-            self._draw_line(ctx, self.view())
+            self._draw_line(ctx, view)
 
     @staticmethod
     def _applies(probe: Probe, quantity: Quantity, statistic: str) -> bool:
@@ -415,7 +494,29 @@ class AnalysisChartPanel(QWidget):
         if reason is not None:
             self.placeholder(reason)
             return
+        series = self._collect(ctx, quantity, statistic)
+        if series is None:
+            return
 
+        scale, unit = self.display_scale(quantity, statistic, ctx.length_unit)
+        selected_id = ctx.selected.id if ctx.selected is not None else None
+        curves = [Curve(
+            label=f"{probe.label} · {note}" if note else probe.label,
+            name=probe.label, colour=probe.color, x=self.x_values(ts.frames),
+            y=ts.values * scale, status=ts.status, emphasised=probe.id == selected_id,
+        ) for probe, ts, note in series]
+        plotted = [(probe, quantity, statistic) for probe, _, _ in series]
+        points_only = all(p.kind == "point" for p, _, _ in plotted)
+        self.chart.plot_curves(
+            curves, x_label=self.x_title(),
+            y_label=text.y_title(quantity, statistic, unit, points_only),
+            integer_x=self.axis() == "frame", cursor_x=self.x_of(ctx.frame),
+        )
+        self.plotted = plotted
+
+    def _collect(self, ctx: ChartContext, quantity: Quantity, statistic: str):
+        """Each visible probe's series and note -- or None, having drawn why
+        there are none. Notes for every probe are left in ``self.notes``."""
         shown = [p for p in ctx.probes
                  if p.visible and self._applies(p, quantity, statistic)]
         notes = {p.id: text.not_applicable_note(p, quantity)
@@ -429,11 +530,8 @@ class AnalysisChartPanel(QWidget):
                 message = f"{message} {hint}"
             self.placeholder(message)
             self.notes = notes
-            return
-
-        scale, unit = self.display_scale(quantity, statistic, ctx.length_unit)
-        curves, plotted = [], []
-        selected_id = ctx.selected.id if ctx.selected is not None else None
+            return None
+        series = []
         for probe in shown:
             try:
                 ts = ctx.series(probe, quantity, statistic)
@@ -442,22 +540,53 @@ class AnalysisChartPanel(QWidget):
                 continue
             note = text.series_note(ts)
             notes[probe.id] = note
+            series.append((probe, ts, note))
+        self.notes = notes
+        return series
+
+    def _draw_stress_strain(self, ctx: ChartContext) -> None:
+        """Stress (load without A0) against the quantity, a curve per probe,
+        the current frame ringed on each."""
+        quantity = self.quantity()
+        statistic = self.statistic_box.currentData() or "mean"
+        reason = self._unavailable(ctx, quantity, need_probes=True)
+        if reason is None and self._load is None:
+            reason = QCoreApplication.translate(
+                "AnalysisTab",
+                "Import the testing machine's load record with Load data… to "
+                "draw stress-strain curves.")
+        if reason is not None:
+            self.placeholder(reason)
+            return
+        series = self._collect(ctx, quantity, statistic)
+        if series is None:
+            return
+
+        if self._stress is not None:
+            force, y_label = self._stress, QCoreApplication.translate(
+                "AnalysisTab", "Stress (MPa)")
+        else:
+            force, y_label = self._load, QCoreApplication.translate(
+                "AnalysisTab", "Load (N)")
+        scale, unit = self.display_scale(quantity, statistic, ctx.length_unit)
+        selected_id = ctx.selected.id if ctx.selected is not None else None
+        curves = []
+        for probe, ts, note in series:
+            at = np.flatnonzero(ts.frames == ctx.frame)
             curves.append(Curve(
                 label=f"{probe.label} · {note}" if note else probe.label,
-                name=probe.label,
-                colour=probe.color, x=self.x_values(ts.frames),
-                y=ts.values * scale, status=ts.status,
+                name=probe.label, colour=probe.color, x=ts.values * scale,
+                y=self._per_frame(ts.frames, force), status=ts.status,
                 emphasised=probe.id == selected_id,
+                mark=int(at[0]) if at.size else None,
             ))
-            plotted.append((probe, quantity, statistic))
-
+        plotted = [(probe, quantity, statistic) for probe, _, _ in series]
         points_only = all(p.kind == "point" for p, _, _ in plotted)
         self.chart.plot_curves(
-            curves, x_label=self.x_title(),
-            y_label=text.y_title(quantity, statistic, unit, points_only),
-            integer_x=not self._time_axis(), cursor_x=self.x_of(ctx.frame),
+            curves, x_label=text.y_title(quantity, statistic, unit, points_only),
+            y_label=y_label, integer_x=False,
         )
-        self.plotted, self.notes = plotted, notes
+        self.plotted = plotted
 
     @staticmethod
     def line_probe(ctx: ChartContext) -> Probe | None:
@@ -518,7 +647,7 @@ class AnalysisChartPanel(QWidget):
                 x_label=self.x_title(), y_label=distance_label,
                 value_label=value_label, colormap=state.colormap,
                 vmin=vmin, vmax=vmax, consumed=consumed.T, consumed_label=crack,
-                integer_x=not self._time_axis(), cursor_x=self.x_of(ctx.frame),
+                integer_x=self.axis() == "frame", cursor_x=self.x_of(ctx.frame),
             )
         self.line_shown = (probe, quantity.name)
 
