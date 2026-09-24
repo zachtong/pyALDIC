@@ -8,6 +8,7 @@ expanding Advanced. These tests pin that promotion down.
 from __future__ import annotations
 
 import pytest
+from PySide6.QtCore import QRect, Qt
 from PySide6.QtWidgets import QApplication
 
 app = QApplication.instance() or QApplication([])
@@ -48,3 +49,43 @@ def test_changing_search_range_updates_state(panel):
     assert AppState.instance().search_range == 60
     panel._search_range.setValue(24)
     assert AppState.instance().search_range == 24
+
+
+@pytest.fixture
+def starting_points_mode():
+    """The search label reads "Starting Point Search" in this mode."""
+    state = AppState.instance()
+    before = state.init_guess_mode
+    state.init_guess_mode = "seed_propagation"
+    yield
+    state.init_guess_mode = before
+
+
+@pytest.mark.parametrize("lang", ["en", "de", "fr", "es", "ja", "zh_TW"])
+def test_no_parameter_label_is_clipped(lang, starting_points_mode):
+    """The labels were fixed at 120 px (R5) and lost their tails in German,
+    French and Spanish ("Niveau de raffineme"). The column now takes its
+    longest label, and wraps past a cap. Measured with each label's own font,
+    so the check holds whatever fonts the machine has.
+    """
+    from al_dic.i18n import LanguageManager
+
+    manager = LanguageManager(app)
+    assert manager.load(lang)
+    try:
+        panel = ParamPanel()
+        labels = panel._row_labels
+        texts = [label.text() for label in labels]
+        assert "Starting Point Search" in texts or lang != "en"
+        widths = {label.maximumWidth() for label in labels}
+        assert len(widths) == 1, f"labels no longer share one column: {widths}"
+        width = widths.pop()
+        for label in labels:
+            # Qt's own line breaking: an unbreakable run wider than the
+            # column comes back wider than the rectangle it was given.
+            flags = Qt.TextFlag.TextWordWrap if label.wordWrap() else 0
+            needed = label.fontMetrics().boundingRect(
+                QRect(0, 0, width, 10_000), flags, label.text()).width()
+            assert needed <= width, f"{label.text()!r} is cut at {width} px"
+    finally:
+        manager.load("en")

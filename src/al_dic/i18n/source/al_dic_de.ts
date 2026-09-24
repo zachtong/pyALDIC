@@ -13,7 +13,7 @@
         <source>Number of global refinement cycles for the AL-DIC solver.
 1 = single global pass (fastest), 3 = default,
 5+ = diminishing returns for most cases.</source>
-        <translation>Anzahl globaler Verfeinerungszyklen für den AL-DIC-Solver.
+        <translation>Anzahl globaler Verfeinerungszyklen für den AL-DIC-Löser.
 1 = einmaliger Durchlauf (schnellste), 3 = Standard,
 5+ = abnehmender Ertrag in den meisten Fällen.</translation>
     </message>
@@ -34,7 +34,7 @@
 Only relevant for the FFT init-guess mode.</source>
         <translation>Wenn der NCC-Peak den Rand des Suchbereichs erreicht, wird automatisch mit einem größeren Bereich wiederholt (bis zur halben Bildgröße, 6 Versuche mit 2-facher Vergrößerung).
 
-Nur relevant für den FFT-Startschätzungsmodus.</translation>
+Nur relevant für den FFT-Anfangsschätzungsmodus.</translation>
     </message>
 </context>
 <context>
@@ -215,7 +215,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
-        <translation>Die Dehnung wurde noch nicht berechnet. Berechnen Sie sie im Reiter „Dehnungsfeld“ oder zeigen Sie eine Verschiebung an.</translation>
+        <translation>Die Dehnung wurde noch nicht berechnet. Berechnen Sie sie im Reiter „Dehnungsfeld“ oder stellen Sie eine Verschiebung dar.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
@@ -398,7 +398,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
-        <translation>Ein Bild bleibt leer, wenn weniger als dieser Anteil der Punkte einer Linie oder Region zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe schrumpft.</translation>
+        <translation>Ein Bild bleibt leer, wenn weniger als dieser Anteil der Punkte einer Linie oder eines Bereichs zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe schrumpft.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
@@ -775,7 +775,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/widgets/range_mode.py" line="36"/>
         <source>Rescale the color range to each frame&apos;s data range</source>
-        <translation>Farbbereich an den Datenbereich jedes Frames anpassen</translation>
+        <translation>Farbbereich an den Datenbereich jedes Bildes anpassen</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/range_mode.py" line="39"/>
@@ -786,7 +786,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/widgets/range_mode.py" line="42"/>
         <source>Keep the manual Min/Max bounds for every frame</source>
-        <translation>Manuelle Min/Max-Grenzen für alle Frames beibehalten</translation>
+        <translation>Manuelle Min/Max-Grenzen für alle Bilder beibehalten</translation>
     </message>
 </context>
 <context>
@@ -794,7 +794,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="367"/>
         <source>Batch Import Region of Interest Masks</source>
-        <translation>Masken des Interessenbereichs stapelweise importieren</translation>
+        <translation>Region-of-Interest-Masken stapelweise importieren</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="418"/>
@@ -824,7 +824,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="456"/>
         <source>Match mask files to frames by number in filename</source>
-        <translation>Maskendateien anhand der Zahl im Dateinamen Frames zuordnen</translation>
+        <translation>Maskendateien anhand der Zahl im Dateinamen den Bildern zuordnen</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="460"/>
@@ -834,12 +834,12 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="462"/>
         <source>Assign masks to frames in order starting from frame 0</source>
-        <translation>Masken den Frames der Reihe nach ab Frame 0 zuweisen</translation>
+        <translation>Masken den Bildern der Reihe nach ab Bild 0 zuweisen</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="470"/>
         <source>Frame Assignments</source>
-        <translation>Frame-Zuweisungen</translation>
+        <translation>Bildzuweisungen</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
@@ -849,7 +849,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
         <source>Image</source>
-        <translation>Bild</translation>
+        <translation>Bilddatei</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
@@ -864,7 +864,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="486"/>
         <source>Pair selected mask(s) with selected frame(s)</source>
-        <translation>Ausgewählte Maske(n) mit ausgewähltem/ausgewählten Frame(s) koppeln</translation>
+        <translation>Ausgewählte Maske(n) mit ausgewähltem/ausgewählten Bild(ern) koppeln</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="490"/>
@@ -980,7 +980,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
         <source>Init</source>
-        <translation>Start</translation>
+        <translation>Anfangsschätzung</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
@@ -1010,17 +1010,17 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="112"/>
         <source>Previous frame</source>
-        <translation>Vorheriger Frame</translation>
+        <translation>Vorheriges Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
         <source>FFT every frame</source>
-        <translation>FFT jeder Frame</translation>
+        <translation>FFT jedes Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
         <source>FFT every %1 fr</source>
-        <translation>FFT alle %1 Frames</translation>
+        <translation>FFT alle %1 Bilder</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="117"/>
@@ -1089,7 +1089,7 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="654"/>
         <source>Select output folder…</source>
-        <translation>Ausgabeordner wählen…</translation>
+        <translation>Ausgabeordner auswählen…</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="658"/>
@@ -1179,12 +1179,12 @@ Nur relevant für den FFT-Startschätzungsmodus.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="764"/>
         <source>CSV (per frame)</source>
-        <translation>CSV (pro Frame)</translation>
+        <translation>CSV (pro Bild)</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="767"/>
         <source>NPZ: one file per frame (default: single merged file)</source>
-        <translation>NPZ: eine Datei pro Frame (Standard: eine zusammengeführte Datei)</translation>
+        <translation>NPZ: eine Datei pro Bild (Standard: eine zusammengeführte Datei)</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="775"/>
@@ -1312,7 +1312,7 @@ Referenzbild: an den ursprünglichen Knotenpositionen über dem ersten Bild geze
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
-        <translation>Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter zu exportieren. Die Füllung wird im Reiter „Preview &amp; Colorbar“ gewählt.</translation>
+        <translation>Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter zu exportieren. Die Füllung wird im Reiter „Vorschau &amp; Farbleiste“ gewählt.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
@@ -1590,7 +1590,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
-        <translation>Colormap, Deckkraft und Auto-Bereich dieses Felds auf alle aktivierten Felder anwenden (jedes Feld behält sein eigenes Min/Max).</translation>
+        <translation>Farbskala, Deckkraft und Auto-Bereich dieses Felds auf alle aktivierten Felder anwenden (jedes Feld behält sein eigenes Min/Max).</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
@@ -1600,7 +1600,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
-        <translation>Aktivieren Sie ein Feld im Reiter „Images“ für die Vorschau.</translation>
+        <translation>Aktivieren Sie ein Feld im Reiter „Bilder“ für die Vorschau.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
@@ -1632,7 +1632,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1650"/>
         <source>Select Output Folder</source>
-        <translation>Ausgabeordner wählen</translation>
+        <translation>Ausgabeordner auswählen</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1709"/>
@@ -1699,7 +1699,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="59"/>
         <source>Previous frame</source>
-        <translation>Vorheriger Frame</translation>
+        <translation>Vorheriges Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="69"/>
@@ -1716,7 +1716,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="80"/>
         <source>Next frame</source>
-        <translation>Nächster Frame</translation>
+        <translation>Nächstes Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="93"/>
@@ -1727,7 +1727,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
         <location filename="../../gui/widgets/frame_navigator.py" line="98"/>
         <location filename="../../gui/widgets/frame_navigator.py" line="194"/>
         <source>FRAME 0/0</source>
-        <translation>FRAME 0/0</translation>
+        <translation>BILD 0/0</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="159"/>
@@ -1775,7 +1775,7 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
         <location filename="../../gui/widgets/image_list.py" line="97"/>
         <source>Region</source>
         <comment>Image list column: ROI status</comment>
-        <translation>Bereich</translation>
+        <translation>Region</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/image_list.py" line="190"/>
@@ -1849,11 +1849,11 @@ Auto-placed per region when you draw or edit an ROI.</source>
         <translation>Platzieren Sie einige Punkte; pyALDIC initialisiert jeden mit einer Einpunkt-NCC und propagiert das Feld entlang der Netz-Nachbarn.
 
 Optimal für:
-• Große Verschiebungen zwischen Frames (&gt; 50 px)
+• Große Verschiebungen zwischen Bildern (&gt; 50 px)
 • Diskontinuierliche Felder (Risse, Scherbänder)
 • Szenarien, in denen FFT falsche Peaks wählt
 
-Beim Zeichnen oder Bearbeiten eines ROI automatisch pro Region platziert.</translation>
+Beim Zeichnen oder Bearbeiten einer ROI automatisch pro Region platziert.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="100"/>
@@ -1879,7 +1879,7 @@ Beim Zeichnen oder Bearbeiten eines ROI automatisch pro Region platziert.</trans
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="113"/>
         <source>Clear</source>
-        <translation>Leeren</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="115"/>
@@ -1924,27 +1924,27 @@ Aufwand wächst mit dem Suchradius, sehr große Verschiebungen werden langsam.</
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="165"/>
         <source>Run FFT every N frames. N = 1 means FFT every frame (safest, slowest). N &gt; 1 uses warm-start between resets to limit error propagation to N frames.</source>
-        <translation>FFT alle N Frames ausführen. N = 1 bedeutet FFT in jedem Frame (sicherste, langsamste Option). N &gt; 1 verwendet Warmstart zwischen Resets, um die Fehlerausbreitung auf N Frames zu begrenzen.</translation>
+        <translation>FFT alle N Bilder ausführen. N = 1 bedeutet FFT in jedem Bild (sicherste, langsamste Option). N &gt; 1 verwendet Warmstart zwischen Resets, um die Fehlerausbreitung auf N Bilder zu begrenzen.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="175"/>
         <source>(N=1 = every frame)</source>
-        <translation>(N=1 = jeder Frame)</translation>
+        <translation>(N=1 = jedes Bild)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="184"/>
         <source>Only when reference frame updates (incremental only)</source>
-        <translation>Nur bei Referenzframe-Aktualisierung (nur inkrementell)</translation>
+        <translation>Nur bei Referenzbild-Aktualisierung (nur inkrementell)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="187"/>
         <source>Run FFT whenever the reference frame changes; warm-start within each segment. Typical default for incremental mode.</source>
-        <translation>FFT bei jedem Wechsel des Referenzframes ausführen; Warmstart innerhalb jedes Segments. Typischer Standard für den inkrementellen Modus.</translation>
+        <translation>FFT bei jedem Wechsel des Referenzbildes ausführen; Warmstart innerhalb jedes Segments. Typischer Standard für den inkrementellen Modus.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="198"/>
         <source>Previous frame</source>
-        <translation>Vorheriger Frame</translation>
+        <translation>Vorheriges Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="202"/>
@@ -1955,10 +1955,10 @@ Best for:
 • Fastest option when motion is smooth
 
 Errors can accumulate over long sequences. Prefer FFT or Starting Points on noisy data or when motion is larger.</source>
-        <translation>Die konvergierte Verschiebung des vorherigen Frames als Startschätzung verwenden. Keine Kreuzkorrelation wird ausgeführt.
+        <translation>Die konvergierte Verschiebung des vorherigen Bildes als Anfangsschätzung verwenden. Keine Kreuzkorrelation wird ausgeführt.
 
 Optimal für:
-• Sehr kleine Bewegungen zwischen Frames (wenige Pixel)
+• Sehr kleine Bewegungen zwischen Bildern (wenige Pixel)
 • Schnellste Option bei gleichmäßiger Bewegung
 
 Fehler können sich über lange Sequenzen akkumulieren. Bei verrauschten Daten oder größerer Bewegung FFT oder Startpunkte bevorzugen.</translation>
@@ -1996,12 +1996,12 @@ Standard (nicht aktiviert): lexikographisch — ideal für nullgefüllte Namen</
     <message>
         <location filename="../../gui/panels/left_sidebar.py" line="274"/>
         <source>INITIAL GUESS</source>
-        <translation>STARTSCHÄTZUNG</translation>
+        <translation>ANFANGSSCHÄTZUNG</translation>
     </message>
     <message>
         <location filename="../../gui/panels/left_sidebar.py" line="281"/>
         <source>REGION OF INTEREST</source>
-        <translation>INTERESSENBEREICH</translation>
+        <translation>REGION OF INTEREST</translation>
     </message>
     <message>
         <location filename="../../gui/panels/left_sidebar.py" line="291"/>
@@ -2373,77 +2373,79 @@ Die Ergebnisse wurden wiederhergestellt. Wählen Sie den Ordner, der die Bilder 
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="37"/>
+        <location filename="../../gui/widgets/param_panel.py" line="48"/>
         <source>Subset Size</source>
+        <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>Subset-Größe</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="43"/>
+        <location filename="../../gui/widgets/param_panel.py" line="54"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>IC-GN-Subset-Fenstergröße in Pixeln (ungerade Zahl)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="50"/>
+        <location filename="../../gui/widgets/param_panel.py" line="61"/>
         <source>Subset Step</source>
-        <translation>Subset-Schrittweite</translation>
+        <translation>Subset-Schritt</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="53"/>
+        <location filename="../../gui/widgets/param_panel.py" line="64"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>Knotenabstand in Pixeln (muss eine Zweierpotenz sein)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="72"/>
+        <location filename="../../gui/widgets/param_panel.py" line="197"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
         <source>Search Range</source>
         <translation>Suchbereich</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="76"/>
+        <location filename="../../gui/widgets/param_panel.py" line="87"/>
         <source>Refine Inner Boundary</source>
         <translation>Innere Grenze verfeinern</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="79"/>
+        <location filename="../../gui/widgets/param_panel.py" line="90"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>Netz entlang innerer Maskenränder lokal verfeinern
-(Löcher im Interessenbereich). Nützlich für Blasen- oder Porenränder.</translation>
+(Löcher in der Region of Interest). Nützlich für Blasen- oder Porenränder.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="83"/>
+        <location filename="../../gui/widgets/param_panel.py" line="94"/>
         <source>Refine Outer Boundary</source>
         <translation>Äußere Grenze verfeinern</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/param_panel.py" line="97"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
-        <translation>Netz entlang des äußeren Rands des Interessenbereichs lokal verfeinern.</translation>
+        <translation>Netz entlang des äußeren Rands der Region of Interest lokal verfeinern.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/param_panel.py" line="112"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
-        <translation>Verfeinerungsstärke. Minimale Elementgröße = max(2, subset_step / 2^Stufe). Wird gleichmäßig auf innere, äußere Grenzen UND mit dem Pinsel gemalte Verfeinerungszonen angewendet. Verfügbare Stufen hängen von Subset-Größe und Subset-Schrittweite ab.</translation>
+        <translation>Verfeinerungsstärke. Minimale Elementgröße = max(2, subset_step / 2^level). Wird gleichmäßig auf innere, äußere Grenzen UND mit dem Pinsel gemalte Verfeinerungszonen angewendet. Verfügbare Stufen hängen von Subset-Größe und Subset-Schritt ab.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="108"/>
+        <location filename="../../gui/widgets/param_panel.py" line="118"/>
         <source>Refinement Level</source>
         <translation>Verfeinerungsstufe</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="167"/>
+        <location filename="../../gui/widgets/param_panel.py" line="178"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
   radius × sin(per-step angle).</source>
-        <translation>Maximale Verschiebung pro Frame, die die FFT-Suche erkennen kann (Pixel).
-Deutlich größer als die erwartete Bewegung zwischen Frames einstellen.
+        <translation>Maximale Verschiebung pro Bild, die die FFT-Suche erkennen kann (Pixel).
+Deutlich größer als die erwartete Bewegung zwischen Bildern einstellen.
 Für große Rotationen im inkrementellen Modus muss dies abdecken:
   Radius × sin(Winkel pro Schritt).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/param_panel.py" line="185"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2452,49 +2454,50 @@ Erweitert sich bei abgeschnittenem Peak automatisch um den Faktor 2 pro Wiederho
 Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-aware-Propagation (keine knotenweise Suche).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="182"/>
-        <source>Initial Seed Search</source>
-        <translation>Anfängliche Seed-Suche</translation>
+        <location filename="../../gui/widgets/param_panel.py" line="193"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <source>Starting Point Search</source>
+        <translation>Startpunkt-Suche</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="218"/>
+        <location filename="../../gui/widgets/param_panel.py" line="249"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>Leicht</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="219"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>Mittel</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="220"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Stark</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Sehr stark</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>Ultra</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="228"/>
+        <location filename="../../gui/widgets/param_panel.py" line="259"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="281"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
-        <translation>min. Elementgröße = %1 px  (subset_step=%2, Stufe=%3)</translation>
+        <translation>min. Elementgröße = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
 </context>
 <context>
@@ -2537,7 +2540,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/physical_units_widget.py" line="167"/>
         <source>Disp: px  Velocity: px/fr</source>
-        <translation>Versch.: px  Geschw.: px/fr</translation>
+        <translation>Verschiebung: px  Geschwindigkeit: px/Bild</translation>
     </message>
 </context>
 <context>
@@ -2555,7 +2558,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  Loaded %1 images, shape=%2</source>
-        <translation>  %1 Bilder geladen, Form=%2</translation>
+        <translation>  %1 Bilder geladen, shape=%2</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
@@ -2602,37 +2605,37 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="62"/>
         <source>Load images first, then draw a Region of Interest on frame 1.</source>
-        <translation>Laden Sie zuerst Bilder und zeichnen Sie dann einen Interessenbereich auf Frame 1.</translation>
+        <translation>Laden Sie zuerst Bilder und zeichnen Sie dann eine Region of Interest auf Bild 1.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="69"/>
         <source>&lt;b&gt;Accumulative mode&lt;/b&gt; — only frame 1 needs a Region of Interest. All later frames are compared against it directly.</source>
-        <translation>&lt;b&gt;Akkumulativer Modus&lt;/b&gt; — nur Frame 1 benötigt einen Interessenbereich. Alle späteren Frames werden direkt damit verglichen.</translation>
+        <translation>&lt;b&gt;Akkumulativer Modus&lt;/b&gt; — nur Bild 1 benötigt eine Region of Interest. Alle späteren Bilder werden direkt damit verglichen.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="79"/>
         <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
-        <translation>&lt;b&gt;Inkrementell, jeder Frame&lt;/b&gt; — Frame 1 benötigt einen Interessenbereich. Er wird automatisch auf jeden späteren Frame vorwärts übertragen (kein frameweises Zeichnen erforderlich).</translation>
+        <translation>&lt;b&gt;Inkrementell, jedes Bild&lt;/b&gt; — Bild 1 benötigt eine Region of Interest. Sie wird automatisch auf jedes spätere Bild vorwärts übertragen (kein bildweises Zeichnen erforderlich).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="96"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
-        <translation>&lt;b&gt;Inkrementell, alle %1 Frames&lt;/b&gt; — Interessenbereich auf folgenden Frames zeichnen: &lt;b&gt;%2&lt;/b&gt; (insgesamt %3 Referenzframes).</translation>
+        <translation>&lt;b&gt;Inkrementell, alle %1 Bilder&lt;/b&gt; — Region of Interest auf folgenden Bildern zeichnen: &lt;b&gt;%2&lt;/b&gt; (insgesamt %3 Referenzbilder).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="110"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
-        <translation>&lt;b&gt;Inkrementell, benutzerdefiniert&lt;/b&gt; — keine benutzerdefinierten Referenzframes festgelegt. Frame 1 wird die einzige Referenz sein; fügen Sie weitere Indizes im Feld „Referenzframes“ hinzu.</translation>
+        <translation>&lt;b&gt;Inkrementell, benutzerdefiniert&lt;/b&gt; — keine benutzerdefinierten Referenzbilder festgelegt. Bild 1 wird die einzige Referenz sein; fügen Sie weitere Indizes im Feld „Referenzbilder“ hinzu.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="120"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
-        <translation>&lt;b&gt;Inkrementell, benutzerdefiniert&lt;/b&gt; — Interessenbereich auf folgenden Frames zeichnen: &lt;b&gt;%1&lt;/b&gt; (insgesamt %2 Referenzframes).</translation>
+        <translation>&lt;b&gt;Inkrementell, benutzerdefiniert&lt;/b&gt; — Region of Interest auf folgenden Bildern zeichnen: &lt;b&gt;%1&lt;/b&gt; (insgesamt %2 Referenzbilder).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="128"/>
         <source>Draw a Region of Interest on frame 1.</source>
-        <translation>Zeichnen Sie einen Interessenbereich auf Frame 1.</translation>
+        <translation>Zeichnen Sie eine Region of Interest auf Bild 1.</translation>
     </message>
 </context>
 <context>
@@ -2645,7 +2648,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="74"/>
         <source>Add region to the Region of Interest (Polygon / Rectangle / Circle)</source>
-        <translation>Region zum Interessenbereich hinzufügen (Polygon / Rechteck / Kreis)</translation>
+        <translation>Region zur Region of Interest hinzufügen (Polygon / Rechteck / Kreis)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="79"/>
@@ -2655,7 +2658,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="81"/>
         <source>Cut region from the Region of Interest (Polygon / Rectangle / Circle)</source>
-        <translation>Region aus dem Interessenbereich ausschneiden (Polygon / Rechteck / Kreis)</translation>
+        <translation>Region aus der Region of Interest ausschneiden (Polygon / Rechteck / Kreis)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="86"/>
@@ -2667,12 +2670,12 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
         <source>Paint extra mesh-refinement zones with a brush
 (only on frame 1 — material points auto-warped to later frames)</source>
         <translation>Zusätzliche Netzverfeinerungszonen mit einem Pinsel malen
-(nur auf Frame 1 — Materialpunkte werden automatisch auf spätere Frames übertragen)</translation>
+(nur auf Bild 1 — Materialpunkte werden automatisch auf spätere Bilder übertragen)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="94"/>
         <source>Refine brush is only available on frame 1. Switch to frame 1 to paint refinement zones; they are automatically warped to later frames.</source>
-        <translation>Der Verfeinerungspinsel ist nur auf Frame 1 verfügbar. Wechseln Sie zu Frame 1, um Verfeinerungszonen zu malen; sie werden automatisch auf spätere Frames übertragen.</translation>
+        <translation>Der Verfeinerungspinsel ist nur auf Bild 1 verfügbar. Wechseln Sie zu Bild 1, um Verfeinerungszonen zu malen; sie werden automatisch auf spätere Bilder übertragen.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="118"/>
@@ -2692,7 +2695,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="126"/>
         <source>Batch import mask files for multiple frames</source>
-        <translation>Maskendateien für mehrere Frames stapelweise importieren</translation>
+        <translation>Maskendateien für mehrere Bilder stapelweise importieren</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="139"/>
@@ -2712,17 +2715,17 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="147"/>
         <source>Invert the Region of Interest mask</source>
-        <translation>Maske des Interessenbereichs invertieren</translation>
+        <translation>Region-of-Interest-Maske invertieren</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="152"/>
         <source>Clear</source>
-        <translation>Leeren</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="154"/>
         <source>Clear all Region of Interest masks</source>
-        <translation>Alle Masken des Interessenbereichs leeren</translation>
+        <translation>Alle Region-of-Interest-Masken löschen</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="186"/>
@@ -2742,25 +2745,40 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="219"/>
         <source>Clear Brush</source>
-        <translation>Pinsel leeren</translation>
+        <translation>Pinsel löschen</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="256"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="247"/>
+        <source>Polygon</source>
+        <translation>Polygon</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="251"/>
+        <source>Rectangle</source>
+        <translation>Rechteck</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="255"/>
+        <source>Circle</source>
+        <translation>Kreis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="259"/>
         <source>Circle (3-point)</source>
         <translation>Kreis (3 Punkte)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
         <source>Import Mask Image</source>
         <translation>Maskenbild importieren</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>Images</source>
         <translation>Bilder</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
         <source>All Files</source>
         <translation>Alle Dateien</translation>
     </message>
@@ -2891,7 +2909,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
-        <translation>Farbkarte</translation>
+        <translation>Farbskala</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="217"/>
@@ -2916,7 +2934,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Clear</source>
-        <translation>Leeren</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="361"/>
@@ -2926,7 +2944,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="468"/>
         <source>%1  —  Frame %2</source>
-        <translation>%1  —  Frame %2</translation>
+        <translation>%1  —  Bild %2</translation>
     </message>
 </context>
 <context>
@@ -2947,7 +2965,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="73"/>
         <source>Previous frame</source>
-        <translation>Vorheriger Frame</translation>
+        <translation>Vorheriges Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="84"/>
@@ -2964,7 +2982,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="95"/>
         <source>Next frame</source>
-        <translation>Nächster Frame</translation>
+        <translation>Nächstes Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="109"/>
@@ -2975,7 +2993,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
         <location filename="../../gui/widgets/strain_navigator.py" line="114"/>
         <location filename="../../gui/widgets/strain_navigator.py" line="228"/>
         <source>FRAME 0/0</source>
-        <translation>FRAME 0/0</translation>
+        <translation>BILD 0/0</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="205"/>
@@ -3019,13 +3037,13 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
 • Rule of thumb: VSG ≥ 2 × subset step + 1 (default: 41 px).
 
 Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size).</source>
-        <translation>VSG (Virtual Strain Gauge) ist der Durchmesser in Pixel des kreisförmigen Bereichs um jeden Netzknoten, der zum Anpassen einer lokalen Verschiebungs-ebene verwendet wird. Die Dehnung ergibt sich aus der Steigung dieser Ebene.
+        <translation>VSG (Virtual Strain Gauge) ist der Durchmesser in Pixel des kreisförmigen Bereichs um jeden Netzknoten, der zum Anpassen einer lokalen Verschiebungsebene verwendet wird. Die Dehnung ergibt sich aus der Steigung dieser Ebene.
 
 • Größeres VSG → glattere Dehnung, geringere räumliche Auflösung.
 • Kleineres VSG → schärfere Dehnung, mehr Rauschen.
 • Faustregel: VSG ≥ 2 × Subset-Schritt + 1 (Standard: 41 px).
 
-Nicht verwendet bei Methode = FEM nodal (dort bestimmt der Netzabstand die Größe).</translation>
+Nicht verwendet bei Methode = FEM-Knoten (dort bestimmt der Netzabstand die Größe).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
@@ -3133,7 +3151,7 @@ Gilt nur bei Methode = Ebenenanpassung.</translation>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
-        <translation>⚠ VSG-Radius (%1 px) &lt; DIC-Knotenabstand (%2 px); Ebenenanpassung wird fehlschlagen. VSG ≥ %3 px verwenden oder Methode auf FEM nodal wechseln.</translation>
+        <translation>⚠ VSG-Radius (%1 px) &lt; DIC-Knotenabstand (%2 px); Ebenenanpassung wird fehlschlagen. VSG ≥ %3 px verwenden oder Methode auf FEM-Knoten wechseln.</translation>
     </message>
 </context>
 <context>
@@ -3409,7 +3427,7 @@ Gilt nur bei Methode = Ebenenanpassung.</translation>
     <message>
         <location filename="../../gui/widgets/velocity_settings.py" line="84"/>
         <source>Unit: px/frame</source>
-        <translation>Einheit: px/Frame</translation>
+        <translation>Einheit: px/Bild</translation>
     </message>
 </context>
 <context>
@@ -3431,10 +3449,10 @@ Suitable for large accumulated deformation, required for large rotations.
 
 Accumulative: every frame is compared to frame 1.
 Accurate for small, monotonic deformation only.</source>
-        <translation>Inkrementell: Jeder Frame wird mit dem vorherigen Referenzframe verglichen.
+        <translation>Inkrementell: Jedes Bild wird mit dem vorherigen Referenzbild verglichen.
 Geeignet für große kumulierte Verformungen, erforderlich bei großen Rotationen.
 
-Akkumulativ: Jeder Frame wird mit Frame 1 verglichen.
+Akkumulativ: Jedes Bild wird mit Bild 1 verglichen.
 Nur für kleine, monotone Verformungen genau.</translation>
     </message>
     <message>
@@ -3461,7 +3479,7 @@ images, or when strain accuracy matters.</source>
 erhält scharfe lokale Merkmale. Optimal für kleine
 Verformungen oder hochwertige Bilder.
 
-AL-DIC: Augmented Lagrangian mit globaler FEM-
+AL-DIC: Erweiterte Lagrange-Methode mit globaler FEM-
 Regularisierung. Erzwingt Verschiebungskompatibilität
 zwischen Subsets. Optimal für große Verformungen,
 verrauschte Bilder oder hohe Dehnungsgenauigkeit.</translation>
@@ -3474,12 +3492,12 @@ verrauschte Bilder oder hohe Dehnungsgenauigkeit.</translation>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
         <source>Every Frame</source>
-        <translation>Jeder Frame</translation>
+        <translation>Jedes Bild</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="105"/>
         <source>Every N Frames</source>
-        <translation>Alle N Frames</translation>
+        <translation>Alle N Bilder</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
@@ -3494,10 +3512,10 @@ most robust for large deformation).
 Every N Frames: reset every N frames (balance speed vs robustness).
 Custom Frames: user-defined list of reference frame indices.</source>
         <translation>Zeitpunkt der Referenzaktualisierung beim inkrementellen Tracking.
-Jeder Frame: Referenz bei jedem Frame zurücksetzen (kleinste Schrittverschiebung,
+Jedes Bild: Referenz bei jedem Bild zurücksetzen (kleinste Schrittverschiebung,
 am robustesten für große Verformungen).
-Alle N Frames: alle N Frames zurücksetzen (Balance zwischen Geschwindigkeit und Robustheit).
-Benutzerdefiniert: vom Benutzer festgelegte Liste der Referenz-Frame-Indizes.</translation>
+Alle N Bilder: alle N Bilder zurücksetzen (Balance zwischen Geschwindigkeit und Robustheit).
+Benutzerdefiniert: vom Benutzer festgelegte Liste der Referenzbild-Indizes.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
@@ -3507,7 +3525,7 @@ Benutzerdefiniert: vom Benutzer festgelegte Liste der Referenz-Frame-Indizes.</t
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
         <source>Update reference every N frames</source>
-        <translation>Referenz alle N Frames aktualisieren</translation>
+        <translation>Referenz alle N Bilder aktualisieren</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
@@ -3517,12 +3535,12 @@ Benutzerdefiniert: vom Benutzer festgelegte Liste der Referenz-Frame-Indizes.</t
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="139"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
-        <translation>Komma-getrennte Frame-Indizes als Referenzframes (0-basiert)</translation>
+        <translation>Komma-getrennte Bildindizes als Referenzbilder (0-basiert)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
         <source>Reference Frames</source>
-        <translation>Referenzframes</translation>
+        <translation>Referenzbilder</translation>
     </message>
 </context>
 <context>

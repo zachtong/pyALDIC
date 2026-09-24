@@ -19,6 +19,13 @@ from PySide6.QtWidgets import (
 
 from al_dic.gui.app_state import AppState
 
+#: The label column is as wide as its longest label in the current language,
+#: never narrower than the English layout and, past a cap of about 28
+#: characters of the label font, wrapped rather than squeezing the inputs.
+_LABEL_MIN_WIDTH = 120
+_LABEL_MAX_CHARS = 28
+_LABEL_PADDING = 6
+
 
 class ParamPanel(QWidget):
     """Parameter inputs: Subset Size, Subset Step, Search Range, Refinement."""
@@ -28,6 +35,10 @@ class ParamPanel(QWidget):
         state = AppState.instance()
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 0, 4, 0)
+        # Row labels, and the rows indented to line up with the inputs; both
+        # follow the label column (see _fit_label_column).
+        self._row_labels: list[QLabel] = []
+        self._aligned_with_inputs: list[QHBoxLayout | QLabel] = []
 
         # --- Subset Size (display odd, store even internally) ---
         # User sees 21, 41 etc. (odd = 2*half+1 centered window).
@@ -59,7 +70,7 @@ class ParamPanel(QWidget):
         # when init_guess_mode == 'seed_propagation' (see _sync_search_label).
         search_row = QHBoxLayout()
         self._search_lbl = QLabel(self.tr("Search Range"))
-        self._search_lbl.setFixedWidth(120)
+        self._row_labels.append(self._search_lbl)
         self._search_range = QSpinBox()
         self._search_range.setRange(4, 512)
         self._search_range.setSingleStep(2)
@@ -88,13 +99,12 @@ class ParamPanel(QWidget):
         ))
         # Indent the checkboxes so they visually belong to the subset_step row
         inner_row = QHBoxLayout()
-        inner_row.setContentsMargins(120, 0, 0, 0)
         inner_row.addWidget(self._refine_inner_cb)
         layout.addLayout(inner_row)
         outer_row = QHBoxLayout()
-        outer_row.setContentsMargins(120, 0, 0, 0)
         outer_row.addWidget(self._refine_outer_cb)
         layout.addLayout(outer_row)
+        self._aligned_with_inputs += [inner_row, outer_row]
 
         # Level selector
         self._refine_level = QComboBox()
@@ -106,15 +116,16 @@ class ParamPanel(QWidget):
         ))
         level_row = QHBoxLayout()
         self._refine_level_lbl = QLabel(self.tr("Refinement Level"))
-        self._refine_level_lbl.setFixedWidth(120)
+        self._row_labels.append(self._refine_level_lbl)
         level_row.addWidget(self._refine_level_lbl)
         level_row.addWidget(self._refine_level)
         layout.addLayout(level_row)
 
         self._refine_info_lbl = QLabel()
-        self._refine_info_lbl.setContentsMargins(120, 0, 0, 0)
         self._refine_info_lbl.setStyleSheet("color: #888; font-size: 10px;")
         layout.addWidget(self._refine_info_lbl)
+        self._aligned_with_inputs.append(self._refine_info_lbl)
+        self._fit_label_column()
 
         # Wire refinement signals
         self._refine_inner_cb.toggled.connect(self._on_refine_inner_toggled)
@@ -179,13 +190,33 @@ class ParamPanel(QWidget):
             "F-aware propagation (no per-node search)."
         )
         if state.init_guess_mode == "seed_propagation":
-            self._search_lbl.setText(self.tr("Initial Seed Search"))
+            self._search_lbl.setText(self.tr("Starting Point Search"))
             self._search_lbl.setToolTip(seed_tip)
             self._search_range.setToolTip(seed_tip)
         else:
             self._search_lbl.setText(self.tr("Search Range"))
             self._search_lbl.setToolTip(fft_tip)
             self._search_range.setToolTip(fft_tip)
+
+    def _fit_label_column(self) -> None:
+        """Give the label column the width of its longest label.
+
+        A fixed 120 px clipped German, French and Spanish labels (R5). The
+        search label's other wording counts too, since it swaps with the
+        initial-guess mode.
+        """
+        texts = [label.text() for label in self._row_labels]
+        texts += [self.tr("Search Range"), self.tr("Starting Point Search")]
+        self._search_lbl.ensurePolished()
+        metrics = self._search_lbl.fontMetrics()
+        widest = max(metrics.horizontalAdvance(text) for text in texts)
+        cap = max(_LABEL_MIN_WIDTH, _LABEL_MAX_CHARS * metrics.averageCharWidth())
+        width = min(max(_LABEL_MIN_WIDTH, widest + _LABEL_PADDING), cap)
+        for label in self._row_labels:
+            label.setWordWrap(True)
+            label.setFixedWidth(width)
+        for item in self._aligned_with_inputs:
+            item.setContentsMargins(width, 0, 0, 0)
 
     def _on_search_range_changed(self, value: int) -> None:
         """Update search_range in state (mirrors InitGuessWidget pattern)."""
@@ -285,7 +316,7 @@ class ParamPanel(QWidget):
     ) -> QSpinBox:
         row = QHBoxLayout()
         lbl = QLabel(label)
-        lbl.setFixedWidth(120)
+        self._row_labels.append(lbl)
         lbl.setToolTip(tooltip)
         spin = QSpinBox()
         spin.setRange(minimum, maximum)
@@ -307,7 +338,7 @@ class ParamPanel(QWidget):
     ) -> QComboBox:
         row = QHBoxLayout()
         lbl = QLabel(label)
-        lbl.setFixedWidth(120)
+        self._row_labels.append(lbl)
         lbl.setToolTip(tooltip)
         combo = QComboBox()
         combo.addItems([str(v) for v in (options or [])])

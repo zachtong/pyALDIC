@@ -303,7 +303,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
         <source>Run a DIC analysis to plot probes.</source>
-        <translation>Lancez une analyse DIC pour tracer les sondes.</translation>
+        <translation>Exécutez une analyse DIC pour tracer les sondes.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="96"/>
@@ -477,7 +477,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
         <source>Probe data (CSV)…</source>
-        <translation>Données des sondes (CSV)…</translation>
+        <translation>Données de sonde (CSV)…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
@@ -579,7 +579,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="134"/>
         <source>Esc cancels placement</source>
-        <translation>Esc annule le placement</translation>
+        <translation>Échap annule le placement</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="142"/>
@@ -849,7 +849,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
         <source>Image</source>
-        <translation>Image</translation>
+        <translation>Fichier image</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
@@ -980,7 +980,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
         <source>Init</source>
-        <translation>Initial</translation>
+        <translation>Estimation initiale</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
@@ -1069,7 +1069,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
         <source>All</source>
-        <translation>Tout</translation>
+        <translation>Tous</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
@@ -1114,7 +1114,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
-        <translation>Mettre à l&apos;échelle les valeurs de déplacement par la taille du pixel et afficher les unités physiques sur les étiquettes de la barre de couleurs. La déformation est sans dimension et n&apos;est pas affectée.</translation>
+        <translation>Mettre à l&apos;échelle les valeurs de déplacement par la taille de pixel et afficher les unités physiques sur les étiquettes de la barre de couleur. La déformation est sans dimension et n&apos;est pas affectée.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
@@ -1124,7 +1124,7 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
         <source>Pixel size</source>
-        <translation>Taille du pixel</translation>
+        <translation>Taille de pixel</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="712"/>
@@ -1312,7 +1312,7 @@ Image de référence : tracé aux positions d&apos;origine des nœuds, par-dessu
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
-        <translation>Décochez pour n&apos;exporter que le champ, sans image de mouchetis derrière. Le remplissage se choisit dans l&apos;onglet Preview &amp; Colorbar.</translation>
+        <translation>Décochez pour n&apos;exporter que le champ, sans image de mouchetis derrière. Le remplissage se choisit dans l&apos;onglet « Aperçu et barre de couleur ».</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
@@ -1381,7 +1381,7 @@ Les étiquettes se mettent à jour par image quand la plage auto est activée.</
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>Exporte une image sur N (1 = toutes les images). Plus élevé = plus rapide et plus léger,
-mais plus saccadé. La durée de lecture est conservée (les FPS ci-dessus sont le débit avant décimation).</translation>
+mais plus saccadé. La durée de lecture est conservée (les FPS ci-dessus sont la fréquence d&apos;images avant décimation).</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
@@ -1590,7 +1590,7 @@ La transparence est conservée pour PNG et TIFF ; JPEG, GIF et MP4 n&apos;ont pa
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
-        <translation>Applique la colormap, l&apos;opacité et l&apos;auto-plage de ce champ à tous les champs activés (chaque champ garde ses propres min/max).</translation>
+        <translation>Applique la palette, l&apos;opacité et la plage auto de ce champ à tous les champs activés (chaque champ garde ses propres min/max).</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
@@ -1911,7 +1911,7 @@ Cost grows with the search radius, so very large displacements become slow.</sou
 
 Idéal pour :
 • Mouvements lisses petits à modérés
-• Speckle bien texturé
+• Mouchetis bien texturé
 • Aucune configuration spéciale requise
 
 Le coût augmente avec le rayon de recherche, les très grands déplacements deviennent donc lents.</translation>
@@ -2268,7 +2268,7 @@ Results were restored. To show the background images, select the folder that now
         <translation>Le dossier d&apos;images enregistré avec cette session est introuvable :
 %1
 
-Les résultats ont été restaurés. Pour afficher les images d&apos;arrière-plan, sélectionnez le dossier qui les contient désormais.</translation>
+Les résultats ont été restaurés. Pour afficher les images de fond, sélectionnez le dossier qui les contient désormais.</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="367"/>
@@ -2373,77 +2373,79 @@ Les résultats ont été restaurés. Pour afficher les images d&apos;arrière-pl
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="37"/>
+        <location filename="../../gui/widgets/param_panel.py" line="48"/>
         <source>Subset Size</source>
+        <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>Taille d&apos;imagette</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="43"/>
+        <location filename="../../gui/widgets/param_panel.py" line="54"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>Taille de la fenêtre d&apos;imagette IC-GN en pixels (nombre impair)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="50"/>
+        <location filename="../../gui/widgets/param_panel.py" line="61"/>
         <source>Subset Step</source>
         <translation>Pas d&apos;imagette</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="53"/>
+        <location filename="../../gui/widgets/param_panel.py" line="64"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>Espacement des nœuds en pixels (doit être une puissance de 2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="72"/>
+        <location filename="../../gui/widgets/param_panel.py" line="197"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
         <source>Search Range</source>
         <translation>Plage de recherche</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="76"/>
+        <location filename="../../gui/widgets/param_panel.py" line="87"/>
         <source>Refine Inner Boundary</source>
         <translation>Raffiner la limite interne</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="79"/>
+        <location filename="../../gui/widgets/param_panel.py" line="90"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>Raffiner localement le maillage le long des limites internes du masque
 (trous à l&apos;intérieur de la région d&apos;intérêt). Utile pour les bords de bulles / vides.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="83"/>
+        <location filename="../../gui/widgets/param_panel.py" line="94"/>
         <source>Refine Outer Boundary</source>
         <translation>Raffiner la limite externe</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/param_panel.py" line="97"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>Raffiner localement le maillage le long de la limite externe de la région d&apos;intérêt.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/param_panel.py" line="112"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
-        <translation>Intensité du raffinage. Taille minimale d&apos;élément = max(2, subset_step / 2^niveau). S&apos;applique uniformément aux limites internes, externes ET aux zones peintes au pinceau. Les niveaux disponibles dépendent de la taille et du pas d&apos;imagette.</translation>
+        <translation>Intensité du raffinement. Taille minimale d&apos;élément = max(2, subset_step / 2^level). S&apos;applique uniformément aux limites internes, externes ET aux zones peintes au pinceau. Les niveaux disponibles dépendent de la taille et du pas d&apos;imagette.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="108"/>
+        <location filename="../../gui/widgets/param_panel.py" line="118"/>
         <source>Refinement Level</source>
-        <translation>Niveau de raffinage</translation>
+        <translation>Niveau de raffinement</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="167"/>
+        <location filename="../../gui/widgets/param_panel.py" line="178"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
   radius × sin(per-step angle).</source>
         <translation>Déplacement maximal par image détectable par la recherche FFT (pixels).
-Définissez une valeur nettement supérieure au mouvement inter-image attendu.
+Définissez une valeur nettement supérieure au mouvement inter-images attendu.
 Pour les grandes rotations en mode incrémental, cela doit couvrir :
   rayon × sin(angle par étape).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/param_panel.py" line="185"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2452,49 +2454,50 @@ S&apos;étend automatiquement d&apos;un facteur 2 par tentative si le pic est tr
 N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœuds utilisent la propagation F-aware (pas de recherche par nœud).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="182"/>
-        <source>Initial Seed Search</source>
-        <translation>Recherche initiale du germe</translation>
+        <location filename="../../gui/widgets/param_panel.py" line="193"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <source>Starting Point Search</source>
+        <translation>Recherche aux points de départ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="218"/>
+        <location filename="../../gui/widgets/param_panel.py" line="249"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>Léger</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="219"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>Moyen</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="220"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Fort</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Très fort</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>Ultra</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="228"/>
+        <location filename="../../gui/widgets/param_panel.py" line="259"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="281"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
-        <translation>taille min. d&apos;élément = %1 px  (subset_step=%2, niveau=%3)</translation>
+        <translation>taille min. d&apos;élément = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
 </context>
 <context>
@@ -2555,7 +2558,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  Loaded %1 images, shape=%2</source>
-        <translation>  %1 images chargées, forme=%2</translation>
+        <translation>  %1 images chargées, shape=%2</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
@@ -2565,7 +2568,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
         <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>Exécution annulée : définissez les régions d&apos;intérêt par image pour les images de référence manquantes, ou acceptez le masque hérité de l&apos;image 1 au prochain lancement.</translation>
+        <translation>Exécution annulée : définissez les régions d&apos;intérêt par image pour les images de référence manquantes, ou acceptez le masque hérité de l&apos;image 1 à la prochaine exécution.</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="625"/>
@@ -2666,13 +2669,13 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
         <location filename="../../gui/widgets/roi_toolbar.py" line="90"/>
         <source>Paint extra mesh-refinement zones with a brush
 (only on frame 1 — material points auto-warped to later frames)</source>
-        <translation>Peindre des zones de raffinage de maillage supplémentaires au pinceau
+        <translation>Peindre des zones de raffinement de maillage supplémentaires au pinceau
 (uniquement sur l&apos;image 1 — les points matériels sont automatiquement reportés sur les images suivantes)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="94"/>
         <source>Refine brush is only available on frame 1. Switch to frame 1 to paint refinement zones; they are automatically warped to later frames.</source>
-        <translation>Le pinceau de raffinage n&apos;est disponible que sur l&apos;image 1. Passez à l&apos;image 1 pour peindre les zones de raffinage ; elles sont automatiquement reportées sur les images suivantes.</translation>
+        <translation>Le pinceau de raffinement n&apos;est disponible que sur l&apos;image 1. Passez à l&apos;image 1 pour peindre les zones de raffinement ; elles sont automatiquement reportées sur les images suivantes.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="118"/>
@@ -2737,7 +2740,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="209"/>
         <source>Erase</source>
-        <translation>Effacer</translation>
+        <translation>Gommer</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="219"/>
@@ -2745,22 +2748,37 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
         <translation>Effacer le pinceau</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="256"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="247"/>
+        <source>Polygon</source>
+        <translation>Polygone</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="251"/>
+        <source>Rectangle</source>
+        <translation>Rectangle</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="255"/>
+        <source>Circle</source>
+        <translation>Cercle</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="259"/>
         <source>Circle (3-point)</source>
         <translation>Cercle (3 points)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
         <source>Import Mask Image</source>
         <translation>Importer une image de masque</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>Images</source>
         <translation>Images</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
         <source>All Files</source>
         <translation>Tous les fichiers</translation>
     </message>
@@ -2770,7 +2788,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="59"/>
         <source>Run DIC Analysis</source>
-        <translation>Lancer l&apos;analyse DIC</translation>
+        <translation>Exécuter l&apos;analyse DIC</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="72"/>
@@ -2891,7 +2909,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
-        <translation>Palette de couleurs</translation>
+        <translation>Palette</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="217"/>
@@ -3023,7 +3041,7 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 
 • VSG plus grande → déformation plus lisse, résolution spatiale plus faible.
 • VSG plus petite → déformation plus fine, mais plus de bruit.
-• Règle empirique : VSG ≥ 2 × pas de subset + 1 (par défaut : 41 px).
+• Règle empirique : VSG ≥ 2 × pas d&apos;imagette + 1 (par défaut : 41 px).
 
 Non utilisée quand Méthode = FEM nodal (l&apos;espacement du maillage fixe alors la taille).</translation>
     </message>

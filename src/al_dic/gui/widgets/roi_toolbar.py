@@ -244,13 +244,16 @@ class ROIToolbar(QWidget):
         """Create a popup menu with Polygon / Rectangle / Circle actions."""
         menu = QMenu(self)
         menu.addAction(
-            "\u2b1f  Polygon", lambda: self._on_shape_selected("polygon", mode)
+            "\u2b1f  " + self.tr("Polygon"),
+            lambda: self._on_shape_selected("polygon", mode),
         )
         menu.addAction(
-            "\u25a1  Rectangle", lambda: self._on_shape_selected("rect", mode)
+            "\u25a1  " + self.tr("Rectangle"),
+            lambda: self._on_shape_selected("rect", mode),
         )
         menu.addAction(
-            "\u25cb  Circle", lambda: self._on_shape_selected("circle", mode)
+            "\u25cb  " + self.tr("Circle"),
+            lambda: self._on_shape_selected("circle", mode),
         )
         menu.addAction(
             "\u25cc  " + self.tr("Circle (3-point)"),

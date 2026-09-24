@@ -60,8 +60,8 @@ LANGUAGES = ("zh_CN", "zh_TW", "ja", "ko", "de", "fr", "es")
 TRANSLATIONS: dict[str, dict[str, str]] = {
     # ===== MainWindow — ROI toolbar feedback after reopening a session ======
     "Frame %1 has no Region of Interest of its own — frame 1's is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.": {
-        "zh_CN": "帧 %1 没有自己的感兴趣区域 — 计算时使用帧 1 的感兴趣区域。请切换到帧 1 编辑，或导入掩码为此帧单独指定。",
-        "zh_TW": "幀 %1 沒有自己的感興趣區域 — 計算時使用幀 1 的感興趣區域。請切換到幀 1 編輯，或匯入遮罩為此幀單獨指定。",
+        "zh_CN": "帧 %1 没有自己的感兴趣区域 — 计算时使用帧 1 的感兴趣区域。请切换到帧 1 编辑，或导入掩模为此帧单独指定。",
+        "zh_TW": "第 %1 影格沒有自己的感興趣區域 — 計算時使用第 1 影格的感興趣區域。請切換到第 1 影格編輯，或匯入遮罩為此影格單獨指定。",
         "ja":    "フレーム %1 には独自の関心領域がありません — 計算にはフレーム 1 の関心領域を使用します。フレーム 1 に切り替えて編集するか、マスクをインポートしてこのフレーム専用の領域を設定してください。",
         "ko":    "프레임 %1에는 자체 관심 영역이 없습니다 — 계산에는 프레임 1의 관심 영역을 사용합니다. 프레임 1로 전환하여 편집하거나 마스크를 가져와 이 프레임 전용으로 지정하세요.",
         "de":    "Bild %1 hat keine eigene Region of Interest — für die Berechnung wird die von Bild 1 verwendet. Wechseln Sie zu Bild 1, um sie zu bearbeiten, oder importieren Sie eine Maske, um diesem Bild eine eigene zu geben.",
@@ -79,7 +79,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "No Region of Interest to invert — load images first.": {
         "zh_CN": "没有可反选的感兴趣区域 — 请先加载图像。",
-        "zh_TW": "沒有可反選的感興趣區域 — 請先載入影像。",
+        "zh_TW": "沒有可反轉的感興趣區域 — 請先載入影像。",
         "ja":    "反転できる関心領域がありません — 先に画像を読み込んでください。",
         "ko":    "반전할 관심 영역이 없습니다 — 먼저 이미지를 불러오세요.",
         "de":    "Keine Region of Interest zum Invertieren — laden Sie zuerst Bilder.",
@@ -87,7 +87,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es":    "No hay región de interés que invertir — cargue primero las imágenes.",
     },
     "Region of Interest mask is empty.": {
-        "zh_CN": "感兴趣区域掩码为空。",
+        "zh_CN": "感兴趣区域掩模为空。",
         "zh_TW": "感興趣區域遮罩為空。",
         "ja":    "関心領域のマスクが空です。",
         "ko":    "관심 영역 마스크가 비어 있습니다.",
@@ -97,7 +97,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Define a Region of Interest on frame 1 first.": {
         "zh_CN": "请先在帧 1 上定义感兴趣区域。",
-        "zh_TW": "請先在幀 1 上定義感興趣區域。",
+        "zh_TW": "請先在第 1 影格上定義感興趣區域。",
         "ja":    "まずフレーム 1 で関心領域を定義してください。",
         "ko":    "먼저 프레임 1에서 관심 영역을 정의하세요.",
         "de":    "Definieren Sie zuerst eine Region of Interest auf Bild 1.",
@@ -105,7 +105,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es":    "Defina primero una región de interés en el fotograma 1.",
     },
     "Mask saved to %1": {
-        "zh_CN": "掩码已保存至 %1",
+        "zh_CN": "掩模已保存至 %1",
         "zh_TW": "遮罩已儲存至 %1",
         "ja":    "マスクを %1 に保存しました",
         "ko":    "마스크를 %1에 저장했습니다",
@@ -115,8 +115,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     # ========== MainWindow — relink moved session images (all 8 locales) ======
     "Locate Session Images": {
-        "zh_CN": "定位会话图片",
-        "zh_TW": "定位工作階段圖片",
+        "zh_CN": "定位会话图像",
+        "zh_TW": "定位工作階段影像",
         "ja":    "セッション画像の場所を指定",
         "ko":    "세션 이미지 위치 지정",
         "de":    "Sitzungsbilder suchen",
@@ -133,12 +133,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es":    "Seleccionar carpeta de imágenes",
     },
     "The image folder saved with this session was not found:\n%1\n\nResults were restored. To show the background images, select the folder that now contains them.": {
-        "zh_CN": "未找到此会话保存的图片文件夹:\n%1\n\n结果已恢复。要显示背景图片,请选择现在包含这些图片的文件夹。",
-        "zh_TW": "找不到此工作階段儲存的圖片資料夾:\n%1\n\n結果已還原。若要顯示背景圖片,請選擇現在包含這些圖片的資料夾。",
+        "zh_CN": "未找到此会话保存的图像文件夹:\n%1\n\n结果已恢复。要显示背景图像,请选择现在包含这些图像的文件夹。",
+        "zh_TW": "找不到此工作階段儲存的影像資料夾：\n%1\n\n結果已還原。若要顯示背景影像，請選擇現在包含這些影像的資料夾。",
         "ja":    "このセッションに保存された画像フォルダが見つかりませんでした:\n%1\n\n結果は復元されました。背景画像を表示するには、現在それらが入っているフォルダを選択してください。",
         "ko":    "이 세션에 저장된 이미지 폴더를 찾을 수 없습니다:\n%1\n\n결과는 복원되었습니다. 배경 이미지를 표시하려면 현재 이미지가 들어 있는 폴더를 선택하세요.",
         "de":    "Der mit dieser Sitzung gespeicherte Bildordner wurde nicht gefunden:\n%1\n\nDie Ergebnisse wurden wiederhergestellt. Wählen Sie den Ordner, der die Bilder jetzt enthält, um den Hintergrund anzuzeigen.",
-        "fr":    "Le dossier d'images enregistré avec cette session est introuvable :\n%1\n\nLes résultats ont été restaurés. Pour afficher les images d'arrière-plan, sélectionnez le dossier qui les contient désormais.",
+        "fr":    "Le dossier d'images enregistré avec cette session est introuvable :\n%1\n\nLes résultats ont été restaurés. Pour afficher les images de fond, sélectionnez le dossier qui les contient désormais.",
         "es":    "No se encontró la carpeta de imágenes guardada con esta sesión:\n%1\n\nLos resultados se restauraron. Para mostrar las imágenes de fondo, seleccione la carpeta que ahora las contiene.",
     },
     # ========== StrainWindow — cancel strain computation (all 8 locales) ======
@@ -182,7 +182,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Cancel the current analysis. Frames already computed are kept "
     "so you can review or export the partial run.": {
         "zh_CN": "取消当前分析。已计算的帧会被保留，你可以查看或导出这部分结果。",
-        "zh_TW": "取消當前分析。已計算的影格會被保留，你可以檢視或匯出這部分結果。",
+        "zh_TW": "取消目前的分析。已計算的影格會被保留，你可以檢視或匯出這部分結果。",
         "ja":    "現在の解析をキャンセルします。計算済みのフレームは保持され、"
                  "途中までの結果を確認またはエクスポートできます。",
         "ko":    "현재 분석을 취소합니다. 이미 계산된 프레임은 유지되므로 부분 "
@@ -201,7 +201,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Trim low-confidence edges": {
         "zh_CN": "裁剪低置信度边缘",
         "zh_TW": "裁剪低可信度邊緣",
-        "ja":    "低信頼度のエッジを除去",
+        "ja":    "低信頼度の縁をトリミング",
         "ko":    "저신뢰도 가장자리 잘라내기",
         "de":    "Ränder mit geringer Konfidenz beschneiden",
         "fr":    "Rogner les bords peu fiables",
@@ -229,23 +229,18 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "• 0.70 = 推薦（裁掉誤差明顯上升的區域）。\n"
                  "• 1.00 = 最嚴格（視窗一旦觸及邊界即裁剪）。\n\n"
                  "僅在 方法 = 平面擬合 時生效。",
-        "ja":    "ROI / 穴の縁で、VSG ウィンドウが境界をまたぎ、局所的な平面"
-                 "フィッティングが片側的かつ不正確になる箇所の、低信頼度のひずみ"
-                 "を非表示にします。\n\n"
+        "ja":    "ROI / 穴の縁で、VSG ウィンドウが境界をまたぎ、局所的な平面フィットが片側的かつ不正確になる箇所の、低信頼度のひずみを非表示にします。\n\n"
                  "• 係数 × VSG 半径 = トリミングされる境界帯の幅。\n"
                  "• 0.00 = すべてのノードを保持（トリミングなし）。\n"
                  "• 0.70 = 推奨（縁の誤差が急増する箇所をトリミング）。\n"
-                 "• 1.00 = 最も厳格（ウィンドウが縁に触れるノードをすべて"
-                 "トリミング）。\n\n"
-                 "方法 = 平面フィッティング の場合のみ有効です。",
-        "ko":    "ROI / 구멍 가장자리에서 VSG 창이 경계를 넘어 국소 평면 피팅이 "
-                 "한쪽으로 치우쳐 신뢰할 수 없게 되는 부분의 저신뢰도 변형률을 "
-                 "숨깁니다.\n\n"
+                 "• 1.00 = 最も厳格（ウィンドウが縁に触れるノードをすべてトリミング）。\n\n"
+                 "手法 = 平面フィット の場合のみ有効です。",
+        "ko":    "ROI / 구멍 가장자리에서 VSG 윈도우가 경계를 넘어 국소 평면 피팅이 한쪽으로 치우쳐 신뢰할 수 없게 되는 부분의 저신뢰도 변형률을 숨깁니다.\n\n"
                  "• 계수 × VSG 반경 = 잘라내는 경계 띠의 폭.\n"
                  "• 0.00 = 모든 노드 유지(잘라내기 없음).\n"
                  "• 0.70 = 권장(가장자리 오차가 급증하는 곳을 잘라냄).\n"
-                 "• 1.00 = 가장 엄격(창이 가장자리에 닿는 모든 노드를 잘라냄).\n\n"
-                 "Method = 평면 피팅 일 때만 적용됩니다.",
+                 "• 1.00 = 가장 엄격(윈도우가 가장자리에 닿는 모든 노드를 잘라냄).\n\n"
+                 "방법 = 평면 피팅일 때만 적용됩니다.",
         "de":    "Blendet Dehnung mit geringer Konfidenz an ROI-/Loch-Rändern "
                  "aus, wo das VSG-Fenster die Grenze überschreitet und die "
                  "lokale Ebenenanpassung einseitig und unzuverlässig wird.\n\n"
@@ -336,7 +331,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
 
     # ========== ROI drawing — 3-point circle (all 8 locales) ==========
     "Circle (3-point)": {
-        "zh_CN": "圆（三点）", "zh_TW": "圓（三點）",
+        "zh_CN": "圆形（三点）", "zh_TW": "圓形（三點）",
         "ja": "円（3 点）", "ko": "원(3점)",
         "de": "Kreis (3 Punkte)", "fr": "Cercle (3 points)",
         "es": "Círculo (3 puntos)",
@@ -391,12 +386,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "%n máscara(s) tienen tamaños no coincidentes y están deshabilitadas.",
     },
     "Invalid assignment": {
-        "zh_TW": "無效的指派", "ja": "無効な割り当て", "ko": "잘못된 할당",
+        "zh_TW": "無效的分配", "ja": "無効な割り当て", "ko": "잘못된 할당",
         "de": "Ungültige Zuordnung", "fr": "Affectation non valide",
         "es": "Asignación no válida",
     },
     "A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.": {
-        "zh_TW": "一個影格只能對應一個遮罩。請選擇恰好一個遮罩，或選擇多個影格以將同一個遮罩套用到多個影格。",
+        "zh_TW": "一個影格只能對應一個遮罩。請選擇恰好一個遮罩，或選擇多個影格以將同一個遮罩分配給多個影格。",
         "ja": "1 つのフレームに割り当てられるマスクは 1 つだけです。マスクを 1 つだけ選択するか、複数のフレームを選択して 1 つのマスクを複数に割り当ててください。",
         "ko": "한 프레임에는 마스크를 하나만 지정할 수 있습니다. 마스크를 정확히 하나 선택하거나, 여러 프레임을 선택해 하나의 마스크를 여러 프레임에 지정하세요.",
         "de": "Ein Bild kann nur eine Maske haben. Wählen Sie genau eine Maske aus oder wählen Sie mehrere Bilder, um eine Maske mehreren zuzuweisen.",
@@ -413,7 +408,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Batch import: %n mask(s) loaded": {
         "zh_TW": "批次匯入：已載入 %n 個遮罩",
-        "ja": "バッチインポート: %n 個のマスクを読み込みました",
+        "ja": "一括インポート: %n 個のマスクを読み込みました",
         "ko": "일괄 가져오기: 마스크 %n개를 불러왔습니다",
         "de": "Stapelimport: %n Maske(n) geladen",
         "fr": "Import par lot : %n masque(s) chargé(s)",
@@ -444,7 +439,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Ansicht:", "fr": "Affichage :", "es": "Vista:",
     },
     "Alpha:": {
-        "zh_TW": "透明度：", "ja": "アルファ:", "ko": "알파:",
+        "zh_TW": "不透明度：", "ja": "アルファ:", "ko": "알파:",
         "de": "Alpha:", "fr": "Alpha :", "es": "Alfa:",
     },
     "Blue": {
@@ -468,7 +463,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Maskenfarbe:", "fr": "Couleur du masque :", "es": "Color de máscara:",
     },
     "No mask assigned": {
-        "zh_TW": "未指派遮罩", "ja": "マスク未割り当て", "ko": "지정된 마스크 없음",
+        "zh_TW": "未分配遮罩", "ja": "マスク未割り当て", "ko": "지정된 마스크 없음",
         "de": "Keine Maske zugewiesen", "fr": "Aucun masque attribué",
         "es": "Sin máscara asignada",
     },
@@ -506,10 +501,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ja":    "AL-DIC ソルバーの全体的な精密化反復回数。\n"
                  "1 = 単一パス（最速）、3 = デフォルト、\n"
                  "5 以上はほとんどの場合で効果逓減。",
-        "ko":    "AL-DIC 솔버의 전역 세분화 반복 횟수.\n"
+        "ko":    "AL-DIC 솔버의 전역 개선 반복 횟수.\n"
                  "1 = 단일 패스(가장 빠름), 3 = 기본값,\n"
                  "5 이상은 대부분의 경우 수익이 감소합니다.",
-        "de":    "Anzahl globaler Verfeinerungszyklen für den AL-DIC-Solver.\n"
+        "de":    "Anzahl globaler Verfeinerungszyklen für den AL-DIC-Löser.\n"
                  "1 = einmaliger Durchlauf (schnellste), 3 = Standard,\n"
                  "5+ = abnehmender Ertrag in den meisten Fällen.",
         "fr":    "Nombre de cycles de raffinement global du solveur AL-DIC.\n"
@@ -530,9 +525,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ko": "불투명도", "de": "Deckkraft", "fr": "Opacité", "es": "Opacidad",
     },
     "Field opacity (0 = transparent, 1 = fully opaque)": {
-        "zh_CN": "字段不透明度（0 = 透明，1 = 完全不透明）",
-        "zh_TW": "欄位不透明度（0 = 透明，1 = 完全不透明）",
-        "ja":    "フィールドの不透明度（0 = 透明、1 = 完全に不透明）",
+        "zh_CN": "场不透明度（0 = 透明，1 = 完全不透明）",
+        "zh_TW": "場的不透明度（0 = 透明，1 = 完全不透明）",
+        "ja":    "場の不透明度（0 = 透明、1 = 完全に不透明）",
         "ko":    "필드 불투명도 (0 = 투명, 1 = 완전 불투명)",
         "de":    "Feld-Deckkraft (0 = transparent, 1 = vollständig deckend)",
         "fr":    "Opacité du champ (0 = transparent, 1 = opaque)",
@@ -543,8 +538,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ko": "가장자리", "de": "Ränder", "fr": "Bords", "es": "Bordes",
     },
     "Fill trimmed edges (display only)": {
-        "zh_CN": "填充修剪的边缘（仅显示）",
-        "zh_TW": "填充修剪的邊緣（僅顯示）",
+        "zh_CN": "填充裁剪的边缘（仅显示）",
+        "zh_TW": "填充裁剪的邊緣（僅顯示）",
         "ja":    "トリミングされた縁を補間（表示のみ）",
         "ko":    "잘라낸 가장자리 채우기 (표시 전용)",
         "de":    "Beschnittene Ränder füllen (nur Anzeige)",
@@ -555,12 +550,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "interior nodes. Affects the on-screen view and exported "
     "images/animations; exported data files always keep the "
     "trimmed edge as NaN.": {
-        "zh_CN": "从可靠的内部节点重新插值被边缘修剪的应变带。"
-                 "影响屏幕显示和导出的图片/动画；导出的数据文件"
-                 "始终将修剪的边缘保留为 NaN。",
-        "zh_TW": "從可靠的內部節點重新插值被邊緣修剪的應變帶。"
-                 "影響螢幕顯示與匯出的圖片/動畫；匯出的資料檔案"
-                 "始終將修剪的邊緣保留為 NaN。",
+        "zh_CN": "从可靠的内部节点重新插值被边缘裁剪的应变带。影响屏幕显示和导出的图像/动画；导出的数据文件始终将裁剪的边缘保留为 NaN。",
+        "zh_TW": "從可靠的內部節點重新內插被邊緣裁剪的應變帶。影響螢幕顯示與匯出的影像/動畫；匯出的資料檔案始終將裁剪的邊緣保留為 NaN。",
         "ja":    "縁がトリミングされたひずみ帯を、信頼できる内部ノードから"
                  "再補間します。画面表示とエクスポートした画像/アニメーション"
                  "に影響します。エクスポートしたデータファイルでは、"
@@ -589,7 +580,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ko": "내보내기", "de": "Exportieren", "fr": "Exporter", "es": "Exportar",
     },
     "Field": {
-        "zh_CN": "字段", "zh_TW": "欄位", "ja": "フィールド",
+        "zh_CN": "场变量", "zh_TW": "場變數", "ja": "フィールド",
         "ko": "필드", "de": "Feld", "fr": "Champ", "es": "Campo",
     },
     "Colormap": {
@@ -615,7 +606,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "DPI": {
         "zh_CN": "DPI", "zh_TW": "DPI", "ja": "DPI",
-        "ko": "DPI", "de": "DPI", "fr": "DPI", "es": "PPP",
+        "ko": "DPI", "de": "DPI", "fr": "DPI", "es": "DPI",
     },
     # ========== Export: output resolution + JPEG quality (all 8 locales) ==========
     "Resolution (long edge)": {
@@ -625,7 +616,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Resolución (borde largo)",
     },
     "Frame step": {
-        "zh_CN": "抽帧间隔", "zh_TW": "抽幀間隔", "ja": "フレーム間引き",
+        "zh_CN": "抽帧间隔", "zh_TW": "影格間隔", "ja": "フレーム間引き",
         "ko": "프레임 간격", "de": "Bildschritt", "fr": "Pas d'image",
         "es": "Paso de fotogramas",
     },
@@ -659,8 +650,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "zh_TW": "限制匯出影像的長邊（寬與高中較大的一個；保持長寬比）。\n"
                  "場的細節由網格密度決定，因此較小的上限幾乎無損，\n"
                  "但檔案更小、編碼更快。越低越快。「原始解析度」保持原生尺寸。",
-        "ja": "書き出す画像の長辺（幅と高さの大きい方。縦横比は維持）を制限します。\n"
-              "フィールドの詳細はメッシュで決まるため、上限を小さくしてもほぼ無損失で、\n"
+        "ja": "エクスポートする画像の長辺（幅と高さの大きい方。縦横比は維持）を制限します。\n"
+              "場の詳細はメッシュで決まるため、上限を小さくしてもほぼ無損失で、\n"
               "ファイルは小さく書き出しも高速です。小さいほど高速。「フル解像度」は元のサイズを保ちます。",
         "ko": "내보내는 이미지의 긴 변(너비/높이 중 큰 값, 종횡비 유지)을 제한합니다.\n"
               "필드 세부 정보는 메시로 결정되므로 상한을 낮춰도 거의 무손실이며,\n"
@@ -698,16 +689,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "FPS above is the pre-decimation rate).": {
         "zh_CN": "每 N 帧导出一帧（1 = 每帧都导出）。越大越快、越小，\n"
                  "但看起来更卡顿。播放时长保持不变（上方 FPS 为抽帧前的帧率）。",
-        "zh_TW": "每 N 幀匯出一幀（1 = 每幀都匯出）。越大越快、越小，\n"
-                 "但看起來更卡頓。播放時長保持不變（上方 FPS 為抽幀前的幀率）。",
-        "ja": "N フレームごとに 1 枚書き出します（1 = 全フレーム）。大きいほど高速・小容量ですが、\n"
+        "zh_TW": "每 N 個影格匯出一個影格（1 = 每個影格都匯出）。越大越快、越小，\n"
+                 "但看起來更卡頓。播放時長保持不變（上方 FPS 為抽取影格前的影格率）。",
+        "ja": "N フレームごとに 1 枚エクスポートします（1 = 全フレーム）。大きいほど高速・小容量ですが、\n"
               "カクついて見えます。再生時間は維持されます（上の FPS は間引き前のレート）。",
         "ko": "N 프레임마다 하나씩 내보냅니다(1 = 모든 프레임). 클수록 빠르고 작지만,\n"
-              "더 끊겨 보입니다. 재생 시간은 유지됩니다(위의 FPS는 추출 전 프레임률).",
+              "더 끊겨 보입니다. 재생 시간은 유지됩니다(위의 FPS는 추출 전 프레임 속도).",
         "de": "Jedes N-te Bild exportieren (1 = jedes Bild). Höher = schneller und kleiner,\n"
               "wirkt aber ruckeliger. Die Abspieldauer bleibt erhalten (die FPS oben sind die Rate vor der Dezimierung).",
         "fr": "Exporte une image sur N (1 = toutes les images). Plus élevé = plus rapide et plus léger,\n"
-              "mais plus saccadé. La durée de lecture est conservée (les FPS ci-dessus sont le débit avant décimation).",
+              "mais plus saccadé. La durée de lecture est conservée (les FPS ci-dessus sont la fréquence d'images avant décimation).",
         "es": "Exporta uno de cada N fotogramas (1 = todos). Mayor = más rápido y pequeño,\n"
               "pero se ve más entrecortado. La duración se conserva (los FPS de arriba son la tasa antes de diezmar).",
     },
@@ -780,13 +771,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr": "Actualiser l'aperçu", "es": "Actualizar vista previa",
     },
     "FIELD APPEARANCE": {
-        "zh_CN": "字段外观", "zh_TW": "欄位外觀", "ja": "フィールドの外観",
+        "zh_CN": "场的外观", "zh_TW": "場的外觀", "ja": "フィールドの外観",
         "ko": "필드 모양", "de": "FELDDARSTELLUNG",
         "fr": "APPARENCE DU CHAMP", "es": "APARIENCIA DEL CAMPO",
     },
     "Open this tab to render a preview.": {
-        "zh_CN": "打开此选项卡以渲染预览。",
-        "zh_TW": "開啟此分頁以算繪預覽。",
+        "zh_CN": "打开此页以渲染预览。",
+        "zh_TW": "開啟此分頁以繪製預覽。",
         "ja": "このタブを開くとプレビューが描画されます。",
         "ko": "이 탭을 열면 미리보기가 렌더링됩니다.",
         "de": "Diesen Reiter öffnen, um eine Vorschau zu rendern.",
@@ -794,17 +785,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Abre esta pestaña para generar una vista previa.",
     },
     "Enable a field on the Images tab to preview.": {
-        "zh_CN": "在 Images 页启用一个字段以进行预览。",
-        "zh_TW": "在 Images 頁啟用一個欄位以進行預覽。",
-        "ja": "プレビューするには Images タブでフィールドを有効にしてください。",
-        "ko": "미리보려면 Images 탭에서 필드를 활성화하세요.",
-        "de": "Aktivieren Sie ein Feld im Reiter „Images“ für die Vorschau.",
+        "zh_CN": "在“图像”页启用一个场以进行预览。",
+        "zh_TW": "在「影像」頁啟用一個場以進行預覽。",
+        "ja": "プレビューするには「画像」タブでフィールドを有効にしてください。",
+        "ko": "미리보려면 '이미지' 탭에서 필드를 활성화하세요.",
+        "de": "Aktivieren Sie ein Feld im Reiter „Bilder“ für die Vorschau.",
         "fr": "Activez un champ dans l'onglet Images pour l'aperçu.",
-        "es": "Active un campo en la pestaña Images para la vista previa.",
+        "es": "Active un campo en la pestaña «Imágenes» para la vista previa.",
     },
     "No data for this field/frame.": {
-        "zh_CN": "该字段/帧没有数据。",
-        "zh_TW": "該欄位/影格沒有資料。",
+        "zh_CN": "该场/帧没有数据。",
+        "zh_TW": "該場/影格沒有資料。",
         "ja": "このフィールド/フレームにはデータがありません。",
         "ko": "이 필드/프레임에 데이터가 없습니다.",
         "de": "Keine Daten für dieses Feld/Bild.",
@@ -819,20 +810,20 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     # ========== Export: apply-to-all + margin (all 8 locales) ==========
     "Apply to all fields": {
-        "zh_CN": "应用到所有字段", "zh_TW": "套用到所有欄位",
+        "zh_CN": "应用到所有场", "zh_TW": "套用到所有場",
         "ja": "すべてのフィールドに適用", "ko": "모든 필드에 적용",
         "de": "Auf alle Felder anwenden", "fr": "Appliquer à tous les champs",
         "es": "Aplicar a todos los campos",
     },
     "Apply this field's colormap, opacity and auto-range to every "
     "enabled field (each field keeps its own min/max).": {
-        "zh_CN": "将该字段的 colormap、不透明度和自动范围应用到所有已启用字段（每个字段保留各自的 min/max）。",
-        "zh_TW": "將該欄位的 colormap、不透明度和自動範圍套用到所有已啟用欄位（每個欄位保留各自的 min/max）。",
-        "ja": "このフィールドの colormap・不透明度・自動範囲を、有効なすべてのフィールドに適用します（各フィールドの min/max は保持）。",
-        "ko": "이 필드의 colormap, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 min/max는 유지).",
-        "de": "Colormap, Deckkraft und Auto-Bereich dieses Felds auf alle aktivierten Felder anwenden (jedes Feld behält sein eigenes Min/Max).",
-        "fr": "Applique la colormap, l'opacité et l'auto-plage de ce champ à tous les champs activés (chaque champ garde ses propres min/max).",
-        "es": "Aplica el colormap, la opacidad y el rango automático de este campo a todos los campos activados (cada campo conserva su propio mín/máx).",
+        "zh_CN": "将该场的颜色映射、不透明度和自动范围应用到所有已启用的场（每个场保留各自的最小/最大值）。",
+        "zh_TW": "將該場的色彩對映、不透明度和自動範圍套用到所有已啟用的場（每個場保留各自的最小/最大值）。",
+        "ja": "このフィールドのカラーマップ・不透明度・自動範囲を、有効なすべてのフィールドに適用します（各フィールドの最小/最大は保持）。",
+        "ko": "이 필드의 색상 맵, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 최소/최대는 유지).",
+        "de": "Farbskala, Deckkraft und Auto-Bereich dieses Felds auf alle aktivierten Felder anwenden (jedes Feld behält sein eigenes Min/Max).",
+        "fr": "Applique la palette, l'opacité et la plage auto de ce champ à tous les champs activés (chaque champ garde ses propres min/max).",
+        "es": "Aplica el mapa de colores, la opacidad y el rango automático de este campo a todos los campos activados (cada campo conserva su propio mín/máx).",
     },
     "Margin": {
         "zh_CN": "边距", "zh_TW": "邊距", "ja": "余白", "ko": "여백",
@@ -847,7 +838,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "the long edge (0 = none).": {
         "zh_CN": "在导出内容外围加一圈空白边框，宽度为长边的比例（0 = 无）。",
         "zh_TW": "在匯出內容外圍加一圈空白邊框，寬度為長邊的比例（0 = 無）。",
-        "ja": "書き出す内容の周囲に空白の枠を追加します。幅は長辺に対する割合です（0 = なし）。",
+        "ja": "エクスポートする内容の周囲に空白の枠を追加します。幅は長辺に対する割合です（0 = なし）。",
         "ko": "내보내는 콘텐츠 주위에 여백 테두리를 추가합니다. 너비는 긴 변에 대한 비율입니다(0 = 없음).",
         "de": "Fügt einen leeren Rand um den exportierten Inhalt hinzu, als Anteil der langen Kante (0 = keiner).",
         "fr": "Ajoute une bordure vide autour du contenu exporté, en fraction du bord long (0 = aucune).",
@@ -956,7 +947,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "zh_TW": "在每張影像右側添加一條垂直色條。\n"
                  "啟用自動範圍時，刻度標籤會依影格更新。",
         "ja":    "各画像の右側に垂直カラーバーを追加します。\n"
-                 "自動レンジ有効時、目盛りラベルはフレームごとに更新されます。",
+                 "自動範囲有効時、目盛りラベルはフレームごとに更新されます。",
         "ko":    "각 이미지 오른쪽에 수직 컬러바를 추가합니다.\n"
                  "자동 범위가 활성화되면 눈금 레이블이 프레임별로 갱신됩니다.",
         "de":    "Fügt rechts neben jedem Bild eine vertikale Farbleiste hinzu.\n"
@@ -973,7 +964,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "zh_TW": "在每一影格右側添加一條垂直色條。\n"
                  "啟用自動範圍時，刻度標籤會依影格更新。",
         "ja":    "各フレームの右側に垂直カラーバーを追加します。\n"
-                 "自動レンジ有効時、目盛りラベルはフレームごとに更新されます。",
+                 "自動範囲有効時、目盛りラベルはフレームごとに更新されます。",
         "ko":    "각 프레임 오른쪽에 수직 컬러바를 추가합니다.\n"
                  "자동 범위가 활성화되면 눈금 레이블이 프레임별로 갱신됩니다.",
         "de":    "Fügt rechts neben jedem Bild eine vertikale Farbleiste hinzu.\n"
@@ -1060,7 +1051,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr": "PARAMÈTRES D'ANIMATION", "es": "AJUSTES DE ANIMACIÓN",
     },
     "FPS": {
-        "zh_CN": "帧率", "zh_TW": "影格率", "ja": "FPS",
+        "zh_CN": "FPS", "zh_TW": "FPS", "ja": "FPS",
         "ko": "FPS", "de": "FPS", "fr": "FPS", "es": "FPS",
     },
     "Export Animation": {
@@ -1081,8 +1072,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Tabla resumen de parámetros",
     },
     "Field statistics (min/max/mean/std per frame)": {
-        "zh_CN": "字段统计（每帧 最小/最大/平均/标准差）",
-        "zh_TW": "欄位統計（每影格 最小/最大/平均/標準差）",
+        "zh_CN": "场统计（每帧 最小/最大/平均/标准差）",
+        "zh_TW": "場統計（每影格 最小/最大/平均/標準差）",
         "ja":    "フィールド統計（フレームごとの最小/最大/平均/標準偏差）",
         "ko":    "필드 통계 (프레임별 최소/최대/평균/표준편차)",
         "de":    "Feldstatistik (min/max/Mittelwert/Stdabw. pro Bild)",
@@ -1090,7 +1081,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es":    "Estadísticas de campo (mín/máx/media/desv.típ. por fotograma)",
     },
     "Sample field images": {
-        "zh_CN": "示例字段图像", "zh_TW": "範例欄位影像",
+        "zh_CN": "场图像示例", "zh_TW": "場的範例影像",
         "ja": "フィールド画像のサンプル", "ko": "필드 이미지 샘플",
         "de": "Beispiel-Feldbilder", "fr": "Exemples d'images de champ",
         "es": "Imágenes de campo de muestra",
@@ -1101,12 +1092,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Alle", "fr": "Échantillonner toutes les", "es": "Muestrear cada",
     },
     "frames": {
-        "zh_CN": "帧", "zh_TW": "影格",
+        "zh_CN": "帧", "zh_TW": "個影格",
         "ja": "フレーム", "ko": "프레임",
         "de": "Bilder", "fr": "images", "es": "fotogramas",
     },
     "FIELDS": {
-        "zh_CN": "字段", "zh_TW": "欄位", "ja": "フィールド",
+        "zh_CN": "场变量", "zh_TW": "場變數", "ja": "フィールド",
         "ko": "필드", "de": "FELDER", "fr": "CHAMPS", "es": "CAMPOS",
     },
     "Displacement:": {
@@ -1158,8 +1149,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Select Output Folder": {
         "zh_CN": "选择输出文件夹", "zh_TW": "選擇輸出資料夾",
-        "ja": "出力フォルダーを選択", "ko": "출력 폴더 선택",
-        "de": "Ausgabeordner wählen",
+        "ja": "出力フォルダを選択", "ko": "출력 폴더 선택",
+        "de": "Ausgabeordner auswählen",
         "fr": "Sélectionner le dossier de sortie",
         "es": "Seleccionar carpeta de salida",
     },
@@ -1236,7 +1227,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Region": {
         "zh_CN": "区域", "zh_TW": "區域",
         "ja": "領域", "ko": "영역",
-        "de": "Bereich", "fr": "Région", "es": "Región",
+        "de": "Region", "fr": "Région", "es": "Región",
     },
     "Clear Region of Interest": {
         "zh_CN": "清除感兴趣区域",
@@ -1249,7 +1240,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Clear Region of Interest (%1 with region)": {
         "zh_CN": "清除感兴趣区域（%1 帧已有区域）",
-        "zh_TW": "清除感興趣區域（%1 影格已有區域）",
+        "zh_TW": "清除感興趣區域（%1 個影格已有區域）",
         "ja":    "関心領域をクリア（%1 フレームに領域あり）",
         "ko":    "관심 영역 지우기 (%1개 프레임에 영역 있음)",
         "de":    "Region of Interest löschen (%1 mit Region)",
@@ -1269,7 +1260,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Selected %1 files for %2 frames — count must match": {
         "zh_CN": "已选择 %1 个文件用于 %2 帧 — 数量必须匹配",
-        "zh_TW": "已選擇 %1 個檔案用於 %2 影格 — 數量必須相符",
+        "zh_TW": "已選擇 %1 個檔案用於 %2 個影格 — 數量必須相符",
         "ja":    "%2 フレームに対し %1 個のファイルが選択されました — 数量が一致する必要があります",
         "ko":    "%2 프레임에 대해 %1 개 파일 선택됨 — 개수가 일치해야 합니다",
         "de":    "%1 Dateien für %2 Bilder ausgewählt — Anzahl muss übereinstimmen",
@@ -1338,72 +1329,51 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "• Rule of thumb: VSG ≥ 2 × subset step + 1 (default: 41 px).\n\n"
     "Not used when Method = FEM nodal (there, mesh spacing itself "
     "sets the gauge size).": {
-        "zh_CN": "VSG（虚拟应变计，Virtual Strain Gauge）尺寸指围绕每个网格节点、"
-                 "用于拟合局部位移平面的圆形区域的直径（像素）。"
-                 "应变由该平面的斜率给出。\n\n"
+        "zh_CN": "VSG（虚拟应变计，Virtual Strain Gauge）尺寸指围绕每个网格节点、用于拟合局部位移平面的圆形区域的直径（像素）。应变由该平面的斜率给出。\n\n"
                  "• VSG 越大 → 应变越平滑，空间分辨率越低。\n"
                  "• VSG 越小 → 应变越锐利，但噪声越大。\n"
                  "• 经验法则：VSG ≥ 2 × 子集步长 + 1（默认：41 px）。\n\n"
-                 "方法选择 FEM nodal 时不使用此参数（此时由网格间距决定虚拟应变计尺寸）。",
-        "zh_TW": "VSG（虛擬應變計，Virtual Strain Gauge）尺寸指圍繞每個網格節點、"
-                 "用於擬合局部位移平面的圓形區域的直徑（像素）。"
-                 "應變由該平面的斜率給出。\n\n"
+                 "方法选择 FEM 节点时不使用此参数（此时由网格间距决定虚拟应变计尺寸）。",
+        "zh_TW": "VSG（虛擬應變計，Virtual Strain Gauge）尺寸指圍繞每個網格節點、用於擬合局部位移平面的圓形區域的直徑（像素）。應變由該平面的斜率給出。\n\n"
                  "• VSG 越大 → 應變越平滑，空間解析度越低。\n"
                  "• VSG 越小 → 應變越銳利，但雜訊越大。\n"
                  "• 經驗法則：VSG ≥ 2 × 子集步長 + 1（預設：41 px）。\n\n"
-                 "方法選擇 FEM nodal 時不使用此參數（此時由網格間距決定虛擬應變計尺寸）。",
-        "ja":    "VSG（バーチャルひずみゲージ、Virtual Strain Gauge）サイズとは、"
-                 "各メッシュノード周辺で局所変位平面をフィットさせるために使う"
-                 "円形領域の直径（ピクセル）のことです。ひずみはこの平面の勾配として算出されます。\n\n"
+                 "方法選擇 FEM 節點時不使用此參數（此時由網格間距決定虛擬應變計尺寸）。",
+        "ja":    "VSG（バーチャルひずみゲージ、Virtual Strain Gauge）サイズとは、各メッシュノード周辺で局所変位平面をフィットさせるために使う円形領域の直径（ピクセル）のことです。ひずみはこの平面の勾配として算出されます。\n\n"
                  "• VSG が大きい → ひずみは平滑になるが、空間解像度は低下。\n"
                  "• VSG が小さい → ひずみは鋭敏になるが、ノイズが増加。\n"
-                 "• 目安：VSG ≥ 2 × サブセットステップ + 1（既定：41 px）。\n\n"
-                 "方法が FEM nodal の場合は使用されません（そこではメッシュ間隔がゲージサイズを決定します）。",
-        "ko":    "VSG(가상 변형률 게이지, Virtual Strain Gauge) 크기는 각 메시 노드 주위에서 "
-                 "국소 변위 평면을 피팅하는 데 사용되는 원형 영역의 지름(픽셀)입니다. "
-                 "변형률은 이 평면의 기울기로 얻어집니다.\n\n"
+                 "• 目安：VSG ≥ 2 × サブセットステップ + 1（デフォルト：41 px）。\n\n"
+                 "手法が FEM ノードの場合は使用されません（そこではメッシュ間隔がゲージサイズを決定します）。",
+        "ko":    "VSG(가상 변형률 게이지, Virtual Strain Gauge) 크기는 각 메시 노드 주위에서 국소 변위 평면을 피팅하는 데 사용되는 원형 영역의 지름(픽셀)입니다. 변형률은 이 평면의 기울기로 얻어집니다.\n\n"
                  "• VSG가 클수록 → 변형률이 매끄럽고 공간 해상도가 낮음.\n"
                  "• VSG가 작을수록 → 변형률이 날카롭지만 노이즈 증가.\n"
                  "• 경험 법칙: VSG ≥ 2 × 서브셋 스텝 + 1 (기본값: 41 px).\n\n"
-                 "Method = FEM nodal일 때는 사용되지 않습니다(그 경우 메시 간격 자체가 게이지 크기를 결정).",
-        "de":    "VSG (Virtual Strain Gauge) ist der Durchmesser in Pixel des kreisförmigen "
-                 "Bereichs um jeden Netzknoten, der zum Anpassen einer lokalen Verschiebungs-"
-                 "ebene verwendet wird. Die Dehnung ergibt sich aus der Steigung dieser Ebene.\n\n"
+                 "방법 = FEM 노드일 때는 사용되지 않습니다(그 경우 메시 간격 자체가 게이지 크기를 결정).",
+        "de":    "VSG (Virtual Strain Gauge) ist der Durchmesser in Pixel des kreisförmigen Bereichs um jeden Netzknoten, der zum Anpassen einer lokalen Verschiebungsebene verwendet wird. Die Dehnung ergibt sich aus der Steigung dieser Ebene.\n\n"
                  "• Größeres VSG → glattere Dehnung, geringere räumliche Auflösung.\n"
                  "• Kleineres VSG → schärfere Dehnung, mehr Rauschen.\n"
                  "• Faustregel: VSG ≥ 2 × Subset-Schritt + 1 (Standard: 41 px).\n\n"
-                 "Nicht verwendet bei Methode = FEM nodal (dort bestimmt der Netzabstand die Größe).",
-        "fr":    "La taille VSG (Virtual Strain Gauge, jauge de déformation virtuelle) est le "
-                 "diamètre, en pixels, de la région circulaire autour de chaque nœud du maillage, "
-                 "utilisée pour ajuster un plan de déplacement local. La déformation est ensuite "
-                 "prise comme la pente de ce plan.\n\n"
+                 "Nicht verwendet bei Methode = FEM-Knoten (dort bestimmt der Netzabstand die Größe).",
+        "fr":    "La taille VSG (Virtual Strain Gauge, jauge de déformation virtuelle) est le diamètre, en pixels, de la région circulaire autour de chaque nœud du maillage, utilisée pour ajuster un plan de déplacement local. La déformation est ensuite prise comme la pente de ce plan.\n\n"
                  "• VSG plus grande → déformation plus lisse, résolution spatiale plus faible.\n"
                  "• VSG plus petite → déformation plus fine, mais plus de bruit.\n"
-                 "• Règle empirique : VSG ≥ 2 × pas de subset + 1 (par défaut : 41 px).\n\n"
+                 "• Règle empirique : VSG ≥ 2 × pas d'imagette + 1 (par défaut : 41 px).\n\n"
                  "Non utilisée quand Méthode = FEM nodal (l'espacement du maillage fixe alors la taille).",
-        "es":    "El tamaño VSG (Virtual Strain Gauge, galga de deformación virtual) es el diámetro, "
-                 "en píxeles, de la región circular alrededor de cada nodo de malla utilizada para "
-                 "ajustar un plano de desplazamiento local. La deformación se toma como la pendiente "
-                 "de dicho plano.\n\n"
+        "es":    "El tamaño VSG (Virtual Strain Gauge, galga de deformación virtual) es el diámetro, en píxeles, de la región circular alrededor de cada nodo de malla utilizada para ajustar un plano de desplazamiento local. La deformación se toma como la pendiente de dicho plano.\n\n"
                  "• VSG más grande → deformación más suave, menor resolución espacial.\n"
                  "• VSG más pequeño → deformación más nítida, pero con más ruido.\n"
-                 "• Regla práctica: VSG ≥ 2 × paso del subset + 1 (predeterminado: 41 px).\n\n"
-                 "No se usa con Method = FEM nodal (allí el espaciado de la malla establece el tamaño).",
+                 "• Regla práctica: VSG ≥ 2 × paso del subconjunto + 1 (predeterminado: 41 px).\n\n"
+                 "No se usa con Método = FEM nodal (allí el espaciado de la malla establece el tamaño).",
     },
 
     "\u26a0 VSG radius (%1 px) < DIC node spacing (%2 px); "
     "plane fit will fail. Use VSG \u2265 %3 px or switch "
     "Method to FEM nodal.": {
-        "zh_CN": "⚠ VSG 半径（%1 px）< DIC 节点间距（%2 px）；"
-                 "平面拟合将失败。请将 VSG ≥ %3 px 或将方法切换为 FEM nodal。",
-        "zh_TW": "⚠ VSG 半徑（%1 px）< DIC 節點間距（%2 px）；"
-                 "平面擬合將失敗。請將 VSG ≥ %3 px 或將方法切換為 FEM nodal。",
-        "ja":    "⚠ VSG 半径（%1 px）< DIC ノード間隔（%2 px）；"
-                 "平面フィットは失敗します。VSG ≥ %3 px にするか、方法を FEM nodal に切り替えてください。",
-        "ko":    "⚠ VSG 반경(%1 px) < DIC 노드 간격(%2 px); "
-                 "평면 피팅이 실패합니다. VSG ≥ %3 px로 설정하거나 Method를 FEM nodal로 전환하세요.",
-        "de":    "⚠ VSG-Radius (%1 px) < DIC-Knotenabstand (%2 px); "
-                 "Ebenenanpassung wird fehlschlagen. VSG ≥ %3 px verwenden oder Methode auf FEM nodal wechseln.",
+        "zh_CN": "⚠ VSG 半径（%1 px）< DIC 节点间距（%2 px）；平面拟合将失败。请将 VSG ≥ %3 px 或将方法切换为 FEM 节点。",
+        "zh_TW": "⚠ VSG 半徑（%1 px）< DIC 節點間距（%2 px）；平面擬合將失敗。請將 VSG ≥ %3 px 或將方法切換為 FEM 節點。",
+        "ja":    "⚠ VSG 半径（%1 px）< DIC ノード間隔（%2 px）；平面フィットは失敗します。VSG ≥ %3 px にするか、手法を FEM ノードに切り替えてください。",
+        "ko":    "⚠ VSG 반경(%1 px) < DIC 노드 간격(%2 px); 평면 피팅이 실패합니다. VSG ≥ %3 px로 설정하거나 방법을 FEM 노드로 전환하세요.",
+        "de":    "⚠ VSG-Radius (%1 px) < DIC-Knotenabstand (%2 px); Ebenenanpassung wird fehlschlagen. VSG ≥ %3 px verwenden oder Methode auf FEM-Knoten wechseln.",
         "fr":    "⚠ Rayon VSG (%1 px) < espacement des nœuds DIC (%2 px) ; "
                  "l'ajustement de plan échouera. Utilisez VSG ≥ %3 px ou passez la Méthode en FEM nodal.",
         "es":    "⚠ Radio VSG (%1 px) < espaciado de nodos DIC (%2 px); "
@@ -1482,17 +1452,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
 
     # ========== PipelineController (start() + _on_finished()) ==========
     "  Loaded %1 images, shape=%2": {
-        "zh_CN": "  已加载 %1 张图像，尺寸=%2",
-        "zh_TW": "  已載入 %1 張影像，尺寸=%2",
+        "zh_CN": "  已加载 %1 张图像，shape=%2",
+        "zh_TW": "  已載入 %1 張影像，shape=%2",
         "ja":    "  %1 枚の画像を読み込みました、shape=%2",
-        "ko":    "  %1 개 이미지 로드됨, shape=%2",
-        "de":    "  %1 Bilder geladen, Form=%2",
-        "fr":    "  %1 images chargées, forme=%2",
-        "es":    "  %1 imágenes cargadas, forma=%2",
+        "ko":    "  %1 개 이미지 불러옴, shape=%2",
+        "de":    "  %1 Bilder geladen, shape=%2",
+        "fr":    "  %1 images chargées, shape=%2",
+        "es":    "  %1 imágenes cargadas, shape=%2",
     },
     "  ROI mask: %1, %2 pixels (%3%)": {
-        "zh_CN": "  感兴趣区域蒙版：%1，%2 像素（%3%）",
-        "zh_TW": "  感興趣區域遮罩：%1，%2 像素（%3%）",
+        "zh_CN": "  ROI 掩模：%1，%2 像素（%3%）",
+        "zh_TW": "  ROI 遮罩：%1，%2 像素（%3%）",
         "ja":    "  ROI マスク：%1、%2 ピクセル（%3%）",
         "ko":    "  ROI 마스크: %1, %2 픽셀 (%3%)",
         "de":    "  ROI-Maske: %1, %2 Pixel (%3%)",
@@ -1502,21 +1472,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Run cancelled: define per-frame Regions of Interest "
     "for the missing reference frames or accept the "
     "inherited frame-1 mask in the next run.": {
-        "zh_CN": "已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，"
-                 "或在下次运行时接受继承自第 1 帧的蒙版。",
+        "zh_CN": "已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。",
         "zh_TW": "已取消執行：請為缺失的參考影格定義逐影格感興趣區域，"
                  "或在下次執行時接受繼承自第 1 影格的遮罩。",
-        "ja":    "実行をキャンセルしました：欠けている参照フレームに対して"
-                 "フレーム別の関心領域を定義するか、次回実行時に"
-                 "第 1 フレームのマスクを継承してください。",
+        "ja":    "実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。",
         "ko":    "실행 취소됨: 누락된 참조 프레임에 대해 프레임별 관심 영역을 "
                  "정의하거나, 다음 실행 시 프레임 1의 마스크를 그대로 사용하도록 허용하세요.",
         "de":    "Lauf abgebrochen: Definieren Sie pro Bild Regions of Interest "
                  "für die fehlenden Referenzbilder, oder akzeptieren Sie beim "
                  "nächsten Lauf die vom 1. Bild geerbte Maske.",
-        "fr":    "Exécution annulée : définissez les régions d'intérêt par image "
-                 "pour les images de référence manquantes, ou acceptez le "
-                 "masque hérité de l'image 1 au prochain lancement.",
+        "fr":    "Exécution annulée : définissez les régions d'intérêt par image pour les images de référence manquantes, ou acceptez le masque hérité de l'image 1 à la prochaine exécution.",
         "es":    "Ejecución cancelada: defina regiones de interés por fotograma "
                  "para los fotogramas de referencia que faltan, o acepte la "
                  "máscara heredada del fotograma 1 en la próxima ejecución.",
@@ -1595,19 +1560,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Rescale the color range to each frame's data range": {
         "zh_CN": "根据每帧的数据范围自动缩放颜色范围",
-        "zh_TW": "根據每幀的資料範圍自動縮放顏色範圍",
-        "ja":    "各フレームのデータ範囲に合わせてカラーレンジを再スケールします",
+        "zh_TW": "根據每個影格的資料範圍自動縮放顏色範圍",
+        "ja":    "各フレームのデータ範囲に合わせてカラー範囲を再スケールします",
         "ko":    "각 프레임의 데이터 범위에 맞춰 색상 범위를 다시 조정합니다",
-        "de":    "Farbbereich an den Datenbereich jedes Frames anpassen",
+        "de":    "Farbbereich an den Datenbereich jedes Bildes anpassen",
         "fr":    "Ajuster la plage de couleurs à la plage de données de chaque image",
         "es":    "Ajustar el rango de colores al rango de datos de cada fotograma",
     },
     "Keep the manual Min/Max bounds for every frame": {
         "zh_CN": "所有帧都使用手动设置的最小/最大值",
-        "zh_TW": "所有幀都使用手動設定的最小/最大值",
+        "zh_TW": "所有影格都使用手動設定的最小/最大值",
         "ja":    "すべてのフレームで手動の最小/最大値を使用します",
         "ko":    "모든 프레임에서 수동 최소/최대 값을 유지합니다",
-        "de":    "Manuelle Min/Max-Grenzen für alle Frames beibehalten",
+        "de":    "Manuelle Min/Max-Grenzen für alle Bilder beibehalten",
         "fr":    "Conserver les bornes Min/Max manuelles pour toutes les images",
         "es":    "Mantener los límites Mín/Máx manuales en todos los fotogramas",
     },
@@ -1615,7 +1580,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     # ===== Display mode: geometry and background chosen separately =========
     "Deformed frame": {
         "zh_CN": "变形帧",
-        "zh_TW": "變形幀",
+        "zh_TW": "變形影格",
         "ja":    "変形フレーム",
         "ko":    "변형된 프레임",
         "de":    "Verformtes Bild",
@@ -1624,7 +1589,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "Reference frame": {
         "zh_CN": "参考帧",
-        "zh_TW": "參考幀",
+        "zh_TW": "參考影格",
         "ja":    "参照フレーム",
         "ko":    "참조 프레임",
         "de":    "Referenzbild",
@@ -1668,45 +1633,45 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es":    "Fondo oculto",
     },
     "Plot the field at the deformed node positions, or at their positions in the reference frame.": {
-        "zh_CN": "将字段绘制在变形后的节点位置，或绘制在其在参考帧中的位置。",
-        "zh_TW": "將欄位繪製在變形後的節點位置，或繪製在其於參考幀中的位置。",
-        "ja":    "フィールドを変形後のノード位置に描画するか、参照フレームでの位置に描画します。",
+        "zh_CN": "将场绘制在变形后的节点位置，或绘制在其在参考帧中的位置。",
+        "zh_TW": "將場繪製在變形後的節點位置，或繪製在其於參考影格中的位置。",
+        "ja":    "場を変形後のノード位置に描画するか、参照フレームでの位置に描画します。",
         "ko":    "필드를 변형된 노드 위치에 그리거나 참조 프레임에서의 위치에 그립니다.",
         "de":    "Das Feld an den verformten Knotenpositionen zeichnen oder an ihren Positionen im Referenzbild.",
         "fr":    "Tracer le champ aux positions déformées des nœuds, ou à leurs positions dans l'image de référence.",
         "es":    "Dibujar el campo en las posiciones deformadas de los nodos, o en sus posiciones en el fotograma de referencia.",
     },
     "Uncheck to show the field on its own, with no speckle image behind it.": {
-        "zh_CN": "取消勾选可仅显示字段，其后不显示散斑图像。",
-        "zh_TW": "取消勾選可僅顯示欄位，其後不顯示散斑影像。",
-        "ja":    "チェックを外すと、背後にスペックル画像を表示せずフィールドのみを表示します。",
+        "zh_CN": "取消勾选可仅显示场，其后不显示散斑图像。",
+        "zh_TW": "取消勾選可僅顯示場本身，其後不顯示散斑影像。",
+        "ja":    "チェックを外すと、背後にスペックル画像を表示せず場のみを表示します。",
         "ko":    "선택을 해제하면 뒤에 스페클 이미지 없이 필드만 표시합니다.",
         "de":    "Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter anzuzeigen.",
         "fr":    "Décochez pour n'afficher que le champ, sans image de mouchetis derrière.",
         "es":    "Desmarque para mostrar solo el campo, sin imagen de moteado detrás.",
     },
     "Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview & Colorbar tab.": {
-        "zh_CN": "取消勾选可仅导出字段，其后不含散斑图像。填充色在 Preview & Colorbar 页选择。",
-        "zh_TW": "取消勾選可僅匯出欄位，其後不含散斑影像。填充色於 Preview & Colorbar 頁選擇。",
-        "ja":    "チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。塗りつぶしは Preview & Colorbar タブで選択します。",
-        "ko":    "선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. 채우기는 Preview & Colorbar 탭에서 선택합니다.",
-        "de":    "Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter zu exportieren. Die Füllung wird im Reiter \u201ePreview & Colorbar\u201c gewählt.",
-        "fr":    "Décochez pour n'exporter que le champ, sans image de mouchetis derrière. Le remplissage se choisit dans l'onglet Preview & Colorbar.",
-        "es":    "Desmarque para exportar solo el campo, sin imagen de moteado detrás. El relleno se elige en la pestaña Preview & Colorbar.",
+        "zh_CN": "取消勾选可仅导出场，其后不含散斑图像。填充色在“预览与色条”页选择。",
+        "zh_TW": "取消勾選可僅匯出場本身，其後不含散斑影像。填充色於「預覽與色條」頁選擇。",
+        "ja":    "チェックを外すと、背後にスペックル画像を含めず場のみをエクスポートします。塗りつぶしは「プレビューとカラーバー」タブで選択します。",
+        "ko":    "선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. 채우기는 '미리보기 및 컬러바' 탭에서 선택합니다.",
+        "de":    "Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter zu exportieren. Die Füllung wird im Reiter „Vorschau & Farbleiste“ gewählt.",
+        "fr":    "Décochez pour n'exporter que le champ, sans image de mouchetis derrière. Le remplissage se choisit dans l'onglet « Aperçu et barre de couleur ».",
+        "es":    "Desmarque para exportar solo el campo, sin imagen de moteado detrás. El relleno se elige en la pestaña «Vista previa y barra de color».",
     },
     "Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.": {
-        "zh_CN": "取消勾选可仅导出字段，其后不含散斑图像。GIF 和 MP4 无法保存透明度，透明填充将写为白色。",
-        "zh_TW": "取消勾選可僅匯出欄位，其後不含散斑影像。GIF 與 MP4 無法儲存透明度，透明填充將寫為白色。",
-        "ja":    "チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。GIF と MP4 は透明度を保存できないため、透明の塗りつぶしは白として書き出されます。",
+        "zh_CN": "取消勾选可仅导出场，其后不含散斑图像。GIF 和 MP4 无法保存透明度，透明填充将写为白色。",
+        "zh_TW": "取消勾選可僅匯出場本身，其後不含散斑影像。GIF 與 MP4 無法儲存透明度，透明填充將寫為白色。",
+        "ja":    "チェックを外すと、背後にスペックル画像を含めず場のみをエクスポートします。GIF と MP4 は透明度を保存できないため、透明の塗りつぶしは白として書き出されます。",
         "ko":    "선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. GIF와 MP4는 투명도를 저장할 수 없으므로 투명 채우기는 흰색으로 기록됩니다.",
         "de":    "Deaktivieren, um nur das Feld ohne Speckle-Bild dahinter zu exportieren. GIF und MP4 können keine Transparenz speichern; eine transparente Füllung wird als Weiß geschrieben.",
         "fr":    "Décochez pour n'exporter que le champ, sans image de mouchetis derrière. GIF et MP4 ne peuvent pas stocker la transparence : un remplissage transparent est écrit en blanc.",
         "es":    "Desmarque para exportar solo el campo, sin imagen de moteado detrás. GIF y MP4 no pueden almacenar transparencia, por lo que un relleno transparente se escribe como blanco.",
     },
     "Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame's own photo.\nReference: drawn at the original node positions, over the first frame.": {
-        "zh_CN": "变形帧：字段绘制在位移后的节点位置（参考位置 + 位移），叠加在每一帧自己的照片上。\n参考帧：绘制在原始节点位置，叠加在第一帧上。",
-        "zh_TW": "變形幀：欄位繪製在位移後的節點位置（參考位置 + 位移），疊加在每一幀自己的照片上。\n參考幀：繪製在原始節點位置，疊加在第一幀上。",
-        "ja":    "変形フレーム：フィールドを変位後のノード位置（参照位置 + 変位）に描画し、各フレーム自身の写真に重ねます。\n参照フレーム：元のノード位置に描画し、最初のフレームに重ねます。",
+        "zh_CN": "变形帧：场绘制在位移后的节点位置（参考位置 + 位移），叠加在每一帧自己的照片上。\n参考帧：绘制在原始节点位置，叠加在第一帧上。",
+        "zh_TW": "變形影格：場繪製在位移後的節點位置（參考位置 + 位移），疊加在每個影格自己的照片上。\n參考影格：繪製在原始節點位置，疊加在第一個影格上。",
+        "ja":    "変形フレーム：場を変位後のノード位置（参照位置 + 変位）に描画し、各フレーム自身の写真に重ねます。\n参照フレーム：元のノード位置に描画し、最初のフレームに重ねます。",
         "ko":    "변형된 프레임: 필드를 변위된 노드 위치(참조 위치 + 변위)에 그려 각 프레임 자체의 사진 위에 겹칩니다.\n참조 프레임: 원래 노드 위치에 그려 첫 번째 프레임 위에 겹칩니다.",
         "de":    "Verformtes Bild: Das Feld wird an den verschobenen Knotenpositionen (Referenz + Verschiebung) über dem jeweils eigenen Foto jedes Bildes gezeichnet.\nReferenzbild: an den ursprünglichen Knotenpositionen über dem ersten Bild gezeichnet.",
         "fr":    "Image déformée : le champ est tracé aux positions déplacées des nœuds (référence + déplacement), par-dessus la photo propre à chaque image.\nImage de référence : tracé aux positions d'origine des nœuds, par-dessus la première image.",
@@ -1724,7 +1689,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.": {
         "zh_CN": "背景隐藏时用什么替代图像。导出时 PNG 和 TIFF 会保留透明度，其他格式改用白色。",
         "zh_TW": "背景隱藏時用什麼替代影像。匯出時 PNG 與 TIFF 會保留透明度，其他格式改用白色。",
-        "ja":    "背景を非表示にしたとき、画像の代わりに何を表示するかです。書き出しでは PNG と TIFF が透明度を保持し、他の形式は白になります。",
+        "ja":    "背景を非表示にしたとき、画像の代わりに何を表示するかです。エクスポートでは PNG と TIFF が透明度を保持し、他の形式は白になります。",
         "ko":    "배경을 숨겼을 때 이미지를 대신할 채우기입니다. 내보낼 때 PNG와 TIFF는 투명도를 유지하며, 다른 형식은 흰색이 됩니다.",
         "de":    "Was das Bild ersetzt, wenn es ausgeblendet ist. Beim Export bleibt die Transparenz bei PNG und TIFF erhalten; andere Formate erhalten Weiß.",
         "fr":    "Ce qui remplace l'image lorsqu'elle est masquée. À l'export, la transparence est conservée pour PNG et TIFF ; les autres formats reçoivent du blanc.",
@@ -1736,7 +1701,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Analyse", "fr": "Analyse", "es": "Análisis",
     },
     "Strain Field": {
-        "zh_CN": "应变场", "zh_TW": "應變場", "ja": "ひずみ場", "ko": "변형률 장",
+        "zh_CN": "应变场", "zh_TW": "應變場", "ja": "ひずみ場", "ko": "변형률장",
         "de": "Dehnungsfeld", "fr": "Champ de déformation",
         "es": "Campo de deformación",
     },
@@ -1761,8 +1726,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Polygon", "fr": "Polygone", "es": "Polígono",
     },
     "Click once to place a point probe.": {
-        "zh_CN": "单击一次放置点探针。",
-        "zh_TW": "按一下放置點探針。",
+        "zh_CN": "点击一次放置点探针。",
+        "zh_TW": "點擊一次放置點探針。",
         "ja": "1 回クリックして点プローブを配置します。",
         "ko": "한 번 클릭하여 점 프로브를 배치합니다.",
         "de": "Einmal klicken, um eine Punktsonde zu setzen.",
@@ -1779,8 +1744,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Haga clic dos veces: inicio y fin de la base de medida.",
     },
     "Click twice: opposite corners.": {
-        "zh_CN": "单击两次：对角两点。",
-        "zh_TW": "按兩下：對角兩點。",
+        "zh_CN": "点击两次：对角两点。",
+        "zh_TW": "點擊兩次：對角兩點。",
         "ja": "2 回クリック：対角の 2 点。",
         "ko": "두 번 클릭: 마주 보는 두 모서리.",
         "de": "Zweimal klicken: gegenüberliegende Ecken.",
@@ -1788,8 +1753,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Haga clic dos veces: esquinas opuestas.",
     },
     "Click twice: centre, then the edge.": {
-        "zh_CN": "单击两次：先圆心，后边缘。",
-        "zh_TW": "按兩下：先圓心，後邊緣。",
+        "zh_CN": "点击两次：先圆心，后边缘。",
+        "zh_TW": "點擊兩次：先圓心，後邊緣。",
         "ja": "2 回クリック：中心、次に円周。",
         "ko": "두 번 클릭: 중심, 그다음 가장자리.",
         "de": "Zweimal klicken: Mittelpunkt, dann Rand.",
@@ -1797,8 +1762,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "Haga clic dos veces: centro y luego borde.",
     },
     "Click each vertex, then double-click to close.": {
-        "zh_CN": "逐个单击顶点，双击闭合。",
-        "zh_TW": "逐一按下頂點，按兩下閉合。",
+        "zh_CN": "逐个点击顶点，双击闭合。",
+        "zh_TW": "逐一點擊頂點，雙擊閉合。",
         "ja": "各頂点をクリックし、ダブルクリックで閉じます。",
         "ko": "각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.",
         "de": "Jeden Eckpunkt anklicken, dann per Doppelklick schließen.",
@@ -1811,7 +1776,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ja": "Esc で配置をキャンセル",
         "ko": "Esc 키로 배치 취소",
         "de": "Esc bricht das Setzen ab",
-        "fr": "Esc annule le placement",
+        "fr": "Échap annule le placement",
         "es": "Esc cancela la colocación",
     },
     "Show": {
@@ -1839,13 +1804,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Löschen", "fr": "Supprimer", "es": "Eliminar",
     },
     "Clear All": {
-        "zh_CN": "全部清除", "zh_TW": "全部清除", "ja": "すべて消去",
+        "zh_CN": "全部清除", "zh_TW": "全部清除", "ja": "すべてクリア",
         "ko": "모두 지우기", "de": "Alle löschen", "fr": "Tout effacer",
         "es": "Borrar todo",
     },
     "Clear All Probes": {
         "zh_CN": "清除所有探针", "zh_TW": "清除所有探針",
-        "ja": "すべてのプローブを消去", "ko": "모든 프로브 지우기",
+        "ja": "すべてのプローブをクリア", "ko": "모든 프로브 지우기",
         "de": "Alle Sonden löschen", "fr": "Effacer toutes les sondes",
         "es": "Borrar todas las sondas",
     },
@@ -1953,14 +1918,14 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "ja": "プローブを描画するには、先に DIC 解析を実行してください。",
         "ko": "프로브를 그리려면 먼저 DIC 분석을 실행하세요.",
         "de": "Führen Sie eine DIC-Analyse aus, um Sonden darzustellen.",
-        "fr": "Lancez une analyse DIC pour tracer les sondes.",
+        "fr": "Exécutez une analyse DIC pour tracer les sondes.",
         "es": "Ejecute un análisis DIC para representar las sondas.",
     },
     "Place a probe on the reference image to begin.": {
         "zh_CN": "在参考图像上放置一个探针即可开始。",
         "zh_TW": "在參考影像上放置一個探針即可開始。",
         "ja": "参照画像にプローブを配置すると始まります。",
-        "ko": "기준 이미지에 프로브를 배치하면 시작됩니다.",
+        "ko": "참조 이미지에 프로브를 배치하면 시작됩니다.",
         "de": "Setzen Sie eine Sonde auf das Referenzbild, um zu beginnen.",
         "fr": "Placez une sonde sur l'image de référence pour commencer.",
         "es": "Coloque una sonda en la imagen de referencia para empezar.",
@@ -2094,7 +2059,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     "An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.": {
         "zh_CN": "发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。",
-        "zh_TW": "發生了非預期的錯誤。應用程式之後的行為可能不正常，建議儲存會話並重新啟動。",
+        "zh_TW": "發生了非預期的錯誤。應用程式之後的行為可能不正常，建議儲存工作階段並重新啟動。",
         "ja":    "予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。",
         "ko":    "예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.",
         "de":    "Ein unerwarteter Fehler ist aufgetreten. Die Anwendung verhält sich möglicherweise nicht mehr korrekt; es wird empfohlen, die Sitzung zu speichern und neu zu starten.",
@@ -2195,8 +2160,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "unreliable (strain edge trim)": {
         "zh_CN": "不可靠（应变边缘裁剪）",
         "zh_TW": "不可靠（應變邊緣裁剪）",
-        "ja":    "信頼できない（ひずみの端部トリミング）",
-        "ko":    "신뢰할 수 없음(변형률 가장자리 트림)",
+        "ja":    "信頼できない（ひずみの縁トリミング）",
+        "ko":    "신뢰할 수 없음(변형률 가장자리 잘라내기)",
         "de":    "unzuverlässig (Dehnungs-Randbeschnitt)",
         "fr":    "non fiable (rognage des bords de la déformation)",
         "es":    "no fiable (recorte de bordes de la deformación)",
@@ -2216,7 +2181,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'zh_TW': '尚未計算應變。請在「應變場」頁中計算，或改為繪製位移。',
         'ja': 'ひずみはまだ計算されていません。「ひずみ場」タブで計算するか、変位を表示してください。',
         'ko': "변형률이 아직 계산되지 않았습니다. '변형률장' 탭에서 계산하거나 변위를 표시하십시오.",
-        'de': 'Die Dehnung wurde noch nicht berechnet. Berechnen Sie sie im Reiter „Dehnungsfeld“ oder zeigen Sie eine Verschiebung an.',
+        'de': 'Die Dehnung wurde noch nicht berechnet. Berechnen Sie sie im Reiter „Dehnungsfeld“ oder stellen Sie eine Verschiebung dar.',
         'fr': "La déformation n'a pas encore été calculée. Calculez-la dans l'onglet « Champ de déformation » ou affichez un déplacement.",
         'es': 'La deformación aún no se ha calculado. Calcúlela en la pestaña «Campo de deformación» o represente un desplazamiento.',
     },
@@ -2360,7 +2325,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'zh_TW': '當線或區域中可靠點的比例低於此值時，該影格留空。避免樣本逐漸縮小而曲線依然平滑的假象。',
         'ja': '線または領域の信頼できる点の割合がこの値を下回るフレームは空白になります。サンプルが減っていても曲線が滑らかに見えてしまうことを防ぎます。',
         'ko': '선이나 영역에서 신뢰할 수 있는 점의 비율이 이 값보다 낮으면 해당 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 유지되는 것을 방지합니다.',
-        'de': 'Ein Bild bleibt leer, wenn weniger als dieser Anteil der Punkte einer Linie oder Region zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe schrumpft.',
+        'de': 'Ein Bild bleibt leer, wenn weniger als dieser Anteil der Punkte einer Linie oder eines Bereichs zuverlässig ist. Verhindert eine Kurve, die glatt bleibt, während ihre Stichprobe schrumpft.',
         'fr': "Une image reste vide lorsque moins de cette fraction des points d'une ligne ou d'une région est fiable. Évite une courbe qui reste lisse alors que son échantillon se réduit.",
         'es': 'Un fotograma queda en blanco cuando menos de esta fracción de los puntos de una línea o región es fiable. Evita una curva que sigue suave mientras su muestra se reduce.',
     },
@@ -2370,12 +2335,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'ja': 'プローブデータ（CSV）…',
         'ko': '프로브 데이터(CSV)…',
         'de': 'Sondendaten (CSV)…',
-        'fr': 'Données des sondes (CSV)…',
+        'fr': 'Données de sonde (CSV)…',
         'es': 'Datos de las sondas (CSV)…',
     },
     'Chart image…': {
-        'zh_CN': '图表图片…',
-        'zh_TW': '圖表圖片…',
+        'zh_CN': '图表图像…',
+        'zh_TW': '圖表影像…',
         'ja': 'グラフ画像…',
         'ko': '차트 이미지…',
         'de': 'Diagrammbild…',
@@ -2520,7 +2485,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     'Fit image to viewport': {
         'zh_CN': '将图像适配到视口',
-        'zh_TW': '將影像適配到視口',
+        'zh_TW': '將影像適配到檢視區',
         'ja': '画像をビューポートに合わせる',
         'ko': '이미지를 뷰포트에 맞춤',
         'de': 'Bild an den Ansichtsbereich anpassen',
@@ -2576,7 +2541,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'zh_CN': '用当前帧所绘物理量的场为参考图像着色。对于量规读数，显示“应变场”页中的场。',
         'zh_TW': '以目前影格所繪物理量的場為參考影像著色。對於量規讀數，顯示「應變場」頁中的場。',
         'ja': '現在のフレームで表示中の量の場で参照画像を色付けします。ゲージの読み取り値では「ひずみ場」タブの場を表示します。',
-        'ko': "현재 프레임에서 표시 중인 양의 필드로 기준 이미지를 색칠합니다. 게이지 판독값의 경우 '변형률장' 탭의 필드를 표시합니다.",
+        'ko': "현재 프레임에서 표시 중인 양의 필드로 참조 이미지를 색칠합니다. 게이지 판독값의 경우 '변형률장' 탭의 필드를 표시합니다.",
         'de': 'Färbt das Referenzbild mit dem dargestellten Feld im aktuellen Bild ein. Bei einer Messstreckengröße wird das Feld des Reiters „Dehnungsfeld“ angezeigt.',
         'fr': "Colore l'image de référence avec le champ tracé à l'image courante. Pour une lecture de jauge, le champ de l'onglet « Champ de déformation » est affiché.",
         'es': 'Colorea la imagen de referencia con el campo representado en el fotograma actual. Para una lectura de calibre, se muestra el campo de la pestaña «Campo de deformación».',
@@ -2701,7 +2666,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     },
     'A line view shows a field. Choose a field to plot.': {
         'zh_CN': '沿线视图显示的是场。请选择一个场来绘制。',
-        'zh_TW': '沿線視圖顯示的是場。請選擇一個場來繪製。',
+        'zh_TW': '沿線檢視顯示的是場。請選擇一個場來繪製。',
         'ja': '線のビューは場を表示します。表示する場を選んでください。',
         'ko': '선 보기는 필드를 표시합니다. 표시할 필드를 선택하십시오.',
         'de': 'Eine Linienansicht zeigt ein Feld. Wählen Sie ein Feld zum Darstellen.',
@@ -2756,7 +2721,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     'Nothing valid along %1: its strain is trimmed as low-confidence near an edge or a hole. Plot a displacement, or trim less on the Strain Field tab.': {
         'zh_CN': '%1 沿线没有有效数据：其应变在边缘或孔附近被判为低置信度而裁剪。请改为绘制位移，或在“应变场”页减少裁剪。',
         'zh_TW': '%1 沿線沒有有效資料：其應變在邊緣或孔附近被判為低可信度而裁剪。請改為繪製位移，或在「應變場」頁減少裁剪。',
-        'ja': '%1 に沿って有効なデータがありません：縁や穴の近くのひずみは低信頼度として除去されています。変位を表示するか、「ひずみ場」タブで除去を減らしてください。',
+        'ja': '%1 に沿って有効なデータがありません：縁や穴の近くのひずみは低信頼度としてトリミングされています。変位を表示するか、「ひずみ場」タブでトリミングを減らしてください。',
         'ko': "%1을(를) 따라 유효한 데이터가 없습니다: 가장자리나 구멍 근처의 변형률이 저신뢰도로 잘려 나갔습니다. 변위를 표시하거나 '변형률장' 탭에서 잘라내기를 줄이십시오.",
         'de': 'Keine gültigen Daten entlang %1: Die Dehnung wird nahe einem Rand oder Loch als wenig zuverlässig beschnitten. Stellen Sie eine Verschiebung dar oder beschneiden Sie im Reiter „Dehnungsfeld“ weniger.',
         'fr': "Aucune donnée valide le long de %1 : sa déformation est rognée comme peu fiable près d'un bord ou d'un trou. Tracez un déplacement, ou rognez moins dans l'onglet « Champ de déformation ».",
@@ -2848,7 +2813,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Import a testing machine's load record (CSV) to plot against load or stress, and to draw stress-strain curves.": {
         'zh_CN': '导入试验机的载荷记录（CSV），以载荷或应力为横轴绘图，并绘制应力–应变曲线。',
         'zh_TW': '匯入試驗機的載荷記錄（CSV），以載荷或應力為橫軸繪圖，並繪製應力–應變曲線。',
-        'ja': '試験機の荷重記録（CSV）を読み込み、荷重または応力に対してプロットし、応力–ひずみ曲線を描きます。',
+        'ja': '試験機の荷重記録（CSV）をインポートし、荷重または応力に対してプロットし、応力–ひずみ曲線を描きます。',
         'ko': '시험기의 하중 기록(CSV)을 가져와 하중 또는 응력에 대해 그래프를 그리고 응력–변형률 곡선을 그립니다.',
         'de': 'Kraftaufzeichnung einer Prüfmaschine (CSV) importieren, um über Kraft oder Spannung darzustellen und Spannungs-Dehnungs-Kurven zu zeichnen.',
         'fr': "Importer l'enregistrement de charge d'une machine d'essai (CSV) pour tracer en fonction de la charge ou de la contrainte, et tracer des courbes contrainte-déformation.",
@@ -2966,7 +2931,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'zh_CN': '参考图像时刻对应的试验机时间。若相机比试验机晚 2 s 启动，则输入 2。',
         'zh_TW': '參考影像時刻對應的試驗機時間。若相機比試驗機晚 2 s 啟動，則輸入 2。',
         'ja': '参照画像の時点における試験機の時間。カメラが試験機より 2 s 遅れて開始した場合は 2 と入力します。',
-        'ko': '기준 이미지 시점의 시험기 시간입니다. 카메라가 시험기보다 2 s 늦게 시작했다면 2를 입력하십시오.',
+        'ko': '참조 이미지 시점의 시험기 시간입니다. 카메라가 시험기보다 2 s 늦게 시작했다면 2를 입력하십시오.',
         'de': 'Die Maschinenzeit beim Referenzbild. Startete die Kamera 2 s nach der Maschine, geben Sie 2 ein.',
         'fr': "Le temps de la machine à l'image de référence. Si la caméra a démarré 2 s après la machine, saisissez 2.",
         'es': 'El tiempo de la máquina en la imagen de referencia. Si la cámara empezó 2 s después que la máquina, introduzca 2.',
@@ -3101,11 +3066,20 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "Import the testing machine's load record with Load data… to draw stress-strain curves.": {
         'zh_CN': '请通过“载荷数据…”导入试验机的载荷记录，以绘制应力–应变曲线。',
         'zh_TW': '請透過「載荷資料…」匯入試驗機的載荷記錄，以繪製應力–應變曲線。',
-        'ja': '応力–ひずみ曲線を描くには、「荷重データ…」で試験機の荷重記録を読み込んでください。',
+        'ja': '応力–ひずみ曲線を描くには、「荷重データ…」で試験機の荷重記録をインポートしてください。',
         'ko': "응력–변형률 곡선을 그리려면 '하중 데이터…'로 시험기의 하중 기록을 가져오십시오.",
         'de': 'Importieren Sie die Kraftaufzeichnung der Prüfmaschine über „Kraftdaten…“, um Spannungs-Dehnungs-Kurven zu zeichnen.',
         'fr': "Importez l'enregistrement de charge de la machine d'essai via « Données de charge… » pour tracer des courbes contrainte-déformation.",
         'es': 'Importe el registro de carga de la máquina de ensayo con «Datos de carga…» para trazar curvas tensión-deformación.',
+    },
+    # ===== ParamPanel — the search label in Starting Points mode ==========
+    # Was "Initial Seed Search": the only "seed" left in the English UI,
+    # which says "Starting Point" everywhere else.
+    "Starting Point Search": {
+        "zh_CN": "种子点搜索", "zh_TW": "種子點搜尋",
+        "ja": "シード点探索", "ko": "시드점 탐색",
+        "de": "Startpunkt-Suche", "fr": "Recherche aux points de départ",
+        "es": "Búsqueda en puntos iniciales",
     },
 }
 
@@ -3117,7 +3091,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
 NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     "Import Region of Interest for %n frame(s)": {
         "zh_CN": ("为 %n 帧导入感兴趣区域",),
-        "zh_TW": ("為 %n 影格匯入感興趣區域",),
+        "zh_TW": ("為 %n 個影格匯入感興趣區域",),
         "ja":    ("%n フレームに関心領域をインポート",),
         "ko":    ("%n 프레임에 관심 영역 가져오기",),
         "de":    ("Region of Interest für %n Bild importieren",
@@ -3137,7 +3111,7 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
         "es":    ("Eliminar %n imagen", "Eliminar %n imágenes"),
     },
     "Select %n Mask File(s)": {
-        "zh_CN": ("选择 %n 个蒙版文件",),
+        "zh_CN": ("选择 %n 个掩模文件",),
         "zh_TW": ("選擇 %n 個遮罩檔案",),
         "ja":    ("%n 個のマスクファイルを選択",),
         "ko":    ("%n 개 마스크 파일 선택",),
@@ -3149,7 +3123,7 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "Imported Region of Interest for %n frame(s)": {
         "zh_CN": ("为 %n 帧导入了感兴趣区域",),
-        "zh_TW": ("為 %n 影格匯入了感興趣區域",),
+        "zh_TW": ("為 %n 個影格匯入了感興趣區域",),
         "ja":    ("%n フレームに関心領域をインポートしました",),
         "ko":    ("%n 프레임에 관심 영역 가져옴",),
         "de":    ("Region of Interest für %n Bild importiert",
@@ -3160,8 +3134,8 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
                   "Región de interés importada para %n fotogramas"),
     },
     "  %n frame(s) with custom ROI masks": {
-        "zh_CN": ("  %n 帧使用自定义感兴趣区域蒙版",),
-        "zh_TW": ("  %n 影格使用自訂感興趣區域遮罩",),
+        "zh_CN": ("  %n 帧使用自定义 ROI 掩模",),
+        "zh_TW": ("  %n 個影格使用自訂 ROI 遮罩",),
         "ja":    ("  %n 個のフレームでカスタム ROI マスクを使用",),
         "ko":    ("  %n 개 프레임에서 사용자 지정 ROI 마스크 사용",),
         "de":    ("  %n Bild mit benutzerdefinierter ROI-Maske",
@@ -3173,7 +3147,7 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     },
     "Results received: %n frame(s)": {
         "zh_CN": ("已收到结果：%n 帧",),
-        "zh_TW": ("已收到結果：%n 影格",),
+        "zh_TW": ("已收到結果：%n 個影格",),
         "ja":    ("結果を受信：%n フレーム",),
         "ko":    ("결과 수신: %n 프레임",),
         "de":    ("Ergebnisse empfangen: %n Bild",

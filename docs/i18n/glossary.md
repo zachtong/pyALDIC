@@ -5,6 +5,23 @@
 > released `.qm` catalog, changing it requires bumping the catalog
 > version (otherwise users see mixed translations).
 
+> **Revised 2026-09-24** (terminology unification, ships with the next
+> minor version): zh_TW "frame" is 影格 in every row (the table had 影格
+> beside 參考幀/變形幀); "Field" is the physical field (场/場/場/장) plus
+> the standalone selector label -- the old GUI row (字段/欄位, a form
+> field) was the wrong sense for this application; fr/es subset follow the
+> domain terms the catalogs already used (imagette, subconjunto); zh_TW
+> 數位影像相關 and 四元樹 (Taiwan usage); ko 시드점, 증분 추적 (the
+> mechanics term the UI always used) and 탐색 범위 (image-matching search);
+> de Erweiterte Lagrange-Methode; the de/fr/es Seed propagation cells follow
+> their Starting point rows; `Quadtree` left the do-not-translate list (the
+> CJK columns translate it). New rows: Load (a force), Stress, Stress–strain,
+> Gauge points, the mode labels, Solver, Method, Post-processing, Session,
+> Erase, Delete, Invert, Batch import; sense notes on Reset, Edit, View and
+> Field. Every catalog was brought in line (tests/test_i18n_glossary_terms.py
+> keeps it there), and the English label "Initial Seed Search" became
+> "Starting Point Search" like the rest of the UI.
+
 Fixed translations for domain-specific DIC terminology and high-frequency
 GUI verbs. Single source of truth for all 7 non-English languages.
 
@@ -30,7 +47,7 @@ established abbreviations stay literal English across all 8 languages:
 | Category | Tokens |
 |---|---|
 | Brand / method | `pyALDIC`, `AL-DIC`, `IC-GN`, `ADMM`, `FEM`, `Q8`, `DIC` |
-| Algorithm | `FFT`, `NCC`, `BFS`, `Quadtree`, `IDW`, `VSG` |
+| Algorithm | `FFT`, `NCC`, `BFS`, `IDW`, `VSG` |
 | File formats | `MAT`, `NPZ`, `CSV`, `PNG`, `GIF`, `MP4`, `PDF`, `BMP`, `TIFF`, `JPEG`, `HTML` |
 | Tech abbreviations | `GUI`, `CLI`, `CPU`, `GPU`, `CI`, `ROI`, `POI`, `RMSE`, `DPI`, `FPS` |
 | Library names | `PySide6`, `NumPy`, `SciPy`, `Numba`, `Matplotlib` |
@@ -49,31 +66,37 @@ established abbreviations stay literal English across all 8 languages:
 
 | English | zh_CN | zh_TW | ja | ko | de | fr | es |
 |---|---|---|---|---|---|---|---|
-| Digital Image Correlation | 数字图像相关 | 數字圖像相關 | デジタル画像相関 | 디지털 이미지 상관법 | Digitale Bildkorrelation | Corrélation d'images numériques | Correlación digital de imágenes |
-| Subset | 子集 | 子集 | サブセット | 서브셋 | Subset | Subset | Subset |
-| Subset size | 子集尺寸 | 子集尺寸 | サブセットサイズ | 서브셋 크기 | Subset-Größe | Taille du subset | Tamaño del subset |
-| Subset step | 子集步长 | 子集步長 | サブセットステップ | 서브셋 스텝 | Subset-Schritt | Pas du subset | Paso del subset |
-| Search range | 搜索范围 | 搜尋範圍 | 探索範囲 | 검색 범위 | Suchbereich | Plage de recherche | Rango de búsqueda |
+| Digital Image Correlation | 数字图像相关 | 數位影像相關 | デジタル画像相関 | 디지털 이미지 상관법 | Digitale Bildkorrelation | Corrélation d'images numériques | Correlación digital de imágenes |
+| Subset | 子集 | 子集 | サブセット | 서브셋 | Subset | Imagette | Subconjunto |
+| Subset size | 子集尺寸 | 子集尺寸 | サブセットサイズ | 서브셋 크기 | Subset-Größe | Taille d'imagette | Tamaño del subconjunto |
+| Subset step | 子集步长 | 子集步長 | サブセットステップ | 서브셋 스텝 | Subset-Schritt | Pas d'imagette | Paso del subconjunto |
+| Search range | 搜索范围 | 搜尋範圍 | 探索範囲 | 탐색 범위 | Suchbereich | Plage de recherche | Rango de búsqueda |
 | Shape function | 形函数 | 形函數 | 形状関数 | 형상 함수 | Formfunktion | Fonction de forme | Función de forma |
-| Reference frame | 参考帧 | 參考幀 | 参照フレーム | 참조 프레임 | Referenzbild | Image de référence | Fotograma de referencia |
-| Deformed frame | 变形帧 | 變形幀 | 変形フレーム | 변형된 프레임 | Verformtes Bild | Image déformée | Fotograma deformado |
+| Reference frame | 参考帧 | 參考影格 | 参照フレーム | 참조 프레임 | Referenzbild | Image de référence | Fotograma de referencia |
+| Deformed frame | 变形帧 | 變形影格 | 変形フレーム | 변형된 프레임 | Verformtes Bild | Image déformée | Fotograma deformado |
 | Displacement field | 位移场 | 位移場 | 変位場 | 변위장 | Verschiebungsfeld | Champ de déplacement | Campo de desplazamiento |
 | Strain field | 应变场 | 應變場 | ひずみ場 | 변형률장 | Dehnungsfeld | Champ de déformation | Campo de deformación |
+| Field (a physical field on the map: displacement, strain…) | 场 | 場 | 場 | 장 | Feld | Champ | Campo |
+| Field (the standalone label of a field selector) | 场变量 | 場變數 | フィールド | 필드 | Feld | Champ | Campo |
 | Strain | 应变 | 應變 | ひずみ | 변형률 | Dehnung | Déformation | Deformación |
 | Displacement | 位移 | 位移 | 変位 | 변위 | Verschiebung | Déplacement | Desplazamiento |
 | Velocity | 速度 | 速度 | 速度 | 속도 | Geschwindigkeit | Vitesse | Velocidad |
 | Correlation | 相关 | 相關 | 相関 | 상관 | Korrelation | Corrélation | Correlación |
 | Mesh | 网格 | 網格 | メッシュ | 메시 | Netz | Maillage | Malla |
 | Adaptive mesh | 自适应网格 | 自適應網格 | 適応メッシュ | 적응형 메시 | Adaptives Netz | Maillage adaptatif | Malla adaptativa |
-| Quadtree refinement | 四叉树加密 | 四叉樹加密 | 四分木細分化 | 쿼드트리 세분화 | Quadtree-Verfeinerung | Raffinement quadtree | Refinamiento quadtree |
+| Quadtree refinement | 四叉树加密 | 四元樹加密 | 四分木細分化 | 쿼드트리 세분화 | Quadtree-Verfeinerung | Raffinement quadtree | Refinamiento quadtree |
 | Mesh refinement | 网格加密 | 網格加密 | メッシュ細分化 | 메시 세분화 | Netzverfeinerung | Raffinement de maillage | Refinamiento de malla |
 | Mask | 掩模 | 遮罩 | マスク | 마스크 | Maske | Masque | Máscara |
 | Region of Interest (ROI) | 感兴趣区域 | 感興趣區域 | 関心領域 | 관심 영역 | Region of Interest | Région d'intérêt | Región de interés |
-| Seed / Starting point | 种子点 | 種子點 | シード点 | 시드 점 | Startpunkt | Point de départ | Punto inicial |
-| Seed propagation | 种子传播 | 種子傳播 | シード伝播 | 시드 전파 | Seed-Propagation | Propagation des seeds | Propagación de seeds |
-| Incremental tracking | 增量追踪 | 增量追蹤 | 逐次追跡 | 점진적 추적 | Inkrementelles Tracking | Suivi incrémental | Seguimiento incremental |
+| Seed / Starting point | 种子点 | 種子點 | シード点 | 시드점 | Startpunkt | Point de départ | Punto inicial |
+| Seed propagation | 种子传播 | 種子傳播 | シード伝播 | 시드 전파 | Startpunkt-Propagation | Propagation depuis les points de départ | Propagación desde puntos iniciales |
+| Incremental tracking | 增量追踪 | 增量追蹤 | 逐次追跡 | 증분 추적 | Inkrementelles Tracking | Suivi incrémental | Seguimiento incremental |
 | Accumulative tracking | 累积追踪 | 累積追蹤 | 累積追跡 | 누적 추적 | Akkumulatives Tracking | Suivi cumulatif | Seguimiento acumulativo |
-| Augmented Lagrangian | 增广拉格朗日 | 增廣拉格朗日 | 拡張ラグランジュ | 증강 라그랑주 | Erweiterte Lagrange | Lagrangien augmenté | Lagrangiano aumentado |
+| Incremental (mode label) | 增量式 | 增量式 | 逐次式 | 증분형 | Inkrementell | Incrémental | Incremental |
+| Accumulative (mode label) | 累积式 | 累積式 | 累積式 | 누적형 | Akkumulativ | Cumulatif | Acumulativo |
+| Augmented Lagrangian | 增广拉格朗日 | 增廣拉格朗日 | 拡張ラグランジュ | 증강 라그랑주 | Erweiterte Lagrange-Methode | Lagrangien augmenté | Lagrangiano aumentado |
+| Solver | 求解器 | 求解器 | ソルバー | 솔버 | Löser | Solveur | Solucionador |
+| Method (strain method) | 方法 | 方法 | 手法 | 방법 | Methode | Méthode | Método |
 | Initial guess | 初始猜测 | 初始猜測 | 初期推定 | 초기 추정 | Anfangsschätzung | Estimation initiale | Estimación inicial |
 | Convergence | 收敛 | 收斂 | 収束 | 수렴 | Konvergenz | Convergence | Convergencia |
 | Iteration | 迭代 | 迭代 | 反復 | 반복 | Iteration | Itération | Iteración |
@@ -88,6 +111,11 @@ established abbreviations stay literal English across all 8 languages:
 | Colorbar | 色条 | 色條 | カラーバー | 컬러바 | Farbleiste | Barre de couleur | Barra de color |
 | Opacity | 不透明度 | 不透明度 | 不透明度 | 불투명도 | Deckkraft | Opacité | Opacidad |
 | Range | 范围 | 範圍 | 範囲 | 범위 | Bereich | Plage | Rango |
+| Post-processing | 后处理 | 後處理 | 後処理 | 후처리 | Nachbearbeitung | Post-traitement | Posprocesado |
+| Session | 会话 | 工作階段 | セッション | 세션 | Sitzung | Session | Sesión |
+
+**Field in ja and ko**: 場 and 장 stand only inside compounds (変位場,
+변위장); on its own the word is フィールド / 필드, as in the selector label.
 
 ---
 
@@ -102,6 +130,10 @@ established abbreviations stay literal English across all 8 languages:
 | Crack | 裂纹 | 裂紋 | き裂 | 균열 | Riss | Fissure | Grieta |
 | Crack opening | 裂纹张开位移 | 裂紋張開位移 | き裂開口変位 | 균열 개구 변위 | Rissöffnung | Ouverture de fissure | Apertura de grieta |
 | Crack gauge | 裂纹量规 | 裂紋量規 | き裂ゲージ | 균열 게이지 | Riss-Messstrecke | Jauge de fissure | Calibre de grieta |
+| Gauge points (the two marks a gauge measures between) | 标距点 | 標距點 | 標点 | 표점 | Messpunkte | points de mesure | puntos de medida |
+| Load (a force, from a testing machine) | 载荷 | 載荷 | 荷重 | 하중 | Kraft | Charge | Carga |
+| Stress | 应力 | 應力 | 応力 | 응력 | Spannung | Contrainte | Tensión |
+| Stress–strain | 应力–应变 | 應力–應變 | 応力–ひずみ | 응력–변형률 | Spannung–Dehnung | Contrainte–déformation | Tensión–deformación |
 
 ---
 
@@ -118,16 +150,20 @@ established abbreviations stay literal English across all 8 languages:
 | Import | 导入 | 匯入 | インポート | 가져오기 | Importieren | Importer | Importar |
 | Export | 导出 | 匯出 | エクスポート | 내보내기 | Exportieren | Exporter | Exportar |
 | Refine | 加密 | 加密 | 細分化 | 세분화 | Verfeinern | Raffiner | Refinar |
-| Reset | 重置 | 重設 | リセット | 재설정 | Zurücksetzen | Réinitialiser | Restablecer |
+| Reset (a button: back to defaults) | 重置 | 重設 | リセット | 재설정 | Zurücksetzen | Réinitialiser | Restablecer |
 | Clear | 清除 | 清除 | クリア | 지우기 | Löschen | Effacer | Borrar |
+| Erase (brush mode, beside Paint and Clear) | 擦除 | 擦除 | 消去 | 지우개 | Radieren | Gommer | Borrar |
+| Delete | 删除 | 刪除 | 削除 | 삭제 | Löschen | Supprimer | Eliminar |
+| Invert (a mask) | 反选 | 反轉 | 反転 | 반전 | Invertieren | Inverser | Invertir |
+| Batch import | 批量导入 | 批次匯入 | 一括インポート | 일괄 가져오기 | Stapelimport | Import par lot | Importación por lotes |
 | Open | 打开 | 開啟 | 開く | 열기 | Öffnen | Ouvrir | Abrir |
 | Close | 关闭 | 關閉 | 閉じる | 닫기 | Schließen | Fermer | Cerrar |
 | Settings | 设置 | 設定 | 設定 | 설정 | Einstellungen | Paramètres | Ajustes |
 | Preferences | 首选项 | 偏好設定 | 環境設定 | 환경 설정 | Voreinstellungen | Préférences | Preferencias |
 | File | 文件 | 檔案 | ファイル | 파일 | Datei | Fichier | Archivo |
 | Filename | 文件名 | 檔名 | ファイル名 | 파일 이름 | Dateiname | Nom de fichier | Nombre de archivo |
-| Edit | 编辑 | 編輯 | 編集 | 편집 | Bearbeiten | Édition | Editar |
-| View | 视图 | 檢視 | 表示 | 보기 | Ansicht | Affichage | Ver |
+| Edit (the menu) | 编辑 | 編輯 | 編集 | 편집 | Bearbeiten | Édition | Editar |
+| View (the menu) | 视图 | 檢視 | 表示 | 보기 | Ansicht | Affichage | Ver |
 | Help | 帮助 | 說明 | ヘルプ | 도움말 | Hilfe | Aide | Ayuda |
 | About | 关于 | 關於 | について | 정보 | Über | À propos | Acerca de |
 | Browse... | 浏览… | 瀏覽… | 参照… | 찾아보기… | Durchsuchen… | Parcourir… | Examinar… |
@@ -136,9 +172,15 @@ established abbreviations stay literal English across all 8 languages:
 | Min | 最小 | 最小 | 最小 | 최소 | Min | Min | Mín |
 | Max | 最大 | 最大 | 最大 | 최대 | Max | Max | Máx |
 | Format | 格式 | 格式 | 形式 | 형식 | Format | Format | Formato |
-| Field | 字段 | 欄位 | フィールド | 필드 | Feld | Champ | Campo |
 | All | 全部 | 全部 | すべて | 모두 | Alle | Tous | Todos |
 | None | 无 | 無 | なし | 없음 | Keine | Aucun | Ninguno |
+
+**Senses**: where a word is a noun or an item's button rather than the
+menu, it may read differently -- es "Vista:" for a view selector, fr
+"Modifier" for an item's Edit button. Clear and Erase must differ where both
+appear (the Refine brush menu: Paint / Erase / Clear Brush; es "Borrar
+todos los trazos" for Clear Brush). ko keeps 모두 선택 / 모두 해제 on the
+Export dialog's select buttons (없음 alone reads as a status).
 
 ---
 

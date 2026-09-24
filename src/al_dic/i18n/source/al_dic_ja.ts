@@ -52,7 +52,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
         <source>unreliable (strain edge trim)</source>
-        <translation>信頼できない（ひずみの端部トリミング）</translation>
+        <translation>信頼できない（ひずみの縁トリミング）</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
@@ -166,7 +166,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
         <source>Clear All</source>
-        <translation>すべて消去</translation>
+        <translation>すべてクリア</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
@@ -275,7 +275,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/tab.py" line="594"/>
         <source>Clear All Probes</source>
-        <translation>すべてのプローブを消去</translation>
+        <translation>すべてのプローブをクリア</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/tab.py" line="595"/>
@@ -472,7 +472,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
-        <translation>試験機の荷重記録（CSV）を読み込み、荷重または応力に対してプロットし、応力–ひずみ曲線を描きます。</translation>
+        <translation>試験機の荷重記録（CSV）をインポートし、荷重または応力に対してプロットし、応力–ひずみ曲線を描きます。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
@@ -497,7 +497,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
-        <translation>応力–ひずみ曲線を描くには、「荷重データ…」で試験機の荷重記録を読み込んでください。</translation>
+        <translation>応力–ひずみ曲線を描くには、「荷重データ…」で試験機の荷重記録をインポートしてください。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="28"/>
@@ -594,7 +594,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="205"/>
         <source>Nothing valid along %1: its strain is trimmed as low-confidence near an edge or a hole. Plot a displacement, or trim less on the Strain Field tab.</source>
-        <translation>%1 に沿って有効なデータがありません：縁や穴の近くのひずみは低信頼度として除去されています。変位を表示するか、「ひずみ場」タブで除去を減らしてください。</translation>
+        <translation>%1 に沿って有効なデータがありません：縁や穴の近くのひずみは低信頼度としてトリミングされています。変位を表示するか、「ひずみ場」タブでトリミングを減らしてください。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="211"/>
@@ -775,7 +775,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/widgets/range_mode.py" line="36"/>
         <source>Rescale the color range to each frame&apos;s data range</source>
-        <translation>各フレームのデータ範囲に合わせてカラーレンジを再スケールします</translation>
+        <translation>各フレームのデータ範囲に合わせてカラー範囲を再スケールします</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/range_mode.py" line="39"/>
@@ -869,7 +869,7 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="490"/>
         <source>Clear All</source>
-        <translation>すべて消去</translation>
+        <translation>すべてクリア</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="535"/>
@@ -1064,17 +1064,17 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
-        <translation>フィールドの不透明度（0 = 透明、1 = 完全に不透明）</translation>
+        <translation>場の不透明度（0 = 透明、1 = 完全に不透明）</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
         <source>All</source>
-        <translation>全選択</translation>
+        <translation>すべて</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
         <source>None</source>
-        <translation>全解除</translation>
+        <translation>なし</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
@@ -1273,8 +1273,8 @@ FFT 初期推定モードでのみ有効です。</translation>
         <source>Cap the exported image&apos;s long edge (the larger of width/height; aspect ratio is kept).
 Field detail is bounded by the mesh, so a smaller cap is near-lossless
 but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolution&apos; keeps the native size.</source>
-        <translation>書き出す画像の長辺（幅と高さの大きい方。縦横比は維持）を制限します。
-フィールドの詳細はメッシュで決まるため、上限を小さくしてもほぼ無損失で、
+        <translation>エクスポートする画像の長辺（幅と高さの大きい方。縦横比は維持）を制限します。
+場の詳細はメッシュで決まるため、上限を小さくしてもほぼ無損失で、
 ファイルは小さく書き出しも高速です。小さいほど高速。「フル解像度」は元のサイズを保ちます。</translation>
     </message>
     <message>
@@ -1300,7 +1300,7 @@ but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolu
         <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
         <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
 Reference: drawn at the original node positions, over the first frame.</source>
-        <translation>変形フレーム：フィールドを変位後のノード位置（参照位置 + 変位）に描画し、各フレーム自身の写真に重ねます。
+        <translation>変形フレーム：場を変位後のノード位置（参照位置 + 変位）に描画し、各フレーム自身の写真に重ねます。
 参照フレーム：元のノード位置に描画し、最初のフレームに重ねます。</translation>
     </message>
     <message>
@@ -1312,7 +1312,7 @@ Reference: drawn at the original node positions, over the first frame.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
-        <translation>チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。塗りつぶしは Preview &amp; Colorbar タブで選択します。</translation>
+        <translation>チェックを外すと、背後にスペックル画像を含めず場のみをエクスポートします。塗りつぶしは「プレビューとカラーバー」タブで選択します。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
@@ -1347,7 +1347,7 @@ Lower = faster and much smaller. Strongly recommended for GIF, whose size explod
         <source>Append a vertical colorbar strip to the right of each image.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>各画像の右側に垂直カラーバーを追加します。
-自動レンジ有効時、目盛りラベルはフレームごとに更新されます。</translation>
+自動範囲有効時、目盛りラベルはフレームごとに更新されます。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="963"/>
@@ -1380,7 +1380,7 @@ Tick labels update per frame when Auto range is enabled.</source>
         <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
-        <translation>N フレームごとに 1 枚書き出します（1 = 全フレーム）。大きいほど高速・小容量ですが、
+        <translation>N フレームごとに 1 枚エクスポートします（1 = 全フレーム）。大きいほど高速・小容量ですが、
 カクついて見えます。再生時間は維持されます（上の FPS は間引き前のレート）。</translation>
     </message>
     <message>
@@ -1393,12 +1393,12 @@ but looks choppier. Playback duration is preserved (the FPS above is the pre-dec
         <source>Append a vertical colorbar strip to the right of each frame.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>各フレームの右側に垂直カラーバーを追加します。
-自動レンジ有効時、目盛りラベルはフレームごとに更新されます。</translation>
+自動範囲有効時、目盛りラベルはフレームごとに更新されます。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
-        <translation>チェックを外すと、背後にスペックル画像を含めずフィールドのみを書き出します。GIF と MP4 は透明度を保存できないため、透明の塗りつぶしは白として書き出されます。</translation>
+        <translation>チェックを外すと、背後にスペックル画像を含めず場のみをエクスポートします。GIF と MP4 は透明度を保存できないため、透明の塗りつぶしは白として書き出されます。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
@@ -1538,7 +1538,7 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1313"/>
         <source>Add a blank border around the exported content, as a fraction of the long edge (0 = none).</source>
-        <translation>書き出す内容の周囲に空白の枠を追加します。幅は長辺に対する割合です（0 = なし）。</translation>
+        <translation>エクスポートする内容の周囲に空白の枠を追加します。幅は長辺に対する割合です（0 = なし）。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1316"/>
@@ -1590,7 +1590,7 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
-        <translation>このフィールドの colormap・不透明度・自動範囲を、有効なすべてのフィールドに適用します（各フィールドの min/max は保持）。</translation>
+        <translation>このフィールドのカラーマップ・不透明度・自動範囲を、有効なすべてのフィールドに適用します（各フィールドの最小/最大は保持）。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
@@ -1600,7 +1600,7 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
-        <translation>プレビューするには Images タブでフィールドを有効にしてください。</translation>
+        <translation>プレビューするには「画像」タブでフィールドを有効にしてください。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
@@ -1632,7 +1632,7 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1650"/>
         <source>Select Output Folder</source>
-        <translation>出力フォルダーを選択</translation>
+        <translation>出力フォルダを選択</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1709"/>
@@ -1850,7 +1850,7 @@ Auto-placed per region when you draw or edit an ROI.</source>
 
 最適な場面:
 • 大きなフレーム間変位(&gt; 50 px)
-• 不連続な場(亀裂、せん断帯)
+• 不連続な場(き裂、せん断帯)
 • FFT が誤ピークを選ぶケース
 
 ROI 作成/編集時に領域ごとに自動配置されます。</translation>
@@ -2349,7 +2349,7 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="951"/>
         <source>Batch import: %n mask(s) loaded</source>
-        <translation>バッチインポート: %n 個のマスクを読み込みました</translation>
+        <translation>一括インポート: %n 個のマスクを読み込みました</translation>
     </message>
 </context>
 <context>
@@ -2373,66 +2373,68 @@ Results were restored. To show the background images, select the folder that now
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="37"/>
+        <location filename="../../gui/widgets/param_panel.py" line="48"/>
         <source>Subset Size</source>
+        <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>サブセットサイズ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="43"/>
+        <location filename="../../gui/widgets/param_panel.py" line="54"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>IC-GN サブセットウィンドウサイズ(ピクセル、奇数)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="50"/>
+        <location filename="../../gui/widgets/param_panel.py" line="61"/>
         <source>Subset Step</source>
         <translation>サブセットステップ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="53"/>
+        <location filename="../../gui/widgets/param_panel.py" line="64"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>ノード間隔(ピクセル、2 の累乗)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="72"/>
+        <location filename="../../gui/widgets/param_panel.py" line="197"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
         <source>Search Range</source>
         <translation>探索範囲</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="76"/>
+        <location filename="../../gui/widgets/param_panel.py" line="87"/>
         <source>Refine Inner Boundary</source>
         <translation>内部境界を細分化</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="79"/>
+        <location filename="../../gui/widgets/param_panel.py" line="90"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>内部マスク境界に沿ってメッシュを局所的に細分化します
 (関心領域内の穴)。気泡や空隙の縁に有用です。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="83"/>
+        <location filename="../../gui/widgets/param_panel.py" line="94"/>
         <source>Refine Outer Boundary</source>
         <translation>外部境界を細分化</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/param_panel.py" line="97"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>関心領域の外部境界に沿ってメッシュを局所的に細分化します。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/param_panel.py" line="112"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
-        <translation>細分化の強さ。最小要素サイズ = max(2, サブセットステップ / 2^レベル)。内部・外部境界およびブラシで塗った領域すべてに一律適用されます。利用可能なレベルはサブセットサイズとステップに依存します。</translation>
+        <translation>細分化の強さ。最小要素サイズ = max(2, subset_step / 2^level)。内部・外部境界およびブラシで塗った領域すべてに一律適用されます。利用可能なレベルはサブセットサイズとステップに依存します。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="108"/>
+        <location filename="../../gui/widgets/param_panel.py" line="118"/>
         <source>Refinement Level</source>
         <translation>細分化レベル</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="167"/>
+        <location filename="../../gui/widgets/param_panel.py" line="178"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2443,7 +2445,7 @@ For large rotations in incremental mode, this must cover
   半径 × sin(1 ステップ角)。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/param_panel.py" line="185"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2452,49 +2454,50 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 シード点の初期化にのみ影響し、他のノードは F-aware 伝播(ノード単位の探索なし)を使用します。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="182"/>
-        <source>Initial Seed Search</source>
-        <translation>初期シード探索</translation>
+        <location filename="../../gui/widgets/param_panel.py" line="193"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <source>Starting Point Search</source>
+        <translation>シード点探索</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="218"/>
+        <location filename="../../gui/widgets/param_panel.py" line="249"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>軽度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="219"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>中程度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="220"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>強</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>最強</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>極限</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="228"/>
+        <location filename="../../gui/widgets/param_panel.py" line="259"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="281"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
-        <translation>最小要素サイズ = %1 px  (サブセットステップ=%2, レベル=%3)</translation>
+        <translation>最小要素サイズ = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
 </context>
 <context>
@@ -2565,7 +2568,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
         <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時に第 1 フレームのマスクを継承してください。</translation>
+        <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="625"/>
@@ -2666,7 +2669,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/widgets/roi_toolbar.py" line="90"/>
         <source>Paint extra mesh-refinement zones with a brush
 (only on frame 1 — material points auto-warped to later frames)</source>
-        <translation>ブラシで追加の細分化領域を塗ります
+        <translation>ブラシで追加のメッシュ細分化領域を塗ります
 (フレーム 1 のみ — 後続フレームへ自動ワープされます)</translation>
     </message>
     <message>
@@ -2745,22 +2748,37 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>ブラシをクリア</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="256"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="247"/>
+        <source>Polygon</source>
+        <translation>多角形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="251"/>
+        <source>Rectangle</source>
+        <translation>矩形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="255"/>
+        <source>Circle</source>
+        <translation>円</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="259"/>
         <source>Circle (3-point)</source>
         <translation>円（3 点）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
         <source>Import Mask Image</source>
         <translation>マスク画像をインポート</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>Images</source>
         <translation>画像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
         <source>All Files</source>
         <translation>すべてのファイル</translation>
     </message>
@@ -2813,7 +2831,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="394"/>
         <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
-        <translation>経過  %1</translation>
+        <translation>経過時間  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
@@ -2821,12 +2839,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="493"/>
         <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
-        <translation>残り  %1</translation>
+        <translation>残り時間  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="135"/>
         <source>FIELD</source>
-        <translation>表示項目</translation>
+        <translation>フィールド</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="144"/>
@@ -2846,7 +2864,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="152"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
-        <translation>フィールドを変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
+        <translation>場を変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="160"/>
@@ -2856,7 +2874,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="163"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
-        <translation>チェックを外すと、背後にスペックル画像を表示せずフィールドのみを表示します。</translation>
+        <translation>チェックを外すと、背後にスペックル画像を表示せず場のみを表示します。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="174"/>
@@ -2881,7 +2899,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="183"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
-        <translation>背景を非表示にしたとき、画像の代わりに何を表示するかです。書き出しでは PNG と TIFF が透明度を保持し、他の形式は白になります。</translation>
+        <translation>背景を非表示にしたとき、画像の代わりに何を表示するかです。エクスポートでは PNG と TIFF が透明度を保持し、他の形式は白になります。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="193"/>
@@ -2998,12 +3016,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="85"/>
         <source>Plane fitting</source>
-        <translation>平面フィッティング</translation>
+        <translation>平面フィット</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
         <source>FEM nodal</source>
-        <translation>FEM 節点</translation>
+        <translation>FEM ノード</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="88"/>
@@ -3023,9 +3041,9 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 
 • VSG が大きい → ひずみは平滑になるが、空間解像度は低下。
 • VSG が小さい → ひずみは鋭敏になるが、ノイズが増加。
-• 目安：VSG ≥ 2 × サブセットステップ + 1（既定：41 px）。
+• 目安：VSG ≥ 2 × サブセットステップ + 1（デフォルト：41 px）。
 
-方法が FEM nodal の場合は使用されません（そこではメッシュ間隔がゲージサイズを決定します）。</translation>
+手法が FEM ノードの場合は使用されません（そこではメッシュ間隔がゲージサイズを決定します）。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
@@ -3047,19 +3065,19 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 • 1.00 = strictest (trim any node whose window touches the edge).
 
 Only applies when Method = Plane fitting.</source>
-        <translation>ROI / 穴の縁で、VSG ウィンドウが境界をまたぎ、局所的な平面フィッティングが片側的かつ不正確になる箇所の、低信頼度のひずみを非表示にします。
+        <translation>ROI / 穴の縁で、VSG ウィンドウが境界をまたぎ、局所的な平面フィットが片側的かつ不正確になる箇所の、低信頼度のひずみを非表示にします。
 
 • 係数 × VSG 半径 = トリミングされる境界帯の幅。
 • 0.00 = すべてのノードを保持（トリミングなし）。
 • 0.70 = 推奨（縁の誤差が急増する箇所をトリミング）。
 • 1.00 = 最も厳格（ウィンドウが縁に触れるノードをすべてトリミング）。
 
-方法 = 平面フィッティング の場合のみ有効です。</translation>
+手法 = 平面フィット の場合のみ有効です。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="174"/>
         <source>Trim low-confidence edges</source>
-        <translation>低信頼度のエッジを除去</translation>
+        <translation>低信頼度の縁をトリミング</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="201"/>
@@ -3091,9 +3109,9 @@ Only applies when Method = Plane fitting.</source>
   Strong (2 × step) ⚠:  aggressive, may blur real gradients.</source>
         <translation>計算後のひずみ場にガウス平滑化を適用。
 σ はガウスカーネル幅、&apos;step&apos; は DIC ノード間隔。
-  Light  (0.5 × step): 穏やか、細部を保持。
-  Medium (1 × step):    バランス型、ノイズデータに推奨。
-  Strong (2 × step) ⚠: 強め、実勾配をぼかす可能性あり。</translation>
+  軽度  (0.5 × step): 穏やか、細部を保持。
+  中程度 (1 × step):    バランス型、ノイズデータに推奨。
+  強 (2 × step) ⚠: 強め、実勾配をぼかす可能性あり。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="216"/>
@@ -3133,7 +3151,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
-        <translation>⚠ VSG 半径（%1 px）&lt; DIC ノード間隔（%2 px）；平面フィットは失敗します。VSG ≥ %3 px にするか、方法を FEM nodal に切り替えてください。</translation>
+        <translation>⚠ VSG 半径（%1 px）&lt; DIC ノード間隔（%2 px）；平面フィットは失敗します。VSG ≥ %3 px にするか、手法を FEM ノードに切り替えてください。</translation>
     </message>
 </context>
 <context>
@@ -3152,7 +3170,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="68"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
-        <translation>フィールドを変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
+        <translation>場を変形後のノード位置に描画するか、参照フレームでの位置に描画します。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="71"/>
@@ -3167,7 +3185,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
-        <translation>チェックを外すと、背後にスペックル画像を表示せずフィールドのみを表示します。</translation>
+        <translation>チェックを外すと、背後にスペックル画像を表示せず場のみを表示します。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="82"/>
@@ -3187,7 +3205,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="87"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
-        <translation>背景を非表示にしたとき、画像の代わりに何を表示するかです。書き出しでは PNG と TIFF が透明度を保持し、他の形式は白になります。</translation>
+        <translation>背景を非表示にしたとき、画像の代わりに何を表示するかです。エクスポートでは PNG と TIFF が透明度を保持し、他の形式は白になります。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="79"/>
@@ -3300,7 +3318,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/strain_window.py" line="340"/>
         <source>FIELD</source>
-        <translation>表示項目</translation>
+        <translation>フィールド</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="349"/>
@@ -3409,7 +3427,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/velocity_settings.py" line="84"/>
         <source>Unit: px/frame</source>
-        <translation>単位: px/frame</translation>
+        <translation>単位: px/フレーム</translation>
     </message>
 </context>
 <context>
@@ -3434,7 +3452,7 @@ Accurate for small, monotonic deformation only.</source>
         <translation>逐次: 各フレームを直前の参照フレームと比較します。
 大きな累積変形に適し、大回転では必須です。
 
-累積: 各フレームを第 1 フレームと比較します。
+累積: 各フレームをフレーム 1 と比較します。
 小さく単調な変形にのみ適します。</translation>
     </message>
     <message>
@@ -3495,7 +3513,7 @@ Custom Frames: user-defined list of reference frame indices.</source>
 毎フレーム: 毎フレーム参照をリセット(ステップ変位最小、
 大変形に最もロバスト)。
 N フレームごと: N フレームごとにリセット(速度と頑健性のバランス)。
-カスタム: ユーザ指定の参照フレームインデックス。</translation>
+カスタムフレーム: ユーザー指定の参照フレームインデックス。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>

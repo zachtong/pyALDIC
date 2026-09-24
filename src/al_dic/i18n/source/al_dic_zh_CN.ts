@@ -105,22 +105,22 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="106"/>
         <source>Click once to place a point probe.</source>
-        <translation>单击一次放置点探针。</translation>
+        <translation>点击一次放置点探针。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="112"/>
         <source>Click twice: opposite corners.</source>
-        <translation>单击两次：对角两点。</translation>
+        <translation>点击两次：对角两点。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="114"/>
         <source>Click twice: centre, then the edge.</source>
-        <translation>单击两次：先圆心，后边缘。</translation>
+        <translation>点击两次：先圆心，后边缘。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="116"/>
         <source>Click each vertex, then double-click to close.</source>
-        <translation>逐个单击顶点，双击闭合。</translation>
+        <translation>逐个点击顶点，双击闭合。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="87"/>
@@ -482,7 +482,7 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
         <source>Chart image…</source>
-        <translation>图表图片…</translation>
+        <translation>图表图像…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
@@ -1064,17 +1064,17 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
-        <translation>字段不透明度（0 = 透明，1 = 完全不透明）</translation>
+        <translation>场不透明度（0 = 透明，1 = 完全不透明）</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
         <source>All</source>
-        <translation>全选</translation>
+        <translation>全部</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
         <source>None</source>
-        <translation>全不选</translation>
+        <translation>无</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
@@ -1228,7 +1228,7 @@ Only relevant for the FFT init-guess mode.</source>
         <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1253"/>
         <source>Field</source>
-        <translation>字段</translation>
+        <translation>场变量</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
@@ -1300,7 +1300,7 @@ but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolu
         <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
         <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
 Reference: drawn at the original node positions, over the first frame.</source>
-        <translation>变形帧：字段绘制在位移后的节点位置（参考位置 + 位移），叠加在每一帧自己的照片上。
+        <translation>变形帧：场绘制在位移后的节点位置（参考位置 + 位移），叠加在每一帧自己的照片上。
 参考帧：绘制在原始节点位置，叠加在第一帧上。</translation>
     </message>
     <message>
@@ -1312,7 +1312,7 @@ Reference: drawn at the original node positions, over the first frame.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
-        <translation>取消勾选可仅导出字段，其后不含散斑图像。填充色在 Preview &amp; Colorbar 页选择。</translation>
+        <translation>取消勾选可仅导出场，其后不含散斑图像。填充色在“预览与色条”页选择。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
@@ -1374,7 +1374,7 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1063"/>
         <source>FPS</source>
-        <translation>帧率</translation>
+        <translation>FPS</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
@@ -1398,7 +1398,7 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
-        <translation>取消勾选可仅导出字段，其后不含散斑图像。GIF 和 MP4 无法保存透明度，透明填充将写为白色。</translation>
+        <translation>取消勾选可仅导出场，其后不含散斑图像。GIF 和 MP4 无法保存透明度，透明填充将写为白色。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
@@ -1418,12 +1418,12 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1154"/>
         <source>Field statistics (min/max/mean/std per frame)</source>
-        <translation>字段统计（每帧 最小/最大/平均/标准差）</translation>
+        <translation>场统计（每帧 最小/最大/平均/标准差）</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1157"/>
         <source>Sample field images</source>
-        <translation>示例字段图像</translation>
+        <translation>场图像示例</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1164"/>
@@ -1439,7 +1439,7 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1176"/>
         <source>FIELDS</source>
-        <translation>字段</translation>
+        <translation>场变量</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1179"/>
@@ -1464,7 +1464,7 @@ Tick labels update per frame when Auto range is enabled.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
         <source>Open this tab to render a preview.</source>
-        <translation>打开此选项卡以渲染预览。</translation>
+        <translation>打开此页以渲染预览。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1261"/>
@@ -1575,7 +1575,7 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
         <source>FIELD APPEARANCE</source>
-        <translation>字段外观</translation>
+        <translation>场的外观</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
@@ -1585,12 +1585,12 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
         <source>Apply to all fields</source>
-        <translation>应用到所有字段</translation>
+        <translation>应用到所有场</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
-        <translation>将该字段的 colormap、不透明度和自动范围应用到所有已启用字段（每个字段保留各自的 min/max）。</translation>
+        <translation>将该场的颜色映射、不透明度和自动范围应用到所有已启用的场（每个场保留各自的最小/最大值）。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
@@ -1600,12 +1600,12 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
-        <translation>在 Images 页启用一个字段以进行预览。</translation>
+        <translation>在“图像”页启用一个场以进行预览。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
         <source>No data for this field/frame.</source>
-        <translation>该字段/帧没有数据。</translation>
+        <translation>该场/帧没有数据。</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1602"/>
@@ -1727,7 +1727,7 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
         <location filename="../../gui/widgets/frame_navigator.py" line="98"/>
         <location filename="../../gui/widgets/frame_navigator.py" line="194"/>
         <source>FRAME 0/0</source>
-        <translation>第 0/0 帧</translation>
+        <translation>帧 0/0</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/frame_navigator.py" line="159"/>
@@ -2206,7 +2206,7 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
         <location filename="../../gui/app.py" line="332"/>
         <location filename="../../gui/app.py" line="796"/>
         <source>All Files</source>
-        <translation>全部文件</translation>
+        <translation>所有文件</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="296"/>
@@ -2257,7 +2257,7 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/app.py" line="356"/>
         <source>Locate Session Images</source>
-        <translation>定位会话图片</translation>
+        <translation>定位会话图像</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="359"/>
@@ -2265,10 +2265,10 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
 %1
 
 Results were restored. To show the background images, select the folder that now contains them.</source>
-        <translation>未找到此会话保存的图片文件夹:
+        <translation>未找到此会话保存的图像文件夹:
 %1
 
-结果已恢复。要显示背景图片,请选择现在包含这些图片的文件夹。</translation>
+结果已恢复。要显示背景图像,请选择现在包含这些图像的文件夹。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="367"/>
@@ -2298,7 +2298,7 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="763"/>
         <source>Frame %1 has no Region of Interest of its own — frame 1&apos;s is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.</source>
-        <translation>帧 %1 没有自己的感兴趣区域 — 计算时使用帧 1 的感兴趣区域。请切换到帧 1 编辑，或导入掩码为此帧单独指定。</translation>
+        <translation>帧 %1 没有自己的感兴趣区域 — 计算时使用帧 1 的感兴趣区域。请切换到帧 1 编辑，或导入掩模为此帧单独指定。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="774"/>
@@ -2308,7 +2308,7 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="781"/>
         <source>Region of Interest mask is empty.</source>
-        <translation>感兴趣区域掩码为空。</translation>
+        <translation>感兴趣区域掩模为空。</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="793"/>
@@ -2323,7 +2323,7 @@ Results were restored. To show the background images, select the folder that now
     <message>
         <location filename="../../gui/app.py" line="804"/>
         <source>Mask saved to %1</source>
-        <translation>掩码已保存至 %1</translation>
+        <translation>掩模已保存至 %1</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="813"/>
@@ -2373,66 +2373,68 @@ Results were restored. To show the background images, select the folder that now
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="37"/>
+        <location filename="../../gui/widgets/param_panel.py" line="48"/>
         <source>Subset Size</source>
+        <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>子集尺寸</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="43"/>
+        <location filename="../../gui/widgets/param_panel.py" line="54"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>IC-GN 子集窗口尺寸（像素，奇数）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="50"/>
+        <location filename="../../gui/widgets/param_panel.py" line="61"/>
         <source>Subset Step</source>
         <translation>子集步长</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="53"/>
+        <location filename="../../gui/widgets/param_panel.py" line="64"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>节点间距（像素，必须是 2 的幂）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="72"/>
+        <location filename="../../gui/widgets/param_panel.py" line="197"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
         <source>Search Range</source>
         <translation>搜索范围</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="76"/>
+        <location filename="../../gui/widgets/param_panel.py" line="87"/>
         <source>Refine Inner Boundary</source>
         <translation>加密内部边界</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="79"/>
+        <location filename="../../gui/widgets/param_panel.py" line="90"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>沿内部掩模边界局部加密网格
 （感兴趣区域内部的孔洞）。适合气泡 / 空洞边缘。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="83"/>
+        <location filename="../../gui/widgets/param_panel.py" line="94"/>
         <source>Refine Outer Boundary</source>
         <translation>加密外部边界</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/param_panel.py" line="97"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>沿感兴趣区域的外部边界局部加密网格。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/param_panel.py" line="112"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
-        <translation>加密强度。最小单元尺寸 = max(2, 子集步长 / 2^级别)。对内部边界、外部边界和画笔加密区域统一生效。可用级别取决于子集尺寸和步长。</translation>
+        <translation>加密强度。最小单元尺寸 = max(2, subset_step / 2^level)。对内部边界、外部边界和画笔加密区域统一生效。可用级别取决于子集尺寸和步长。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="108"/>
+        <location filename="../../gui/widgets/param_panel.py" line="118"/>
         <source>Refinement Level</source>
         <translation>加密级别</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="167"/>
+        <location filename="../../gui/widgets/param_panel.py" line="178"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2443,7 +2445,7 @@ For large rotations in incremental mode, this must cover
   半径 × sin(单步角度)。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/param_panel.py" line="185"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2452,49 +2454,50 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 仅影响种子点引导；其他节点使用 F-aware 传播（无需逐节点搜索）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="182"/>
-        <source>Initial Seed Search</source>
-        <translation>初始种子搜索</translation>
+        <location filename="../../gui/widgets/param_panel.py" line="193"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <source>Starting Point Search</source>
+        <translation>种子点搜索</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="218"/>
+        <location filename="../../gui/widgets/param_panel.py" line="249"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>轻度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="219"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>中等</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="220"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>强</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>超强</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>极限</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="228"/>
+        <location filename="../../gui/widgets/param_panel.py" line="259"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="281"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
-        <translation>最小单元尺寸 = %1 px  (子集步长=%2, 级别=%3)</translation>
+        <translation>最小单元尺寸 = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
 </context>
 <context>
@@ -2555,22 +2558,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  Loaded %1 images, shape=%2</source>
-        <translation>  已加载 %1 张图像，尺寸=%2</translation>
+        <translation>  已加载 %1 张图像，shape=%2</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
-        <translation>  感兴趣区域蒙版：%1，%2 像素（%3%）</translation>
+        <translation>  ROI 掩模：%1，%2 像素（%3%）</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
         <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的蒙版。</translation>
+        <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="625"/>
         <source>  %n frame(s) with custom ROI masks</source>
-        <translation>  %n 帧使用自定义感兴趣区域蒙版</translation>
+        <translation>  %n 帧使用自定义 ROI 掩模</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="755"/>
@@ -2712,7 +2715,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="147"/>
         <source>Invert the Region of Interest mask</source>
-        <translation>反转感兴趣区域掩模</translation>
+        <translation>反选感兴趣区域掩模</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="152"/>
@@ -2745,22 +2748,37 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>清除画笔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="256"/>
-        <source>Circle (3-point)</source>
-        <translation>圆（三点）</translation>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="247"/>
+        <source>Polygon</source>
+        <translation>多边形</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="251"/>
+        <source>Rectangle</source>
+        <translation>矩形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="255"/>
+        <source>Circle</source>
+        <translation>圆形</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="259"/>
+        <source>Circle (3-point)</source>
+        <translation>圆形（三点）</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
         <source>Import Mask Image</source>
         <translation>导入掩模图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>Images</source>
         <translation>图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
@@ -2813,7 +2831,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="394"/>
         <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
-        <translation>已用  %1</translation>
+        <translation>已用时间  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
@@ -2821,7 +2839,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="493"/>
         <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
-        <translation>剩余  %1</translation>
+        <translation>剩余时间  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="135"/>
@@ -2846,7 +2864,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="152"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
-        <translation>将字段绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
+        <translation>将场绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="160"/>
@@ -2856,7 +2874,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="163"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
-        <translation>取消勾选可仅显示字段，其后不显示散斑图像。</translation>
+        <translation>取消勾选可仅显示场，其后不显示散斑图像。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="174"/>
@@ -2891,17 +2909,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
-        <translation>色图</translation>
+        <translation>颜色映射</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="217"/>
         <source>Opacity</source>
-        <translation>透明度</translation>
+        <translation>不透明度</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="224"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
-        <translation>叠加图透明度（0 = 透明，100 = 不透明）</translation>
+        <translation>叠加图不透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="230"/>
@@ -2975,7 +2993,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/widgets/strain_navigator.py" line="114"/>
         <location filename="../../gui/widgets/strain_navigator.py" line="228"/>
         <source>FRAME 0/0</source>
-        <translation>第 0/0 帧</translation>
+        <translation>帧 0/0</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_navigator.py" line="205"/>
@@ -3003,7 +3021,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
         <source>FEM nodal</source>
-        <translation>有限元节点</translation>
+        <translation>FEM 节点</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="88"/>
@@ -3025,7 +3043,7 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 • VSG 越小 → 应变越锐利，但噪声越大。
 • 经验法则：VSG ≥ 2 × 子集步长 + 1（默认：41 px）。
 
-方法选择 FEM nodal 时不使用此参数（此时由网格间距决定虚拟应变计尺寸）。</translation>
+方法选择 FEM 节点时不使用此参数（此时由网格间距决定虚拟应变计尺寸）。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
@@ -3091,9 +3109,9 @@ Only applies when Method = Plane fitting.</source>
   Strong (2 × step) ⚠:  aggressive, may blur real gradients.</source>
         <translation>计算后对应变场做高斯平滑。
 σ 为高斯核宽度；“step” 为 DIC 节点间距。
-  Light（0.5 × step）：轻度平滑，保留细节。
-  Medium（1 × step）：平衡选择，推荐用于噪声数据。
-  Strong（2 × step）⚠：强平滑，可能模糊真实梯度。</translation>
+  轻度（0.5 × step）：轻度平滑，保留细节。
+  中等（1 × step）：平衡选择，推荐用于噪声数据。
+  强（2 × step）⚠：强平滑，可能模糊真实梯度。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="216"/>
@@ -3133,7 +3151,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
-        <translation>⚠ VSG 半径（%1 px）&lt; DIC 节点间距（%2 px）；平面拟合将失败。请将 VSG ≥ %3 px 或将方法切换为 FEM nodal。</translation>
+        <translation>⚠ VSG 半径（%1 px）&lt; DIC 节点间距（%2 px）；平面拟合将失败。请将 VSG ≥ %3 px 或将方法切换为 FEM 节点。</translation>
     </message>
 </context>
 <context>
@@ -3152,7 +3170,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="68"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
-        <translation>将字段绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
+        <translation>将场绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="71"/>
@@ -3167,7 +3185,7 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="76"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
-        <translation>取消勾选可仅显示字段，其后不显示散斑图像。</translation>
+        <translation>取消勾选可仅显示场，其后不显示散斑图像。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="82"/>
@@ -3227,12 +3245,12 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="143"/>
         <source>Fill trimmed edges (display only)</source>
-        <translation>填充修剪的边缘（仅显示）</translation>
+        <translation>填充裁剪的边缘（仅显示）</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="147"/>
         <source>Re-interpolate the edge-trimmed strain band from reliable interior nodes. Affects the on-screen view and exported images/animations; exported data files always keep the trimmed edge as NaN.</source>
-        <translation>从可靠的内部节点重新插值被边缘修剪的应变带。影响屏幕显示和导出的图片/动画；导出的数据文件始终将修剪的边缘保留为 NaN。</translation>
+        <translation>从可靠的内部节点重新插值被边缘裁剪的应变带。影响屏幕显示和导出的图像/动画；导出的数据文件始终将裁剪的边缘保留为 NaN。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_viz_panel.py" line="152"/>
@@ -3386,12 +3404,12 @@ Only applies when Method = Plane fitting.</source>
     <message>
         <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
-        <translation>启动中…</translation>
+        <translation>开始中…</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>
         <source>Complete</source>
-        <translation>完成</translation>
+        <translation>已完成</translation>
     </message>
 </context>
 <context>
@@ -3496,7 +3514,7 @@ Custom Frames: user-defined list of reference frame indices.</source>
 每帧：每帧都更新参考（单步位移最小，
 对大变形最稳健）。
 每 N 帧：每 N 帧更新一次（速度与稳健性的折中）。
-自定义：由用户指定参考帧索引列表。</translation>
+自定义帧：由用户指定参考帧索引列表。</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
@@ -3575,7 +3593,7 @@ or Browse</source>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="167"/>
         <source>Alpha:</source>
-        <translation>透明度：</translation>
+        <translation>不透明度：</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="175"/>

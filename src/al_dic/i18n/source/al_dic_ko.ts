@@ -13,7 +13,7 @@
         <source>Number of global refinement cycles for the AL-DIC solver.
 1 = single global pass (fastest), 3 = default,
 5+ = diminishing returns for most cases.</source>
-        <translation>AL-DIC 솔버의 전역 세분화 반복 횟수.
+        <translation>AL-DIC 솔버의 전역 개선 반복 횟수.
 1 = 단일 패스(가장 빠름), 3 = 기본값,
 5 이상은 대부분의 경우 수익이 감소합니다.</translation>
     </message>
@@ -52,7 +52,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
         <source>unreliable (strain edge trim)</source>
-        <translation>신뢰할 수 없음(변형률 가장자리 트림)</translation>
+        <translation>신뢰할 수 없음(변형률 가장자리 잘라내기)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
@@ -373,7 +373,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
-        <translation>현재 프레임에서 표시 중인 양의 필드로 기준 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
+        <translation>현재 프레임에서 표시 중인 양의 필드로 참조 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
@@ -589,7 +589,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
         <source>Place a probe on the reference image to begin.</source>
-        <translation>기준 이미지에 프로브를 배치하면 시작됩니다.</translation>
+        <translation>참조 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/text.py" line="205"/>
@@ -824,7 +824,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="456"/>
         <source>Match mask files to frames by number in filename</source>
-        <translation>파일명의 숫자로 마스크 파일을 프레임에 매칭합니다</translation>
+        <translation>파일 이름의 숫자로 마스크 파일을 프레임에 매칭합니다</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/batch_import_dialog.py" line="460"/>
@@ -957,7 +957,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/canvas_area.py" line="1251"/>
         <source>Show subset window on hover (requires Grid)</source>
-        <translation>마우스 오버 시 서브셋 창 표시(격자 필요)</translation>
+        <translation>마우스 오버 시 서브셋 윈도우 표시(격자 필요)</translation>
     </message>
     <message>
         <location filename="../../gui/panels/canvas_area.py" line="1505"/>
@@ -980,7 +980,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
         <source>Init</source>
-        <translation>초기값</translation>
+        <translation>초기 추정</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
@@ -1114,7 +1114,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
-        <translation>변위 값을 픽셀 크기로 스케일링하고 색상 막대 레이블에 물리 단위를 표시합니다. 변형률은 무차원이므로 영향받지 않습니다.</translation>
+        <translation>변위 값을 픽셀 크기로 스케일링하고 컬러바 레이블에 물리 단위를 표시합니다. 변형률은 무차원이므로 영향받지 않습니다.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
@@ -1312,7 +1312,7 @@ Reference: drawn at the original node positions, over the first frame.</source>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
-        <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. 채우기는 Preview &amp; Colorbar 탭에서 선택합니다.</translation>
+        <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. 채우기는 &apos;미리보기 및 컬러바&apos; 탭에서 선택합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
@@ -1381,7 +1381,7 @@ Tick labels update per frame when Auto range is enabled.</source>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>N 프레임마다 하나씩 내보냅니다(1 = 모든 프레임). 클수록 빠르고 작지만,
-더 끊겨 보입니다. 재생 시간은 유지됩니다(위의 FPS는 추출 전 프레임률).</translation>
+더 끊겨 보입니다. 재생 시간은 유지됩니다(위의 FPS는 추출 전 프레임 속도).</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
@@ -1590,7 +1590,7 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
-        <translation>이 필드의 colormap, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 min/max는 유지).</translation>
+        <translation>이 필드의 색상 맵, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 최소/최대는 유지).</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
@@ -1600,7 +1600,7 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
         <source>Enable a field on the Images tab to preview.</source>
-        <translation>미리보려면 Images 탭에서 필드를 활성화하세요.</translation>
+        <translation>미리보려면 &apos;이미지&apos; 탭에서 필드를 활성화하세요.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
@@ -1924,7 +1924,7 @@ Cost grows with the search radius, so very large displacements become slow.</sou
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="165"/>
         <source>Run FFT every N frames. N = 1 means FFT every frame (safest, slowest). N &gt; 1 uses warm-start between resets to limit error propagation to N frames.</source>
-        <translation>N 프레임마다 FFT를 실행합니다. N = 1은 매 프레임 FFT(가장 안전·가장 느림). N &gt; 1은 리셋 사이에 웜스타트를 사용해 오류 전파를 N 프레임 이내로 제한합니다.</translation>
+        <translation>N 프레임마다 FFT를 실행합니다. N = 1은 매 프레임 FFT(가장 안전·가장 느림). N &gt; 1은 리셋 사이에 웜스타트를 사용해 오차 전파를 N 프레임 이내로 제한합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="175"/>
@@ -1934,12 +1934,12 @@ Cost grows with the search radius, so very large displacements become slow.</sou
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="184"/>
         <source>Only when reference frame updates (incremental only)</source>
-        <translation>기준 프레임 갱신 시에만(증분형만)</translation>
+        <translation>참조 프레임 갱신 시에만(증분 추적만)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="187"/>
         <source>Run FFT whenever the reference frame changes; warm-start within each segment. Typical default for incremental mode.</source>
-        <translation>기준 프레임이 바뀔 때마다 FFT를 실행하고, 각 구간 내에서는 웜스타트를 사용합니다. 증분 모드의 표준 기본값입니다.</translation>
+        <translation>참조 프레임이 바뀔 때마다 FFT를 실행하고, 각 구간 내에서는 웜스타트를 사용합니다. 증분 모드의 표준 기본값입니다.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="198"/>
@@ -1961,7 +1961,7 @@ Errors can accumulate over long sequences. Prefer FFT or Starting Points on nois
 • 매우 작은 프레임 간 움직임(몇 픽셀)
 • 움직임이 부드러울 때 가장 빠른 옵션
 
-긴 시퀀스에서 오류가 누적될 수 있습니다. 노이즈 데이터나 움직임이 클 때는 FFT 또는 시드점을 권장합니다.</translation>
+긴 시퀀스에서 오차가 누적될 수 있습니다. 노이즈 데이터나 움직임이 클 때는 FFT 또는 시드점을 권장합니다.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="280"/>
@@ -2059,7 +2059,7 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="153"/>
         <source>The machine&apos;s time at the reference image. If the camera started 2 s after the machine, enter 2.</source>
-        <translation>기준 이미지 시점의 시험기 시간입니다. 카메라가 시험기보다 2 s 늦게 시작했다면 2를 입력하십시오.</translation>
+        <translation>참조 이미지 시점의 시험기 시간입니다. 카메라가 시험기보다 2 s 늦게 시작했다면 2를 입력하십시오.</translation>
     </message>
     <message>
         <location filename="../../gui/dialogs/load_data_dialog.py" line="155"/>
@@ -2373,66 +2373,68 @@ Results were restored. To show the background images, select the folder that now
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="37"/>
+        <location filename="../../gui/widgets/param_panel.py" line="48"/>
         <source>Subset Size</source>
+        <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>서브셋 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="43"/>
+        <location filename="../../gui/widgets/param_panel.py" line="54"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>IC-GN 서브셋 윈도우 크기(픽셀, 홀수)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="50"/>
+        <location filename="../../gui/widgets/param_panel.py" line="61"/>
         <source>Subset Step</source>
-        <translation>서브셋 간격</translation>
+        <translation>서브셋 스텝</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="53"/>
+        <location filename="../../gui/widgets/param_panel.py" line="64"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>노드 간격(픽셀, 2의 거듭제곱이어야 함)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="72"/>
+        <location filename="../../gui/widgets/param_panel.py" line="197"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
         <source>Search Range</source>
         <translation>탐색 범위</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="76"/>
+        <location filename="../../gui/widgets/param_panel.py" line="87"/>
         <source>Refine Inner Boundary</source>
         <translation>내부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="79"/>
+        <location filename="../../gui/widgets/param_panel.py" line="90"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>내부 마스크 경계를 따라 메시를 국소적으로 세분화합니다
 (관심 영역 내부의 구멍). 기포/공극 가장자리에 유용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="83"/>
+        <location filename="../../gui/widgets/param_panel.py" line="94"/>
         <source>Refine Outer Boundary</source>
         <translation>외부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/param_panel.py" line="97"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>관심 영역 외부 경계를 따라 메시를 국소적으로 세분화합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/param_panel.py" line="112"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
-        <translation>세분화 강도. 최소 요소 크기 = max(2, 서브셋 간격 / 2^레벨). 내부·외부 경계와 브러시로 칠한 영역에 모두 일괄 적용됩니다. 사용 가능한 레벨은 서브셋 크기와 간격에 따라 달라집니다.</translation>
+        <translation>세분화 강도. 최소 요소 크기 = max(2, subset_step / 2^level). 내부·외부 경계와 브러시로 칠한 영역에 모두 일괄 적용됩니다. 사용 가능한 레벨은 서브셋 크기와 스텝에 따라 달라집니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="108"/>
+        <location filename="../../gui/widgets/param_panel.py" line="118"/>
         <source>Refinement Level</source>
         <translation>세분화 레벨</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="167"/>
+        <location filename="../../gui/widgets/param_panel.py" line="178"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2443,7 +2445,7 @@ For large rotations in incremental mode, this must cover
   반경 × sin(단계 각).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/param_panel.py" line="185"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2452,49 +2454,50 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 시드점 초기화에만 영향을 주며, 다른 노드는 F-aware 전파(노드별 탐색 없음)를 사용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="182"/>
-        <source>Initial Seed Search</source>
-        <translation>초기 시드 탐색</translation>
+        <location filename="../../gui/widgets/param_panel.py" line="193"/>
+        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <source>Starting Point Search</source>
+        <translation>시드점 탐색</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="218"/>
+        <location filename="../../gui/widgets/param_panel.py" line="249"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>약함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="219"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>중간</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="220"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>매우 강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>극강</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="228"/>
+        <location filename="../../gui/widgets/param_panel.py" line="259"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="281"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
-        <translation>최소 요소 크기 = %1 px  (서브셋 간격=%2, 레벨=%3)</translation>
+        <translation>최소 요소 크기 = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
 </context>
 <context>
@@ -2555,7 +2558,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  Loaded %1 images, shape=%2</source>
-        <translation>  %1 개 이미지 로드됨, shape=%2</translation>
+        <translation>  %1 개 이미지 불러옴, shape=%2</translation>
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
@@ -2617,17 +2620,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="96"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
-        <translation>&lt;b&gt;증분, %1 프레임마다&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%2&lt;/b&gt;(기준 프레임 총 %3개).</translation>
+        <translation>&lt;b&gt;증분, %1 프레임마다&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%2&lt;/b&gt;(참조 프레임 총 %3개).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="110"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
-        <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 사용자 정의 기준 프레임이 설정되지 않았습니다. 프레임 1이 유일한 기준이 됩니다. 기준 프레임 입력란에 인덱스를 추가하세요.</translation>
+        <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 사용자 지정 참조 프레임이 설정되지 않았습니다. 프레임 1이 유일한 참조 프레임이 됩니다. 참조 프레임 입력란에 인덱스를 추가하세요.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="120"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
-        <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%1&lt;/b&gt;(기준 프레임 총 %2개).</translation>
+        <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%1&lt;/b&gt;(참조 프레임 총 %2개).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_hint.py" line="128"/>
@@ -2737,7 +2740,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="209"/>
         <source>Erase</source>
-        <translation>지우기</translation>
+        <translation>지우개</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/roi_toolbar.py" line="219"/>
@@ -2745,22 +2748,37 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>브러시 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="256"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="247"/>
+        <source>Polygon</source>
+        <translation>다각형</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="251"/>
+        <source>Rectangle</source>
+        <translation>사각형</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="255"/>
+        <source>Circle</source>
+        <translation>원</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="259"/>
         <source>Circle (3-point)</source>
         <translation>원(3점)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="350"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
         <source>Import Mask Image</source>
         <translation>마스크 이미지 가져오기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>Images</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
@@ -2806,14 +2824,14 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
         <location filename="../../gui/panels/right_sidebar.py" line="392"/>
         <source>Ready</source>
-        <translation>준비 완료</translation>
+        <translation>준비됨</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
         <location filename="../../gui/panels/right_sidebar.py" line="394"/>
         <location filename="../../gui/panels/right_sidebar.py" line="485"/>
         <source>ELAPSED  %1</source>
-        <translation>경과  %1</translation>
+        <translation>경과 시간  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
@@ -2821,12 +2839,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="493"/>
         <location filename="../../gui/panels/right_sidebar.py" line="497"/>
         <source>REMAINING  %1</source>
-        <translation>남음  %1</translation>
+        <translation>남은 시간  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="135"/>
         <source>FIELD</source>
-        <translation>표시 필드</translation>
+        <translation>필드</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="144"/>
@@ -2891,7 +2909,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Colormap</source>
-        <translation>색상표</translation>
+        <translation>색상 맵</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="217"/>
@@ -3003,7 +3021,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
         <source>FEM nodal</source>
-        <translation>FEM 절점</translation>
+        <translation>FEM 노드</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="88"/>
@@ -3025,7 +3043,7 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 • VSG가 작을수록 → 변형률이 날카롭지만 노이즈 증가.
 • 경험 법칙: VSG ≥ 2 × 서브셋 스텝 + 1 (기본값: 41 px).
 
-Method = FEM nodal일 때는 사용되지 않습니다(그 경우 메시 간격 자체가 게이지 크기를 결정).</translation>
+방법 = FEM 노드일 때는 사용되지 않습니다(그 경우 메시 간격 자체가 게이지 크기를 결정).</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
@@ -3047,14 +3065,14 @@ Method = FEM nodal일 때는 사용되지 않습니다(그 경우 메시 간격 
 • 1.00 = strictest (trim any node whose window touches the edge).
 
 Only applies when Method = Plane fitting.</source>
-        <translation>ROI / 구멍 가장자리에서 VSG 창이 경계를 넘어 국소 평면 피팅이 한쪽으로 치우쳐 신뢰할 수 없게 되는 부분의 저신뢰도 변형률을 숨깁니다.
+        <translation>ROI / 구멍 가장자리에서 VSG 윈도우가 경계를 넘어 국소 평면 피팅이 한쪽으로 치우쳐 신뢰할 수 없게 되는 부분의 저신뢰도 변형률을 숨깁니다.
 
 • 계수 × VSG 반경 = 잘라내는 경계 띠의 폭.
 • 0.00 = 모든 노드 유지(잘라내기 없음).
 • 0.70 = 권장(가장자리 오차가 급증하는 곳을 잘라냄).
-• 1.00 = 가장 엄격(창이 가장자리에 닿는 모든 노드를 잘라냄).
+• 1.00 = 가장 엄격(윈도우가 가장자리에 닿는 모든 노드를 잘라냄).
 
-Method = 평면 피팅 일 때만 적용됩니다.</translation>
+방법 = 평면 피팅일 때만 적용됩니다.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="174"/>
@@ -3091,9 +3109,9 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
   Strong (2 × step) ⚠:  aggressive, may blur real gradients.</source>
         <translation>계산 후 변형률장에 가우스 평활화를 적용합니다.
 σ는 가우스 커널 너비, &apos;step&apos;은 DIC 노드 간격입니다.
-  Light  (0.5 × step):  약함, 세부를 보존.
-  Medium (1 × step):    균형, 노이즈 데이터에 권장.
-  Strong (2 × step) ⚠: 강함, 실제 기울기를 흐릴 수 있음.</translation>
+  약함 (0.5 × step):  미세함, 세부를 보존.
+  중간 (1 × step):    균형, 노이즈 데이터에 권장.
+  강함 (2 × step) ⚠: 공격적, 실제 기울기를 흐릴 수 있음.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="216"/>
@@ -3133,7 +3151,7 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
-        <translation>⚠ VSG 반경(%1 px) &lt; DIC 노드 간격(%2 px); 평면 피팅이 실패합니다. VSG ≥ %3 px로 설정하거나 Method를 FEM nodal로 전환하세요.</translation>
+        <translation>⚠ VSG 반경(%1 px) &lt; DIC 노드 간격(%2 px); 평면 피팅이 실패합니다. VSG ≥ %3 px로 설정하거나 방법을 FEM 노드로 전환하세요.</translation>
     </message>
 </context>
 <context>
@@ -3300,7 +3318,7 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/strain_window.py" line="340"/>
         <source>FIELD</source>
-        <translation>표시 필드</translation>
+        <translation>필드</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="349"/>
@@ -3320,7 +3338,7 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/strain_window.py" line="400"/>
         <source>Strain Field</source>
-        <translation>변형률 장</translation>
+        <translation>변형률장</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="402"/>
@@ -3391,7 +3409,7 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>
         <source>Complete</source>
-        <translation>완료</translation>
+        <translation>완료됨</translation>
     </message>
 </context>
 <context>
@@ -3409,7 +3427,7 @@ Method = 평면 피팅 일 때만 적용됩니다.</translation>
     <message>
         <location filename="../../gui/widgets/velocity_settings.py" line="84"/>
         <source>Unit: px/frame</source>
-        <translation>단위: px/frame</translation>
+        <translation>단위: px/프레임</translation>
     </message>
 </context>
 <context>
@@ -3431,10 +3449,10 @@ Suitable for large accumulated deformation, required for large rotations.
 
 Accumulative: every frame is compared to frame 1.
 Accurate for small, monotonic deformation only.</source>
-        <translation>증분형: 각 프레임을 직전 기준 프레임과 비교합니다.
+        <translation>증분형: 각 프레임을 직전 참조 프레임과 비교합니다.
 누적 변형이 큰 경우에 적합하며, 큰 회전에는 필수입니다.
 
-누적형: 각 프레임을 1번 프레임과 비교합니다.
+누적형: 각 프레임을 프레임 1과 비교합니다.
 작고 단조로운 변형에만 정확합니다.</translation>
     </message>
     <message>
@@ -3461,7 +3479,7 @@ images, or when strain accuracy matters.</source>
 국소 특징을 보존합니다. 작은 변형이나 고품질
 이미지에 적합합니다.
 
-AL-DIC: 전역 FEM 정칙화를 갖춘 확장 라그랑주.
+AL-DIC: 전역 FEM 정칙화를 갖춘 증강 라그랑주.
 서브셋 간 변위 적합성을 강제합니다. 큰 변형,
 노이즈 이미지, 변형률 정확도가 중요한 경우에 적합합니다.</translation>
     </message>
@@ -3492,21 +3510,21 @@ Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
 Every N Frames: reset every N frames (balance speed vs robustness).
 Custom Frames: user-defined list of reference frame indices.</source>
-        <translation>증분 추적 중 기준 프레임 갱신 시점.
-매 프레임: 매 프레임마다 기준 리셋(단계 변위 최소,
+        <translation>증분 추적 중 참조 프레임 갱신 시점.
+매 프레임: 매 프레임마다 참조 프레임 리셋(단계 변위 최소,
 큰 변형에 가장 견고).
 N 프레임마다: N 프레임마다 리셋(속도-견고성 균형).
-사용자 지정: 사용자 정의 기준 프레임 인덱스 목록.</translation>
+사용자 지정: 사용자 정의 참조 프레임 인덱스 목록.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
         <source>Reference Update</source>
-        <translation>기준 프레임 갱신</translation>
+        <translation>참조 프레임 갱신</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
         <source>Update reference every N frames</source>
-        <translation>N 프레임마다 기준 갱신</translation>
+        <translation>N 프레임마다 참조 프레임 갱신</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
@@ -3516,12 +3534,12 @@ N 프레임마다: N 프레임마다 리셋(속도-견고성 균형).
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="139"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
-        <translation>기준 프레임으로 사용할 프레임 인덱스(0부터, 쉼표 구분)</translation>
+        <translation>참조 프레임으로 사용할 프레임 인덱스(0부터, 쉼표 구분)</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
         <source>Reference Frames</source>
-        <translation>기준 프레임</translation>
+        <translation>참조 프레임</translation>
     </message>
 </context>
 <context>
