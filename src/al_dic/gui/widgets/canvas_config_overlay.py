@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class CanvasConfigOverlay(QFrame):
@@ -29,10 +29,14 @@ class CanvasConfigOverlay(QFrame):
         super().__init__(parent)
         self._state = AppState.instance()
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        self.setStyleSheet(
-            f"background-color: rgba(16, 20, 24, 215); "
-            f"border: 1px solid {COLORS.BORDER}; "
-            f"border-radius: 6px;"
+        # Scoped to the card itself: a rule without a selector also boxed
+        # every row and label inside it, which the light theme's border showed.
+        self.setObjectName("canvasConfigOverlay")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        themed(self,
+            "QWidget#canvasConfigOverlay {{ background-color: {OVERLAY_BG}; "
+            "border: 1px solid {BORDER}; "
+            "border-radius: 6px; }}"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(10, 8, 10, 8)
@@ -55,17 +59,17 @@ class CanvasConfigOverlay(QFrame):
         row_layout.setSpacing(0)
 
         key_lbl = QLabel(key.upper())
-        key_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 9px; "
-            f"font-weight: bold; letter-spacing: 1px; "
-            f"background: transparent;"
+        themed(key_lbl,
+            "color: {TEXT_SECONDARY}; font-size: 9px; "
+            "font-weight: bold; letter-spacing: 1px; "
+            "background: transparent;"
         )
         row_layout.addWidget(key_lbl)
 
         val_lbl = QLabel("—")
-        val_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_PRIMARY}; font-size: 12px; "
-            f"font-weight: bold; background: transparent;"
+        themed(val_lbl,
+            "color: {TEXT_PRIMARY}; font-size: 12px; "
+            "font-weight: bold; background: transparent;"
         )
         row_layout.addWidget(val_lbl)
         layout.addWidget(row)

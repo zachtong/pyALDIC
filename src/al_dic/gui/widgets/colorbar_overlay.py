@@ -181,7 +181,9 @@ class ColorbarOverlay(QWidget):
         panel_x, label_x = panel_layout(w, bar_x, tick_w, label_w)
         panel_w = w - panel_x
         p.setPen(Qt.PenStyle.NoPen)
-        p.setBrush(QColor(11, 15, 26, 180))  # BG_DARKEST with alpha
+        backing = QColor(COLORS.BG_DARKEST)  # the theme's window colour
+        backing.setAlpha(180)
+        p.setBrush(backing)
         p.drawRoundedRect(
             QRectF(panel_x, bar_top - 20, panel_w, bar_height + 36),
             6, 6,

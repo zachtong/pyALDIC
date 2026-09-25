@@ -18,6 +18,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
+from al_dic.gui.theme_manager import themed
 
 #: The label column is as wide as its longest label in the current language,
 #: never narrower than the English layout and, past a cap of about 28
@@ -122,7 +123,7 @@ class ParamPanel(QWidget):
         layout.addLayout(level_row)
 
         self._refine_info_lbl = QLabel()
-        self._refine_info_lbl.setStyleSheet("color: #888; font-size: 10px;")
+        themed(self._refine_info_lbl, "color: {TEXT_MUTED}; font-size: 10px;")
         layout.addWidget(self._refine_info_lbl)
         self._aligned_with_inputs.append(self._refine_info_lbl)
         self._fit_label_column()

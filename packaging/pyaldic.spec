@@ -46,7 +46,8 @@ for _lc in LOCALES:
     )
 
 _arrows = glob.glob(os.path.join(PKG, "gui", "arrows", "*.svg"))
-assert len(_arrows) == 4, f"expected 4 spin-box arrow SVGs, found {len(_arrows)}"
+# Four for the dark theme, three light variants (theme.LIGHT's ARROW_* files).
+assert len(_arrows) == 7, f"expected 7 spin-box arrow SVGs, found {len(_arrows)}"
 
 for _ic in ("pyALDIC.ico", "pyALDIC-256.png", "pyALDIC.svg", "pyALDIC.icns"):
     assert os.path.isfile(os.path.join(PKG, "gui", "assets", "icon", _ic)), _ic

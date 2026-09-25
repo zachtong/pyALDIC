@@ -60,6 +60,7 @@ from al_dic.analysis.probes import (
 )
 from al_dic.gui.panels.strain_canvas import StrainCanvas
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme
 from al_dic.utils.locale_format import format_number
 
 Tool = Literal[
@@ -164,15 +165,25 @@ class ProbeCanvas(StrainCanvas):
 
         self._preview = QGraphicsPathItem()
         self._preview.setZValue(_PREVIEW_Z)
-        pen = QPen(QColor(COLORS.TEXT_PRIMARY), 1.2, Qt.PenStyle.DashLine)
-        pen.setCosmetic(True)
-        self._preview.setPen(pen)
+        self._set_preview_pen()
         self._preview.setBrush(QBrush(Qt.BrushStyle.NoBrush))
         self._scene.addItem(self._preview)
         self._preview_label: ProbeLabel | None = None
 
         self.setMouseTracking(True)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        connect_theme(self._on_probe_theme_changed)
+
+    def _set_preview_pen(self) -> None:
+        pen = QPen(QColor(COLORS.TEXT_PRIMARY), 1.2, Qt.PenStyle.DashLine)
+        pen.setCosmetic(True)
+        self._preview.setPen(pen)
+
+    def _on_probe_theme_changed(self, _name: str) -> None:
+        """Handles and the placement preview take the theme's colours; the
+        probes themselves keep their own."""
+        self._set_preview_pen()
+        self._redraw_overlay()
 
     # -- tool state -------------------------------------------------------
 

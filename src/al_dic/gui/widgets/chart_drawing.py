@@ -35,7 +35,9 @@ from matplotlib.patches import Patch
 from matplotlib.ticker import MaxNLocator
 
 from al_dic.analysis.series import FrameStatus
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme import DARK as _DARK_UI
+from al_dic.gui.theme import LIGHT as _LIGHT_UI
+from al_dic.gui.theme import current_colors
 
 # Above this many points a marker on every frame is noise; markers are kept
 # only where a frame is flagged.
@@ -61,13 +63,28 @@ class ChartTheme:
     legend_size: float
 
 
-# The application's dark look.
+# The application's dark look. Built from the dark palette by name, not from
+# COLORS: this module may first be imported after the light theme is applied.
 DARK = ChartTheme(
-    figure=COLORS.BG_PANEL, axes=COLORS.BG_DARKEST, spine=COLORS.BORDER,
-    tick=COLORS.TEXT_SECONDARY, label=COLORS.TEXT_PRIMARY, grid=COLORS.BORDER,
-    grid_alpha=0.6, legend=COLORS.TEXT_SECONDARY, muted=COLORS.TEXT_MUTED,
-    consumed=COLORS.TEXT_SECONDARY, tick_size=9, label_size=10, legend_size=9,
+    figure=_DARK_UI.BG_PANEL, axes=_DARK_UI.BG_DARKEST, spine=_DARK_UI.BORDER,
+    tick=_DARK_UI.TEXT_SECONDARY, label=_DARK_UI.TEXT_PRIMARY, grid=_DARK_UI.BORDER,
+    grid_alpha=0.6, legend=_DARK_UI.TEXT_SECONDARY, muted=_DARK_UI.TEXT_MUTED,
+    consumed=_DARK_UI.TEXT_SECONDARY, tick_size=9, label_size=10, legend_size=9,
 )
+
+# The light UI theme's screen: its panel and text colours at screen sizes --
+# not LIGHT below, which is sized for a printed page.
+SCREEN_LIGHT = ChartTheme(
+    figure=_LIGHT_UI.BG_PANEL, axes=_LIGHT_UI.BG_DARKEST, spine=_LIGHT_UI.TEXT_MUTED,
+    tick=_LIGHT_UI.TEXT_SECONDARY, label=_LIGHT_UI.TEXT_PRIMARY, grid=_LIGHT_UI.BORDER,
+    grid_alpha=0.8, legend=_LIGHT_UI.TEXT_SECONDARY, muted="#9ca3af",
+    consumed=_LIGHT_UI.TEXT_MUTED, tick_size=9, label_size=10, legend_size=9,
+)
+
+
+def screen_theme() -> ChartTheme:
+    """The chart theme for the screen in the UI theme in use."""
+    return DARK if current_colors().IS_DARK else SCREEN_LIGHT
 
 # A figure for a paper or a report: white, black type, sizes for a printed
 # column rather than a screen.

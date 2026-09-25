@@ -5,7 +5,7 @@ is why ``packaging/pyaldic.spec`` must not exclude
 ``matplotlib.backends.backend_qtagg`` and ``gui/self_test.py`` checks that it
 imports inside a frozen bundle.
 
-The widget remembers its last drawing call. On screen it is drawn in the dark
+The widget remembers its last drawing call. On screen it is drawn in the UI
 theme with a frame cursor, a separate artist moved without redrawing, and a
 click on the axes reports the x position so the caller can jump there. For a
 paper the same call is drawn again on a fresh figure in the light theme --
@@ -35,8 +35,12 @@ from PySide6.QtWidgets import QVBoxLayout, QWidget  # noqa: E402
 
 from al_dic.analysis.series import FrameStatus  # noqa: E402
 from al_dic.gui.theme import COLORS  # noqa: E402
+from al_dic.gui.theme_manager import (  # noqa: E402
+    connect_theme,
+    refresh_toolbar_icons,
+    themed,
+)
 from al_dic.gui.widgets.chart_drawing import (  # noqa: E402
-    DARK,
     LIGHT,
     Curve,
     draw_curves,
@@ -46,6 +50,7 @@ from al_dic.gui.widgets.chart_drawing import (  # noqa: E402
     table_curves,
     table_kymograph,
     table_profile,
+    screen_theme,
 )
 
 # A figure for a paper: a two-column page's width, a readable height.
@@ -81,7 +86,7 @@ def status_label(status: FrameStatus) -> str:
 
 
 class MplChart(QWidget):
-    """A figure with a navigation toolbar, styled for the dark theme."""
+    """A figure with a navigation toolbar, in the UI theme's colours."""
 
     # Data-space x of a left click inside the axes.
     x_clicked = Signal(float)
@@ -95,6 +100,10 @@ class MplChart(QWidget):
         self._cursor = None
         self._has_data = False
         self._last: tuple[Callable, tuple, dict] | None = None
+        # What is on screen, placeholder or data, and where the cursor is --
+        # drawn again in the new colours when the theme changes.
+        self._screen: tuple[Callable, tuple, dict, bool] | None = None
+        self._cursor_x: float | None = None
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -103,8 +112,12 @@ class MplChart(QWidget):
         layout.addWidget(self._canvas, 1)
 
         self._canvas.mpl_connect("button_press_event", self._on_press)
-        self._canvas.setStyleSheet(f"background-color: {DARK.figure};")
+        themed(self._canvas, "background-color: {BG_PANEL};")
+        # Before 3.11 matplotlib colours the icons once, from the palette the
+        # toolbar has while it is built -- before the style sheet reaches it.
+        refresh_toolbar_icons(self._toolbar)
         self.clear()
+        connect_theme(self._on_theme_changed)
 
     # -- content ----------------------------------------------------------
 
@@ -118,15 +131,29 @@ class MplChart(QWidget):
         return self._figure
 
     def clear(self, message: str | None = None) -> None:
-        self._ax = draw_message(self._figure, DARK, message)
+        self._ax = draw_message(self._figure, screen_theme(), message)
         self._cursor, self._has_data, self._last = None, False, None
+        self._screen, self._cursor_x = (draw_message, (message,), {}, False), None
         self._canvas.draw_idle()
 
     def _draw(self, draw: Callable, *args, has_data: bool = True, **kwargs) -> None:
         """Draw on screen, and remember the call for an export to repeat."""
-        self._ax = draw(self._figure, DARK, *args, **kwargs)
-        self._cursor, self._has_data = None, has_data
+        self._ax = draw(self._figure, screen_theme(), *args, **kwargs)
+        self._cursor, self._has_data, self._cursor_x = None, has_data, None
         self._last = (draw, args, kwargs) if has_data else None
+        self._screen = (draw, args, kwargs, has_data)
+        self._canvas.draw_idle()
+
+    def _on_theme_changed(self, _name: str) -> None:
+        """Draw what is on screen again, in the new theme's colours."""
+        if self._screen is None:
+            return
+        draw, args, kwargs, has_data = self._screen
+        cursor_x = self._cursor_x
+        self._figure.clear()
+        self._ax = draw(self._figure, screen_theme(), *args, **kwargs)
+        self._cursor, self._has_data = None, has_data
+        self.set_cursor(cursor_x)
         self._canvas.draw_idle()
 
     def plot_curves(self, curves: Sequence[Curve], *, x_label: str, y_label: str,
@@ -153,6 +180,7 @@ class MplChart(QWidget):
         if self._cursor is not None:
             self._cursor.remove()
             self._cursor = None
+        self._cursor_x = x
         if x is not None and np.isfinite(x):
             self._cursor = self._ax.axvline(
                 x, color=COLORS.ACCENT, linestyle="--", linewidth=1.0,

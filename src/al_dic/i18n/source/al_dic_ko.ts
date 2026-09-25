@@ -40,32 +40,32 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="70"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="75"/>
         <source>crack</source>
         <translation>균열</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="72"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
         <source>too few valid points</source>
         <translation>유효한 점이 너무 적음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>unreliable (strain edge trim)</source>
         <translation>신뢰할 수 없음(변형률 가장자리 잘라내기)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="82"/>
         <source>gauge endpoint lost</source>
         <translation>게이지 끝점 상실</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="84"/>
         <source>not computed</source>
         <translation>계산되지 않음</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="80"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="85"/>
         <source>no data</source>
         <translation>데이터 없음</translation>
     </message>
@@ -123,53 +123,53 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="87"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="89"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
         <translation>표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="89"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="91"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
         <translation>이름</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="91"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="93"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
         <translation>종류</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="93"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
         <translation>색상</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>비고</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="98"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
         <source>Colour…</source>
         <translation>색상…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="99"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
         <translation>삭제</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="103"/>
         <source>Clear All</source>
         <translation>모두 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Statistic:</source>
         <translation>통계량:</translation>
     </message>
@@ -213,17 +213,17 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="488"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>변형률이 아직 계산되지 않았습니다. &apos;변형률장&apos; 탭에서 계산하거나 변위를 표시하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="532"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>게이지 양에는 선 프로브가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="529"/>
         <source>No visible probe can show this quantity.</source>
         <translation>이 양을 표시할 수 있는 보이는 프로브가 없습니다.</translation>
     </message>
@@ -283,25 +283,25 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="108"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="110"/>
         <source>Point</source>
         <comment>Probe type</comment>
         <translation>점</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="109"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="111"/>
         <source>Line</source>
         <comment>Probe type</comment>
         <translation>선분</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="110"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="112"/>
         <source>Region</source>
         <comment>Probe type: an enclosed area</comment>
         <translation>영역</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="479"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>프로브를 그리려면 먼저 DIC 분석을 실행하세요.</translation>
     </message>
@@ -333,169 +333,169 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 양쪽에 한 점씩 클릭하십시오. 차트에 균열이 벌어진 정도가 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="122"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="124"/>
         <source>Fit</source>
         <comment>Zoom button: fit the image to the view</comment>
         <translation>맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="129"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="131"/>
         <source>Fit image to viewport</source>
         <translation>이미지를 뷰포트에 맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="130"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="132"/>
         <source>100%</source>
         <comment>Zoom button: one image pixel per screen pixel</comment>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="133"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="135"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>100%(1:1) 확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="134"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="136"/>
         <source>Zoom in</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="135"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="137"/>
         <source>Zoom out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="136"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
         <comment>Analysis canvas: colour the image by the field</comment>
         <translation>필드 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
         <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>현재 프레임에서 표시 중인 양의 필드로 참조 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
         <source>Plot:</source>
         <translation>표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>X axis:</source>
         <translation>X 축:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
         <source>Strain as:</source>
         <translation>변형률 표시:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="185"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>Min. valid fraction:</source>
         <translation>최소 유효 비율:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>선이나 영역에서 신뢰할 수 있는 점의 비율이 이 값보다 낮으면 해당 프레임은 비워 둡니다. 표본이 줄어드는데도 곡선이 매끄럽게 유지되는 것을 방지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>시간 변화</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>각 프로브의 모든 프레임에서의 판독값.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="198"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="199"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>선을 따른 분포</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>키모그래프</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>모든 프레임에서 선택한 선을 따른 필드: 거리 대 프레임, 값은 색으로 표시.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
         <source>Stress–strain</source>
         <comment>Chart view: stress against strain</comment>
         <translation>응력–변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="214"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
         <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
         <translation>표시 중인 양에 대한 응력(A0가 없으면 하중) 곡선을 프로브마다 그립니다: 신율계면 응력–변형률, 균열 게이지면 하중–개구 곡선입니다. 하중 데이터가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="225"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
         <source>Other frames</source>
         <translation>다른 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="227"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>현재 프레임 뒤에 다른 프레임의 분포를 흐리게 그립니다(최대 12개, 균등 간격).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
         <source>Line data (CSV)…</source>
         <translation>선 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Load data…</source>
         <translation>하중 데이터…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="235"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
         <translation>시험기의 하중 기록(CSV)을 가져와 하중 또는 응력에 대해 그래프를 그리고 응력–변형률 곡선을 그립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
         <source>Probe data (CSV)…</source>
         <translation>프로브 데이터(CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
         <source>Chart image…</source>
         <translation>차트 이미지…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="244"/>
         <source>Copy chart</source>
         <translation>차트 복사</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="245"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="246"/>
         <source>Copy plotted data</source>
         <translation>표시된 데이터 복사</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="558"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
         <translation>응력–변형률 곡선을 그리려면 &apos;하중 데이터…&apos;로 시험기의 하중 기록을 가져오십시오.</translation>
     </message>
@@ -540,33 +540,33 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>균열 개구 변위 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="277"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="433"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="279"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="280"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
         <source>Time (s)</source>
         <translation>시간 (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="572"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="282"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="430"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="573"/>
         <source>Load (N)</source>
         <translation>하중 (N)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="284"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="431"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="285"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="570"/>
         <source>Stress (MPa)</source>
         <translation>응력 (MPa)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="293"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="294"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>비율</translation>
@@ -587,7 +587,7 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>드래그하여 프로브를 이동하거나 핸들을 드래그하여 모양을 바꿉니다. Delete로 삭제하고 F2로 이름을 바꿉니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>참조 이미지에 프로브를 배치하면 시작됩니다.</translation>
     </message>
@@ -607,22 +607,22 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>%1을(를) 따라 유효한 데이터가 없습니다: 측정 영역 밖에 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="608"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>선 보기는 필드를 표시합니다. 표시할 필드를 선택하십시오.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="612"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="613"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>선 프로브를 배치하거나 선택하면 선을 따른 필드를 볼 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="630"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="631"/>
         <source>Distance along %1 (%2)</source>
         <translation>%1을(를) 따른 거리(%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="639"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="640"/>
         <source>%1, frame %2</source>
         <translation>%1, %2 프레임</translation>
     </message>
@@ -726,12 +726,12 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="1015"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>%n 프레임에 관심 영역 가져옴</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="997"/>
+        <location filename="../../gui/app.py" line="1029"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>DIC를 먼저 실행하세요 —— 후처리할 변위 결과가 없습니다.</translation>
     </message>
@@ -739,27 +739,27 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1103"/>
+        <location filename="../../gui/app.py" line="1135"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC에서 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1104"/>
+        <location filename="../../gui/app.py" line="1136"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1114"/>
+        <location filename="../../gui/app.py" line="1146"/>
         <source>Details were written to %1</source>
         <translation>자세한 내용을 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1218"/>
+        <location filename="../../gui/app.py" line="1252"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1232"/>
+        <location filename="../../gui/app.py" line="1266"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>계산 커널 준비 완료(%1초).</translation>
     </message>
@@ -792,112 +792,112 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>BatchImportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="367"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="368"/>
         <source>Batch Import Region of Interest Masks</source>
         <translation>관심 영역 마스크 일괄 가져오기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="418"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="419"/>
         <source>Mask Folder:</source>
         <translation>마스크 폴더:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="419"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="420"/>
         <source>(none)</source>
         <translation>(없음)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="424"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="425"/>
         <source>Browse...</source>
         <translation>찾아보기…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="443"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="444"/>
         <source>Available Masks</source>
         <translation>사용 가능한 마스크</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="454"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="455"/>
         <source>Auto-Match by Name</source>
         <translation>이름으로 자동 매칭</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="456"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="457"/>
         <source>Match mask files to frames by number in filename</source>
         <translation>파일 이름의 숫자로 마스크 파일을 프레임에 매칭합니다</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="460"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="461"/>
         <source>Assign Sequential</source>
         <translation>순차 할당</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="462"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="463"/>
         <source>Assign masks to frames in order starting from frame 0</source>
         <translation>프레임 0부터 순서대로 마스크를 프레임에 할당합니다</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="470"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="471"/>
         <source>Frame Assignments</source>
         <translation>프레임 할당</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Image</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Mask</source>
         <translation>마스크</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="484"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="485"/>
         <source>Assign Selected -&gt;</source>
         <translation>선택 항목 할당 -&gt;</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="486"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="487"/>
         <source>Pair selected mask(s) with selected frame(s)</source>
         <translation>선택한 마스크와 선택한 프레임을 짝지웁니다</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="490"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="491"/>
         <source>Clear All</source>
         <translation>모두 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="535"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="536"/>
         <source>Select Mask Folder</source>
         <translation>마스크 폴더 선택</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="589"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="590"/>
         <source>Failed to read mask file.</source>
         <translation>마스크 파일을 읽지 못했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="593"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="594"/>
         <source>Mismatched shape: %1×%2 (expected %3×%4)</source>
         <translation>형상 불일치: %1×%2 (예상 %3×%4)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="666"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="667"/>
         <source>%n mask(s) have mismatched sizes and are disabled.</source>
         <translation>크기가 일치하지 않는 마스크 %n개가 비활성화되었습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="725"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="726"/>
         <source>Invalid assignment</source>
         <translation>잘못된 할당</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="727"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="728"/>
         <source>A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.</source>
         <translation>한 프레임에는 마스크를 하나만 지정할 수 있습니다. 마스크를 정확히 하나 선택하거나, 여러 프레임을 선택해 하나의 마스크를 여러 프레임에 지정하세요.</translation>
     </message>
@@ -905,62 +905,62 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>CanvasArea</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1215"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
         <source>Fit</source>
         <translation>맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1216"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
         <source>Fit image to viewport</source>
         <translation>이미지를 뷰포트에 맞춤</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1227"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1228"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>100%(1:1) 확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1226"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
         <source>Zoom in</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1238"/>
         <source>–</source>
         <translation>–</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1239"/>
         <source>Zoom out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1246"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1252"/>
         <source>Show Grid</source>
         <translation>격자 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1247"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1253"/>
         <source>Show/hide computational mesh grid</source>
         <translation>계산 메시 격자 표시/숨김</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1250"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1256"/>
         <source>Show Subset</source>
         <translation>서브셋 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1251"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1257"/>
         <source>Show subset window on hover (requires Grid)</source>
         <translation>마우스 오버 시 서브셋 윈도우 표시(격자 필요)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1505"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1511"/>
         <source>Placing Starting Points</source>
         <translation>시드점 배치 중</translation>
     </message>
@@ -968,62 +968,62 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>CanvasConfigOverlay</name>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="41"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="45"/>
         <source>Mode</source>
         <translation>모드</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="42"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
         <source>Solver</source>
         <translation>솔버</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
         <source>Init</source>
         <translation>초기 추정</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="97"/>
         <source>Accumulative</source>
         <translation>누적형</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="94"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="98"/>
         <source>Incremental</source>
         <translation>증분형</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="101"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="105"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="103"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="107"/>
         <source>ADMM (%1 iter)</source>
         <translation>ADMM(%1회 반복)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="110"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
         <source>Starting Points</source>
         <translation>시드점</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="112"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
         <source>Previous frame</source>
         <translation>이전 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
         <source>FFT every frame</source>
         <translation>매 프레임 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
         <source>FFT every %1 fr</source>
         <translation>%1 프레임마다 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="117"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="121"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -1049,227 +1049,227 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>ExportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
         <source>Auto</source>
         <translation>자동</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1382"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="482"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1383"/>
         <source>Opacity</source>
         <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>불투명도</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="484"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
         <translation>필드 불투명도 (0 = 투명, 1 = 완전 불투명)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="592"/>
         <source>All</source>
         <translation>모두 선택</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="594"/>
         <source>None</source>
         <translation>모두 해제</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="623"/>
         <source>Export Results</source>
         <translation>결과 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="646"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="647"/>
         <source>OUTPUT FOLDER</source>
         <translation>출력 폴더</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="654"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="655"/>
         <source>Select output folder…</source>
         <translation>출력 폴더 선택…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="658"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="659"/>
         <source>Browse…</source>
         <translation>찾아보기…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="663"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="664"/>
         <source>Open Folder</source>
         <translation>폴더 열기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="672"/>
         <source>PHYSICAL UNITS</source>
         <translation>물리 단위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="675"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="676"/>
         <source>Enable physical units</source>
         <translation>물리 단위 활성화</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="679"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
         <translation>변위 값을 픽셀 크기로 스케일링하고 컬러바 레이블에 물리 단위를 표시합니다. 변형률은 무차원이므로 영향받지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="696"/>
         <source>/ pixel</source>
         <translation>/ 픽셀</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="698"/>
         <source>Pixel size</source>
         <translation>픽셀 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="712"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="713"/>
         <source>fps</source>
         <translation>fps</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="715"/>
         <source>Frame rate</source>
         <translation>프레임 속도</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
         <source>Data</source>
         <translation>데이터</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
         <source>Images</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
         <source>Animation</source>
         <translation>애니메이션</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="726"/>
         <source>Report</source>
         <translation>보고서</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="727"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="728"/>
         <source>Preview &amp; Colorbar</source>
         <translation>미리보기 및 컬러바</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="759"/>
         <source>FORMAT</source>
         <translation>형식</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="760"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="761"/>
         <source>NumPy Archive (.npz)</source>
         <translation>NumPy 아카이브 (.npz)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="762"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="763"/>
         <source>MATLAB (.mat)</source>
         <translation>MATLAB (.mat)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="764"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="765"/>
         <source>CSV (per frame)</source>
         <translation>CSV(프레임별)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="767"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="768"/>
         <source>NPZ: one file per frame (default: single merged file)</source>
         <translation>NPZ: 프레임별 1 파일(기본값: 통합 단일 파일)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="775"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="776"/>
         <source>DISPLACEMENT</source>
         <translation>변위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="784"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="811"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="785"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="812"/>
         <source>Select:</source>
         <translation>선택:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="799"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="800"/>
         <source>STRAIN</source>
         <translation>변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="802"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="803"/>
         <source>Run Compute Strain first.</source>
         <translation>먼저 「변형률 계산」을 실행하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="829"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="830"/>
         <source>✓ Parameters file (JSON) always exported</source>
         <translation>✓ 매개변수 파일(JSON)은 항상 내보내집니다</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="836"/>
         <source>Export Data</source>
         <translation>데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="856"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1005"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1253"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1254"/>
         <source>Field</source>
         <translation>필드</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1355"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1356"/>
         <source>Colormap</source>
         <translation>색상 맵</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1367"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1368"/>
         <source>Min</source>
         <translation>최소</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1374"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="862"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1011"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1375"/>
         <source>Max</source>
         <translation>최대</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="880"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="881"/>
         <source>IMAGE SETTINGS</source>
         <translation>이미지 설정</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="890"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1039"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="891"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1040"/>
         <source>Format</source>
         <translation>형식</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="898"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1047"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="899"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1048"/>
         <source>Full resolution</source>
         <translation>전체 해상도</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="900"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="901"/>
         <source>Cap the exported image&apos;s long edge (the larger of width/height; aspect ratio is kept).
 Field detail is bounded by the mesh, so a smaller cap is near-lossless
 but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolution&apos; keeps the native size.</source>
@@ -1278,405 +1278,405 @@ but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolu
 파일이 작고 인코딩이 빠릅니다. 낮을수록 빠름. &apos;전체 해상도&apos;는 원본 크기를 유지합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="907"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1054"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="908"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1055"/>
         <source>Resolution (long edge)</source>
         <translation>해상도(긴 변)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="941"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1091"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
         <source>Deformed frame</source>
         <translation>변형된 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="943"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1093"/>
         <source>Reference frame</source>
         <translation>참조 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="946"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="947"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1097"/>
         <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
 Reference: drawn at the original node positions, over the first frame.</source>
         <translation>변형된 프레임: 필드를 변위된 노드 위치(참조 위치 + 변위)에 그려 각 프레임 자체의 사진 위에 겹칩니다.
 참조 프레임: 원래 노드 위치에 그려 첫 번째 프레임 위에 겹칩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1102"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="955"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1103"/>
         <source>Show background image</source>
         <translation>배경 이미지 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="958"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
         <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. 채우기는 &apos;미리보기 및 컬러바&apos; 탭에서 선택합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1050"/>
         <source>Cap the animation&apos;s long edge (the larger of width/height).
 Lower = faster and much smaller. Strongly recommended for GIF, whose size explodes at native resolution.</source>
         <translation>애니메이션의 긴 변(너비/높이 중 큰 값)을 제한합니다.
 낮을수록 빠르고 작습니다. GIF에 강력히 권장됩니다. 원본 해상도에서는 크기가 급격히 커집니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="916"/>
         <source>JPEG quality (higher = larger file). Ignored for PNG/TIFF.</source>
         <translation>JPEG 품질(높을수록 파일이 커집니다). PNG/TIFF에서는 무시됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="918"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="919"/>
         <source>JPEG quality</source>
         <translation>JPEG 품질</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="927"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="928"/>
         <source>DPI</source>
         <translation>DPI</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="929"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1080"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="930"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1081"/>
         <source>Include colorbar</source>
         <translation>컬러바 포함</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="932"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="933"/>
         <source>Append a vertical colorbar strip to the right of each image.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>각 이미지 오른쪽에 수직 컬러바를 추가합니다.
 자동 범위가 활성화되면 눈금 레이블이 프레임별로 갱신됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="963"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1111"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="964"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1112"/>
         <source>Render as</source>
         <translation>렌더링 방식</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="981"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1127"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="982"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1128"/>
         <source>Cancel Export</source>
         <translation>내보내기 취소</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="986"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="987"/>
         <source>Export Images</source>
         <translation>이미지 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1029"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1030"/>
         <source>ANIMATION SETTINGS</source>
         <translation>애니메이션 설정</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1063"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1064"/>
         <source>FPS</source>
         <translation>FPS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1074"/>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>N 프레임마다 하나씩 내보냅니다(1 = 모든 프레임). 클수록 빠르고 작지만,
 더 끊겨 보입니다. 재생 시간은 유지됩니다(위의 FPS는 추출 전 프레임 속도).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1079"/>
         <source>Frame step</source>
         <translation>프레임 간격</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1083"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1084"/>
         <source>Append a vertical colorbar strip to the right of each frame.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>각 프레임 오른쪽에 수직 컬러바를 추가합니다.
 자동 범위가 활성화되면 눈금 레이블이 프레임별로 갱신됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1106"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
         <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 내보냅니다. GIF와 MP4는 투명도를 저장할 수 없으므로 투명 채우기는 흰색으로 기록됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1133"/>
         <source>Export Animation</source>
         <translation>애니메이션 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1149"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1150"/>
         <source>CONTENT</source>
         <translation>내용</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1151"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1152"/>
         <source>Parameter summary table</source>
         <translation>매개변수 요약 표</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1154"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1155"/>
         <source>Field statistics (min/max/mean/std per frame)</source>
         <translation>필드 통계 (프레임별 최소/최대/평균/표준편차)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1157"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1158"/>
         <source>Sample field images</source>
         <translation>필드 이미지 샘플</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1164"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1165"/>
         <source>Sample every</source>
         <translation>샘플 간격</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1170"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1171"/>
         <source>frames</source>
         <comment>Report: sample every N frames</comment>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1176"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1177"/>
         <source>FIELDS</source>
         <translation>필드</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1179"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1180"/>
         <source>Displacement:</source>
         <translation>변위:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1194"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1195"/>
         <source>Strain:</source>
         <translation>변형률:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1216"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1217"/>
         <source>Format: HTML (self-contained, view in any browser)</source>
         <translation>형식: HTML (자체 포함, 모든 브라우저에서 볼 수 있음)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1223"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1224"/>
         <source>Generate Report</source>
         <translation>보고서 생성</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1246"/>
         <source>Open this tab to render a preview.</source>
         <translation>이 탭을 열면 미리보기가 렌더링됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1261"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1262"/>
         <source>Frame</source>
         <translation>프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1273"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1274"/>
         <source>COLORBAR STYLE</source>
         <translation>컬러바 스타일</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Right</source>
         <translation>오른쪽</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Left</source>
         <translation>왼쪽</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
         <source>Top</source>
         <translation>위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
         <source>Bottom</source>
         <translation>아래</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1280"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1281"/>
         <source>Position</source>
         <translation>위치</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1286"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1287"/>
         <source>Font size</source>
         <translation>글꼴 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1292"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1293"/>
         <source>Font family</source>
         <translation>글꼴</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1300"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1301"/>
         <source>Bar thickness</source>
         <translation>막대 두께</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1304"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1320"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
         <source>Black</source>
         <translation>검정</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1325"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1304"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1320"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
         <source>White</source>
         <translation>흰색</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1306"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1307"/>
         <source>Background</source>
         <translation>배경</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1313"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1314"/>
         <source>Add a blank border around the exported content, as a fraction of the long edge (0 = none).</source>
         <translation>내보내는 콘텐츠 주위에 여백 테두리를 추가합니다. 너비는 긴 변에 대한 비율입니다(0 = 없음).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1316"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1317"/>
         <source>Margin</source>
         <translation>여백</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1322"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1323"/>
         <source>Margin color</source>
         <translation>여백 색상</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1328"/>
         <source>Transparent</source>
         <translation>투명</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1333"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1334"/>
         <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
 Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
         <translation>‘배경 이미지 표시’를 끄면 배경 이미지가 있던 자리를 채우는 색입니다.
 PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 없어 흰색으로 대체됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1340"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1341"/>
         <source>Hidden background</source>
         <translation>숨김 시 배경</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1342"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1343"/>
         <source>Refresh preview</source>
         <translation>미리보기 새로고침</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1350"/>
         <source>FIELD APPEARANCE</source>
         <translation>필드 모양</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1361"/>
         <source>Range</source>
         <translation>범위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1385"/>
         <source>Apply to all fields</source>
         <translation>모든 필드에 적용</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1387"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>이 필드의 색상 맵, 불투명도, 자동 범위를 활성화된 모든 필드에 적용합니다(각 필드의 최소/최대는 유지).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1510"/>
         <source>Preview failed: </source>
         <translation>미리보기 실패: </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1525"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>미리보려면 &apos;이미지&apos; 탭에서 필드를 활성화하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1538"/>
         <source>No data for this field/frame.</source>
         <translation>이 필드/프레임에 데이터가 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1602"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
         <source>FRAME RANGE</source>
         <translation>프레임 범위</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1605"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1606"/>
         <source>All frames</source>
         <translation>모든 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1611"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1612"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>시작</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1619"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1620"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>끝</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1650"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1651"/>
         <source>Select Output Folder</source>
         <translation>출력 폴더 선택</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1709"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1710"/>
         <source>Exported %1 files → %2</source>
         <translation>%1 개 파일 내보냄 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1718"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1848"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1937"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1979"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
         <source>Error: %1</source>
         <translation>오류: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1743"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1876"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1744"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1877"/>
         <source>Starting…</source>
         <translation>시작 중…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1821"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1899"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1822"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1900"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>%1 렌더링 중 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1827"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1905"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1828"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1906"/>
         <source>Frame %1/%2</source>
         <translation>프레임 %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1837"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1838"/>
         <source>Exported %1 images → %2</source>
         <translation>%1 개 이미지 내보냄 → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1916"/>
         <source>No animation was written. See the log for details.</source>
         <translation>애니메이션이 기록되지 않았습니다. 자세한 내용은 로그를 확인하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
         <source>Report saved → %1</source>
         <translation>보고서 저장됨 → %1</translation>
     </message>
@@ -1748,12 +1748,12 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
 <context>
     <name>ImageCanvas</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1061"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1067"/>
         <source>Load images first before drawing a Region of Interest.</source>
         <translation>관심 영역을 그리기 전에 먼저 이미지를 불러오세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1080"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1086"/>
         <source>The three points are nearly collinear — pick points spread around the circle&apos;s edge.</source>
         <translation>세 점이 거의 일직선입니다 — 원의 가장자리에 고르게 세 점을 찍으세요.</translation>
     </message>
@@ -1761,70 +1761,70 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
 <context>
     <name>ImageList</name>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="95"/>
+        <location filename="../../gui/widgets/image_list.py" line="97"/>
         <source>#</source>
         <comment>Image list column: frame index</comment>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="96"/>
+        <location filename="../../gui/widgets/image_list.py" line="98"/>
         <source>Filename</source>
         <translation>파일 이름</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="97"/>
+        <location filename="../../gui/widgets/image_list.py" line="99"/>
         <source>Region</source>
         <comment>Image list column: ROI status</comment>
         <translation>영역</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="190"/>
-        <location filename="../../gui/widgets/image_list.py" line="248"/>
+        <location filename="../../gui/widgets/image_list.py" line="193"/>
+        <location filename="../../gui/widgets/image_list.py" line="255"/>
         <source>Add</source>
         <translation>추가</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="242"/>
+        <location filename="../../gui/widgets/image_list.py" line="249"/>
         <source>Edit</source>
         <translation>편집</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="245"/>
+        <location filename="../../gui/widgets/image_list.py" line="252"/>
         <source>Need</source>
         <translation>필요</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="362"/>
+        <location filename="../../gui/widgets/image_list.py" line="369"/>
         <source>Import Region of Interest for %n frame(s)</source>
         <translation>%n 프레임에 관심 영역 가져오기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="378"/>
+        <location filename="../../gui/widgets/image_list.py" line="385"/>
         <source>Clear Region of Interest (%1 with region)</source>
         <translation>관심 영역 지우기 (%1개 프레임에 영역 있음)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="382"/>
+        <location filename="../../gui/widgets/image_list.py" line="389"/>
         <source>Clear Region of Interest</source>
         <translation>관심 영역 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="393"/>
+        <location filename="../../gui/widgets/image_list.py" line="400"/>
         <source>Delete %n image(s)</source>
         <translation>%n 개 이미지 삭제</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="496"/>
+        <location filename="../../gui/widgets/image_list.py" line="503"/>
         <source>Images</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="497"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="506"/>
+        <location filename="../../gui/widgets/image_list.py" line="513"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>%2 프레임에 대해 %1 개 파일 선택됨 — 개수가 일치해야 합니다</translation>
     </message>
@@ -2141,126 +2141,143 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../gui/app.py" line="201"/>
+        <location filename="../../gui/app.py" line="205"/>
         <source>&amp;File</source>
         <translation>파일</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="203"/>
+        <location filename="../../gui/app.py" line="207"/>
         <source>Open Session…</source>
         <translation>세션 열기…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="208"/>
+        <location filename="../../gui/app.py" line="212"/>
         <source>Save Session…</source>
         <translation>세션 저장…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="217"/>
+        <location filename="../../gui/app.py" line="221"/>
         <source>Associate .aldic files with pyALDIC…</source>
         <translation>.aldic 파일을 pyALDIC에 연결…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="219"/>
+        <location filename="../../gui/app.py" line="223"/>
         <source>Register .aldic so double-clicking a session file opens pyALDIC (current user only, no admin rights needed).</source>
         <translation>.aldic를 등록하여 세션 파일을 두 번 클릭하면 pyALDIC가 열리도록 합니다(현재 사용자만, 관리자 권한 불필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="225"/>
+        <location filename="../../gui/app.py" line="229"/>
         <source>Quit</source>
         <translation>종료</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="233"/>
+        <location filename="../../gui/app.py" line="237"/>
         <source>&amp;Settings</source>
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="234"/>
+        <location filename="../../gui/app.py" line="242"/>
+        <source>Theme</source>
+        <translation>테마</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="247"/>
+        <source>Dark</source>
+        <comment>Colour theme</comment>
+        <translation>다크</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="248"/>
+        <source>Light</source>
+        <comment>Colour theme</comment>
+        <translation>라이트</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="260"/>
         <source>Language</source>
         <translation>언어</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="263"/>
+        <location filename="../../gui/app.py" line="295"/>
         <source>Language changed</source>
         <translation>언어가 변경되었습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="266"/>
+        <location filename="../../gui/app.py" line="298"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation>언어가 %1(으)로 설정되었습니다. 모든 화면에 반영하려면 pyALDIC을 재시작하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="280"/>
+        <location filename="../../gui/app.py" line="312"/>
         <source>Save Session</source>
         <translation>세션 저장</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="282"/>
-        <location filename="../../gui/app.py" line="331"/>
+        <location filename="../../gui/app.py" line="314"/>
+        <location filename="../../gui/app.py" line="363"/>
         <source>pyALDIC Session</source>
         <translation>pyALDIC 세션</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="283"/>
-        <location filename="../../gui/app.py" line="332"/>
-        <location filename="../../gui/app.py" line="796"/>
+        <location filename="../../gui/app.py" line="315"/>
+        <location filename="../../gui/app.py" line="364"/>
+        <location filename="../../gui/app.py" line="828"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="296"/>
+        <location filename="../../gui/app.py" line="328"/>
         <source>large</source>
         <translation>큼</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="299"/>
+        <location filename="../../gui/app.py" line="331"/>
         <source>Include Results?</source>
         <translation>결과를 포함할까요?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="301"/>
+        <location filename="../../gui/app.py" line="333"/>
         <source>Include the computed results in this session?</source>
         <translation>이 세션에 계산된 결과를 포함하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="304"/>
+        <location filename="../../gui/app.py" line="336"/>
         <source>Including results (about %1 uncompressed) lets you reopen the session without recomputing. Choose No to save a small configuration-only file for sharing.</source>
         <translation>결과를 포함하면(압축 전 약 %1) 다시 계산하지 않고 세션을 다시 열 수 있습니다. &apos;아니요&apos;를 선택하면 공유용으로 구성만 담긴 작은 파일을 저장합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="317"/>
+        <location filename="../../gui/app.py" line="349"/>
         <source>Saving Session</source>
         <translation>세션 저장 중</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="322"/>
+        <location filename="../../gui/app.py" line="354"/>
         <source>Save Session Failed</source>
         <translation>세션 저장 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="329"/>
+        <location filename="../../gui/app.py" line="361"/>
         <source>Open Session</source>
         <translation>세션 열기</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="344"/>
+        <location filename="../../gui/app.py" line="376"/>
         <source>Loading Session</source>
         <translation>세션 불러오는 중</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="347"/>
-        <location filename="../../gui/app.py" line="382"/>
+        <location filename="../../gui/app.py" line="379"/>
+        <location filename="../../gui/app.py" line="414"/>
         <source>Open Session Failed</source>
         <translation>세션 열기 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="356"/>
+        <location filename="../../gui/app.py" line="388"/>
         <source>Locate Session Images</source>
         <translation>세션 이미지 위치 지정</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="359"/>
+        <location filename="../../gui/app.py" line="391"/>
         <source>The image folder saved with this session was not found:
 %1
 
@@ -2271,83 +2288,83 @@ Results were restored. To show the background images, select the folder that now
 결과는 복원되었습니다. 배경 이미지를 표시하려면 현재 이미지가 들어 있는 폴더를 선택하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="367"/>
+        <location filename="../../gui/app.py" line="399"/>
         <source>Select Image Folder</source>
         <translation>이미지 폴더 선택</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="443"/>
+        <location filename="../../gui/app.py" line="475"/>
         <source>File Association Failed</source>
         <translation>파일 연결 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="444"/>
+        <location filename="../../gui/app.py" line="476"/>
         <source>Could not register .aldic files: </source>
         <translation>.aldic 파일을 등록할 수 없습니다: </translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="447"/>
+        <location filename="../../gui/app.py" line="479"/>
         <source>File Association</source>
         <translation>파일 연결</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="448"/>
+        <location filename="../../gui/app.py" line="480"/>
         <source>Done. Double-clicking a .aldic file will now open pyALDIC and restore that session.</source>
         <translation>완료되었습니다. 이제 .aldic 파일을 두 번 클릭하면 pyALDIC가 열리고 해당 세션이 복원됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="763"/>
+        <location filename="../../gui/app.py" line="795"/>
         <source>Frame %1 has no Region of Interest of its own — frame 1&apos;s is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.</source>
         <translation>프레임 %1에는 자체 관심 영역이 없습니다 — 계산에는 프레임 1의 관심 영역을 사용합니다. 프레임 1로 전환하여 편집하거나 마스크를 가져와 이 프레임 전용으로 지정하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="774"/>
+        <location filename="../../gui/app.py" line="806"/>
         <source>No Region of Interest to save — load images first.</source>
         <translation>저장할 관심 영역이 없습니다 — 먼저 이미지를 불러오세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="781"/>
+        <location filename="../../gui/app.py" line="813"/>
         <source>Region of Interest mask is empty.</source>
         <translation>관심 영역 마스크가 비어 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="793"/>
+        <location filename="../../gui/app.py" line="825"/>
         <source>Save Region of Interest Mask</source>
         <translation>관심 영역 마스크 저장</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="795"/>
+        <location filename="../../gui/app.py" line="827"/>
         <source>PNG Images</source>
         <translation>PNG 이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="804"/>
+        <location filename="../../gui/app.py" line="836"/>
         <source>Mask saved to %1</source>
         <translation>마스크를 %1에 저장했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="813"/>
+        <location filename="../../gui/app.py" line="845"/>
         <source>No Region of Interest to invert — load images first.</source>
         <translation>반전할 관심 영역이 없습니다 — 먼저 이미지를 불러오세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="843"/>
-        <location filename="../../gui/app.py" line="896"/>
+        <location filename="../../gui/app.py" line="875"/>
+        <location filename="../../gui/app.py" line="928"/>
         <source>Load images first.</source>
         <translation>먼저 이미지를 불러오세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="854"/>
+        <location filename="../../gui/app.py" line="886"/>
         <source>Define a Region of Interest on frame 1 first.</source>
         <translation>먼저 프레임 1에서 관심 영역을 정의하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="945"/>
+        <location filename="../../gui/app.py" line="977"/>
         <source>  Imported mask for frame %1</source>
         <translation>  프레임 %1의 마스크를 가져왔습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="951"/>
+        <location filename="../../gui/app.py" line="983"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>일괄 가져오기: 마스크 %n개를 불러왔습니다</translation>
     </message>
@@ -2373,68 +2390,68 @@ Results were restored. To show the background images, select the folder that now
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="48"/>
+        <location filename="../../gui/widgets/param_panel.py" line="49"/>
         <source>Subset Size</source>
         <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>서브셋 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="54"/>
+        <location filename="../../gui/widgets/param_panel.py" line="55"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>IC-GN 서브셋 윈도우 크기(픽셀, 홀수)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
+        <location filename="../../gui/widgets/param_panel.py" line="62"/>
         <source>Subset Step</source>
         <translation>서브셋 스텝</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="64"/>
+        <location filename="../../gui/widgets/param_panel.py" line="65"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>노드 간격(픽셀, 2의 거듭제곱이어야 함)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="72"/>
-        <location filename="../../gui/widgets/param_panel.py" line="197"/>
-        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <location filename="../../gui/widgets/param_panel.py" line="73"/>
+        <location filename="../../gui/widgets/param_panel.py" line="198"/>
+        <location filename="../../gui/widgets/param_panel.py" line="210"/>
         <source>Search Range</source>
         <translation>탐색 범위</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="87"/>
+        <location filename="../../gui/widgets/param_panel.py" line="88"/>
         <source>Refine Inner Boundary</source>
         <translation>내부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="90"/>
+        <location filename="../../gui/widgets/param_panel.py" line="91"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>내부 마스크 경계를 따라 메시를 국소적으로 세분화합니다
 (관심 영역 내부의 구멍). 기포/공극 가장자리에 유용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="94"/>
+        <location filename="../../gui/widgets/param_panel.py" line="95"/>
         <source>Refine Outer Boundary</source>
         <translation>외부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="97"/>
+        <location filename="../../gui/widgets/param_panel.py" line="98"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>관심 영역 외부 경계를 따라 메시를 국소적으로 세분화합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="112"/>
+        <location filename="../../gui/widgets/param_panel.py" line="113"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
         <translation>세분화 강도. 최소 요소 크기 = max(2, subset_step / 2^level). 내부·외부 경계와 브러시로 칠한 영역에 모두 일괄 적용됩니다. 사용 가능한 레벨은 서브셋 크기와 스텝에 따라 달라집니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="118"/>
+        <location filename="../../gui/widgets/param_panel.py" line="119"/>
         <source>Refinement Level</source>
         <translation>세분화 레벨</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="178"/>
+        <location filename="../../gui/widgets/param_panel.py" line="179"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2445,7 +2462,7 @@ For large rotations in incremental mode, this must cover
   반경 × sin(단계 각).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="185"/>
+        <location filename="../../gui/widgets/param_panel.py" line="186"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2454,48 +2471,48 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 시드점 초기화에만 영향을 주며, 다른 노드는 F-aware 전파(노드별 탐색 없음)를 사용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="193"/>
-        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <location filename="../../gui/widgets/param_panel.py" line="194"/>
+        <location filename="../../gui/widgets/param_panel.py" line="210"/>
         <source>Starting Point Search</source>
         <translation>시드점 탐색</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="249"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>약함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>중간</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="251"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="252"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>매우 강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="253"/>
+        <location filename="../../gui/widgets/param_panel.py" line="254"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>극강</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="259"/>
+        <location filename="../../gui/widgets/param_panel.py" line="260"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="281"/>
+        <location filename="../../gui/widgets/param_panel.py" line="282"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>최소 요소 크기 = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
@@ -2603,37 +2620,37 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>ROIHint</name>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="62"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="63"/>
         <source>Load images first, then draw a Region of Interest on frame 1.</source>
         <translation>먼저 이미지를 불러온 후, 프레임 1에 관심 영역을 그리세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="69"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="70"/>
         <source>&lt;b&gt;Accumulative mode&lt;/b&gt; — only frame 1 needs a Region of Interest. All later frames are compared against it directly.</source>
         <translation>&lt;b&gt;누적 모드&lt;/b&gt; — 관심 영역은 프레임 1에만 필요합니다. 이후 프레임은 모두 직접 비교됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="79"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="80"/>
         <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
         <translation>&lt;b&gt;증분, 매 프레임&lt;/b&gt; — 프레임 1에 관심 영역이 필요합니다. 이후 프레임으로 자동 전진 워프됩니다(프레임별 그리기 불필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="96"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="97"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;증분, %1 프레임마다&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%2&lt;/b&gt;(참조 프레임 총 %3개).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="110"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="111"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 사용자 지정 참조 프레임이 설정되지 않았습니다. 프레임 1이 유일한 참조 프레임이 됩니다. 참조 프레임 입력란에 인덱스를 추가하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="120"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="121"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%1&lt;/b&gt;(참조 프레임 총 %2개).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="128"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>프레임 1에 관심 영역을 그리세요.</translation>
     </message>
@@ -2768,17 +2785,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>원(3점)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
         <source>Import Mask Image</source>
         <translation>마스크 이미지 가져오기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="354"/>
         <source>Images</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
@@ -2822,22 +2839,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
         <source>Ready</source>
         <translation>준비됨</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="394"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="485"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
         <source>ELAPSED  %1</source>
         <translation>경과 시간  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="493"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
         <location filename="../../gui/panels/right_sidebar.py" line="497"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
         <source>REMAINING  %1</source>
         <translation>남은 시간  %1</translation>
     </message>
@@ -2937,12 +2954,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="361"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>실행 전에 각 빨간 영역에 시드점을 하나 이상 배치하세요(빨강 = 시드점 필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="468"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  프레임 %2</translation>
     </message>
@@ -3014,22 +3031,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>StrainParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="85"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
         <source>Plane fitting</source>
         <translation>평면 피팅</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="87"/>
         <source>FEM nodal</source>
         <translation>FEM 노드</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="88"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="89"/>
         <source>Method</source>
         <translation>방법</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="103"/>
         <source>VSG (Virtual Strain Gauge) size is the diameter, in pixels, of the circular region around each mesh node used to fit a local displacement plane. Strain is then taken as the plane&apos;s slope.
 
 • Larger VSG → smoother strain, lower spatial resolution.
@@ -3046,17 +3063,17 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 방법 = FEM 노드일 때는 사용되지 않습니다(그 경우 메시 간격 자체가 게이지 크기를 결정).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="116"/>
         <source>VSG size</source>
         <translation>VSG 크기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="132"/>
         <source>Number of mesh nodes per axis inside the circular VSG window on a uniform mesh: 2 × floor(VSG radius / node spacing) + 1. The plane fit uses every node within the radius; on a refined mesh the count varies locally.</source>
         <translation>균일 메시에서 원형 VSG 윈도우 내 축당 메시 노드 수: 2 × floor(VSG 반경 / 노드 간격) + 1. 평면 피팅은 반경 내 모든 노드를 사용하며, 세분화된 메시에서는 이 수가 국소적으로 달라집니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="162"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="163"/>
         <source>Hides low-confidence strain at ROI / hole edges, where the VSG window crosses the boundary and the local plane fit becomes one-sided and unreliable.
 
 • Coefficient × VSG radius = width of the trimmed boundary band.
@@ -3075,33 +3092,33 @@ Only applies when Method = Plane fitting.</source>
 방법 = 평면 피팅일 때만 적용됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="175"/>
         <source>Trim low-confidence edges</source>
         <translation>저신뢰도 가장자리 잘라내기</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="201"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="202"/>
         <source>Off</source>
         <comment>Strain smoothing preset</comment>
         <translation>끔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="202"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="203"/>
         <source>Light (σ = 0.5 × step)</source>
         <translation>약함 (σ = 0.5 × step)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="203"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="204"/>
         <source>Medium (σ = 1 × step)</source>
         <translation>중간 (σ = 1 × step)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="204"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="205"/>
         <source>Strong (σ = 2 × step) ⚠</source>
         <translation>강함 (σ = 2 × step) ⚠</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="211"/>
         <source>Gaussian smoothing of the strain field after computation.
 σ is the Gaussian kernel width; &apos;step&apos; = DIC node spacing.
   Light  (0.5 × step):  subtle, preserves fine features.
@@ -3114,42 +3131,42 @@ Only applies when Method = Plane fitting.</source>
   강함 (2 × step) ⚠: 공격적, 실제 기울기를 흐릴 수 있음.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="216"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="217"/>
         <source>Strain field smoothing</source>
         <translation>변형률장 평활화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="222"/>
         <source>Infinitesimal</source>
         <translation>미소 변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="223"/>
         <source>Eulerian</source>
         <translation>오일러 변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="223"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="224"/>
         <source>Green-Lagrangian</source>
         <translation>그린-라그랑주 변형률</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="225"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="226"/>
         <source>Strain type</source>
         <translation>변형률 종류</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="287"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="288"/>
         <source>Trimmed: %1 nodes (%2%)</source>
         <translation>잘라냄: 노드 %1개 (%2%)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="363"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="364"/>
         <source>Strain window ≈ %1×%2 nodes</source>
         <translation>변형률 윈도우 ≈ %1×%2 노드</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="371"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
         <translation>⚠ VSG 반경(%1 px) &lt; DIC 노드 간격(%2 px); 평면 피팅이 실패합니다. VSG ≥ %3 px로 설정하거나 방법을 FEM 노드로 전환하세요.</translation>
     </message>
@@ -3560,82 +3577,82 @@ or Browse</source>
 <context>
     <name>_MaskPreviewPanel</name>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="132"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="133"/>
         <source>Preview</source>
         <translation>미리보기</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="136"/>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="262"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="137"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="263"/>
         <source>(no image)</source>
         <translation>(이미지 없음)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="156"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="157"/>
         <source>Image only</source>
         <translation>이미지만</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="157"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="158"/>
         <source>Image + Mask</source>
         <translation>이미지 + 마스크</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="158"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="159"/>
         <source>Mask only</source>
         <translation>마스크만</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="161"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="162"/>
         <source>View:</source>
         <translation>보기:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="167"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="168"/>
         <source>Alpha:</source>
         <translation>알파:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="175"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="176"/>
         <source>Blue</source>
         <comment>Mask overlay color</comment>
         <translation>파랑</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="179"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="180"/>
         <source>Red</source>
         <comment>Mask overlay color</comment>
         <translation>빨강</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="183"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="184"/>
         <source>Green</source>
         <comment>Mask overlay color</comment>
         <translation>초록</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="187"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="188"/>
         <source>Yellow</source>
         <comment>Mask overlay color</comment>
         <translation>노랑</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="191"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="192"/>
         <source>Mask color:</source>
         <translation>마스크 색상:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="268"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="269"/>
         <source>No mask assigned</source>
         <translation>지정된 마스크 없음</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="274"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="275"/>
         <source>Frame %1 — %2</source>
         <translation>프레임 %1 — %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="289"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="290"/>
         <source>Failed to load image</source>
         <translation>이미지를 불러오지 못했습니다</translation>
     </message>

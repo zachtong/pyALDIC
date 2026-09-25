@@ -7,7 +7,7 @@ import traceback
 from pathlib import Path
 
 from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtGui import QAction, QKeySequence
+from PySide6.QtGui import QAction, QActionGroup, QKeySequence
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -27,10 +27,14 @@ from al_dic.gui.icons import icon_app
 from al_dic.gui.panels.canvas_area import CanvasArea
 from al_dic.gui.panels.left_sidebar import LeftSidebar
 from al_dic.gui.panels.right_sidebar import RightSidebar
-from al_dic.gui.theme import COLORS, build_stylesheet
+from al_dic.gui.theme_manager import (
+    apply_title_bar,
+    connect_theme,
+    startup_theme,
+    theme_manager,
+)
 
 
-from al_dic.gui.window_chrome import enable_dark_title_bar
 
 
 class MainWindow(QMainWindow):
@@ -44,7 +48,7 @@ class MainWindow(QMainWindow):
         # canvas toolbar ~520 + right sidebar 280 = 1120) instead of being
         # padded above it, so the window can shrink onto smaller screens.
         self.setMinimumSize(1120, 760)
-        enable_dark_title_bar(self)
+        apply_title_bar(self)
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -231,6 +235,28 @@ class MainWindow(QMainWindow):
         from al_dic.i18n import SUPPORTED_LANGUAGES, LanguageManager
 
         settings_menu = menu_bar.addMenu(self.tr("&Settings"))
+
+        # Settings > Theme: applied at once, remembered for the next start.
+        from al_dic.gui.theme import current_theme
+
+        theme_menu = settings_menu.addMenu(self.tr("Theme"))
+        theme_group = QActionGroup(self)
+        theme_group.setExclusive(True)
+        self._theme_actions: dict[str, QAction] = {}
+        for name, label in (
+            ("dark", self.tr("Dark", "Colour theme")),
+            ("light", self.tr("Light", "Colour theme")),
+        ):
+            act = QAction(label, self)
+            act.setCheckable(True)
+            act.setChecked(name == current_theme())
+            act.triggered.connect(
+                lambda _checked=False, n=name: theme_manager().set_theme(n))
+            theme_group.addAction(act)
+            theme_menu.addAction(act)
+            self._theme_actions[name] = act
+        connect_theme(self._on_theme_changed)
+
         language_menu = settings_menu.addMenu(self.tr("Language"))
         current = LanguageManager.saved_preference()
         for code, display_name in SUPPORTED_LANGUAGES.items():
@@ -240,6 +266,12 @@ class MainWindow(QMainWindow):
             act.triggered.connect(
                 lambda _checked=False, c=code: self._on_language_selected(c))
             language_menu.addAction(act)
+
+    def _on_theme_changed(self, name: str) -> None:
+        """Keep the Theme menu's check on the theme in use."""
+        action = self._theme_actions.get(name)
+        if action is not None:
+            action.setChecked(True)
 
     def _on_language_selected(self, lang_code: str) -> None:
         """Persist the chosen language and prompt for a restart.
@@ -1165,7 +1197,9 @@ def main() -> None:
     app.setOrganizationName("pyALDIC")
     app.setApplicationName("pyALDIC")
     app.setStyle("Fusion")  # required for QSS to work correctly
-    app.setStyleSheet(build_stylesheet())
+    # The saved theme (or $PYALDIC_THEME), applied before any widget is built:
+    # every widget reads its colours from the theme in use when constructed.
+    theme_manager(app).set_theme(startup_theme(), persist=False)
 
     # i18n: install translators before any widget is constructed so
     # tr() wrappers resolve correctly from the very first paint.

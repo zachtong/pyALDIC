@@ -467,6 +467,13 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(config, items):
+    # The theme tests run first. A theme switch repolishes every live widget,
+    # and the GUI tests leave their windows alive -- a closed window is never
+    # freed (a known leak: callbacks its children hold keep it) -- so late in
+    # the session one switch took minutes; first, it takes a fraction of a
+    # second. A stable sort: the order within each group stays.
+    items[:] = sorted(items, key=lambda item: item.path.name != "test_theme.py")
+
     # `frozen` tests drive a built PyInstaller bundle, which most runs do not
     # have. Skipping them here rather than only inside the fixture keeps a
     # plain `pytest` on a fresh clone from reporting anything unexpected.

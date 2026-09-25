@@ -33,7 +33,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 # ---- Displacement section -------------------------------------------------
 
@@ -122,9 +122,9 @@ def field_colorbar_label(
 
 def _section_label(text: str) -> QLabel:
     lbl = QLabel(text)
-    lbl.setStyleSheet(
-        f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
-        f"font-weight: bold; letter-spacing: 1px; margin-top: 4px;"
+    themed(lbl,
+        "color: {TEXT_SECONDARY}; font-size: 10px; "
+        "font-weight: bold; letter-spacing: 1px; margin-top: 4px;"
     )
     return lbl
 
@@ -232,13 +232,13 @@ class StrainFieldSelector(QWidget):
         for name, btn in self._buttons.items():
             active = name == self._current
             if active:
-                btn.setStyleSheet(
-                    f"background: {COLORS.ACCENT}; color: white; "
-                    f"border: none; border-radius: 4px; font-weight: bold;"
+                themed(btn,
+                    "background: {ACCENT}; color: white; "
+                    "border: none; border-radius: 4px; font-weight: bold;"
                 )
             else:
-                btn.setStyleSheet(
-                    f"background: {COLORS.BG_INPUT}; "
-                    f"color: {COLORS.TEXT_SECONDARY}; "
-                    f"border: 1px solid {COLORS.BORDER}; border-radius: 4px;"
+                themed(btn,
+                    "background: {BG_INPUT}; "
+                    "color: {TEXT_SECONDARY}; "
+                    "border: 1px solid {BORDER}; border-radius: 4px;"
                 )

@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.widgets.info_icon import InfoIcon
 
 
@@ -120,8 +120,8 @@ class InitGuessWidget(QWidget):
         from al_dic.i18n import tr_args
         self._lbl_seed_progress = QLabel(
             tr_args(self.tr("%1 / %2 regions ready"), 0, 0))
-        self._lbl_seed_progress.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
+        themed(self._lbl_seed_progress,
+            "color: {TEXT_SECONDARY}; font-size: 11px;"
         )
         seed_layout.addWidget(self._lbl_seed_progress)
         self._seed_panel.setVisible(False)
@@ -173,8 +173,8 @@ class InitGuessWidget(QWidget):
         every_row.addWidget(self._rb_fft_every_n)
         every_row.addWidget(self._spin_fft_n)
         _every_hint = QLabel(self.tr("(N=1 = every frame)"))
-        _every_hint.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px;"
+        themed(_every_hint,
+            "color: {TEXT_SECONDARY}; font-size: 10px;"
         )
         every_row.addWidget(_every_hint)
         every_row.addStretch()

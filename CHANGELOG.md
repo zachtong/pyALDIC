@@ -6,6 +6,19 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **A light theme.** *Settings > Theme* switches between the dark theme,
+  still the default, and a new light one. The switch is immediate -- every
+  open window changes, the strain window's charts included -- and the
+  choice is remembered for the next start. Images, field colour maps and
+  figures exported for a paper look the same in both themes: they show data,
+  not the interface. On Windows the title bar follows the theme too.
+
+### Changed
+
+- The Analysis tab's *Export* button looks like *Load data* beside it.
+
 ## [0.9.0] — 2026-09-24
 
 pyALDIC now installs like any other program on Windows and macOS, and gains

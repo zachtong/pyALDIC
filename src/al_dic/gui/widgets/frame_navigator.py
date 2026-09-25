@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import set_icon, themed
 
 try:
     from al_dic.gui.icons import (
@@ -44,9 +44,9 @@ class FrameNavigator(QWidget):
         self._state = AppState.instance()
 
         self.setFixedHeight(36)
-        self.setStyleSheet(
-            f"background: {COLORS.BG_PANEL}; "
-            f"border-top: 1px solid {COLORS.BORDER};"
+        themed(self,
+            "background: {BG_PANEL}; "
+            "border-top: 1px solid {BORDER};"
         )
 
         layout = QHBoxLayout(self)
@@ -58,7 +58,7 @@ class FrameNavigator(QWidget):
         self._prev_btn.setFixedWidth(28)
         self._prev_btn.setToolTip(self.tr("Previous frame"))
         if _HAS_ICONS:
-            self._prev_btn.setIcon(icon_chevron_left())
+            set_icon(self._prev_btn, icon_chevron_left)
             self._prev_btn.setText("")
         self._prev_btn.clicked.connect(self._on_prev)
         layout.addWidget(self._prev_btn)
@@ -68,7 +68,7 @@ class FrameNavigator(QWidget):
         self._play_btn.setFixedWidth(28)
         self._play_btn.setToolTip(self.tr("Play animation"))
         if _HAS_ICONS:
-            self._play_btn.setIcon(icon_play())
+            set_icon(self._play_btn, icon_play)
         else:
             self._play_btn.setText(self.tr("▶"))
         self._play_btn.clicked.connect(self._on_play_toggle)
@@ -79,7 +79,7 @@ class FrameNavigator(QWidget):
         self._next_btn.setFixedWidth(28)
         self._next_btn.setToolTip(self.tr("Next frame"))
         if _HAS_ICONS:
-            self._next_btn.setIcon(icon_chevron_right())
+            set_icon(self._next_btn, icon_chevron_right)
             self._next_btn.setText("")
         self._next_btn.clicked.connect(self._on_next)
         layout.addWidget(self._next_btn)
@@ -98,9 +98,9 @@ class FrameNavigator(QWidget):
         self._label = QLabel(self.tr("FRAME 0/0"))
         self._label.setFixedWidth(90)
         self._label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"font-weight: bold; background: transparent;"
+        themed(self._label,
+            "color: {TEXT_SECONDARY}; font-size: 11px; "
+            "font-weight: bold; background: transparent;"
         )
         layout.addWidget(self._label)
 
@@ -154,7 +154,7 @@ class FrameNavigator(QWidget):
             return
         self._playing = True
         if _HAS_ICONS:
-            self._play_btn.setIcon(icon_pause())
+            set_icon(self._play_btn, icon_pause)
         else:
             self._play_btn.setText(self.tr("⏸"))
         self._play_btn.setToolTip(self.tr("Pause animation"))
@@ -164,7 +164,7 @@ class FrameNavigator(QWidget):
         self._playing = False
         self._timer.stop()
         if _HAS_ICONS:
-            self._play_btn.setIcon(icon_play())
+            set_icon(self._play_btn, icon_play)
         else:
             self._play_btn.setText(self.tr("▶"))
         self._play_btn.setToolTip(self.tr("Play animation"))

@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.gui.app_state import AppState
 from al_dic.gui.controllers.image_controller import ImageController
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.widgets.collapsible_section import CollapsibleSection
 from al_dic.gui.widgets.image_list import ImageList
 from al_dic.gui.widgets.init_guess_widget import InitGuessWidget
@@ -51,17 +51,17 @@ class _SectionHeader(QWidget):
         layout.setSpacing(6)
 
         label = QLabel(title)
-        label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"font-weight: bold; letter-spacing: 1px;"
+        themed(label,
+            "color: {TEXT_SECONDARY}; font-size: 11px; "
+            "font-weight: bold; letter-spacing: 1px;"
         )
         layout.addWidget(label)
 
         self._badge = QLabel("")
-        self._badge.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px; "
-            f"background: {COLORS.BG_INPUT}; border-radius: 7px; "
-            f"padding: 1px 6px;"
+        themed(self._badge,
+            "color: {TEXT_MUTED}; font-size: 10px; "
+            "background: {BG_INPUT}; border-radius: 7px; "
+            "padding: 1px 6px;"
         )
         self._badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._badge.hide()
@@ -92,17 +92,17 @@ class _DropZone(QWidget):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
         self.setMinimumHeight(72)
-        self.setStyleSheet(
-            f"""
+        themed(self,
+            """
             _DropZone {{
-                background: {COLORS.BG_PANEL};
-                border: 1px dashed {COLORS.BORDER};
+                background: {BG_PANEL};
+                border: 1px dashed {BORDER};
                 border-radius: 6px;
                 margin: 4px 8px;
             }}
             _DropZone:hover {{
-                border-color: {COLORS.ACCENT};
-                background: {COLORS.BG_INPUT};
+                border-color: {ACCENT};
+                background: {BG_INPUT};
             }}
             """
         )
@@ -119,8 +119,8 @@ class _DropZone(QWidget):
 
         text_label = QLabel(self.tr("Drop image folder\nor Browse"))
         text_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        text_label.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 11px; background: transparent;"
+        themed(text_label,
+            "color: {TEXT_MUTED}; font-size: 11px; background: transparent;"
         )
         layout.addWidget(text_label)
 
@@ -188,9 +188,9 @@ class LeftSidebar(QWidget):
             "Sort by embedded numbers: image1, image2, …, image10\n"
             "Default (unchecked): lexicographic — best for zero-padded names"
         ))
-        self._natural_sort_cb.setStyleSheet(
-            f"QCheckBox {{ color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"margin: 2px 12px; }}"
+        themed(self._natural_sort_cb,
+            "QCheckBox {{ color: {TEXT_SECONDARY}; font-size: 11px; "
+            "margin: 2px 12px; }}"
         )
         self._natural_sort_cb.toggled.connect(self._image_ctrl.set_natural_sort)
         layout.addWidget(self._natural_sort_cb)
@@ -209,8 +209,8 @@ class LeftSidebar(QWidget):
         _divider = QFrame()
         _divider.setFrameShape(QFrame.Shape.HLine)
         _divider.setFrameShadow(QFrame.Shadow.Plain)
-        _divider.setStyleSheet(
-            f"color: {COLORS.BORDER}; background: {COLORS.BORDER};"
+        themed(_divider,
+            "color: {BORDER}; background: {BORDER};"
         )
         _divider.setFixedHeight(1)
         layout.addSpacing(6)

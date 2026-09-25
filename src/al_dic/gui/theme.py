@@ -1,16 +1,25 @@
-"""Dark navy theme with indigo accent for AL-DIC GUI.
+"""Colour themes of the pyALDIC GUI: dark navy (the default) and light, both with the indigo accent.
 
-Provides a frozen Colors dataclass and a build_stylesheet() function
-that returns a complete QSS string for PySide6 widgets.
+A frozen :class:`Colors` palette per theme (:data:`DARK`, :data:`LIGHT`, by
+name in :data:`THEMES`); the theme in use (:func:`current_theme`,
+:func:`current_colors`, :func:`set_current_theme`); :data:`COLORS`, which reads
+the palette of the theme in use each time it is asked, so code written as
+``COLORS.ACCENT`` follows the theme without knowing there is one; and
+:func:`build_stylesheet`, the complete QSS of a palette. Qt-free. Switching the
+theme of the running application is :mod:`al_dic.gui.theme_manager`'s job.
+
+The light palette is the one pyALDVC uses, so the two applications look alike.
 """
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
+
+ARROWS_DIR = Path(__file__).parent / "arrows"
 
 
 @dataclass(frozen=True)
 class Colors:
-    """Dark navy color palette with indigo accent."""
+    """The palette of one theme; the defaults are the dark navy theme."""
 
     # Backgrounds
     BG_DARKEST: str = "#0b0f1a"
@@ -40,20 +49,181 @@ class Colors:
     SUCCESS: str = "#22c55e"
     WARNING: str = "#eab308"
 
+    # What differs between the themes beyond the colours above; the defaults
+    # reproduce the dark theme exactly.
+    DANGER_PRESSED: str = "#dc2626"
+    SCROLL_HANDLE: str = "#1e2440"
+    SELECTION: str = ""  # selected rows of tables and lists; "" = the style's own
+    SELECTION_TEXT: str = ""
+    # Panels drawn over the image canvas (the run configuration, the colorbar
+    # backing): a translucent card in the theme's colours, above any image.
+    OVERLAY_BG: str = "rgba(16, 20, 24, 215)"
+    # Arrows of the spin and combo boxes (files in ARROWS_DIR)
+    ARROW_UP: str = "spin_up.svg"
+    ARROW_DOWN: str = "spin_down.svg"
+    ARROW_UP_HOVER: str = "spin_up_hover.svg"  # on the accent-coloured button under the pointer
+    ARROW_DOWN_HOVER: str = "spin_down_hover.svg"
+    COMBO_ARROW_HOVER: str = "spin_down_hover.svg"  # on a combo box under the pointer
+    IS_DARK: bool = True  # dark window chrome (the Windows title bar), dark chart theme
 
-# Singleton instance used throughout the application
-COLORS = Colors()
+
+DARK = Colors()
+LIGHT = Colors(
+    BG_DARKEST="#ffffff",
+    BG_SIDEBAR="#f6f7f9",
+    BG_PANEL="#eef0f4",
+    BG_INPUT="#ffffff",
+    BG_HOVER="#e8eaf6",
+    # The image canvas: a neutral grey rather than white, so an image's edge
+    # stays visible against it.
+    BG_CANVAS="#e5e7eb",
+    ACCENT="#4f46e5",
+    ACCENT_HOVER="#6366f1",
+    ACCENT_PRESSED="#4338ca",
+    TEXT_PRIMARY="#111827",
+    TEXT_SECONDARY="#4b5563",
+    TEXT_MUTED="#6b7280",
+    BORDER="#d1d5db",
+    BORDER_FOCUS="#4f46e5",
+    DANGER="#dc2626",
+    DANGER_HOVER="#ef4444",
+    SUCCESS="#16a34a",
+    WARNING="#b45309",
+    DANGER_PRESSED="#b91c1c",
+    SCROLL_HANDLE="#c4c9d2",
+    SELECTION="#e0e7ff",
+    SELECTION_TEXT="#111827",
+    OVERLAY_BG="rgba(255, 255, 255, 230)",
+    ARROW_UP="spin_up_light.svg",
+    ARROW_DOWN="spin_down_light.svg",
+    COMBO_ARROW_HOVER="combo_down_hover_light.svg",
+    IS_DARK=False,
+)
+THEMES: dict[str, Colors] = {"dark": DARK, "light": LIGHT}
+DEFAULT_THEME = "dark"
+_current = {"name": DEFAULT_THEME}  # one per process, like the application stylesheet
 
 
-def build_stylesheet() -> str:
-    """Return a complete QSS stylesheet for the dark navy theme."""
-    c = COLORS
+def current_theme() -> str:
+    """Name of the theme in use (``"dark"`` or ``"light"``)."""
+    return _current["name"]
+
+
+def current_colors() -> Colors:
+    """The palette of the theme in use."""
+    return THEMES[_current["name"]]
+
+
+def set_current_theme(name: str) -> Colors:
+    """Make ``name`` the theme in use -- the colours only; the running
+    application is restyled by :mod:`al_dic.gui.theme_manager`."""
+    if name not in THEMES:
+        raise ValueError(f"unknown theme {name!r}; available: {sorted(THEMES)}")
+    _current["name"] = name
+    return THEMES[name]
+
+
+class _CurrentPalette:
+    """The palette of the theme in use, read at each attribute access.
+
+    Every widget builds its colours from ``COLORS.<NAME>`` when it is
+    constructed, so a window built after a theme is set comes out right with
+    no change to the widget. A widget that is already on screen when the
+    theme changes is restyled by the theme manager.
+    """
+
+    __slots__ = ()
+
+    def __getattr__(self, name: str):
+        return getattr(current_colors(), name)
+
+    def __repr__(self) -> str:
+        return f"COLORS<{current_theme()}>"
+
+
+COLORS = _CurrentPalette()
+
+
+def style_text(template: str, colors: Colors | None = None) -> str:
+    """``template`` with its ``{FIELD}`` placeholders (names of :class:`Colors`)
+    filled from ``colors`` (default: the theme in use); literal braces are
+    doubled, as in ``str.format``."""
+    return template.format_map(asdict(colors if colors is not None else current_colors()))
+
+
+def _columns_apart(c: Colors) -> bool:
+    """True for a palette whose sidebars stand apart from the window (light)."""
+    return c.BG_SIDEBAR != c.BG_DARKEST and not c.IS_DARK
+
+
+def _containers(c: Colors) -> str:
+    """Placed right after the rule that gives every widget the window colour.
+
+    In the dark theme the window and sidebar colours are all but equal, so a
+    container painting the window colour inside a sidebar goes unnoticed. In
+    the light theme it would leave white patches on the grey sidebars: the
+    containers become transparent, so a sidebar or a group box shows through,
+    while windows, dialogs and pop-ups stay opaque. Empty for the dark theme.
+    """
+    if not _columns_apart(c):
+        return ""
+    return f"""/* containers are transparent: a sidebar or a group box shows through them */
+QWidget {{
+    background: transparent;
+}}
+
+QMainWindow,
+QDialog,
+QComboBoxPrivateContainer {{
+    background: {c.BG_DARKEST};
+}}
+"""
+
+
+def _light_details(c: Colors) -> str:
+    """Rules appended where the dark theme relies on opaque containers and the
+    style's own colours: tables and lists on the input colour with a tinted
+    selection, scroll-bar tracks transparent. Empty for the dark theme."""
+    if not _columns_apart(c):
+        return ""
+    return f"""
+/* ============================================================
+   Tables and lists, scroll-bar tracks (light theme)
+   ============================================================ */
+QAbstractItemView {{
+    background: {c.BG_INPUT};
+    selection-background-color: {c.SELECTION or c.ACCENT};
+    selection-color: {c.SELECTION_TEXT or c.TEXT_PRIMARY};
+}}
+
+QScrollBar:vertical,
+QScrollBar:horizontal {{
+    background: transparent;
+}}
+
+/* matplotlib draws white toolbar icons on a dark background, and it reads a
+   transparent one as black: the chart's toolbar is opaque, in the chart panel's
+   colour */
+NavigationToolbar2QT {{
+    background: {c.BG_PANEL};
+}}
+"""
+
+
+def build_stylesheet(colors: Colors | None = None) -> str:
+    """Return the complete QSS stylesheet of ``colors`` (default: the theme in use)."""
+    c = colors if colors is not None else current_colors()
     # Arrow SVG paths — Qt QSS requires forward-slash separators on all platforms
-    _arrows = Path(__file__).parent / "arrows"
-    _up = (_arrows / "spin_up.svg").as_posix()
-    _up_hover = (_arrows / "spin_up_hover.svg").as_posix()
-    _down = (_arrows / "spin_down.svg").as_posix()
-    _down_hover = (_arrows / "spin_down_hover.svg").as_posix()
+    _up = (ARROWS_DIR / c.ARROW_UP).as_posix()
+    _up_hover = (ARROWS_DIR / c.ARROW_UP_HOVER).as_posix()
+    _down = (ARROWS_DIR / c.ARROW_DOWN).as_posix()
+    _down_hover = (ARROWS_DIR / c.ARROW_DOWN_HOVER).as_posix()
+    _combo_hover = (ARROWS_DIR / c.COMBO_ARROW_HOVER).as_posix()
+    return _stylesheet(c, _up, _up_hover, _down, _down_hover, _combo_hover) + _light_details(c)
+
+
+def _stylesheet(c: Colors, _up: str, _up_hover: str, _down: str,
+                _down_hover: str, _combo_hover: str) -> str:
     return f"""
 /* ============================================================
    Global
@@ -68,7 +238,7 @@ QMainWindow,
 QWidget {{
     background: {c.BG_DARKEST};
 }}
-
+{_containers(c)}
 /* ============================================================
    Sidebar panels
    ============================================================ */
@@ -225,7 +395,7 @@ QComboBox::down-arrow {{
 }}
 
 QComboBox::down-arrow:hover {{
-    image: url("{_down_hover}");
+    image: url("{_combo_hover}");
 }}
 
 /* ComboBox popup list */
@@ -314,8 +484,8 @@ QPushButton[class="btn-danger"]:hover {{
 }}
 
 QPushButton[class="btn-danger"]:pressed {{
-    background: #dc2626;
-    border-color: #dc2626;
+    background: {c.DANGER_PRESSED};
+    border-color: {c.DANGER_PRESSED};
 }}
 
 /* ============================================================
@@ -401,7 +571,7 @@ QScrollBar:vertical {{
 }}
 
 QScrollBar::handle:vertical {{
-    background: {c.BG_HOVER};
+    background: {c.SCROLL_HANDLE};
     min-height: 30px;
     border-radius: 4px;
 }}
@@ -429,7 +599,7 @@ QScrollBar:horizontal {{
 }}
 
 QScrollBar::handle:horizontal {{
-    background: {c.BG_HOVER};
+    background: {c.SCROLL_HANDLE};
     min-width: 30px;
     border-radius: 4px;
 }}

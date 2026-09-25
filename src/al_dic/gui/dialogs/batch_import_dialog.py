@@ -58,6 +58,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.window_geometry import fit_dialog_to_screen
 from al_dic.i18n import tr_args
 
@@ -134,8 +135,8 @@ class _MaskPreviewPanel(QWidget):
         layout.addWidget(title)
 
         self._info_label = QLabel(self.tr("(no image)"))
-        self._info_label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY};"
+        themed(self._info_label,
+            "color: {TEXT_SECONDARY};"
         )
         self._info_label.setWordWrap(True)
         layout.addWidget(self._info_label)
@@ -417,8 +418,8 @@ class BatchImportDialog(QDialog):
         folder_row = QHBoxLayout()
         folder_row.addWidget(QLabel(self.tr("Mask Folder:")))
         self._folder_label = QLabel(self.tr("(none)"))
-        self._folder_label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-style: italic;"
+        themed(self._folder_label,
+            "color: {TEXT_SECONDARY}; font-style: italic;"
         )
         folder_row.addWidget(self._folder_label, stretch=1)
         browse_btn = QPushButton(self.tr("Browse..."))
@@ -428,8 +429,8 @@ class BatchImportDialog(QDialog):
 
         # --- Size-mismatch warning (hidden until a mismatch is detected) ---
         self._size_warning = QLabel("")
-        self._size_warning.setStyleSheet(
-            f"color: {COLORS.WARNING}; font-weight: bold;"
+        themed(self._size_warning,
+            "color: {WARNING}; font-weight: bold;"
         )
         self._size_warning.setWordWrap(True)
         self._size_warning.hide()

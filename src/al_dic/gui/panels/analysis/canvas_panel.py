@@ -7,6 +7,8 @@ says what the canvas is waiting for.
 
 from __future__ import annotations
 
+from typing import Callable
+
 from PySide6.QtCore import QCoreApplication, QEvent, QObject, QSize, Qt, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
@@ -23,7 +25,7 @@ from al_dic.gui import icons
 from al_dic.gui.panels.analysis import text
 from al_dic.gui.panels.probe_canvas import ProbeCanvas
 from al_dic.gui.panels.strain_canvas import FieldImage
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import set_icon, themed
 from al_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from al_dic.gui.widgets.strain_navigator import StrainNavigator
 
@@ -67,8 +69,8 @@ class AnalysisCanvasPanel(QWidget):
         self.banner.setTextFormat(Qt.TextFormat.RichText)
         self.banner.setWordWrap(True)
         self.banner.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        self.banner.setStyleSheet(
-            f"background: rgba(20, 25, 41, 215); color: {COLORS.TEXT_PRIMARY};"
+        themed(self.banner,
+            "background: {OVERLAY_BG}; color: {TEXT_PRIMARY};"
             " border-radius: 4px; padding: 4px 8px; font-size: 11px;")
         self.banner.hide()
         viewport.installEventFilter(self)
@@ -89,17 +91,17 @@ class AnalysisCanvasPanel(QWidget):
         for tool, icon in TOOLS:
             if tool == "extensometer":
                 row.addWidget(_separator())
-            button = _icon_button(icon())
+            button = _icon_button(icon)
             button.setCheckable(True)
             button.clicked.connect(
                 lambda checked, t=tool: self.tool_toggled.emit(t, checked))
             row.addWidget(button)
             self.tool_buttons[tool] = button
         row.addWidget(_separator())
-        self._fit_btn = _icon_button(icons.icon_maximize())
+        self._fit_btn = _icon_button(icons.icon_maximize)
         self._zoom_100_btn = QPushButton()
-        self._zoom_in_btn = _icon_button(icons.icon_zoom_in())
-        self._zoom_out_btn = _icon_button(icons.icon_zoom_out())
+        self._zoom_in_btn = _icon_button(icons.icon_zoom_in)
+        self._zoom_out_btn = _icon_button(icons.icon_zoom_out)
         for button in (self._fit_btn, self._zoom_100_btn,
                        self._zoom_in_btn, self._zoom_out_btn):
             row.addWidget(button)
@@ -192,11 +194,13 @@ class AnalysisCanvasPanel(QWidget):
         return super().eventFilter(obj, event)
 
 
-def _icon_button(icon: QIcon) -> QPushButton:
+def _icon_button(factory: Callable[[], QIcon]) -> QPushButton:
+    """A button with the icon ``factory`` draws, drawn again when the theme
+    changes (the icons are stroked in the theme's text colour)."""
     button = QPushButton()
-    button.setIcon(icon)
+    set_icon(button, factory)
     button.setIconSize(QSize(18, 18))
-    if not icon.isNull():
+    if not button.icon().isNull():
         button.setFixedWidth(32)        # an icon alone has nothing to translate
     return button
 
@@ -204,7 +208,7 @@ def _icon_button(icon: QIcon) -> QPushButton:
 def _separator() -> QFrame:
     line = QFrame()
     line.setFrameShape(QFrame.Shape.VLine)
-    line.setStyleSheet(f"color: {COLORS.BORDER};")
+    themed(line, "color: {BORDER};")
     return line
 
 

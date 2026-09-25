@@ -4,6 +4,7 @@ from PySide6.QtCore import QTime
 from PySide6.QtWidgets import QTextEdit
 
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme, themed
 
 
 class ConsoleLog(QTextEdit):
@@ -14,25 +15,46 @@ class ConsoleLog(QTextEdit):
         self.setReadOnly(True)
         self.setMinimumHeight(100)
         self.setMaximumHeight(200)
-        self.setStyleSheet(
-            f"background: {COLORS.BG_DARKEST}; border: 1px solid {COLORS.BORDER}; "
-            f"border-radius: 4px; padding: 4px; font-family: 'Consolas', monospace; "
-            f"font-size: 11px;"
+        themed(self,
+            "background: {BG_DARKEST}; border: 1px solid {BORDER}; "
+            "border-radius: 4px; padding: 4px; font-family: 'Consolas', monospace; "
+            "font-size: 11px;"
         )
+        # (timestamp, message, level) of every line, so a theme change can
+        # colour the lines already written: the colours sit in their HTML.
+        self._entries: list[tuple[str, str, str]] = []
+        connect_theme(self._on_theme_changed)
 
-    def append_log(self, message: str, level: str = "info") -> None:
-        """Append a timestamped, color-coded message to the log."""
+    @staticmethod
+    def _line(timestamp: str, message: str, level: str) -> str:
         color = {
             "info": COLORS.TEXT_SECONDARY,
             "warn": COLORS.WARNING,
             "error": COLORS.DANGER,
             "success": COLORS.SUCCESS,
         }.get(level, COLORS.TEXT_SECONDARY)
+        return f'<span style="color:{color}">{timestamp} {message}</span>'
+
+    def append_log(self, message: str, level: str = "info") -> None:
+        """Append a timestamped, color-coded message to the log."""
         timestamp = QTime.currentTime().toString("HH:mm:ss")
-        self.append(f'<span style="color:{color}">{timestamp} {message}</span>')
+        self._entries.append((timestamp, message, level))
+        self.append(self._line(timestamp, message, level))
         # Auto-scroll to bottom
         self.verticalScrollBar().setValue(self.verticalScrollBar().maximum())
 
     def clear_log(self) -> None:
         """Clear all log entries."""
+        self._entries.clear()
         self.clear()
+
+    def _on_theme_changed(self, _name: str) -> None:
+        """Write the log again in the new theme's colours, keeping the view
+        at the bottom if that is where it was."""
+        bar = self.verticalScrollBar()
+        at_end = bar.value() >= bar.maximum()
+        self.clear()
+        for entry in self._entries:
+            self.append(self._line(*entry))
+        if at_end:
+            bar.setValue(bar.maximum())

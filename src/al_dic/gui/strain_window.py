@@ -71,7 +71,7 @@ from al_dic.gui.widgets.strain_navigator import StrainNavigator
 from al_dic.gui.widgets.strain_viz_panel import StrainVizPanel
 from al_dic.gui.widgets.physical_units_widget import PhysicalUnitsWidget
 from al_dic.gui.widgets.strain_field_selector import field_colorbar_label
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import set_icon, themed
 
 try:
     from al_dic.gui.icons import icon_maximize, icon_zoom_in, icon_zoom_out
@@ -159,8 +159,8 @@ class StrainWindow(QMainWindow):
         self.setWindowIcon(icon_app())
         # Match the main window's dark OS title bar so the two windows
         # share one visual frame.
-        from al_dic.gui.window_chrome import enable_dark_title_bar
-        enable_dark_title_bar(self)
+        from al_dic.gui.theme_manager import apply_title_bar
+        apply_title_bar(self)
         # Default size: 1280×800 clamped to the current screen's usable
         # area so the bottom edge (frame slider, resize handle) never
         # opens off-screen. The right column is wrapped in a QScrollArea
@@ -193,9 +193,9 @@ class StrainWindow(QMainWindow):
         # --- Zoom toolbar (matches main window toolbar style) ---
         _zoom_bar = QWidget()
         _zoom_bar.setFixedHeight(36)
-        _zoom_bar.setStyleSheet(
-            f"background: {COLORS.BG_PANEL}; "
-            f"border-bottom: 1px solid {COLORS.BORDER};"
+        themed(_zoom_bar,
+            "background: {BG_PANEL}; "
+            "border-bottom: 1px solid {BORDER};"
         )
         _zoom_layout = QHBoxLayout(_zoom_bar)
         _zoom_layout.setContentsMargins(8, 2, 8, 2)
@@ -204,7 +204,7 @@ class StrainWindow(QMainWindow):
         _btn_fit.setToolTip(self.tr("Fit image to viewport"))
         _btn_fit.setFixedWidth(60)
         if _HAS_ICONS:
-            _btn_fit.setIcon(icon_maximize())
+            set_icon(_btn_fit, icon_maximize)
             _btn_fit.setText("")
             _btn_fit.setFixedWidth(28)
         _btn_100 = QPushButton(self.tr("100%"))
@@ -214,13 +214,13 @@ class StrainWindow(QMainWindow):
         _btn_zin.setToolTip(self.tr("Zoom in"))
         _btn_zin.setFixedWidth(28)
         if _HAS_ICONS:
-            _btn_zin.setIcon(icon_zoom_in())
+            set_icon(_btn_zin, icon_zoom_in)
             _btn_zin.setText("")
         _btn_zout = QPushButton(self.tr("–"))
         _btn_zout.setToolTip(self.tr("Zoom out"))
         _btn_zout.setFixedWidth(28)
         if _HAS_ICONS:
-            _btn_zout.setIcon(icon_zoom_out())
+            set_icon(_btn_zout, icon_zoom_out)
             _btn_zout.setText("")
         _zoom_layout.addWidget(_btn_fit)
         _zoom_layout.addWidget(_btn_100)
@@ -296,7 +296,7 @@ class StrainWindow(QMainWindow):
                     "The previous strain result is kept.")
         )
         from al_dic.gui.icons import icon_stop
-        self._cancel_btn.setIcon(icon_stop())
+        set_icon(self._cancel_btn, icon_stop)
         self._cancel_btn.setVisible(False)
         self._cancel_btn.clicked.connect(self._on_cancel_clicked)
         right.addWidget(self._cancel_btn)
@@ -320,8 +320,8 @@ class StrainWindow(QMainWindow):
         right.addWidget(self._strain_progress)
 
         self._strain_progress_label = QLabel("")
-        self._strain_progress_label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
+        themed(self._strain_progress_label,
+            "color: {TEXT_SECONDARY}; font-size: 11px;"
         )
         self._strain_progress_label.setVisible(False)
         right.addWidget(self._strain_progress_label)
@@ -330,8 +330,8 @@ class StrainWindow(QMainWindow):
         self._strain_worker: _StrainWorker | None = None
 
         self._stale_label = QLabel("")
-        self._stale_label.setStyleSheet(
-            "color: #fbbf24; font-size: 11px; font-style: italic;"
+        themed(self._stale_label,
+            "color: {WARNING}; font-size: 11px; font-style: italic;"
         )
         right.addWidget(self._stale_label)
 

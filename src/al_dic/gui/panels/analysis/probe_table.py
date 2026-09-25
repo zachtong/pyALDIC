@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.analysis.probes import Probe
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme
 
 _SHOW, _NAME, _TYPE, _COLOUR, _NOTE = range(5)
 
@@ -60,6 +61,7 @@ class ProbeTable(QWidget):
         header.setSectionResizeMode(_NOTE, QHeaderView.ResizeMode.Stretch)
         self.table.itemSelectionChanged.connect(self._on_selection_changed)
         self.table.itemChanged.connect(self._on_item_changed)
+        connect_theme(self._on_theme_changed)
         column.addWidget(self.table, 1)
 
         buttons = QHBoxLayout()
@@ -147,6 +149,13 @@ class ProbeTable(QWidget):
             if probe.id == selected_id:
                 self.table.selectRow(row)
         self._updating = False
+
+    def _on_theme_changed(self, _name: str) -> None:
+        """The notes column is muted text, in the new theme's colour."""
+        for row in range(self.table.rowCount()):
+            note = self.table.item(row, _NOTE)
+            if note is not None:
+                note.setForeground(QColor(COLORS.TEXT_MUTED))
 
     def set_actions(self, has_selection: bool, has_probes: bool) -> None:
         self.colour_btn.setEnabled(has_selection)

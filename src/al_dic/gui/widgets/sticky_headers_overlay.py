@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING
 from PySide6.QtCore import QEvent, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 if TYPE_CHECKING:
     from al_dic.gui.widgets.collapsible_section import CollapsibleSection
@@ -45,9 +45,9 @@ class _StickyHeaderProxy(QWidget):
         # single bottom border under the whole stack, matching the
         # appearance of the original header.
         self.setAutoFillBackground(True)
-        self.setStyleSheet(
-            f"QWidget {{ background: {COLORS.BG_CANVAS}; "
-            f"border: none; }}"
+        themed(self,
+            "QWidget {{ background: {BG_CANVAS}; "
+            "border: none; }}"
         )
 
         lay = QHBoxLayout(self)
@@ -56,17 +56,17 @@ class _StickyHeaderProxy(QWidget):
 
         self._arrow = QLabel("▾" if section.expanded else "▸")
         self._arrow.setFixedWidth(12)
-        self._arrow.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px; "
-            f"background: transparent;"
+        themed(self._arrow,
+            "color: {TEXT_MUTED}; font-size: 10px; "
+            "background: transparent;"
         )
         lay.addWidget(self._arrow)
 
         self._label = QLabel(section.title)
-        self._label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"font-weight: bold; letter-spacing: 1px; "
-            f"background: transparent;"
+        themed(self._label,
+            "color: {TEXT_SECONDARY}; font-size: 11px; "
+            "font-weight: bold; letter-spacing: 1px; "
+            "background: transparent;"
         )
         lay.addWidget(self._label)
         lay.addStretch()
@@ -99,9 +99,9 @@ class StickyHeadersOverlay(QWidget):
         # through tiny gaps between proxy rows. Transparent was the
         # bug — text behind the overlay visually 'passed through'
         # the stack.
-        self.setStyleSheet(
-            f"background: {COLORS.BG_CANVAS}; "
-            f"border-bottom: 1px solid {COLORS.BORDER};"
+        themed(self,
+            "background: {BG_CANVAS}; "
+            "border-bottom: 1px solid {BORDER};"
         )
 
         self._layout = QVBoxLayout(self)

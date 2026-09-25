@@ -60,7 +60,7 @@ from al_dic.core.data_structures import PipelineResult
 from al_dic.export.colorbar import ColorbarStyle
 from al_dic.gui.app_state import AppState
 from al_dic.core.colormaps import COLORMAP_NAMES
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.range_mode import AutoFixedSelector
 from al_dic.gui.window_geometry import fit_dialog_to_screen
@@ -436,8 +436,9 @@ class _FieldRow(QWidget):
         name_lbl = QLabel(_label(field_name))
         name_lbl.setFixedWidth(100)
         name_lbl.setToolTip(field_name)   # internal name visible on hover
-        name_lbl.setStyleSheet(
-            f"color: {'#e2e8f0' if has_data else COLORS.TEXT_MUTED}; font-size: 11px;"
+        themed(name_lbl,
+            "color: {TEXT_PRIMARY}; font-size: 11px;" if has_data
+            else "color: {TEXT_MUTED}; font-size: 11px;"
         )
         row.addWidget(name_lbl)
 
@@ -644,8 +645,8 @@ class ExportDialog(QDialog):
 
         # --- Shared folder row ---
         folder_lbl = QLabel(self.tr("OUTPUT FOLDER"))
-        folder_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
+        themed(folder_lbl,
+            "color: {TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
         root.addWidget(folder_lbl)
 
@@ -827,7 +828,7 @@ class ExportDialog(QDialog):
 
         params_note = QLabel(self.tr(
             "✓ Parameters file (JSON) always exported"))
-        params_note.setStyleSheet(f"color: {COLORS.TEXT_MUTED}; font-size: 11px;")
+        themed(params_note, "color: {TEXT_MUTED}; font-size: 11px;")
         layout.addWidget(params_note)
 
         data_btn_row = QHBoxLayout()
@@ -864,8 +865,8 @@ class ExportDialog(QDialog):
         for text, width in header_defs:
             lbl = QLabel(text)
             lbl.setFixedWidth(width)
-            lbl.setStyleSheet(
-                f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; font-weight: bold;"
+            themed(lbl,
+                "color: {TEXT_SECONDARY}; font-size: 10px; font-weight: bold;"
             )
             header_row.addWidget(lbl)
         header_row.addStretch()
@@ -1013,8 +1014,8 @@ class ExportDialog(QDialog):
         for text, width in header_defs:
             lbl = QLabel(text)
             lbl.setFixedWidth(width)
-            lbl.setStyleSheet(
-                f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; font-weight: bold;"
+            themed(lbl,
+                "color: {TEXT_SECONDARY}; font-size: 10px; font-weight: bold;"
             )
             header_row.addWidget(lbl)
         header_row.addStretch()
@@ -1177,8 +1178,8 @@ class ExportDialog(QDialog):
         fields_vl = QVBoxLayout(fields_group)
 
         disp_lbl = QLabel(self.tr("Displacement:"))
-        disp_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
+        themed(disp_lbl,
+            "color: {TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
         fields_vl.addWidget(disp_lbl)
         self._report_disp_checks: dict[str, QCheckBox] = {}
@@ -1192,8 +1193,8 @@ class ExportDialog(QDialog):
         fields_vl.addLayout(disp_row)
 
         strain_lbl = QLabel(self.tr("Strain:"))
-        strain_lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
+        themed(strain_lbl,
+            "color: {TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
         fields_vl.addWidget(strain_lbl)
         self._report_strain_checks: dict[str, QCheckBox] = {}
@@ -1215,7 +1216,7 @@ class ExportDialog(QDialog):
         format_note = QLabel(self.tr(
             "Format: HTML (self-contained, view in any browser)"
         ))
-        format_note.setStyleSheet(f"color: {COLORS.TEXT_MUTED}; font-size: 11px;")
+        themed(format_note, "color: {TEXT_MUTED}; font-size: 11px;")
         layout.addWidget(format_note)
 
         report_btn_row = QHBoxLayout()
@@ -1245,8 +1246,8 @@ class ExportDialog(QDialog):
         self._preview_label = QLabel(self.tr("Open this tab to render a preview."))
         self._preview_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._preview_label.setMinimumSize(420, 340)
-        self._preview_label.setStyleSheet(
-            "background:#111; color:#888; border:1px solid #333;")
+        themed(self._preview_label,
+            "background: {BG_CANVAS}; color: {TEXT_MUTED}; border: 1px solid {BORDER};")
         left.addWidget(self._preview_label, 1)
 
         pick_row = QHBoxLayout()
@@ -1710,15 +1711,15 @@ class ExportDialog(QDialog):
                     len(exported), str(cfg.dest_dir),
                 )
             )
-            self._data_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
+            themed(self._data_status_lbl, "color: {SUCCESS}; font-size: 11px;")
             self._open_folder_btn.setEnabled(True)
         except Exception as exc:
             from al_dic.i18n import tr_args
             self._data_status_lbl.setText(
                 tr_args(self.tr("Error: %1"), str(exc))
             )
-            self._data_status_lbl.setStyleSheet(
-                f"color: {COLORS.DANGER}; font-size: 11px;"
+            themed(self._data_status_lbl,
+                "color: {DANGER}; font-size: 11px;"
             )
 
     # ------------------------------------------------------------------
@@ -1838,7 +1839,7 @@ class ExportDialog(QDialog):
                 len(paths), folder,
             )
         )
-        self._img_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
+        themed(self._img_status_lbl, "color: {SUCCESS}; font-size: 11px;")
         self._open_folder_btn.setEnabled(True)
 
     def _on_img_error(self, msg: str) -> None:
@@ -1847,7 +1848,7 @@ class ExportDialog(QDialog):
         self._img_status_lbl.setText(
             tr_args(self.tr("Error: %1"), msg)
         )
-        self._img_status_lbl.setStyleSheet(f"color: {COLORS.DANGER}; font-size: 11px;")
+        themed(self._img_status_lbl, "color: {DANGER}; font-size: 11px;")
 
     def _reset_img_controls(self) -> None:
         self._export_img_btn.setEnabled(bool(self._folder_edit.text().strip()))
@@ -1914,8 +1915,8 @@ class ExportDialog(QDialog):
             self._anim_status_lbl.setText(
                 self.tr("No animation was written. See the log for details.")
             )
-            self._anim_status_lbl.setStyleSheet(
-                f"color: {COLORS.DANGER}; font-size: 11px;"
+            themed(self._anim_status_lbl,
+                "color: {DANGER}; font-size: 11px;"
             )
             return
         folder = self._folder_edit.text().strip()
@@ -1927,7 +1928,7 @@ class ExportDialog(QDialog):
                 len(paths),
             ).replace("%1", folder)
         )
-        self._anim_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
+        themed(self._anim_status_lbl, "color: {SUCCESS}; font-size: 11px;")
         self._open_folder_btn.setEnabled(True)
 
     def _on_anim_error(self, msg: str) -> None:
@@ -1936,7 +1937,7 @@ class ExportDialog(QDialog):
         self._anim_status_lbl.setText(
             tr_args(self.tr("Error: %1"), msg)
         )
-        self._anim_status_lbl.setStyleSheet(f"color: {COLORS.DANGER}; font-size: 11px;")
+        themed(self._anim_status_lbl, "color: {DANGER}; font-size: 11px;")
 
     def _reset_anim_controls(self) -> None:
         self._export_anim_btn.setEnabled(bool(self._folder_edit.text().strip()))
@@ -1971,15 +1972,15 @@ class ExportDialog(QDialog):
             self._report_status_lbl.setText(
                 tr_args(self.tr("Report saved → %1"), str(p))
             )
-            self._report_status_lbl.setStyleSheet("color: #4ade80; font-size: 11px;")
+            themed(self._report_status_lbl, "color: {SUCCESS}; font-size: 11px;")
             self._open_folder_btn.setEnabled(True)
         except Exception as exc:
             from al_dic.i18n import tr_args
             self._report_status_lbl.setText(
                 tr_args(self.tr("Error: %1"), str(exc))
             )
-            self._report_status_lbl.setStyleSheet(
-                f"color: {COLORS.DANGER}; font-size: 11px;"
+            themed(self._report_status_lbl,
+                "color: {DANGER}; font-size: 11px;"
             )
 
     # ------------------------------------------------------------------

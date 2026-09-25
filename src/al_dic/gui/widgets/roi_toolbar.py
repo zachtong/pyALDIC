@@ -25,7 +25,7 @@ from PySide6.QtWidgets import (
     QWidgetAction,
 )
 
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class ROIToolbar(QWidget):
@@ -161,15 +161,15 @@ class ROIToolbar(QWidget):
         # Lock all utility button geometry to prevent layout jitter
         # when stylesheets change on the row-0 buttons.
         _util_style = (
-            f"QPushButton {{ background: {COLORS.BG_INPUT}; "
-            f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
-            f"{self._GEOM} }}"
+            "QPushButton {{ background: {BG_INPUT}; "
+            "color: {TEXT_PRIMARY}; border: 1px solid {BORDER}; "
+            + self._GEOM + " }}"
         )
         for btn in (
             self._btn_import, self._btn_batch,
             self._btn_save, self._btn_invert, self._btn_clear,
         ):
-            btn.setStyleSheet(_util_style)
+            themed(btn, _util_style)
 
         # Apply initial styling
         self._update_button_styles()
@@ -295,42 +295,41 @@ class ROIToolbar(QWidget):
     # selector shadows Qt's default gray-out, leaving disabled buttons
     # indistinguishable from enabled ones. Refine-brush gating relies
     # on this disabled appearance to signal "switch to frame 1".
+    # A style template (see theme_manager.themed): {FIELD} names a palette
+    # colour, filled in -- and filled again after a theme change -- when used.
     _BASE_STYLE = (
-        f"QPushButton {{ background: {COLORS.BG_INPUT}; "
-        f"color: {COLORS.TEXT_PRIMARY}; border: 1px solid {COLORS.BORDER}; "
-        f"{_GEOM} }} "
-        f"QPushButton:disabled {{ background: {COLORS.BG_DARKEST}; "
-        f"color: {COLORS.TEXT_MUTED}; "
-        f"border: 1px dashed {COLORS.TEXT_MUTED}; }}"
+        "QPushButton {{ background: {BG_INPUT}; "
+        "color: {TEXT_PRIMARY}; border: 1px solid {BORDER}; "
+        + _GEOM + " }} "
+        "QPushButton:disabled {{ background: {BG_DARKEST}; "
+        "color: {TEXT_MUTED}; "
+        "border: 1px dashed {TEXT_MUTED}; }}"
     )
 
     def _make_active_style(self, bg: str, fg: str = "#ffffff") -> str:
+        """A style template; ``bg`` and ``fg`` are colours or ``{FIELD}``
+        placeholders."""
         return (
-            f"QPushButton {{ background: {bg}; color: {fg}; "
-            f"border: 1px solid {bg}; {self._GEOM} }}"
+            f"QPushButton {{{{ background: {bg}; color: {fg}; "
+            f"border: 1px solid {bg}; {self._GEOM} }}}}"
         )
 
     def _update_button_styles(self) -> None:
         """Update Add/Cut/Refine button highlight based on active mode."""
         # Reset all to a consistent base style (never use empty string —
         # that triggers Qt style-engine fallback and causes layout jitter).
-        self._btn_add.setStyleSheet(self._BASE_STYLE)
-        self._btn_cut.setStyleSheet(self._BASE_STYLE)
-        self._btn_refine.setStyleSheet(self._BASE_STYLE)
+        themed(self._btn_add, self._BASE_STYLE)
+        themed(self._btn_cut, self._BASE_STYLE)
+        themed(self._btn_refine, self._BASE_STYLE)
 
         if self._active_mode == "add":
-            self._btn_add.setStyleSheet(
-                self._make_active_style(COLORS.ACCENT)
-            )
+            themed(self._btn_add, self._make_active_style("{ACCENT}"))
         elif self._active_mode == "cut":
-            self._btn_cut.setStyleSheet(
-                self._make_active_style(COLORS.DANGER)
-            )
+            themed(self._btn_cut, self._make_active_style("{DANGER}"))
         elif self._active_mode in ("brush_paint", "brush_erase"):
+            # The refine brush's own colours, the same in both themes.
             color = "#14dcc8" if self._active_mode == "brush_paint" else "#0a8a7a"
-            self._btn_refine.setStyleSheet(
-                self._make_active_style(color, "#001417")
-            )
+            themed(self._btn_refine, self._make_active_style(color, "#001417"))
 
     def set_refine_brush_enabled(self, enabled: bool) -> None:
         """Enable or disable the Refine brush button.

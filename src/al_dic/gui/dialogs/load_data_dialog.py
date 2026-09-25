@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.analysis.load_data import LoadData, LoadSync, LoadTable, read_load_table
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.window_geometry import fit_dialog_to_screen
 from al_dic.i18n import tr_args
@@ -113,7 +113,7 @@ class LoadDataDialog(QDialog):
 
         file_row = QHBoxLayout()
         self._file_label = QLabel(self.tr("No file chosen."))
-        self._file_label.setStyleSheet(f"color: {COLORS.TEXT_MUTED};")
+        themed(self._file_label, "color: {TEXT_MUTED};")
         choose = QPushButton(self.tr("Choose file…"))
         choose.clicked.connect(self._on_choose)
         file_row.addWidget(self._file_label, 1)
@@ -155,7 +155,7 @@ class LoadDataDialog(QDialog):
         form.addRow(self.tr("Offset:"), self._offset)
         self._rate_note = QLabel()
         self._rate_note.setWordWrap(True)
-        self._rate_note.setStyleSheet(f"color: {COLORS.TEXT_MUTED};")
+        themed(self._rate_note, "color: {TEXT_MUTED};")
         form.addRow("", self._rate_note)
 
         form.addRow("", self._by_frame)
@@ -181,7 +181,7 @@ class LoadDataDialog(QDialog):
         root.addWidget(self._summary)
         self._error = QLabel()
         self._error.setWordWrap(True)
-        self._error.setStyleSheet(f"color: {COLORS.DANGER};")
+        themed(self._error, "color: {DANGER};")
         self._error.hide()
         root.addWidget(self._error)
 

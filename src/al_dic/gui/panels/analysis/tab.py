@@ -54,7 +54,7 @@ from al_dic.gui.panels.analysis.quantities import (
     Quantity,
     format_length,
 )
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.i18n import tr_args
 
 logger = logging.getLogger(__name__)
@@ -198,7 +198,7 @@ class AnalysisTab(QWidget):
         root.setSpacing(4)
         root.addWidget(splitter, 1)
         self._status = QLabel()
-        self._status.setStyleSheet(f"color: {COLORS.TEXT_MUTED}; font-size: 11px;")
+        themed(self._status, "color: {TEXT_MUTED}; font-size: 11px;")
         self._status.setWordWrap(True)
         root.addWidget(self._status)
 

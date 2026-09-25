@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class AdvancedTuningWidget(QWidget):
@@ -59,9 +59,9 @@ class AdvancedTuningWidget(QWidget):
         self._admm_hint = QLabel(self.tr(
             "Only affects AL-DIC solver. Ignored by Local DIC."
         ))
-        self._admm_hint.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 10px; "
-            f"padding-left: 6px;"
+        themed(self._admm_hint,
+            "color: {TEXT_SECONDARY}; font-size: 10px; "
+            "padding-left: 6px;"
         )
         layout.addWidget(self._admm_hint)
 

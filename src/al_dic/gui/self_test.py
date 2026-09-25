@@ -59,11 +59,19 @@ def check_packaged_data() -> str:
             "The spec's datas destination must be 'al_dic/i18n/compiled'."
         )
 
+    # Every arrow either theme's stylesheet names: a missing one is a blank
+    # spin-box button in that theme only.
     arrows_dir = Path(theme_mod.__file__).parent / "arrows"
-    arrows = sorted(p.name for p in arrows_dir.glob("*.svg")) if arrows_dir.is_dir() else []
-    if len(arrows) != 4:
+    arrows = sorted({
+        getattr(palette, field)
+        for palette in theme_mod.THEMES.values()
+        for field in ("ARROW_UP", "ARROW_DOWN", "ARROW_UP_HOVER",
+                      "ARROW_DOWN_HOVER", "COMBO_ARROW_HOVER")
+    })
+    missing = [name for name in arrows if not (arrows_dir / name).is_file()]
+    if missing:
         raise CheckFailed(
-            f"expected 4 spin-box arrow SVGs in {arrows_dir}, found {arrows}"
+            f"spin-box arrow SVGs missing from {arrows_dir}: {missing}"
         )
 
     icon_dir = Path(icons_mod.__file__).parent / "assets" / "icon"
@@ -74,7 +82,7 @@ def check_packaged_data() -> str:
     if missing:
         raise CheckFailed(f"missing icon assets in {icon_dir}: {missing}")
 
-    return f"7 catalogs, 4 arrows, 3 icons"
+    return f"7 catalogs, {len(arrows)} arrows, 3 icons"
 
 
 def check_qt_and_icons() -> str:

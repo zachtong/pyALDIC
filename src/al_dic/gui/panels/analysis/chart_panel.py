@@ -25,7 +25,6 @@ from PySide6.QtWidgets import (
     QMenu,
     QPushButton,
     QTabBar,
-    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -130,8 +129,10 @@ class AnalysisChartPanel(QWidget):
         self.load_btn = QPushButton()
         self.load_btn.clicked.connect(self.load_data_requested)
         row.addWidget(self.load_btn)
-        self.export_btn = QToolButton()
-        self.export_btn.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        # A push button with a menu, styled like Load data beside it; a tool
+        # button drew its frame from the palette, which the light theme's
+        # transparent containers empty.
+        self.export_btn = QPushButton()
         menu = QMenu(self.export_btn)
         self._export_csv_action = menu.addAction("")
         self._export_csv_action.triggered.connect(self.export_csv_requested)

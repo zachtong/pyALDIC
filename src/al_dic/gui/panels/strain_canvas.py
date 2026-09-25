@@ -35,6 +35,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme
 
 # Match canvas_area zoom defaults so the two views feel identical.
 _ZOOM_FACTOR = 1.15
@@ -113,6 +114,7 @@ class StrainCanvas(QGraphicsView):
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
         self.setBackgroundBrush(QBrush(QColor(COLORS.BG_CANVAS)))
+        connect_theme(self._on_theme_changed)
 
         # --- Pan state (middle button only) ---
         self._panning = False
@@ -123,6 +125,10 @@ class StrainCanvas(QGraphicsView):
     # Public API
     # ------------------------------------------------------------------
 
+
+    def _on_theme_changed(self, _name: str) -> None:
+        """The canvas around the image in the new theme's colour."""
+        self.setBackgroundBrush(QBrush(QColor(COLORS.BG_CANVAS)))
     def set_image(self, rgb: NDArray[np.uint8]) -> None:
         """Display *rgb* (H, W, 3) uint8 array as the background image."""
         h, w = rgb.shape[:2]

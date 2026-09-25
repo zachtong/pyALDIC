@@ -52,6 +52,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.gui.app_state import AppState
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme, set_icon, themed
 from al_dic.gui.widgets.colorbar_overlay import ColorbarOverlay
 from al_dic.gui.widgets.frame_navigator import FrameNavigator
 from al_dic.gui.widgets.mesh_overlay import MeshOverlay
@@ -241,6 +242,7 @@ class ImageCanvas(QGraphicsView):
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
         self.setBackgroundBrush(QBrush(QColor(COLORS.BG_CANVAS)))
+        connect_theme(self._on_theme_changed)
 
         # Enable mouse tracking for hover detection (no button press needed)
         self.setMouseTracking(True)
@@ -277,6 +279,10 @@ class ImageCanvas(QGraphicsView):
 
     # ----- public API -----
 
+
+    def _on_theme_changed(self, _name: str) -> None:
+        """The canvas around the image in the new theme's colour."""
+        self.setBackgroundBrush(QBrush(QColor(COLORS.BG_CANVAS)))
     def set_tool(self, tool: str) -> None:
         """Set the active tool.
 
@@ -1204,9 +1210,9 @@ class CanvasArea(QWidget):
         # --- Top toolbar ---
         toolbar = QWidget()
         toolbar.setFixedHeight(36)
-        toolbar.setStyleSheet(
-            f"background: {COLORS.BG_PANEL}; "
-            f"border-bottom: 1px solid {COLORS.BORDER};"
+        themed(toolbar,
+            "background: {BG_PANEL}; "
+            "border-bottom: 1px solid {BORDER};"
         )
         tb_layout = QHBoxLayout(toolbar)
         tb_layout.setContentsMargins(8, 2, 8, 2)
@@ -1216,7 +1222,7 @@ class CanvasArea(QWidget):
         btn_fit.setToolTip(self.tr("Fit image to viewport"))
         btn_fit.setFixedWidth(60)
         if _HAS_ICONS:
-            btn_fit.setIcon(icon_maximize())
+            set_icon(btn_fit, icon_maximize)
 
         btn_100 = QPushButton(self.tr("100%"))
         btn_100.setToolTip(self.tr("Zoom to 100% (1:1)"))
@@ -1226,14 +1232,14 @@ class CanvasArea(QWidget):
         btn_zoom_in.setToolTip(self.tr("Zoom in"))
         btn_zoom_in.setFixedWidth(28)
         if _HAS_ICONS:
-            btn_zoom_in.setIcon(icon_zoom_in())
+            set_icon(btn_zoom_in, icon_zoom_in)
             btn_zoom_in.setText("")
 
         btn_zoom_out = QPushButton(self.tr("–"))  # en-dash as minus
         btn_zoom_out.setToolTip(self.tr("Zoom out"))
         btn_zoom_out.setFixedWidth(28)
         if _HAS_ICONS:
-            btn_zoom_out.setIcon(icon_zoom_out())
+            set_icon(btn_zoom_out, icon_zoom_out)
             btn_zoom_out.setText("")
 
         tb_layout.addWidget(btn_fit)
@@ -1261,9 +1267,9 @@ class CanvasArea(QWidget):
         self._roi_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._roi_banner.setFixedHeight(36)
         self._roi_banner.setVisible(False)
-        self._roi_banner.setStyleSheet(
-            f"background: {COLORS.WARNING}; color: #000; "
-            f"font-size: 14px; font-weight: bold; padding: 4px;"
+        themed(self._roi_banner,
+            "background: {WARNING}; color: #000; "
+            "font-size: 14px; font-weight: bold; padding: 4px;"
         )
         layout.addWidget(self._roi_banner)
 
@@ -1272,9 +1278,9 @@ class CanvasArea(QWidget):
         self._seed_banner.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._seed_banner.setFixedHeight(36)
         self._seed_banner.setVisible(False)
-        self._seed_banner.setStyleSheet(
-            f"background: {COLORS.ACCENT}; color: #fff; "
-            f"font-size: 13px; font-weight: bold; padding: 4px;"
+        themed(self._seed_banner,
+            "background: {ACCENT}; color: #fff; "
+            "font-size: 13px; font-weight: bold; padding: 4px;"
         )
         layout.addWidget(self._seed_banner)
         self._seed_ctrl = None  # set by attach_seed_controller

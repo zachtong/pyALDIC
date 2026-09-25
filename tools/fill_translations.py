@@ -3081,6 +3081,27 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "Startpunkt-Suche", "fr": "Recherche aux points de départ",
         "es": "Búsqueda en puntos iniciales",
     },
+    # ===== MainWindow — Settings > Theme (pyALDVC's wording where it has one)
+    "Theme": {
+        "zh_CN": "主题", "zh_TW": "主題", "ja": "テーマ", "ko": "테마",
+        "de": "Farbschema", "fr": "Thème", "es": "Tema",
+    },
+}
+
+
+# -- Disambiguated sources ---------------------------------------------------
+# Keyed by (source, disambiguation comment): the same English word with
+# another meaning elsewhere ("Light" is also a mesh-refinement severity, 轻度),
+# so the source-only table above cannot hold both. Consulted first.
+DISAMBIGUATED: dict[tuple[str, str], dict[str, str]] = {
+    ("Dark", "Colour theme"): {
+        "zh_CN": "深色", "zh_TW": "深色", "ja": "ダーク", "ko": "다크",
+        "de": "Dunkel", "fr": "Sombre", "es": "Oscuro",
+    },
+    ("Light", "Colour theme"): {
+        "zh_CN": "浅色", "zh_TW": "淺色", "ja": "ライト", "ko": "라이트",
+        "de": "Hell", "fr": "Clair", "es": "Claro",
+    },
 }
 
 
@@ -3208,6 +3229,7 @@ MESSAGE_BLOCK = re.compile(
 )
 
 SOURCE_INNER = re.compile(r"<source>(.*?)</source>", re.DOTALL)
+COMMENT_INNER = re.compile(r"<comment>(.*?)</comment>", re.DOTALL)
 
 UNFIN_TRANSLATION = re.compile(
     r"<translation(?:\s+type=\"unfinished\")?\s*>(.*?)</translation>",
@@ -3244,6 +3266,12 @@ def check_tables() -> None:
                     f"TRANSLATIONS[{source!r}][{lang!r}] must be a string, "
                     f"got {text!r}. Plural forms belong in NUMERUS_TRANSLATIONS."
                 )
+    for key, per_lang in DISAMBIGUATED.items():
+        if not (isinstance(key, tuple) and len(key) == 2):
+            raise TypeError(f"DISAMBIGUATED key {key!r} must be (source, comment)")
+        for lang, text in per_lang.items():
+            if not isinstance(text, str):
+                raise TypeError(f"DISAMBIGUATED[{key!r}][{lang!r}] must be a string")
 
 
 def fill_ts(lang: str) -> tuple[int, int]:
@@ -3292,7 +3320,15 @@ def fill_ts(lang: str) -> tuple[int, int]:
         if 'type="unfinished"' not in body:
             return match.group(0)
 
-        entry = TRANSLATIONS.get(source)
+        # A disambiguated source ("Light", "Colour theme") may mean something
+        # else than the same text elsewhere ("Light", "Mesh refinement
+        # severity"): its own entry wins over the source-only table.
+        comment_m = COMMENT_INNER.search(body)
+        entry = None
+        if comment_m is not None:
+            entry = DISAMBIGUATED.get((source, unescape(comment_m.group(1))))
+        if entry is None:
+            entry = TRANSLATIONS.get(source)
         # Fall back to the first numerusform if lupdate didn't tag the
         # message as numerus="yes". Qt still substitutes %n → count,
         # we just miss the plural-form branching — which is acceptable

@@ -32,6 +32,7 @@ from PySide6.QtWidgets import (
 from al_dic.gui.app_state import AppState
 from al_dic.gui.controllers.image_controller import ImageController
 from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import connect_theme, themed
 
 # Column indices
 _COL_FRAME = 0
@@ -39,17 +40,18 @@ _COL_FILENAME = 1
 _COL_ROI = 2
 
 # ROI button style templates
+# ROI button style templates (theme_manager.themed fills the {FIELD}s)
 _STYLE_ROI_HAS = (
-    f"background: {COLORS.SUCCESS}; color: #fff; border: none; "
-    f"border-radius: 3px; font-size: 10px; font-weight: bold;"
+    "background: {SUCCESS}; color: #fff; border: none; "
+    "border-radius: 3px; font-size: 10px; font-weight: bold;"
 )
 _STYLE_ROI_NEED = (
-    f"background: {COLORS.DANGER}; color: #fff; border: none; "
-    f"border-radius: 3px; font-size: 10px; font-weight: bold;"
+    "background: {DANGER}; color: #fff; border: none; "
+    "border-radius: 3px; font-size: 10px; font-weight: bold;"
 )
 _STYLE_ROI_ADD = (
-    f"background: {COLORS.BG_INPUT}; color: {COLORS.TEXT_MUTED}; "
-    f"border: none; border-radius: 3px; font-size: 10px;"
+    "background: {BG_INPUT}; color: {TEXT_MUTED}; "
+    "border: none; border-radius: 3px; font-size: 10px;"
 )
 
 
@@ -99,6 +101,7 @@ class ImageList(QWidget):
         self._tree.setSelectionMode(QTreeWidget.SelectionMode.ExtendedSelection)
         self._tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._tree.customContextMenuRequested.connect(self._show_context_menu)
+        connect_theme(self._on_theme_changed)
         self._tree.setRootIsDecorated(False)
         self._tree.setIndentation(0)
         # Disable Qt's built-in autoScroll: when an item-widget QPushButton
@@ -122,29 +125,29 @@ class ImageList(QWidget):
         header.setSectionResizeMode(_COL_ROI, QHeaderView.ResizeMode.Fixed)
 
         # Styling
-        self._tree.setStyleSheet(
-            f"""
+        themed(self._tree,
+            """
             QTreeWidget {{
-                background: {COLORS.BG_SIDEBAR};
+                background: {BG_SIDEBAR};
                 border: none;
                 outline: none;
             }}
             QTreeWidget::item {{
-                border-bottom: 1px solid {COLORS.BORDER};
+                border-bottom: 1px solid {BORDER};
                 padding: 2px 0px;
             }}
             QTreeWidget::item:selected {{
-                background: {COLORS.BG_HOVER};
+                background: {BG_HOVER};
             }}
             QTreeWidget::item:hover:!selected {{
-                background: {COLORS.BG_INPUT};
+                background: {BG_INPUT};
             }}
             QHeaderView::section {{
-                background: {COLORS.BG_PANEL};
-                color: {COLORS.TEXT_MUTED};
+                background: {BG_PANEL};
+                color: {TEXT_MUTED};
                 border: none;
-                border-bottom: 1px solid {COLORS.BORDER};
-                border-right: 1px solid {COLORS.BORDER};
+                border-bottom: 1px solid {BORDER};
+                border-right: 1px solid {BORDER};
                 padding: 3px 4px;
                 font-size: 10px;
                 font-weight: bold;
@@ -195,7 +198,7 @@ class ImageList(QWidget):
             # drag the bottommost row into view (in addition to the
             # tree-level autoScroll guard set in __init__).
             roi_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-            roi_btn.setStyleSheet(_STYLE_ROI_ADD)
+            themed(roi_btn, _STYLE_ROI_ADD)
             roi_btn.clicked.connect(
                 self._make_roi_click_handler(i)
             )
@@ -221,6 +224,10 @@ class ImageList(QWidget):
 
         return handler
 
+    def _on_theme_changed(self, _name: str) -> None:
+        """Reference-frame rows are tinted with the accent colour: tint again."""
+        self._update_roi_indicators()
+
     def _update_roi_indicators(self) -> None:
         """Update ROI button text/style and ref-frame row highlighting."""
         n = len(self._state.image_files)
@@ -240,13 +247,13 @@ class ImageList(QWidget):
 
             if has_roi:
                 btn.setText(self.tr("Edit"))
-                btn.setStyleSheet(_STYLE_ROI_HAS)
+                themed(btn, _STYLE_ROI_HAS)
             elif is_ref:
                 btn.setText(self.tr("Need"))
-                btn.setStyleSheet(_STYLE_ROI_NEED)
+                themed(btn, _STYLE_ROI_NEED)
             else:
                 btn.setText(self.tr("Add"))
-                btn.setStyleSheet(_STYLE_ROI_ADD)
+                themed(btn, _STYLE_ROI_ADD)
 
             # Ref-frame highlighting: subtle row background + bold accent filename
             n_cols = 3  # frame, filename, ROI

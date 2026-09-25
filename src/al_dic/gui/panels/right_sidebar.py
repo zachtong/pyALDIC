@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.gui.app_state import AppState, RunState
 from al_dic.core.colormaps import COLORMAP_NAMES
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import set_icon, themed
 from al_dic.i18n import tr_args
 from al_dic.gui.widgets.color_range import ColorRange
 from al_dic.gui.widgets.console_log import ConsoleLog
@@ -60,7 +60,7 @@ class RightSidebar(QWidget):
         self._run_btn.setProperty("class", "btn-primary")
         self._run_btn.setFixedHeight(36)
         if _HAS_ICONS:
-            self._run_btn.setIcon(icon_play())
+            set_icon(self._run_btn, icon_play)
         self._run_btn.clicked.connect(self._on_run)
         layout.addWidget(self._run_btn)
 
@@ -78,7 +78,7 @@ class RightSidebar(QWidget):
             "so you can review or export the partial run."
         ))
         if _HAS_ICONS:
-            self._cancel_btn.setIcon(icon_stop())
+            set_icon(self._cancel_btn, icon_stop)
         self._cancel_btn.clicked.connect(self._on_cancel)
         layout.addWidget(self._cancel_btn)
 
@@ -86,7 +86,7 @@ class RightSidebar(QWidget):
         self._export_btn.setFixedHeight(30)
         self._export_btn.setEnabled(False)
         if _HAS_ICONS:
-            self._export_btn.setIcon(icon_download())
+            set_icon(self._export_btn, icon_download)
         self._export_btn.clicked.connect(self._on_export)
         layout.addWidget(self._export_btn)
 
@@ -112,21 +112,21 @@ class RightSidebar(QWidget):
         layout.addWidget(self._progress_bar)
 
         self._progress_label = QLabel(self.tr("Ready"))
-        self._progress_label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px;"
+        themed(self._progress_label,
+            "color: {TEXT_SECONDARY}; font-size: 11px;"
         )
         layout.addWidget(self._progress_label)
 
         # Elapsed / remaining
         stats_row = QHBoxLayout()
         self._elapsed_label = QLabel(tr_args(self.tr("ELAPSED  %1"), "--:--"))
-        self._elapsed_label.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
+        themed(self._elapsed_label,
+            "color: {TEXT_MUTED}; font-size: 10px;"
         )
         stats_row.addWidget(self._elapsed_label)
         self._remaining_label = QLabel(tr_args(self.tr("REMAINING  %1"), "--:--"))
-        self._remaining_label.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px;"
+        themed(self._remaining_label,
+            "color: {TEXT_MUTED}; font-size: 10px;"
         )
         stats_row.addWidget(self._remaining_label)
         layout.addLayout(stats_row)
@@ -234,15 +234,19 @@ class RightSidebar(QWidget):
         # --- Log section ---
         console_header = QHBoxLayout()
         lbl = QLabel(self.tr("LOG"))
-        lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
+        themed(lbl,
+            "color: {TEXT_SECONDARY}; font-size: 11px; font-weight: bold;"
         )
         console_header.addWidget(lbl)
         console_header.addStretch()
         clear_btn = QPushButton(self.tr("Clear"))
         clear_btn.setFixedSize(56, 20)
-        clear_btn.setStyleSheet(
-            f"font-size: 10px; color: {COLORS.TEXT_MUTED}; border: none;"
+        # A chip of its own colour: without a border, the default button
+        # colour is the page's own in the light theme.
+        themed(clear_btn,
+            "QPushButton {{ font-size: 10px; color: {TEXT_MUTED}; border: none;"
+            " background: {BG_PANEL}; }}"
+            "QPushButton:hover {{ background: {BG_HOVER}; }}"
         )
         clear_btn.clicked.connect(lambda: self._console.clear_log())
         console_header.addWidget(clear_btn)
@@ -282,9 +286,9 @@ class RightSidebar(QWidget):
     def _add_section_label(self, layout: QVBoxLayout, text: str) -> None:
         """Add an uppercase section heading to the layout."""
         lbl = QLabel(text)
-        lbl.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"font-weight: bold; letter-spacing: 1px; margin-top: 8px;"
+        themed(lbl,
+            "color: {TEXT_SECONDARY}; font-size: 11px; "
+            "font-weight: bold; letter-spacing: 1px; margin-top: 8px;"
         )
         layout.addWidget(lbl)
 

@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class CollapsibleSection(QWidget):
@@ -50,23 +50,23 @@ class CollapsibleSection(QWidget):
 
         self._arrow = QLabel("▾" if expanded else "▸")
         self._arrow.setFixedWidth(12)
-        self._arrow.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px; background: transparent;"
+        themed(self._arrow,
+            "color: {TEXT_MUTED}; font-size: 10px; background: transparent;"
         )
         header_layout.addWidget(self._arrow)
 
         self._label = QLabel(title)
-        self._label.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 11px; "
-            f"font-weight: bold; letter-spacing: 1px; background: transparent;"
+        themed(self._label,
+            "color: {TEXT_SECONDARY}; font-size: 11px; "
+            "font-weight: bold; letter-spacing: 1px; background: transparent;"
         )
         header_layout.addWidget(self._label)
 
         self._badge = QLabel("")
-        self._badge.setStyleSheet(
-            f"color: {COLORS.TEXT_MUTED}; font-size: 10px; "
-            f"background: {COLORS.BG_INPUT}; border-radius: 7px; "
-            f"padding: 1px 6px;"
+        themed(self._badge,
+            "color: {TEXT_MUTED}; font-size: 10px; "
+            "background: {BG_INPUT}; border-radius: 7px; "
+            "padding: 1px 6px;"
         )
         self._badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._badge.hide()

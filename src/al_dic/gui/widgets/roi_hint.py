@@ -12,20 +12,21 @@ from __future__ import annotations
 from PySide6.QtWidgets import QLabel, QSizePolicy, QWidget
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 from al_dic.i18n import tr_args
 
 
+# A style template (theme_manager.themed fills the {FIELD}s)
 _HINT_STYLE = (
-    f"QLabel {{ "
-    f"color: {COLORS.TEXT_SECONDARY}; "
-    f"background: {COLORS.BG_INPUT}; "
-    f"border: 1px solid {COLORS.BORDER}; "
-    f"border-left: 3px solid {COLORS.ACCENT}; "
-    f"border-radius: 3px; "
-    f"padding: 6px 8px; "
-    f"font-size: 11px; "
-    f"}}"
+    "QLabel {{ "
+    "color: {TEXT_SECONDARY}; "
+    "background: {BG_INPUT}; "
+    "border: 1px solid {BORDER}; "
+    "border-left: 3px solid {ACCENT}; "
+    "border-radius: 3px; "
+    "padding: 6px 8px; "
+    "font-size: 11px; "
+    "}}"
 )
 
 
@@ -41,7 +42,7 @@ class ROIHint(QLabel):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._state = AppState.instance()
-        self.setStyleSheet(_HINT_STYLE)
+        themed(self, _HINT_STYLE)
         self.setWordWrap(True)
         self.setSizePolicy(
             QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum

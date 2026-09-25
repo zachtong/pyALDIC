@@ -40,32 +40,32 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>AnalysisChart</name>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="70"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="75"/>
         <source>crack</source>
         <translation>grieta</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="72"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
         <source>too few valid points</source>
         <translation>muy pocos puntos válidos</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="74"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
         <source>unreliable (strain edge trim)</source>
         <translation>no fiable (recorte de bordes de la deformación)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="77"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="82"/>
         <source>gauge endpoint lost</source>
         <translation>extremo del calibre perdido</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="79"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="84"/>
         <source>not computed</source>
         <translation>no calculado</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/mpl_chart.py" line="80"/>
+        <location filename="../../gui/widgets/mpl_chart.py" line="85"/>
         <source>no data</source>
         <translation>sin datos</translation>
     </message>
@@ -123,53 +123,53 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Haga clic en cada vértice y doble clic para cerrar.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="87"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="89"/>
         <source>Show</source>
         <comment>Probe list column: visibility checkbox</comment>
         <translation>Mostrar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="89"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="91"/>
         <source>Name</source>
         <comment>Probe list column: the probe&apos;s label</comment>
         <translation>Nombre</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="91"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="93"/>
         <source>Type</source>
         <comment>Probe list column: point, line or region</comment>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="93"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
         <source>Colour</source>
         <comment>Probe list column: colour swatch</comment>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>Nota</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="98"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
         <source>Colour…</source>
         <translation>Color…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="99"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
         <source>Delete</source>
         <comment>Button: delete the selected probe</comment>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="103"/>
         <source>Clear All</source>
         <translation>Borrar todo</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="181"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
         <source>Statistic:</source>
         <translation>Estadístico:</translation>
     </message>
@@ -213,17 +213,17 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Apertura de grieta</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="487"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="488"/>
         <source>Strain has not been computed yet. Compute it on the Strain Field tab, or plot a displacement.</source>
         <translation>La deformación aún no se ha calculado. Calcúlela en la pestaña «Campo de deformación» o represente un desplazamiento.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="531"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="532"/>
         <source>Gauge quantities need a line probe.</source>
         <translation>Las magnitudes de calibre requieren una sonda de línea.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="528"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="529"/>
         <source>No visible probe can show this quantity.</source>
         <translation>Ninguna sonda visible puede mostrar esta magnitud.</translation>
     </message>
@@ -283,25 +283,25 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>¿Eliminar todas las sondas? Esta acción no se puede deshacer.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="108"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="110"/>
         <source>Point</source>
         <comment>Probe type</comment>
         <translation>Punto</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="109"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="111"/>
         <source>Line</source>
         <comment>Probe type</comment>
         <translation>Línea</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="110"/>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="112"/>
         <source>Region</source>
         <comment>Probe type: an enclosed area</comment>
         <translation>Región</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="478"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="479"/>
         <source>Run a DIC analysis to plot probes.</source>
         <translation>Ejecute un análisis DIC para representar las sondas.</translation>
     </message>
@@ -333,169 +333,169 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Haga clic en un punto a cada lado de la grieta. El gráfico muestra entonces cuánto se abre.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="122"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="124"/>
         <source>Fit</source>
         <comment>Zoom button: fit the image to the view</comment>
         <translation>Ajustar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="129"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="131"/>
         <source>Fit image to viewport</source>
         <translation>Ajustar la imagen a la vista</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="130"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="132"/>
         <source>100%</source>
         <comment>Zoom button: one image pixel per screen pixel</comment>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="133"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="135"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>Zoom al 100% (1:1)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="134"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="136"/>
         <source>Zoom in</source>
         <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="135"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="137"/>
         <source>Zoom out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="136"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
         <comment>Analysis canvas: colour the image by the field</comment>
         <translation>Mostrar campo</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
+        <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
         <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>Colorea la imagen de referencia con el campo representado en el fotograma actual. Para una lectura de calibre, se muestra el campo de la pestaña «Campo de deformación».</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="179"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="180"/>
         <source>Plot:</source>
         <translation>Representar:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="182"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
         <source>X axis:</source>
         <translation>Eje X:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="183"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="184"/>
         <source>Strain as:</source>
         <translation>Deformación en:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="185"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
         <source>Min. valid fraction:</source>
         <translation>Fracción válida mín.:</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="186"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="187"/>
         <source>A frame is left blank when fewer than this fraction of a line&apos;s or region&apos;s points are reliable. Guards against a curve that stays smooth while its sample shrinks away.</source>
         <translation>Un fotograma queda en blanco cuando menos de esta fracción de los puntos de una línea o región es fiable. Evita una curva que sigue suave mientras su muestra se reduce.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="193"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="194"/>
         <source>Over time</source>
         <comment>Chart view: every frame of each probe</comment>
         <translation>Evolución temporal</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="195"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="196"/>
         <source>Each probe&apos;s reading at every frame.</source>
         <translation>La lectura de cada sonda en cada fotograma.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="198"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="199"/>
         <source>Along the line</source>
         <comment>Chart view: a profile</comment>
         <translation>A lo largo de la línea</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="200"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
         <source>The field along the selected line at the current frame, over the other frames in grey.</source>
         <translation>El campo a lo largo de la línea seleccionada en el fotograma actual, sobre los demás fotogramas en gris.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="205"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>Quimograma</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="207"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
         <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
         <translation>El campo a lo largo de la línea seleccionada en cada fotograma: distancia frente a fotograma, valor como color.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="212"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="213"/>
         <source>Stress–strain</source>
         <comment>Chart view: stress against strain</comment>
         <translation>Tensión–deformación</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="214"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="215"/>
         <source>Stress (or load, without A0) against the plotted quantity, one curve per probe: stress-strain with an extensometer, load against opening with a crack gauge. Needs load data.</source>
         <translation>Tensión (o carga, sin A0) frente a la magnitud representada, una curva por sonda: tensión-deformación con un extensómetro, carga-apertura con un calibre de grieta. Requiere datos de carga.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="225"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
         <source>Other frames</source>
         <translation>Otros fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="226"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="227"/>
         <source>Draw the other frames&apos; profiles faintly behind the current one (at most twelve, evenly spaced).</source>
         <translation>Dibujar tenuemente los perfiles de los demás fotogramas detrás del actual (como máximo doce, espaciados uniformemente).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="231"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
         <source>Line data (CSV)…</source>
         <translation>Datos de línea (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="232"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
         <source>Export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="233"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
         <source>Load data…</source>
         <translation>Datos de carga…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="234"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="235"/>
         <source>Import a testing machine&apos;s load record (CSV) to plot against load or stress, and to draw stress-strain curves.</source>
         <translation>Importar el registro de carga de una máquina de ensayo (CSV) para representar frente a la carga o la tensión y trazar curvas tensión-deformación.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="239"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="240"/>
         <source>Probe data (CSV)…</source>
         <translation>Datos de las sondas (CSV)…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="241"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="242"/>
         <source>Chart image…</source>
         <translation>Imagen del gráfico…</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="243"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="244"/>
         <source>Copy chart</source>
         <translation>Copiar el gráfico</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="245"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="246"/>
         <source>Copy plotted data</source>
         <translation>Copiar los datos representados</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="557"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="558"/>
         <source>Import the testing machine&apos;s load record with Load data… to draw stress-strain curves.</source>
         <translation>Importe el registro de carga de la máquina de ensayo con «Datos de carga…» para trazar curvas tensión-deformación.</translation>
     </message>
@@ -540,33 +540,33 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Magnitud de la apertura de grieta</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="277"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="278"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="433"/>
         <source>Frame</source>
         <translation>Fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="279"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="427"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="280"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="428"/>
         <source>Time (s)</source>
         <translation>Tiempo (s)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="281"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="429"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="572"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="282"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="430"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="573"/>
         <source>Load (N)</source>
         <translation>Carga (N)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="284"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="431"/>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="569"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="285"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="432"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="570"/>
         <source>Stress (MPa)</source>
         <translation>Tensión (MPa)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="293"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="294"/>
         <source>ratio</source>
         <comment>Strain display unit: plain number</comment>
         <translation>proporción</translation>
@@ -587,7 +587,7 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Arrastre para mover la sonda, o un tirador para cambiar su forma. Supr la elimina; F2 le cambia el nombre.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="483"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="484"/>
         <source>Place a probe on the reference image to begin.</source>
         <translation>Coloque una sonda en la imagen de referencia para empezar.</translation>
     </message>
@@ -607,22 +607,22 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>No hay datos válidos a lo largo de %1: está fuera del área medida.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="608"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="609"/>
         <source>A line view shows a field. Choose a field to plot.</source>
         <translation>Una vista de línea muestra un campo. Elija un campo para representar.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="612"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="613"/>
         <source>Place a line probe, or select one, to see the field along it.</source>
         <translation>Coloque o seleccione una sonda de línea para ver el campo a lo largo de ella.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="630"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="631"/>
         <source>Distance along %1 (%2)</source>
         <translation>Distancia a lo largo de %1 (%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="639"/>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="640"/>
         <source>%1, frame %2</source>
         <translation>%1, fotograma %2</translation>
     </message>
@@ -726,12 +726,12 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="1015"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>Región de interés importada para %n fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="997"/>
+        <location filename="../../gui/app.py" line="1029"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>Ejecute primero el DIC — no hay resultados de desplazamiento para posprocesar.</translation>
     </message>
@@ -739,27 +739,27 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1103"/>
+        <location filename="../../gui/app.py" line="1135"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC ha encontrado un error</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1104"/>
+        <location filename="../../gui/app.py" line="1136"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>Se ha producido un error inesperado. Es posible que la aplicación no funcione correctamente a partir de ahora; se recomienda guardar la sesión y reiniciar.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1114"/>
+        <location filename="../../gui/app.py" line="1146"/>
         <source>Details were written to %1</source>
         <translation>Los detalles se han escrito en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1218"/>
+        <location filename="../../gui/app.py" line="1252"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>Preparando los núcleos de cálculo en segundo plano. El primer análisis tras una instalación nueva tarda más que los siguientes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1232"/>
+        <location filename="../../gui/app.py" line="1266"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>Núcleos de cálculo listos (%1 s).</translation>
     </message>
@@ -792,112 +792,112 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>BatchImportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="367"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="368"/>
         <source>Batch Import Region of Interest Masks</source>
         <translation>Importar por lotes máscaras de región de interés</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="418"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="419"/>
         <source>Mask Folder:</source>
         <translation>Carpeta de máscaras:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="419"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="420"/>
         <source>(none)</source>
         <translation>(ninguna)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="424"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="425"/>
         <source>Browse...</source>
         <translation>Examinar…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="443"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="444"/>
         <source>Available Masks</source>
         <translation>Máscaras disponibles</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="454"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="455"/>
         <source>Auto-Match by Name</source>
         <translation>Coincidencia automática por nombre</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="456"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="457"/>
         <source>Match mask files to frames by number in filename</source>
         <translation>Asociar archivos de máscara a fotogramas según el número del nombre de archivo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="460"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="461"/>
         <source>Assign Sequential</source>
         <translation>Asignar secuencialmente</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="462"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="463"/>
         <source>Assign masks to frames in order starting from frame 0</source>
         <translation>Asignar máscaras a los fotogramas en orden desde el fotograma 0</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="470"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="471"/>
         <source>Frame Assignments</source>
         <translation>Asignaciones de fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Frame</source>
         <translation>Fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Image</source>
         <translation>Imagen</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="473"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="474"/>
         <source>Mask</source>
         <translation>Máscara</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="484"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="485"/>
         <source>Assign Selected -&gt;</source>
         <translation>Asignar selección -&gt;</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="486"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="487"/>
         <source>Pair selected mask(s) with selected frame(s)</source>
         <translation>Emparejar las máscaras seleccionadas con los fotogramas seleccionados</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="490"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="491"/>
         <source>Clear All</source>
         <translation>Borrar todo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="535"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="536"/>
         <source>Select Mask Folder</source>
         <translation>Seleccionar carpeta de máscaras</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="589"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="590"/>
         <source>Failed to read mask file.</source>
         <translation>No se pudo leer el archivo de máscara.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="593"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="594"/>
         <source>Mismatched shape: %1×%2 (expected %3×%4)</source>
         <translation>Forma no coincide: %1×%2 (se esperaba %3×%4)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="666"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="667"/>
         <source>%n mask(s) have mismatched sizes and are disabled.</source>
         <translation>%n máscara(s) tienen tamaños no coincidentes y están deshabilitadas.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="725"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="726"/>
         <source>Invalid assignment</source>
         <translation>Asignación no válida</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="727"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="728"/>
         <source>A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.</source>
         <translation>Un fotograma solo puede tener una máscara. Seleccione exactamente una máscara, o seleccione varios fotogramas para asignar una máscara a muchos.</translation>
     </message>
@@ -905,62 +905,62 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>CanvasArea</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1215"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
         <source>Fit</source>
         <translation>Ajustar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1216"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
         <source>Fit image to viewport</source>
         <translation>Ajustar la imagen a la vista</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1221"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1227"/>
         <source>100%</source>
         <translation>100%</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1222"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1228"/>
         <source>Zoom to 100% (1:1)</source>
         <translation>Zoom al 100% (1:1)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1226"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
         <source>Zoom in</source>
         <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1232"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1238"/>
         <source>–</source>
         <translation>–</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1233"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1239"/>
         <source>Zoom out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1246"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1252"/>
         <source>Show Grid</source>
         <translation>Mostrar cuadrícula</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1247"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1253"/>
         <source>Show/hide computational mesh grid</source>
         <translation>Mostrar/ocultar la cuadrícula de la malla</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1250"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1256"/>
         <source>Show Subset</source>
         <translation>Mostrar subconjunto</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1251"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1257"/>
         <source>Show subset window on hover (requires Grid)</source>
         <translation>Mostrar ventana del subconjunto al pasar el cursor (requiere cuadrícula)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1505"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1511"/>
         <source>Placing Starting Points</source>
         <translation>Colocando puntos iniciales</translation>
     </message>
@@ -968,62 +968,62 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>CanvasConfigOverlay</name>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="41"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="45"/>
         <source>Mode</source>
         <translation>Modo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="42"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
         <source>Solver</source>
         <translation>Solucionador</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="43"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
         <source>Init</source>
         <translation>Estimación inicial</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="93"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="97"/>
         <source>Accumulative</source>
         <translation>Acumulativo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="94"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="98"/>
         <source>Incremental</source>
         <translation>Incremental</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="101"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="105"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="103"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="107"/>
         <source>ADMM (%1 iter)</source>
         <translation>ADMM (%1 iter.)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="110"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
         <source>Starting Points</source>
         <translation>Puntos iniciales</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="112"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
         <source>Previous frame</source>
         <translation>Fotograma anterior</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
         <source>FFT every frame</source>
         <translation>FFT cada fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
         <source>FFT every %1 fr</source>
         <translation>FFT cada %1 fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="117"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="121"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -1049,227 +1049,227 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>ExportDialog</name>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="481"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1382"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="482"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1383"/>
         <source>Opacity</source>
         <extracomment>Whether an image sits behind the field. Independent of show_deformed: which frame to use is only a question once you show one at all. Fill when the background is hidden: &quot;white&quot;, &quot;black&quot; or &quot;transparent&quot;. Fill used by images and animation alike when the background is hidden.</extracomment>
         <translation>Opacidad</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="483"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="484"/>
         <source>Field opacity (0 = transparent, 1 = fully opaque)</source>
         <translation>Opacidad del campo (0 = transparente, 1 = completamente opaco)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="591"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="592"/>
         <source>All</source>
         <translation>Todos</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="593"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="594"/>
         <source>None</source>
         <translation>Ninguno</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="622"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="623"/>
         <source>Export Results</source>
         <translation>Exportar resultados</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="646"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="647"/>
         <source>OUTPUT FOLDER</source>
         <translation>CARPETA DE SALIDA</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="654"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="655"/>
         <source>Select output folder…</source>
         <translation>Seleccionar carpeta de salida…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="658"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="659"/>
         <source>Browse…</source>
         <translation>Examinar…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="663"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="664"/>
         <source>Open Folder</source>
         <translation>Abrir carpeta</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="671"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="672"/>
         <source>PHYSICAL UNITS</source>
         <translation>UNIDADES FÍSICAS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="675"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="676"/>
         <source>Enable physical units</source>
         <translation>Activar unidades físicas</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="678"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="679"/>
         <source>Scale displacement values by pixel size and show physical units on colorbar labels. Strain is dimensionless and unaffected.</source>
         <translation>Escalar los valores de desplazamiento por el tamaño del píxel y mostrar unidades físicas en las etiquetas de la barra de color. La deformación es adimensional y no se ve afectada.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="695"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="696"/>
         <source>/ pixel</source>
         <translation>/ píxel</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="697"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="698"/>
         <source>Pixel size</source>
         <translation>Tamaño de píxel</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="712"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="713"/>
         <source>fps</source>
         <translation>fps</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="714"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="715"/>
         <source>Frame rate</source>
         <translation>Velocidad de fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="722"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
         <source>Data</source>
         <translation>Datos</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="723"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="724"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
         <source>Animation</source>
         <translation>Animación</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="725"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="726"/>
         <source>Report</source>
         <translation>Informe</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="727"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="728"/>
         <source>Preview &amp; Colorbar</source>
         <translation>Vista previa y barra de color</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="758"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="759"/>
         <source>FORMAT</source>
         <translation>FORMATO</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="760"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="761"/>
         <source>NumPy Archive (.npz)</source>
         <translation>Archivo NumPy (.npz)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="762"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="763"/>
         <source>MATLAB (.mat)</source>
         <translation>MATLAB (.mat)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="764"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="765"/>
         <source>CSV (per frame)</source>
         <translation>CSV (por fotograma)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="767"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="768"/>
         <source>NPZ: one file per frame (default: single merged file)</source>
         <translation>NPZ: un archivo por fotograma (predeterminado: un único archivo combinado)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="775"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="776"/>
         <source>DISPLACEMENT</source>
         <translation>DESPLAZAMIENTO</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="784"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="811"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="785"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="812"/>
         <source>Select:</source>
         <translation>Seleccionar:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="799"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="800"/>
         <source>STRAIN</source>
         <translation>DEFORMACIÓN</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="802"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="803"/>
         <source>Run Compute Strain first.</source>
         <translation>Ejecute primero «Calcular deformación».</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="829"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="830"/>
         <source>✓ Parameters file (JSON) always exported</source>
         <translation>✓ El archivo de parámetros (JSON) siempre se exporta</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="835"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="836"/>
         <source>Export Data</source>
         <translation>Exportar datos</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="856"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1005"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
         <source>Export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="857"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1006"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1253"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1254"/>
         <source>Field</source>
         <translation>Campo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="858"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1007"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1355"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="859"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1008"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1356"/>
         <source>Colormap</source>
         <translation>Mapa de colores</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="860"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1009"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1367"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1368"/>
         <source>Min</source>
         <translation>Mín</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="861"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1010"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1374"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="862"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1011"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1375"/>
         <source>Max</source>
         <translation>Máx</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="880"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="881"/>
         <source>IMAGE SETTINGS</source>
         <translation>AJUSTES DE IMAGEN</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="890"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1039"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="891"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1040"/>
         <source>Format</source>
         <translation>Formato</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="898"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1047"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="899"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1048"/>
         <source>Full resolution</source>
         <translation>Resolución completa</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="900"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="901"/>
         <source>Cap the exported image&apos;s long edge (the larger of width/height; aspect ratio is kept).
 Field detail is bounded by the mesh, so a smaller cap is near-lossless
 but much smaller on disk and faster to encode. Lower = faster. &apos;Full resolution&apos; keeps the native size.</source>
@@ -1278,405 +1278,405 @@ El detalle del campo está limitado por la malla, por lo que un límite menor es
 pero mucho más pequeño y rápido de codificar. Menor = más rápido. «Resolución completa» mantiene el tamaño nativo.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="907"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1054"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="908"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1055"/>
         <source>Resolution (long edge)</source>
         <translation>Resolución (borde largo)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="941"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1091"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
         <source>Deformed frame</source>
         <translation>Fotograma deformado</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="942"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1092"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="943"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1093"/>
         <source>Reference frame</source>
         <translation>Fotograma de referencia</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="946"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1096"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="947"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1097"/>
         <source>Deformed: the field is drawn at the displaced node positions (reference + displacement), over each frame&apos;s own photo.
 Reference: drawn at the original node positions, over the first frame.</source>
         <translation>Fotograma deformado: el campo se dibuja en las posiciones desplazadas de los nodos (referencia + desplazamiento), sobre la foto propia de cada fotograma.
 Fotograma de referencia: se dibuja en las posiciones originales de los nodos, sobre el primer fotograma.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="954"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1102"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="955"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1103"/>
         <source>Show background image</source>
         <translation>Mostrar imagen de fondo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="957"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="958"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. Pick the fill on the Preview &amp; Colorbar tab.</source>
         <translation>Desmarque para exportar solo el campo, sin imagen de moteado detrás. El relleno se elige en la pestaña «Vista previa y barra de color».</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1049"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1050"/>
         <source>Cap the animation&apos;s long edge (the larger of width/height).
 Lower = faster and much smaller. Strongly recommended for GIF, whose size explodes at native resolution.</source>
         <translation>Limita el borde largo de la animación (el mayor de ancho/alto).
 Menor = más rápido y mucho más pequeño. Muy recomendable para GIF, cuyo tamaño se dispara a resolución nativa.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="916"/>
         <source>JPEG quality (higher = larger file). Ignored for PNG/TIFF.</source>
         <translation>Calidad JPEG (mayor = archivo más grande). Se ignora para PNG/TIFF.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="918"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="919"/>
         <source>JPEG quality</source>
         <translation>Calidad JPEG</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="927"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="928"/>
         <source>DPI</source>
         <translation>DPI</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="929"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1080"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="930"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1081"/>
         <source>Include colorbar</source>
         <translation>Incluir barra de color</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="932"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="933"/>
         <source>Append a vertical colorbar strip to the right of each image.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>Añade una barra de color vertical a la derecha de cada imagen.
 Las etiquetas se actualizan por fotograma cuando el rango auto está activo.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="963"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1111"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="964"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1112"/>
         <source>Render as</source>
         <translation>Representar como</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="981"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1127"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="982"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1128"/>
         <source>Cancel Export</source>
         <translation>Cancelar exportación</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="986"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="987"/>
         <source>Export Images</source>
         <translation>Exportar imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1029"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1030"/>
         <source>ANIMATION SETTINGS</source>
         <translation>AJUSTES DE ANIMACIÓN</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1063"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1064"/>
         <source>FPS</source>
         <translation>FPS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1073"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1074"/>
         <source>Export every Nth frame (1 = every frame). Higher is faster and smaller
 but looks choppier. Playback duration is preserved (the FPS above is the pre-decimation rate).</source>
         <translation>Exporta uno de cada N fotogramas (1 = todos). Mayor = más rápido y pequeño,
 pero se ve más entrecortado. La duración se conserva (los FPS de arriba son la tasa antes de diezmar).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1078"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1079"/>
         <source>Frame step</source>
         <translation>Paso de fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1083"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1084"/>
         <source>Append a vertical colorbar strip to the right of each frame.
 Tick labels update per frame when Auto range is enabled.</source>
         <translation>Añade una barra de color vertical a la derecha de cada fotograma.
 Las etiquetas se actualizan por fotograma cuando el rango auto está activo.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1105"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1106"/>
         <source>Uncheck to export the field on its own, with no speckle image behind it. GIF and MP4 cannot store transparency, so a transparent fill is written as white.</source>
         <translation>Desmarque para exportar solo el campo, sin imagen de moteado detrás. GIF y MP4 no pueden almacenar transparencia, por lo que un relleno transparente se escribe como blanco.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1132"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1133"/>
         <source>Export Animation</source>
         <translation>Exportar animación</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1149"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1150"/>
         <source>CONTENT</source>
         <translation>CONTENIDO</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1151"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1152"/>
         <source>Parameter summary table</source>
         <translation>Tabla resumen de parámetros</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1154"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1155"/>
         <source>Field statistics (min/max/mean/std per frame)</source>
         <translation>Estadísticas de campo (mín/máx/media/desv.típ. por fotograma)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1157"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1158"/>
         <source>Sample field images</source>
         <translation>Imágenes de campo de muestra</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1164"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1165"/>
         <source>Sample every</source>
         <translation>Muestrear cada</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1170"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1171"/>
         <source>frames</source>
         <comment>Report: sample every N frames</comment>
         <translation>fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1176"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1177"/>
         <source>FIELDS</source>
         <translation>CAMPOS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1179"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1180"/>
         <source>Displacement:</source>
         <translation>Desplazamiento:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1194"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1195"/>
         <source>Strain:</source>
         <translation>Deformación:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1216"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1217"/>
         <source>Format: HTML (self-contained, view in any browser)</source>
         <translation>Formato: HTML (autocontenido, se puede ver en cualquier navegador)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1223"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1224"/>
         <source>Generate Report</source>
         <translation>Generar informe</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1245"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1246"/>
         <source>Open this tab to render a preview.</source>
         <translation>Abre esta pestaña para generar una vista previa.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1261"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1262"/>
         <source>Frame</source>
         <translation>Fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1273"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1274"/>
         <source>COLORBAR STYLE</source>
         <translation>ESTILO DE BARRA DE COLOR</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Right</source>
         <translation>Derecha</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1276"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
         <source>Left</source>
         <translation>Izquierda</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
         <source>Top</source>
         <translation>Arriba</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1277"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1278"/>
         <source>Bottom</source>
         <translation>Abajo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1280"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1281"/>
         <source>Position</source>
         <translation>Posición</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1286"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1287"/>
         <source>Font size</source>
         <translation>Tamaño de fuente</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1292"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1293"/>
         <source>Font family</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1300"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1301"/>
         <source>Bar thickness</source>
         <translation>Grosor de la barra</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1304"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1320"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
         <source>Black</source>
         <translation>Negro</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1303"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1319"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1325"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1304"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1320"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1326"/>
         <source>White</source>
         <translation>Blanco</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1306"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1307"/>
         <source>Background</source>
         <translation>Fondo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1313"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1314"/>
         <source>Add a blank border around the exported content, as a fraction of the long edge (0 = none).</source>
         <translation>Añade un borde en blanco alrededor del contenido exportado, como fracción del borde largo (0 = ninguna).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1316"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1317"/>
         <source>Margin</source>
         <translation>Margen</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1322"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1323"/>
         <source>Margin color</source>
         <translation>Color del margen</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1327"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1328"/>
         <source>Transparent</source>
         <translation>Transparente</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1333"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1334"/>
         <source>Fill used where the background image would have been, when &apos;Show background image&apos; is off.
 Transparency is kept for PNG and TIFF; JPEG, GIF and MP4 have no alpha channel and get white instead.</source>
         <translation>Relleno utilizado donde habría estado la imagen de fondo, cuando «Mostrar imagen de fondo» está desactivado.
 La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal alfa y reciben blanco.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1340"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1341"/>
         <source>Hidden background</source>
         <translation>Fondo oculto</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1342"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1343"/>
         <source>Refresh preview</source>
         <translation>Actualizar vista previa</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1349"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1350"/>
         <source>FIELD APPEARANCE</source>
         <translation>APARIENCIA DEL CAMPO</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1360"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1361"/>
         <source>Range</source>
         <translation>Rango</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1384"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1385"/>
         <source>Apply to all fields</source>
         <translation>Aplicar a todos los campos</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1386"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1387"/>
         <source>Apply this field&apos;s colormap, opacity and auto-range to every enabled field (each field keeps its own min/max).</source>
         <translation>Aplica el mapa de colores, la opacidad y el rango automático de este campo a todos los campos activados (cada campo conserva su propio mín/máx).</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1509"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1510"/>
         <source>Preview failed: </source>
         <translation>Error en la vista previa: </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1524"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1525"/>
         <source>Enable a field on the Images tab to preview.</source>
         <translation>Active un campo en la pestaña «Imágenes» para la vista previa.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1537"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1538"/>
         <source>No data for this field/frame.</source>
         <translation>No hay datos para este campo/fotograma.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1602"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1603"/>
         <source>FRAME RANGE</source>
         <translation>RANGO DE FOTOGRAMAS</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1605"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1606"/>
         <source>All frames</source>
         <translation>Todos los fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1611"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1612"/>
         <source>From</source>
         <comment>Frame range: starting frame</comment>
         <translation>Desde</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1619"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1620"/>
         <source>to</source>
         <comment>Frame range: ending frame</comment>
         <translation>a</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1650"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1651"/>
         <source>Select Output Folder</source>
         <translation>Seleccionar carpeta de salida</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1709"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1710"/>
         <source>Exported %1 files → %2</source>
         <translation>Exportados %1 archivos → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1718"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1848"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1937"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1979"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
         <source>Error: %1</source>
         <translation>Error: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1743"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1876"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1744"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1877"/>
         <source>Starting…</source>
         <translation>Iniciando…</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1821"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1899"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1822"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1900"/>
         <source>Rendering %1 (%2/%3)</source>
         <translation>Renderizando %1 (%2/%3)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1827"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1905"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1828"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1906"/>
         <source>Frame %1/%2</source>
         <translation>Fotograma %1/%2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1837"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1838"/>
         <source>Exported %1 images → %2</source>
         <translation>%1 imágenes exportadas → %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1915"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1916"/>
         <source>No animation was written. See the log for details.</source>
         <translation>No se ha escrito ninguna animación. Consulte el registro para más detalles.</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1972"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
         <source>Report saved → %1</source>
         <translation>Informe guardado → %1</translation>
     </message>
@@ -1748,12 +1748,12 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
 <context>
     <name>ImageCanvas</name>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1061"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1067"/>
         <source>Load images first before drawing a Region of Interest.</source>
         <translation>Cargue primero las imágenes antes de dibujar una región de interés.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/canvas_area.py" line="1080"/>
+        <location filename="../../gui/panels/canvas_area.py" line="1086"/>
         <source>The three points are nearly collinear — pick points spread around the circle&apos;s edge.</source>
         <translation>Los tres puntos son casi colineales — elija puntos repartidos por el borde del círculo.</translation>
     </message>
@@ -1761,70 +1761,70 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
 <context>
     <name>ImageList</name>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="95"/>
+        <location filename="../../gui/widgets/image_list.py" line="97"/>
         <source>#</source>
         <comment>Image list column: frame index</comment>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="96"/>
+        <location filename="../../gui/widgets/image_list.py" line="98"/>
         <source>Filename</source>
         <translation>Nombre de archivo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="97"/>
+        <location filename="../../gui/widgets/image_list.py" line="99"/>
         <source>Region</source>
         <comment>Image list column: ROI status</comment>
         <translation>Región</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="190"/>
-        <location filename="../../gui/widgets/image_list.py" line="248"/>
+        <location filename="../../gui/widgets/image_list.py" line="193"/>
+        <location filename="../../gui/widgets/image_list.py" line="255"/>
         <source>Add</source>
         <translation>Añadir</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="242"/>
+        <location filename="../../gui/widgets/image_list.py" line="249"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="245"/>
+        <location filename="../../gui/widgets/image_list.py" line="252"/>
         <source>Need</source>
         <translation>Falta</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="362"/>
+        <location filename="../../gui/widgets/image_list.py" line="369"/>
         <source>Import Region of Interest for %n frame(s)</source>
         <translation>Importar región de interés para %n fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="378"/>
+        <location filename="../../gui/widgets/image_list.py" line="385"/>
         <source>Clear Region of Interest (%1 with region)</source>
         <translation>Borrar región de interés (%1 con región)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="382"/>
+        <location filename="../../gui/widgets/image_list.py" line="389"/>
         <source>Clear Region of Interest</source>
         <translation>Borrar región de interés</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="393"/>
+        <location filename="../../gui/widgets/image_list.py" line="400"/>
         <source>Delete %n image(s)</source>
         <translation>Eliminar %n imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="496"/>
+        <location filename="../../gui/widgets/image_list.py" line="503"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="497"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="506"/>
+        <location filename="../../gui/widgets/image_list.py" line="513"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>Seleccionados %1 archivos para %2 fotogramas — las cantidades deben coincidir</translation>
     </message>
@@ -2141,126 +2141,143 @@ Predeterminado (desmarcado): lexicográfico — ideal para nombres con ceros a l
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../gui/app.py" line="201"/>
+        <location filename="../../gui/app.py" line="205"/>
         <source>&amp;File</source>
         <translation>Archivo</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="203"/>
+        <location filename="../../gui/app.py" line="207"/>
         <source>Open Session…</source>
         <translation>Abrir sesión…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="208"/>
+        <location filename="../../gui/app.py" line="212"/>
         <source>Save Session…</source>
         <translation>Guardar sesión…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="217"/>
+        <location filename="../../gui/app.py" line="221"/>
         <source>Associate .aldic files with pyALDIC…</source>
         <translation>Asociar archivos .aldic con pyALDIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="219"/>
+        <location filename="../../gui/app.py" line="223"/>
         <source>Register .aldic so double-clicking a session file opens pyALDIC (current user only, no admin rights needed).</source>
         <translation>Registra .aldic para que hacer doble clic en un archivo de sesión abra pyALDIC (solo el usuario actual, sin permisos de administrador).</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="225"/>
+        <location filename="../../gui/app.py" line="229"/>
         <source>Quit</source>
         <translation>Salir</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="233"/>
+        <location filename="../../gui/app.py" line="237"/>
         <source>&amp;Settings</source>
         <translation>Ajustes</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="234"/>
+        <location filename="../../gui/app.py" line="242"/>
+        <source>Theme</source>
+        <translation>Tema</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="247"/>
+        <source>Dark</source>
+        <comment>Colour theme</comment>
+        <translation>Oscuro</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="248"/>
+        <source>Light</source>
+        <comment>Colour theme</comment>
+        <translation>Claro</translation>
+    </message>
+    <message>
+        <location filename="../../gui/app.py" line="260"/>
         <source>Language</source>
         <translation>Idioma</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="263"/>
+        <location filename="../../gui/app.py" line="295"/>
         <source>Language changed</source>
         <translation>Idioma cambiado</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="266"/>
+        <location filename="../../gui/app.py" line="298"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation>Idioma establecido en %1. Reinicie pyALDIC para que todos los elementos adopten el nuevo idioma.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="280"/>
+        <location filename="../../gui/app.py" line="312"/>
         <source>Save Session</source>
         <translation>Guardar sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="282"/>
-        <location filename="../../gui/app.py" line="331"/>
+        <location filename="../../gui/app.py" line="314"/>
+        <location filename="../../gui/app.py" line="363"/>
         <source>pyALDIC Session</source>
         <translation>Sesión de pyALDIC</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="283"/>
-        <location filename="../../gui/app.py" line="332"/>
-        <location filename="../../gui/app.py" line="796"/>
+        <location filename="../../gui/app.py" line="315"/>
+        <location filename="../../gui/app.py" line="364"/>
+        <location filename="../../gui/app.py" line="828"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="296"/>
+        <location filename="../../gui/app.py" line="328"/>
         <source>large</source>
         <translation>grande</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="299"/>
+        <location filename="../../gui/app.py" line="331"/>
         <source>Include Results?</source>
         <translation>¿Incluir resultados?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="301"/>
+        <location filename="../../gui/app.py" line="333"/>
         <source>Include the computed results in this session?</source>
         <translation>¿Incluir los resultados calculados en esta sesión?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="304"/>
+        <location filename="../../gui/app.py" line="336"/>
         <source>Including results (about %1 uncompressed) lets you reopen the session without recomputing. Choose No to save a small configuration-only file for sharing.</source>
         <translation>Incluir los resultados (unos %1 sin comprimir) permite reabrir la sesión sin recalcular. Elija No para guardar un pequeño archivo solo de configuración para compartir.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="317"/>
+        <location filename="../../gui/app.py" line="349"/>
         <source>Saving Session</source>
         <translation>Guardando sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="322"/>
+        <location filename="../../gui/app.py" line="354"/>
         <source>Save Session Failed</source>
         <translation>Error al guardar la sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="329"/>
+        <location filename="../../gui/app.py" line="361"/>
         <source>Open Session</source>
         <translation>Abrir sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="344"/>
+        <location filename="../../gui/app.py" line="376"/>
         <source>Loading Session</source>
         <translation>Cargando sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="347"/>
-        <location filename="../../gui/app.py" line="382"/>
+        <location filename="../../gui/app.py" line="379"/>
+        <location filename="../../gui/app.py" line="414"/>
         <source>Open Session Failed</source>
         <translation>Error al abrir la sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="356"/>
+        <location filename="../../gui/app.py" line="388"/>
         <source>Locate Session Images</source>
         <translation>Localizar imágenes de la sesión</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="359"/>
+        <location filename="../../gui/app.py" line="391"/>
         <source>The image folder saved with this session was not found:
 %1
 
@@ -2271,83 +2288,83 @@ Results were restored. To show the background images, select the folder that now
 Los resultados se restauraron. Para mostrar las imágenes de fondo, seleccione la carpeta que ahora las contiene.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="367"/>
+        <location filename="../../gui/app.py" line="399"/>
         <source>Select Image Folder</source>
         <translation>Seleccionar carpeta de imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="443"/>
+        <location filename="../../gui/app.py" line="475"/>
         <source>File Association Failed</source>
         <translation>Error al asociar archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="444"/>
+        <location filename="../../gui/app.py" line="476"/>
         <source>Could not register .aldic files: </source>
         <translation>No se pudieron registrar los archivos .aldic: </translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="447"/>
+        <location filename="../../gui/app.py" line="479"/>
         <source>File Association</source>
         <translation>Asociación de archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="448"/>
+        <location filename="../../gui/app.py" line="480"/>
         <source>Done. Double-clicking a .aldic file will now open pyALDIC and restore that session.</source>
         <translation>Listo. Ahora, hacer doble clic en un archivo .aldic abrirá pyALDIC y restaurará esa sesión.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="763"/>
+        <location filename="../../gui/app.py" line="795"/>
         <source>Frame %1 has no Region of Interest of its own — frame 1&apos;s is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.</source>
         <translation>El fotograma %1 no tiene una región de interés propia — se usa la del fotograma 1 para el cálculo. Cambie al fotograma 1 para editarla, o importe una máscara para dar a este fotograma la suya.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="774"/>
+        <location filename="../../gui/app.py" line="806"/>
         <source>No Region of Interest to save — load images first.</source>
         <translation>No hay región de interés que guardar — cargue primero las imágenes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="781"/>
+        <location filename="../../gui/app.py" line="813"/>
         <source>Region of Interest mask is empty.</source>
         <translation>La máscara de la región de interés está vacía.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="793"/>
+        <location filename="../../gui/app.py" line="825"/>
         <source>Save Region of Interest Mask</source>
         <translation>Guardar máscara de región de interés</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="795"/>
+        <location filename="../../gui/app.py" line="827"/>
         <source>PNG Images</source>
         <translation>Imágenes PNG</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="804"/>
+        <location filename="../../gui/app.py" line="836"/>
         <source>Mask saved to %1</source>
         <translation>Máscara guardada en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="813"/>
+        <location filename="../../gui/app.py" line="845"/>
         <source>No Region of Interest to invert — load images first.</source>
         <translation>No hay región de interés que invertir — cargue primero las imágenes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="843"/>
-        <location filename="../../gui/app.py" line="896"/>
+        <location filename="../../gui/app.py" line="875"/>
+        <location filename="../../gui/app.py" line="928"/>
         <source>Load images first.</source>
         <translation>Cargue primero las imágenes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="854"/>
+        <location filename="../../gui/app.py" line="886"/>
         <source>Define a Region of Interest on frame 1 first.</source>
         <translation>Defina primero una región de interés en el fotograma 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="945"/>
+        <location filename="../../gui/app.py" line="977"/>
         <source>  Imported mask for frame %1</source>
         <translation>  Máscara importada para el fotograma %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="951"/>
+        <location filename="../../gui/app.py" line="983"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>Importación por lotes: %n máscara(s) cargada(s)</translation>
     </message>
@@ -2373,68 +2390,68 @@ Los resultados se restauraron. Para mostrar las imágenes de fondo, seleccione l
 <context>
     <name>ParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="48"/>
+        <location filename="../../gui/widgets/param_panel.py" line="49"/>
         <source>Subset Size</source>
         <extracomment>The label column is as wide as its longest label in the current language, never narrower than the English layout and, past a cap of about 28 characters of the label font, wrapped rather than squeezing the inputs.</extracomment>
         <translation>Tamaño del subconjunto</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="54"/>
+        <location filename="../../gui/widgets/param_panel.py" line="55"/>
         <source>IC-GN subset window size in pixels (odd number)</source>
         <translation>Tamaño de la ventana del subconjunto IC-GN en píxeles (número impar)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="61"/>
+        <location filename="../../gui/widgets/param_panel.py" line="62"/>
         <source>Subset Step</source>
         <translation>Paso del subconjunto</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="64"/>
+        <location filename="../../gui/widgets/param_panel.py" line="65"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>Espaciado de nodos en píxeles (debe ser potencia de 2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="72"/>
-        <location filename="../../gui/widgets/param_panel.py" line="197"/>
-        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <location filename="../../gui/widgets/param_panel.py" line="73"/>
+        <location filename="../../gui/widgets/param_panel.py" line="198"/>
+        <location filename="../../gui/widgets/param_panel.py" line="210"/>
         <source>Search Range</source>
         <translation>Rango de búsqueda</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="87"/>
+        <location filename="../../gui/widgets/param_panel.py" line="88"/>
         <source>Refine Inner Boundary</source>
         <translation>Refinar borde interior</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="90"/>
+        <location filename="../../gui/widgets/param_panel.py" line="91"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>Refinar localmente la malla a lo largo de los bordes internos de la máscara
 (agujeros dentro de la región de interés). Útil para bordes de burbujas o huecos.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="94"/>
+        <location filename="../../gui/widgets/param_panel.py" line="95"/>
         <source>Refine Outer Boundary</source>
         <translation>Refinar borde exterior</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="97"/>
+        <location filename="../../gui/widgets/param_panel.py" line="98"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>Refinar localmente la malla a lo largo del borde exterior de la región de interés.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="112"/>
+        <location filename="../../gui/widgets/param_panel.py" line="113"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
         <translation>Intensidad del refinamiento. Tamaño mínimo de elemento = max(2, subset_step / 2^level). Se aplica uniformemente a bordes interiores, exteriores Y zonas pintadas con el pincel. Los niveles disponibles dependen del tamaño y el paso del subconjunto.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="118"/>
+        <location filename="../../gui/widgets/param_panel.py" line="119"/>
         <source>Refinement Level</source>
         <translation>Nivel de refinamiento</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="178"/>
+        <location filename="../../gui/widgets/param_panel.py" line="179"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2445,7 +2462,7 @@ Para grandes rotaciones en modo incremental, debe cubrir:
   radio × sin(ángulo por paso).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="185"/>
+        <location filename="../../gui/widgets/param_panel.py" line="186"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2454,48 +2471,48 @@ Se expande automáticamente 2× por reintento si el pico se recorta, hasta la mi
 Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan propagación F-aware (sin búsqueda por nodo).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="193"/>
-        <location filename="../../gui/widgets/param_panel.py" line="209"/>
+        <location filename="../../gui/widgets/param_panel.py" line="194"/>
+        <location filename="../../gui/widgets/param_panel.py" line="210"/>
         <source>Starting Point Search</source>
         <translation>Búsqueda en puntos iniciales</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="249"/>
+        <location filename="../../gui/widgets/param_panel.py" line="250"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>Ligero</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="251"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>Medio</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="251"/>
+        <location filename="../../gui/widgets/param_panel.py" line="252"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Fuerte</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="252"/>
+        <location filename="../../gui/widgets/param_panel.py" line="253"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Muy fuerte</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="253"/>
+        <location filename="../../gui/widgets/param_panel.py" line="254"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>Ultra</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="259"/>
+        <location filename="../../gui/widgets/param_panel.py" line="260"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="281"/>
+        <location filename="../../gui/widgets/param_panel.py" line="282"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>tamaño mín. de elemento = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
@@ -2603,37 +2620,37 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
 <context>
     <name>ROIHint</name>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="62"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="63"/>
         <source>Load images first, then draw a Region of Interest on frame 1.</source>
         <translation>Cargue primero las imágenes y luego dibuje una región de interés en el fotograma 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="69"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="70"/>
         <source>&lt;b&gt;Accumulative mode&lt;/b&gt; — only frame 1 needs a Region of Interest. All later frames are compared against it directly.</source>
         <translation>&lt;b&gt;Modo acumulativo&lt;/b&gt; — solo el fotograma 1 requiere una región de interés. Todos los fotogramas posteriores se comparan directamente con ella.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="79"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="80"/>
         <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
         <translation>&lt;b&gt;Incremental, cada fotograma&lt;/b&gt; — el fotograma 1 requiere una región de interés. Se propaga automáticamente hacia cada fotograma posterior (no es necesario dibujar por fotograma).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="96"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="97"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;Incremental, cada %1 fotogramas&lt;/b&gt; — dibuje una región de interés en los fotogramas: &lt;b&gt;%2&lt;/b&gt; (%3 fotogramas de referencia en total).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="110"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="111"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;Incremental, personalizado&lt;/b&gt; — no hay fotogramas de referencia personalizados definidos. El fotograma 1 será la única referencia; añada más índices en el campo «Fotogramas de referencia».</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="120"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="121"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;Incremental, personalizado&lt;/b&gt; — dibuje una región de interés en los fotogramas: &lt;b&gt;%1&lt;/b&gt; (%2 fotogramas de referencia en total).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="128"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>Dibuje una región de interés en el fotograma 1.</translation>
     </message>
@@ -2768,17 +2785,17 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>Círculo (3 puntos)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="353"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="352"/>
         <source>Import Mask Image</source>
         <translation>Importar imagen de máscara</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="354"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_toolbar.py" line="356"/>
+        <location filename="../../gui/widgets/roi_toolbar.py" line="355"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
@@ -2822,22 +2839,22 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="392"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
         <source>Ready</source>
         <translation>Listo</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="394"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="485"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
         <source>ELAPSED  %1</source>
         <translation>TRANSCURRIDO  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="493"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
         <location filename="../../gui/panels/right_sidebar.py" line="497"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
         <source>REMAINING  %1</source>
         <translation>RESTANTE  %1</translation>
     </message>
@@ -2937,12 +2954,12 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="361"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>Coloque al menos un punto inicial en cada región roja antes de ejecutar (rojo = requiere punto inicial).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="468"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  Fotograma %2</translation>
     </message>
@@ -3014,22 +3031,22 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
 <context>
     <name>StrainParamPanel</name>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="85"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
         <source>Plane fitting</source>
         <translation>Ajuste de plano</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="86"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="87"/>
         <source>FEM nodal</source>
         <translation>FEM nodal</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="88"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="89"/>
         <source>Method</source>
         <translation>Método</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="102"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="103"/>
         <source>VSG (Virtual Strain Gauge) size is the diameter, in pixels, of the circular region around each mesh node used to fit a local displacement plane. Strain is then taken as the plane&apos;s slope.
 
 • Larger VSG → smoother strain, lower spatial resolution.
@@ -3046,17 +3063,17 @@ Not used when Method = FEM nodal (there, mesh spacing itself sets the gauge size
 No se usa con Método = FEM nodal (allí el espaciado de la malla establece el tamaño).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="115"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="116"/>
         <source>VSG size</source>
         <translation>Tamaño VSG</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="131"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="132"/>
         <source>Number of mesh nodes per axis inside the circular VSG window on a uniform mesh: 2 × floor(VSG radius / node spacing) + 1. The plane fit uses every node within the radius; on a refined mesh the count varies locally.</source>
         <translation>Número de nodos de malla por eje dentro de la ventana VSG circular en una malla uniforme: 2 × floor(radio VSG / espaciado de nodos) + 1. El ajuste de plano usa todos los nodos dentro del radio; en una malla refinada, ese número varía localmente.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="162"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="163"/>
         <source>Hides low-confidence strain at ROI / hole edges, where the VSG window crosses the boundary and the local plane fit becomes one-sided and unreliable.
 
 • Coefficient × VSG radius = width of the trimmed boundary band.
@@ -3075,33 +3092,33 @@ Only applies when Method = Plane fitting.</source>
 Solo se aplica cuando Método = Ajuste de plano.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="174"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="175"/>
         <source>Trim low-confidence edges</source>
         <translation>Recortar bordes de baja confianza</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="201"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="202"/>
         <source>Off</source>
         <comment>Strain smoothing preset</comment>
         <translation>Desactivado</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="202"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="203"/>
         <source>Light (σ = 0.5 × step)</source>
         <translation>Ligero (σ = 0,5 × step)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="203"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="204"/>
         <source>Medium (σ = 1 × step)</source>
         <translation>Medio (σ = 1 × step)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="204"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="205"/>
         <source>Strong (σ = 2 × step) ⚠</source>
         <translation>Fuerte (σ = 2 × step) ⚠</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="211"/>
         <source>Gaussian smoothing of the strain field after computation.
 σ is the Gaussian kernel width; &apos;step&apos; = DIC node spacing.
   Light  (0.5 × step):  subtle, preserves fine features.
@@ -3114,42 +3131,42 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
   Fuerte  (2 × step) ⚠: agresivo, puede difuminar gradientes reales.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="216"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="217"/>
         <source>Strain field smoothing</source>
         <translation>Suavizado del campo de deformación</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="221"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="222"/>
         <source>Infinitesimal</source>
         <translation>Infinitesimal</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="222"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="223"/>
         <source>Eulerian</source>
         <translation>Euleriana</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="223"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="224"/>
         <source>Green-Lagrangian</source>
         <translation>Green-Lagrange</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="225"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="226"/>
         <source>Strain type</source>
         <translation>Tipo de deformación</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="287"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="288"/>
         <source>Trimmed: %1 nodes (%2%)</source>
         <translation>Recortados: %1 nodos (%2%)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="363"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="364"/>
         <source>Strain window ≈ %1×%2 nodes</source>
         <translation>Ventana de deformación ≈ %1×%2 nodos</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/strain_param_panel.py" line="370"/>
+        <location filename="../../gui/widgets/strain_param_panel.py" line="371"/>
         <source>⚠ VSG radius (%1 px) &lt; DIC node spacing (%2 px); plane fit will fail. Use VSG ≥ %3 px or switch Method to FEM nodal.</source>
         <translation>⚠ Radio VSG (%1 px) &lt; espaciado de nodos DIC (%2 px); el ajuste de plano fallará. Use VSG ≥ %3 px o cambie Método a FEM nodal.</translation>
     </message>
@@ -3561,82 +3578,82 @@ o Examinar</translation>
 <context>
     <name>_MaskPreviewPanel</name>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="132"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="133"/>
         <source>Preview</source>
         <translation>Vista previa</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="136"/>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="262"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="137"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="263"/>
         <source>(no image)</source>
         <translation>(sin imagen)</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="156"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="157"/>
         <source>Image only</source>
         <translation>Solo imagen</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="157"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="158"/>
         <source>Image + Mask</source>
         <translation>Imagen + máscara</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="158"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="159"/>
         <source>Mask only</source>
         <translation>Solo máscara</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="161"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="162"/>
         <source>View:</source>
         <translation>Vista:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="167"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="168"/>
         <source>Alpha:</source>
         <translation>Alfa:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="175"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="176"/>
         <source>Blue</source>
         <comment>Mask overlay color</comment>
         <translation>Azul</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="179"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="180"/>
         <source>Red</source>
         <comment>Mask overlay color</comment>
         <translation>Rojo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="183"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="184"/>
         <source>Green</source>
         <comment>Mask overlay color</comment>
         <translation>Verde</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="187"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="188"/>
         <source>Yellow</source>
         <comment>Mask overlay color</comment>
         <translation>Amarillo</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="191"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="192"/>
         <source>Mask color:</source>
         <translation>Color de máscara:</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="268"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="269"/>
         <source>No mask assigned</source>
         <translation>Sin máscara asignada</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="274"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="275"/>
         <source>Frame %1 — %2</source>
         <translation>Fotograma %1 — %2</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="289"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="290"/>
         <source>Failed to load image</source>
         <translation>No se pudo cargar la imagen</translation>
     </message>

@@ -30,6 +30,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
+from al_dic.gui.theme_manager import themed
 from al_dic.gui.widgets.double_spin import LocaleSafeDoubleSpinBox
 from al_dic.gui.widgets.info_icon import InfoIcon
 from al_dic.i18n import tr_args
@@ -124,8 +125,8 @@ class StrainParamPanel(QWidget):
         # uniform mesh (2*floor(rad/step)+1 nodes per axis). Tells the user how
         # many data points the plane fit actually spans. Informational.
         self._vsg_window_readout = QLabel("")
-        self._vsg_window_readout.setStyleSheet(
-            "color: #6b7280; font-size: 10px; padding-left: 4px;"
+        themed(self._vsg_window_readout,
+            "color: {TEXT_MUTED}; font-size: 10px; padding-left: 4px;"
         )
         self._vsg_window_readout.setToolTip(self.tr(
             "Number of mesh nodes per axis inside the circular VSG window on a "
@@ -142,8 +143,8 @@ class StrainParamPanel(QWidget):
         # change.
         self._vsg_warning = QLabel("")
         self._vsg_warning.setWordWrap(True)
-        self._vsg_warning.setStyleSheet(
-            "color: #d97706; font-size: 10px; padding-left: 4px;"
+        themed(self._vsg_warning,
+            "color: {WARNING}; font-size: 10px; padding-left: 4px;"
         )
         self._vsg_warning.setVisible(False)
         layout.addRow("", self._vsg_warning)
@@ -182,8 +183,8 @@ class StrainParamPanel(QWidget):
         # Live readout: how many nodes the current trim removes. Updated by
         # the window after each strain render. Informational, not a warning.
         self._edge_trim_readout = QLabel("")
-        self._edge_trim_readout.setStyleSheet(
-            "color: #6b7280; font-size: 10px; padding-left: 4px;"
+        themed(self._edge_trim_readout,
+            "color: {TEXT_MUTED}; font-size: 10px; padding-left: 4px;"
         )
         self._edge_trim_readout.setVisible(False)
         layout.addRow("", self._edge_trim_readout)

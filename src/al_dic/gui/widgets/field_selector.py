@@ -3,7 +3,7 @@
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QPushButton
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class FieldSelector(QWidget):
@@ -44,12 +44,12 @@ class FieldSelector(QWidget):
             (self._btn_v, self._btn_v.isChecked()),
         ]:
             if active:
-                btn.setStyleSheet(
-                    f"background: {COLORS.ACCENT}; color: white; "
-                    f"border: none; border-radius: 4px; font-weight: bold;"
+                themed(btn,
+                    "background: {ACCENT}; color: white; "
+                    "border: none; border-radius: 4px; font-weight: bold;"
                 )
             else:
-                btn.setStyleSheet(
-                    f"background: {COLORS.BG_INPUT}; color: {COLORS.TEXT_SECONDARY}; "
-                    f"border: 1px solid {COLORS.BORDER}; border-radius: 4px;"
+                themed(btn,
+                    "background: {BG_INPUT}; color: {TEXT_SECONDARY}; "
+                    "border: 1px solid {BORDER}; border-radius: 4px;"
                 )

@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from al_dic.gui.app_state import AppState
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class MeshAppearanceWidget(QWidget):
@@ -74,9 +74,9 @@ class MeshAppearanceWidget(QWidget):
 
     def _set_button_color(self, hex_color: str) -> None:
         """Apply hex_color as the button's background."""
-        self._color_btn.setStyleSheet(
-            f"QPushButton {{ background: {hex_color}; "
-            f"border: 1px solid {COLORS.BORDER}; border-radius: 3px; }}"
+        themed(self._color_btn,
+            f"QPushButton {{{{ background: {hex_color}; "
+            "border: 1px solid {BORDER}; border-radius: 3px; }}"
         )
 
     def _pick_color(self) -> None:

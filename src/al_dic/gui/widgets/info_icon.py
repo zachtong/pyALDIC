@@ -17,7 +17,7 @@ from __future__ import annotations
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QToolTip, QWidget
 
-from al_dic.gui.theme import COLORS
+from al_dic.gui.theme_manager import themed
 
 
 class InfoIcon(QLabel):
@@ -28,9 +28,9 @@ class InfoIcon(QLabel):
         self.setToolTip(tip)
         self._tip_text = tip
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setStyleSheet(
-            f"color: {COLORS.TEXT_SECONDARY}; font-size: 13px; "
-            f"padding: 0 4px;"
+        themed(self,
+            "color: {TEXT_SECONDARY}; font-size: 13px; "
+            "padding: 0 4px;"
         )
 
     def set_tip(self, tip: str) -> None:
