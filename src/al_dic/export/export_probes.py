@@ -100,7 +100,7 @@ def _geometry_text(probe: Probe) -> str:
             return f"rect ({x0:.3f}, {y0:.3f}) -> ({x1:.3f}, {y1:.3f}) px"
         if g.shape == "circle":
             cx, cy, r = g.data  # type: ignore[misc]
-            return f"circle centre ({cx:.3f}, {cy:.3f}) px, radius {r:.3f} px"
+            return f"circle center ({cx:.3f}, {cy:.3f}) px, radius {r:.3f} px"
         pts = ", ".join(f"({x:.3f}, {y:.3f})" for x, y in g.data)  # type: ignore[misc]
         return f"polygon [{pts}] px"
     return "unknown geometry"

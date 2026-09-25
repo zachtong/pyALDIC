@@ -11,7 +11,7 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 - **A light theme.** *Settings > Theme* switches between the dark theme,
   still the default, and a new light one. The switch is immediate -- every
   open window changes, the strain window's charts included -- and the
-  choice is remembered for the next start. Images, field colour maps and
+  choice is remembered for the next start. Images, field color maps and
   figures exported for a paper look the same in both themes: they show data,
   not the interface. On Windows the title bar follows the theme too.
 

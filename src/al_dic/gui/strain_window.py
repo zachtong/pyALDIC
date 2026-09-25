@@ -564,7 +564,7 @@ class StrainWindow(QMainWindow):
         if worker is not None and worker.isRunning():
             worker.cancel()
             self._cancel_btn.setEnabled(False)
-            self._strain_progress_label.setText(self.tr("Cancelling…"))
+            self._strain_progress_label.setText(self.tr("Canceling…"))
 
     def _on_strain_progress(self, fraction: float, message: str) -> None:
         self._strain_progress.setValue(int(fraction * 1000))
@@ -601,7 +601,7 @@ class StrainWindow(QMainWindow):
         self._strain_progress.setVisible(False)
         self._strain_progress_label.setVisible(False)
         self._compute_btn.setEnabled(True)
-        self._log(self.tr("Strain computation cancelled."), "warn")
+        self._log(self.tr("Strain computation canceled."), "warn")
 
     def _on_strain_error(self, message: str) -> None:
         from al_dic.i18n import tr_args

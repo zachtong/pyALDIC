@@ -83,7 +83,7 @@ class InitGuessWidget(QWidget):
             self.tr(
                 "Place a few points; pyALDIC bootstraps each with a "
                 "single-point NCC and propagates the field along mesh "
-                "neighbours.\n\n"
+                "neighbors.\n\n"
                 "Best for:\n"
                 "• Large inter-frame displacement (> 50 px)\n"
                 "• Discontinuous fields (cracks, shear bands)\n"

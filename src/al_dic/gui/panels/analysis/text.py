@@ -112,7 +112,7 @@ def tool_instruction(tool: str) -> str:
         "area_rect": QCoreApplication.translate(
             "AnalysisTab", "Click twice: opposite corners."),
         "area_circle": QCoreApplication.translate(
-            "AnalysisTab", "Click twice: centre, then the edge."),
+            "AnalysisTab", "Click twice: center, then the edge."),
         "area_polygon": QCoreApplication.translate(
             "AnalysisTab", "Click each vertex, then double-click to close."),
         "extensometer": QCoreApplication.translate(

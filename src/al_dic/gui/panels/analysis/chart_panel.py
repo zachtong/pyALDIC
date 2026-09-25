@@ -201,14 +201,14 @@ class AnalysisChartPanel(QWidget):
                 QCoreApplication.translate(
                     "AnalysisTab",
                     "The field along the selected line at the current frame, "
-                    "over the other frames in grey.")),
+                    "over the other frames in gray.")),
             "kymograph": (
                 QCoreApplication.translate(
                     "AnalysisTab", "Kymograph", "Chart view: distance against frame"),
                 QCoreApplication.translate(
                     "AnalysisTab",
                     "The field along the selected line at every frame: "
-                    "distance against frame, value as colour.")),
+                    "distance against frame, value as color.")),
             "stress_strain": (
                 QCoreApplication.translate(
                     "AnalysisTab", "Stress–strain", "Chart view: stress against strain"),

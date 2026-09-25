@@ -151,7 +151,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Annuler",
         "es":    "Cancelar",
     },
-    "Cancelling…": {
+    "Canceling…": {
         "zh_CN": "正在取消…",
         "zh_TW": "正在取消…",
         "ja":    "キャンセル中…",
@@ -169,7 +169,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Annuler le calcul de déformation en cours. Le résultat de déformation précédent est conservé.",
         "es":    "Cancelar el cálculo de deformación en curso. Se conserva el resultado de deformación anterior.",
     },
-    "Strain computation cancelled.": {
+    "Strain computation canceled.": {
         "zh_CN": "应变计算已取消。",
         "zh_TW": "應變計算已取消。",
         "ja":    "ひずみ計算をキャンセルしました。",
@@ -1469,7 +1469,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "  Masque ROI : %1, %2 pixels (%3%)",
         "es":    "  Máscara ROI: %1, %2 píxeles (%3%)",
     },
-    "Run cancelled: define per-frame Regions of Interest "
+    "Run canceled: define per-frame Regions of Interest "
     "for the missing reference frames or accept the "
     "inherited frame-1 mask in the next run.": {
         "zh_CN": "已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。",
@@ -1752,7 +1752,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr": "Cliquez deux fois : coins opposés.",
         "es": "Haga clic dos veces: esquinas opuestas.",
     },
-    "Click twice: centre, then the edge.": {
+    "Click twice: center, then the edge.": {
         "zh_CN": "点击两次：先圆心，后边缘。",
         "zh_TW": "點擊兩次：先圓心，後邊緣。",
         "ja": "2 回クリック：中心、次に円周。",
@@ -1791,11 +1791,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "zh_CN": "类型", "zh_TW": "類型", "ja": "種類", "ko": "종류",
         "de": "Typ", "fr": "Type", "es": "Tipo",
     },
-    "Colour": {
+    "Color": {
         "zh_CN": "颜色", "zh_TW": "顏色", "ja": "色", "ko": "색상",
         "de": "Farbe", "fr": "Couleur", "es": "Color",
     },
-    "Colour…": {
+    "Color…": {
         "zh_CN": "颜色…", "zh_TW": "顏色…", "ja": "色…", "ko": "색상…",
         "de": "Farbe…", "fr": "Couleur…", "es": "Color…",
     },
@@ -2537,7 +2537,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'fr': 'Afficher le champ',
         'es': 'Mostrar campo',
     },
-    "Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab's field is shown.": {
+    "Color the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab's field is shown.": {
         'zh_CN': '用当前帧所绘物理量的场为参考图像着色。对于量规读数，显示“应变场”页中的场。',
         'zh_TW': '以目前影格所繪物理量的場為參考影像著色。對於量規讀數，顯示「應變場」頁中的場。',
         'ja': '現在のフレームで表示中の量の場で参照画像を色付けします。ゲージの読み取り値では「ひずみ場」タブの場を表示します。',
@@ -2610,7 +2610,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'fr': 'Le long de la ligne',
         'es': 'A lo largo de la línea',
     },
-    'The field along the selected line at the current frame, over the other frames in grey.': {
+    'The field along the selected line at the current frame, over the other frames in gray.': {
         'zh_CN': '当前帧沿所选线的场分布，其它帧以灰色显示在下方。',
         'zh_TW': '目前影格沿所選線的場分佈，其他影格以灰色顯示在下方。',
         'ja': '現在のフレームにおける選択した線に沿った場。他のフレームは背後に灰色で表示されます。',
@@ -2628,7 +2628,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         'fr': 'Kymographe',
         'es': 'Quimograma',
     },
-    'The field along the selected line at every frame: distance against frame, value as colour.': {
+    'The field along the selected line at every frame: distance against frame, value as color.': {
         'zh_CN': '所选线在每一帧的场分布：距离对帧，数值以颜色表示。',
         'zh_TW': '所選線在每一影格的場分佈：距離對影格，數值以顏色表示。',
         'ja': '選択した線に沿った全フレームの場：距離とフレームの関係を、値を色で表示します。',
@@ -3094,11 +3094,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
 # another meaning elsewhere ("Light" is also a mesh-refinement severity, 轻度),
 # so the source-only table above cannot hold both. Consulted first.
 DISAMBIGUATED: dict[tuple[str, str], dict[str, str]] = {
-    ("Dark", "Colour theme"): {
+    ("Dark", "Color theme"): {
         "zh_CN": "深色", "zh_TW": "深色", "ja": "ダーク", "ko": "다크",
         "de": "Dunkel", "fr": "Sombre", "es": "Oscuro",
     },
-    ("Light", "Colour theme"): {
+    ("Light", "Color theme"): {
         "zh_CN": "浅色", "zh_TW": "淺色", "ja": "ライト", "ko": "라이트",
         "de": "Hell", "fr": "Clair", "es": "Claro",
     },
@@ -3320,7 +3320,7 @@ def fill_ts(lang: str) -> tuple[int, int]:
         if 'type="unfinished"' not in body:
             return match.group(0)
 
-        # A disambiguated source ("Light", "Colour theme") may mean something
+        # A disambiguated source ("Light", "Color theme") may mean something
         # else than the same text elsewhere ("Light", "Mesh refinement
         # severity"): its own entry wins over the source-only table.
         comment_m = COMMENT_INNER.search(body)

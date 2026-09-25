@@ -224,7 +224,7 @@ class Probe:
             )
         if not _COLOUR_RE.match(self.color):
             raise ValueError(
-                f"Probe colour must be '#RRGGBB', got {self.color!r}."
+                f"Probe color must be '#RRGGBB', got {self.color!r}."
             )
 
 

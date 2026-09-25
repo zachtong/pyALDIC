@@ -113,11 +113,6 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>点击两次：对角两点。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/text.py" line="114"/>
-        <source>Click twice: centre, then the edge.</source>
-        <translation>点击两次：先圆心，后边缘。</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/text.py" line="116"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>逐个点击顶点，双击闭合。</translation>
@@ -142,20 +137,20 @@ Only relevant for the FFT init-guess mode.</source>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
-        <source>Colour</source>
-        <comment>Probe list column: colour swatch</comment>
+        <source>Color</source>
+        <comment>Probe list column: color swatch</comment>
         <translation>颜色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
+        <source>Color…</source>
+        <translation>颜色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>说明</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
-        <source>Colour…</source>
-        <translation>颜色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
@@ -323,6 +318,11 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>点击两次：起点和终点。线探针同时也是虚拟引伸计和裂纹张开量规。</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/text.py" line="114"/>
+        <source>Click twice: center, then the edge.</source>
+        <translation>点击两次：先圆心，后边缘。</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/text.py" line="118"/>
         <source>Click the two gauge points. The chart then shows the strain between them.</source>
         <translation>点击两个标距点。图表随后显示两点之间的应变。</translation>
@@ -367,12 +367,12 @@ Only relevant for the FFT init-guess mode.</source>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
-        <comment>Analysis canvas: colour the image by the field</comment>
+        <comment>Analysis canvas: color the image by the field</comment>
         <translation>显示场</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
-        <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
+        <source>Color the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>用当前帧所绘物理量的场为参考图像着色。对于量规读数，显示“应变场”页中的场。</translation>
     </message>
     <message>
@@ -418,19 +418,19 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>沿线分布</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
-        <source>The field along the selected line at the current frame, over the other frames in grey.</source>
-        <translation>当前帧沿所选线的场分布，其它帧以灰色显示在下方。</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>时空图</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
+        <source>The field along the selected line at the current frame, over the other frames in gray.</source>
+        <translation>当前帧沿所选线的场分布，其它帧以灰色显示在下方。</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
-        <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
+        <source>The field along the selected line at every frame: distance against frame, value as color.</source>
         <translation>所选线在每一帧的场分布：距离对帧，数值以颜色表示。</translation>
     </message>
     <message>
@@ -1838,7 +1838,7 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="84"/>
-        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbours.
+        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbors.
 
 Best for:
 • Large inter-frame displacement (&gt; 50 px)
@@ -2183,13 +2183,13 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/app.py" line="247"/>
         <source>Dark</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>深色</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="248"/>
         <source>Light</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>浅色</translation>
     </message>
     <message>
@@ -2584,7 +2584,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
-        <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
+        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。</translation>
     </message>
     <message>
@@ -3379,13 +3379,8 @@ Only applies when Method = Plane fitting.</source>
         <translation>应变窗口：没有可后处理的位移结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="567"/>
-        <source>Cancelling…</source>
-        <translation>正在取消…</translation>
-    </message>
-    <message>
         <location filename="../../gui/strain_window.py" line="604"/>
-        <source>Strain computation cancelled.</source>
+        <source>Strain computation canceled.</source>
         <translation>应变计算已取消。</translation>
     </message>
     <message>
@@ -3422,6 +3417,11 @@ Only applies when Method = Plane fitting.</source>
         <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
         <translation>开始中…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="567"/>
+        <source>Canceling…</source>
+        <translation>正在取消…</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>

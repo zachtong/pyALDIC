@@ -113,11 +113,6 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>2 回クリック：対角の 2 点。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/text.py" line="114"/>
-        <source>Click twice: centre, then the edge.</source>
-        <translation>2 回クリック：中心、次に円周。</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/text.py" line="116"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>各頂点をクリックし、ダブルクリックで閉じます。</translation>
@@ -142,20 +137,20 @@ FFT 初期推定モードでのみ有効です。</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
-        <source>Colour</source>
-        <comment>Probe list column: colour swatch</comment>
+        <source>Color</source>
+        <comment>Probe list column: color swatch</comment>
         <translation>色</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
+        <source>Color…</source>
+        <translation>色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>備考</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
-        <source>Colour…</source>
-        <translation>色…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
@@ -323,6 +318,11 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>2 回クリック：始点と終点。線は仮想伸び計およびき裂開口ゲージとしても使えます。</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/text.py" line="114"/>
+        <source>Click twice: center, then the edge.</source>
+        <translation>2 回クリック：中心、次に円周。</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/text.py" line="118"/>
         <source>Click the two gauge points. The chart then shows the strain between them.</source>
         <translation>2 つの標点をクリックします。グラフにはその間のひずみが表示されます。</translation>
@@ -367,12 +367,12 @@ FFT 初期推定モードでのみ有効です。</translation>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
-        <comment>Analysis canvas: colour the image by the field</comment>
+        <comment>Analysis canvas: color the image by the field</comment>
         <translation>場を表示</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
-        <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
+        <source>Color the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>現在のフレームで表示中の量の場で参照画像を色付けします。ゲージの読み取り値では「ひずみ場」タブの場を表示します。</translation>
     </message>
     <message>
@@ -418,19 +418,19 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>線に沿った分布</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
-        <source>The field along the selected line at the current frame, over the other frames in grey.</source>
-        <translation>現在のフレームにおける選択した線に沿った場。他のフレームは背後に灰色で表示されます。</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>キモグラフ</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
+        <source>The field along the selected line at the current frame, over the other frames in gray.</source>
+        <translation>現在のフレームにおける選択した線に沿った場。他のフレームは背後に灰色で表示されます。</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
-        <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
+        <source>The field along the selected line at every frame: distance against frame, value as color.</source>
         <translation>選択した線に沿った全フレームの場：距離とフレームの関係を、値を色で表示します。</translation>
     </message>
     <message>
@@ -1838,7 +1838,7 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="84"/>
-        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbours.
+        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbors.
 
 Best for:
 • Large inter-frame displacement (&gt; 50 px)
@@ -2183,13 +2183,13 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/app.py" line="247"/>
         <source>Dark</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>ダーク</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="248"/>
         <source>Light</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>ライト</translation>
     </message>
     <message>
@@ -2584,7 +2584,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
-        <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
+        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。</translation>
     </message>
     <message>
@@ -3379,13 +3379,8 @@ Only applies when Method = Plane fitting.</source>
         <translation>ひずみウィンドウ：後処理する変位結果がありません。</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="567"/>
-        <source>Cancelling…</source>
-        <translation>キャンセル中…</translation>
-    </message>
-    <message>
         <location filename="../../gui/strain_window.py" line="604"/>
-        <source>Strain computation cancelled.</source>
+        <source>Strain computation canceled.</source>
         <translation>ひずみ計算をキャンセルしました。</translation>
     </message>
     <message>
@@ -3422,6 +3417,11 @@ Only applies when Method = Plane fitting.</source>
         <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
         <translation>開始中…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="567"/>
+        <source>Canceling…</source>
+        <translation>キャンセル中…</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>

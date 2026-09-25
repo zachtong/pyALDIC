@@ -113,11 +113,6 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>두 번 클릭: 마주 보는 두 모서리.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/text.py" line="114"/>
-        <source>Click twice: centre, then the edge.</source>
-        <translation>두 번 클릭: 중심, 그다음 가장자리.</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/text.py" line="116"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>각 꼭짓점을 클릭한 뒤 두 번 클릭하여 닫습니다.</translation>
@@ -142,20 +137,20 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
-        <source>Colour</source>
-        <comment>Probe list column: colour swatch</comment>
+        <source>Color</source>
+        <comment>Probe list column: color swatch</comment>
         <translation>색상</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
+        <source>Color…</source>
+        <translation>색상…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>비고</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
-        <source>Colour…</source>
-        <translation>색상…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
@@ -323,6 +318,11 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>두 번 클릭: 시작점과 끝점. 선은 가상 신율계이자 균열 개구 게이지이기도 합니다.</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/text.py" line="114"/>
+        <source>Click twice: center, then the edge.</source>
+        <translation>두 번 클릭: 중심, 그다음 가장자리.</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/text.py" line="118"/>
         <source>Click the two gauge points. The chart then shows the strain between them.</source>
         <translation>두 개의 표점을 클릭하십시오. 차트에 두 점 사이의 변형률이 표시됩니다.</translation>
@@ -367,12 +367,12 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
-        <comment>Analysis canvas: colour the image by the field</comment>
+        <comment>Analysis canvas: color the image by the field</comment>
         <translation>필드 표시</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
-        <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
+        <source>Color the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>현재 프레임에서 표시 중인 양의 필드로 참조 이미지를 색칠합니다. 게이지 판독값의 경우 &apos;변형률장&apos; 탭의 필드를 표시합니다.</translation>
     </message>
     <message>
@@ -418,19 +418,19 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>선을 따른 분포</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
-        <source>The field along the selected line at the current frame, over the other frames in grey.</source>
-        <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>키모그래프</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
+        <source>The field along the selected line at the current frame, over the other frames in gray.</source>
+        <translation>현재 프레임에서 선택한 선을 따른 필드이며, 다른 프레임은 뒤에 회색으로 표시됩니다.</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
-        <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
+        <source>The field along the selected line at every frame: distance against frame, value as color.</source>
         <translation>모든 프레임에서 선택한 선을 따른 필드: 거리 대 프레임, 값은 색으로 표시.</translation>
     </message>
     <message>
@@ -1838,7 +1838,7 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="84"/>
-        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbours.
+        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbors.
 
 Best for:
 • Large inter-frame displacement (&gt; 50 px)
@@ -2183,13 +2183,13 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
     <message>
         <location filename="../../gui/app.py" line="247"/>
         <source>Dark</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>다크</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="248"/>
         <source>Light</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>라이트</translation>
     </message>
     <message>
@@ -2584,7 +2584,7 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
-        <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
+        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>실행 취소됨: 누락된 참조 프레임에 대해 프레임별 관심 영역을 정의하거나, 다음 실행 시 프레임 1의 마스크를 그대로 사용하도록 허용하세요.</translation>
     </message>
     <message>
@@ -3379,13 +3379,8 @@ Only applies when Method = Plane fitting.</source>
         <translation>변형률 창: 후처리할 변위 결과가 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="567"/>
-        <source>Cancelling…</source>
-        <translation>취소 중…</translation>
-    </message>
-    <message>
         <location filename="../../gui/strain_window.py" line="604"/>
-        <source>Strain computation cancelled.</source>
+        <source>Strain computation canceled.</source>
         <translation>변형률 계산 취소됨.</translation>
     </message>
     <message>
@@ -3422,6 +3417,11 @@ Only applies when Method = Plane fitting.</source>
         <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
         <translation>시작 중…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="567"/>
+        <source>Canceling…</source>
+        <translation>취소 중…</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>

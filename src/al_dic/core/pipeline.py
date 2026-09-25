@@ -949,7 +949,7 @@ def run_aldic(
             )
             stopped_early = True
             stopped_at_frame = frame_idx + 1
-            stop_reason = "Computation cancelled by user."
+            stop_reason = "Computation canceled by user."
             user_cancelled = True
             break
 

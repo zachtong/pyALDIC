@@ -139,7 +139,7 @@ def compute_strain(
             rad = para.strain_plane_fit_rad
             detail = (
                 f"Plane-fit strain failed: every node's plane fit "
-                f"returned NaN (no node had >= 3 valid neighbours "
+                f"returned NaN (no node had >= 3 valid neighbors "
                 f"within the VSG radius). "
                 f"VSG radius = {rad} px"
             )
@@ -152,7 +152,7 @@ def compute_strain(
             detail += (
                 "Fix: increase VSG Size in the Strain panel, or "
                 "switch Method to 'FEM nodal' which does not depend "
-                "on a neighbourhood radius."
+                "on a neighborhood radius."
             )
             raise ValueError(detail) from exc
     elif method == 3:

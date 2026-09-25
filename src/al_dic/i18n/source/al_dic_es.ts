@@ -113,11 +113,6 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Haga clic dos veces: esquinas opuestas.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/text.py" line="114"/>
-        <source>Click twice: centre, then the edge.</source>
-        <translation>Haga clic dos veces: centro y luego borde.</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/text.py" line="116"/>
         <source>Click each vertex, then double-click to close.</source>
         <translation>Haga clic en cada vértice y doble clic para cerrar.</translation>
@@ -142,20 +137,20 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="95"/>
-        <source>Colour</source>
-        <comment>Probe list column: colour swatch</comment>
+        <source>Color</source>
+        <comment>Probe list column: color swatch</comment>
         <translation>Color</translation>
+    </message>
+    <message>
+        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
+        <source>Color…</source>
+        <translation>Color…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="97"/>
         <source>Note</source>
         <comment>Probe list column: why a probe shows gaps</comment>
         <translation>Nota</translation>
-    </message>
-    <message>
-        <location filename="../../gui/panels/analysis/probe_table.py" line="100"/>
-        <source>Colour…</source>
-        <translation>Color…</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/probe_table.py" line="101"/>
@@ -323,6 +318,11 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Haga clic dos veces: inicio y fin. Una línea es también un extensómetro virtual y un calibre de apertura de grieta.</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/text.py" line="114"/>
+        <source>Click twice: center, then the edge.</source>
+        <translation>Haga clic dos veces: centro y luego borde.</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/text.py" line="118"/>
         <source>Click the two gauge points. The chart then shows the strain between them.</source>
         <translation>Haga clic en los dos puntos de medida. El gráfico muestra entonces la deformación entre ellos.</translation>
@@ -367,12 +367,12 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="138"/>
         <source>Show field</source>
-        <comment>Analysis canvas: colour the image by the field</comment>
+        <comment>Analysis canvas: color the image by the field</comment>
         <translation>Mostrar campo</translation>
     </message>
     <message>
         <location filename="../../gui/panels/analysis/canvas_panel.py" line="140"/>
-        <source>Colour the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
+        <source>Color the reference image with the plotted field at the current frame. For a gauge reading, the Strain Field tab&apos;s field is shown.</source>
         <translation>Colorea la imagen de referencia con el campo representado en el fotograma actual. Para una lectura de calibre, se muestra el campo de la pestaña «Campo de deformación».</translation>
     </message>
     <message>
@@ -418,19 +418,19 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>A lo largo de la línea</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
-        <source>The field along the selected line at the current frame, over the other frames in grey.</source>
-        <translation>El campo a lo largo de la línea seleccionada en el fotograma actual, sobre los demás fotogramas en gris.</translation>
-    </message>
-    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="206"/>
         <source>Kymograph</source>
         <comment>Chart view: distance against frame</comment>
         <translation>Quimograma</translation>
     </message>
     <message>
+        <location filename="../../gui/panels/analysis/chart_panel.py" line="201"/>
+        <source>The field along the selected line at the current frame, over the other frames in gray.</source>
+        <translation>El campo a lo largo de la línea seleccionada en el fotograma actual, sobre los demás fotogramas en gris.</translation>
+    </message>
+    <message>
         <location filename="../../gui/panels/analysis/chart_panel.py" line="208"/>
-        <source>The field along the selected line at every frame: distance against frame, value as colour.</source>
+        <source>The field along the selected line at every frame: distance against frame, value as color.</source>
         <translation>El campo a lo largo de la línea seleccionada en cada fotograma: distancia frente a fotograma, valor como color.</translation>
     </message>
     <message>
@@ -1838,7 +1838,7 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
     </message>
     <message>
         <location filename="../../gui/widgets/init_guess_widget.py" line="84"/>
-        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbours.
+        <source>Place a few points; pyALDIC bootstraps each with a single-point NCC and propagates the field along mesh neighbors.
 
 Best for:
 • Large inter-frame displacement (&gt; 50 px)
@@ -2183,13 +2183,13 @@ Predeterminado (desmarcado): lexicográfico — ideal para nombres con ceros a l
     <message>
         <location filename="../../gui/app.py" line="247"/>
         <source>Dark</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>Oscuro</translation>
     </message>
     <message>
         <location filename="../../gui/app.py" line="248"/>
         <source>Light</source>
-        <comment>Colour theme</comment>
+        <comment>Color theme</comment>
         <translation>Claro</translation>
     </message>
     <message>
@@ -2584,7 +2584,7 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
     </message>
     <message>
         <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
-        <source>Run cancelled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
+        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>Ejecución cancelada: defina regiones de interés por fotograma para los fotogramas de referencia que faltan, o acepte la máscara heredada del fotograma 1 en la próxima ejecución.</translation>
     </message>
     <message>
@@ -3379,13 +3379,8 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <translation>Ventana de deformación: no hay resultados de desplazamiento para posprocesar.</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="567"/>
-        <source>Cancelling…</source>
-        <translation>Cancelando…</translation>
-    </message>
-    <message>
         <location filename="../../gui/strain_window.py" line="604"/>
-        <source>Strain computation cancelled.</source>
+        <source>Strain computation canceled.</source>
         <translation>Cálculo de deformación cancelado.</translation>
     </message>
     <message>
@@ -3422,6 +3417,11 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <location filename="../../gui/strain_window.py" line="547"/>
         <source>Starting…</source>
         <translation>Iniciando…</translation>
+    </message>
+    <message>
+        <location filename="../../gui/strain_window.py" line="567"/>
+        <source>Canceling…</source>
+        <translation>Cancelando…</translation>
     </message>
     <message>
         <location filename="../../gui/strain_window.py" line="583"/>

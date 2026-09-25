@@ -244,8 +244,8 @@ class MainWindow(QMainWindow):
         theme_group.setExclusive(True)
         self._theme_actions: dict[str, QAction] = {}
         for name, label in (
-            ("dark", self.tr("Dark", "Colour theme")),
-            ("light", self.tr("Light", "Colour theme")),
+            ("dark", self.tr("Dark", "Color theme")),
+            ("light", self.tr("Light", "Color theme")),
         ):
             act = QAction(label, self)
             act.setCheckable(True)

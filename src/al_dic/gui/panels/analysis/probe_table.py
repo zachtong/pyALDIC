@@ -93,11 +93,11 @@ class ProbeTable(QWidget):
             QCoreApplication.translate(
                 "AnalysisTab", "Type", "Probe list column: point, line or region"),
             QCoreApplication.translate(
-                "AnalysisTab", "Colour", "Probe list column: colour swatch"),
+                "AnalysisTab", "Color", "Probe list column: color swatch"),
             QCoreApplication.translate(
                 "AnalysisTab", "Note", "Probe list column: why a probe shows gaps"),
         ])
-        self.colour_btn.setText(QCoreApplication.translate("AnalysisTab", "Colour…"))
+        self.colour_btn.setText(QCoreApplication.translate("AnalysisTab", "Color…"))
         self.delete_btn.setText(QCoreApplication.translate(
             "AnalysisTab", "Delete", "Button: delete the selected probe"))
         self.clear_btn.setText(QCoreApplication.translate("AnalysisTab", "Clear All"))

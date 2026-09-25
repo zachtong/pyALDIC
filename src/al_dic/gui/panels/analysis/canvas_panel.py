@@ -136,10 +136,10 @@ class AnalysisCanvasPanel(QWidget):
         self._zoom_in_btn.setToolTip(QCoreApplication.translate("AnalysisTab", "Zoom in"))
         self._zoom_out_btn.setToolTip(QCoreApplication.translate("AnalysisTab", "Zoom out"))
         self.show_field_box.setText(QCoreApplication.translate(
-            "AnalysisTab", "Show field", "Analysis canvas: colour the image by the field"))
+            "AnalysisTab", "Show field", "Analysis canvas: color the image by the field"))
         self.show_field_box.setToolTip(QCoreApplication.translate(
             "AnalysisTab",
-            "Colour the reference image with the plotted field at the current "
+            "Color the reference image with the plotted field at the current "
             "frame. For a gauge reading, the Strain Field tab's field is shown."))
         self.update_banner(has_selection)
 

@@ -603,7 +603,7 @@ class PipelineController:
                 state.log_message.emit(
                     QCoreApplication.translate(
                         "PipelineController",
-                        "Run cancelled: define per-frame Regions of Interest "
+                        "Run canceled: define per-frame Regions of Interest "
                         "for the missing reference frames or accept the "
                         "inherited frame-1 mask in the next run.",
                     ),
