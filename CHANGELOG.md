@@ -6,6 +6,15 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Export, batch-import and load-data dialogs are now closed properly.**
+  Each was shown as a child of the window that opened it and was never
+  deleted, so every one opened in a session stayed in memory until pyALDIC
+  quit. The export dialog kept the whole result set with it, so exporting
+  five times held five copies; each dialog also left widgets behind, which
+  made switching the theme slower the longer a session ran.
+
 ## [0.10.0] — 2026-10-13
 
 ### Added
