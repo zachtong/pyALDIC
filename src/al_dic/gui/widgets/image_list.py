@@ -464,8 +464,9 @@ class ImageList(QWidget):
             self._state.run_state = RunState.IDLE
             self._state.show_deformed = False
 
-        # Clear image caches for removed images
-        self._image_ctrl.clear_cache()
+        # Keep the controller's own list in step; clear_cache() alone would
+        # leave it holding the deleted frames.
+        self._image_ctrl.set_files(files)
 
         # Update state (triggers _rebuild_list via images_changed signal)
         self._state.image_files = files

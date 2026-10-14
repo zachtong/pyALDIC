@@ -19,6 +19,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+from PIL import Image
 from numpy.typing import NDArray
 
 from al_dic.gui.app_state import AppState
@@ -76,6 +77,24 @@ def _read_image_raw(path: str) -> NDArray:
     if img is None:
         raise ValueError(f"Failed to decode image: {path}")
     return img
+
+
+def _read_image_size(path: str) -> tuple[int, int]:
+    """Return (H, W) for *path* without decoding the pixels.
+
+    Pillow parses the header and stops, which is what the folder scan needs:
+    reading 3000 frames to compare their dimensions used to decode every one
+    of them in full, costing minutes (far worse when the images live on a
+    network or cloud-synced drive, where a full read pulls the whole file
+    down). Falls back to a full decode for anything Pillow cannot parse, so
+    no supported format is lost.
+    """
+    try:
+        with Image.open(path) as im:
+            w, h = im.size
+        return h, w
+    except Exception:
+        return _read_image_raw(path).shape[:2]
 
 
 def _normalize_to_float64(img: NDArray) -> NDArray[np.float64]:
@@ -216,6 +235,18 @@ class ImageController:
         # Sort and validate
         self._sort_and_update()
 
+    def set_files(self, files: list[str]) -> None:
+        """Replace the controller's file list without rescanning the folder.
+
+        Callers that mutate ``state.image_files`` directly (deleting frames
+        from the image list) must go through this, or the controller keeps
+        the original list and a later sort toggle resurrects the deleted
+        frames -- and rescans every file again.
+        """
+        self._raw_files = list(files)
+        self._cache.clear()
+        self._cache_rgb.clear()
+
     def _sort_and_update(self) -> None:
         """Sort _raw_files with current mode, validate sizes, update state."""
         self._cache.clear()
@@ -236,14 +267,13 @@ class ImageController:
     def _validate_dimensions(self, files: list[str]) -> None:
         """Check that all images have the same dimensions as the first."""
         try:
-            ref = _read_image_raw(files[0])
-            ref_shape = ref.shape[:2]  # (H, W)
+            ref_shape = _read_image_size(files[0])  # (H, W)
             mismatched: list[str] = []
             for f in files[1:]:
-                img = _read_image_raw(f)
-                if img.shape[:2] != ref_shape:
+                shape = _read_image_size(f)
+                if shape != ref_shape:
                     mismatched.append(
-                        f"{Path(f).name} ({img.shape[1]}x{img.shape[0]})"
+                        f"{Path(f).name} ({shape[1]}x{shape[0]})"
                     )
             if mismatched:
                 ref_dim = f"{ref_shape[1]}x{ref_shape[0]}"
