@@ -39,9 +39,10 @@ jobs:
         # Accuracy regression tests run in CI; performance (perf) tests
         # are skipped because runner CPU varies. Run locally: pytest -m slow
         run: |
-          # TEMPORARY diagnostic: theme tests, or their interaction?
+          # TEMPORARY diagnostic: quarter-split of tests/test_gui
           set +e
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_theme.py tests/test_gui/test_theme_palette.py > /dev/null 2>&1; echo "RESULT theme-only exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui --ignore=tests/test_gui/test_theme.py --ignore=tests/test_gui/test_theme_palette.py > /dev/null 2>&1; echo "RESULT gui-minus-theme exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui > /dev/null 2>&1; echo "RESULT gui-all exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_analysis_line_views.py tests/test_gui/test_analysis_load.py tests/test_gui/test_analysis_tab.py tests/test_gui/test_app_state.py tests/test_gui/test_app_state_brush.py tests/test_gui/test_batch_import_dialog.py tests/test_gui/test_cancel_button.py tests/test_gui/test_colorbar_overlay.py tests/test_gui/test_colorbar_overlay_layout.py tests/test_gui/test_display_mode_split.py > /dev/null 2>&1; echo "RESULT q1 exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_double_spin.py tests/test_gui/test_export_close_during_run.py tests/test_gui/test_export_config.py tests/test_gui/test_export_preview.py tests/test_gui/test_fatal_error_dialog.py tests/test_gui/test_frame_provider.py tests/test_gui/test_kernel_warmup.py tests/test_gui/test_load_data_dialog.py tests/test_gui/test_mpl_chart.py tests/test_gui/test_open_strain_window.py tests/test_gui/test_param_panel.py > /dev/null 2>&1; echo "RESULT q2 exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_pipeline_controller_brush.py tests/test_gui/test_pipeline_masks.py tests/test_gui/test_probe_canvas.py tests/test_gui/test_range_mode.py tests/test_gui/test_refine_brush_gating.py tests/test_gui/test_refine_overlay_scope.py tests/test_gui/test_roi_drawing_ux.py tests/test_gui/test_session.py tests/test_gui/test_session_launch.py tests/test_gui/test_session_menu_wiring.py tests/test_gui/test_session_results.py > /dev/null 2>&1; echo "RESULT q3 exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_session_roi_restore.py tests/test_gui/test_session_roundtrip_fidelity.py tests/test_gui/test_strain_canvas.py tests/test_gui/test_strain_controller.py tests/test_gui/test_strain_field_selector.py tests/test_gui/test_strain_param_panel.py tests/test_gui/test_strain_viz_panel.py tests/test_gui/test_strain_window.py tests/test_gui/test_user_data_dir.py tests/test_gui/test_velocity_settings.py tests/test_gui/test_workflow_type_panel.py > /dev/null 2>&1; echo "RESULT q4 exit=$?"
           exit 0
