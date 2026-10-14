@@ -654,6 +654,9 @@ class StrainWindow(QMainWindow):
         )
         # All exports happen inside the dialog; exec() blocks until user clicks Close.
         dlg.exec()
+        # Delete it: a dialog given a parent outlives the call that made it,
+        # and this one holds the whole PipelineResult.
+        dlg.deleteLater()
 
     def _on_params_dirty(self) -> None:
         self._stale_label.setText(self.tr("⚠ Params changed -- click Compute Strain"))

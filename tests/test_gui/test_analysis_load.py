@@ -154,6 +154,10 @@ def test_the_button_stores_what_the_dialog_returns(tab, state, monkeypatch):
         def load_data(self):
             return record
 
+        def deleteLater(self):
+            # The real dialog is parented, so the tab deletes it after use.
+            self.deleted = True
+
     monkeypatch.setattr("al_dic.gui.panels.analysis.tab.LoadDataDialog", FakeDialog)
     tab._on_load_data()
     assert state.load_data is record
@@ -169,6 +173,9 @@ def test_cancelling_the_dialog_keeps_the_record(tab, state, monkeypatch):
 
         def exec(self):
             return QDialog.DialogCode.Rejected
+
+        def deleteLater(self):
+            self.deleted = True
 
     monkeypatch.setattr("al_dic.gui.panels.analysis.tab.LoadDataDialog", FakeDialog)
     tab._on_load_data()

@@ -966,10 +966,14 @@ class MainWindow(QMainWindow):
             required_frames=required_frames,
             img_shape=img_shape,
         )
-        if dialog.exec() != BatchImportDialog.DialogCode.Accepted:
+        accepted = dialog.exec() == BatchImportDialog.DialogCode.Accepted
+        masks = dialog.load_masks(img_shape) if accepted else {}
+        # Delete it: a dialog given a parent outlives the call that made it,
+        # and this one is reached on both paths out of here.
+        dialog.deleteLater()
+        if not accepted:
             return
 
-        masks = dialog.load_masks(img_shape)
         for frame_idx, mask in masks.items():
             state.per_frame_rois[frame_idx] = mask
             state.log_message.emit(

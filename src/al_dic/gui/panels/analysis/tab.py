@@ -449,6 +449,8 @@ class AnalysisTab(QWidget):
                                 self._frame_rate(), self)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self._state.set_load_data(dialog.load_data())
+        # Delete it: a dialog given a parent outlives the call that made it.
+        dialog.deleteLater()
 
     def _frame_count(self) -> int:
         result = self._state.results
