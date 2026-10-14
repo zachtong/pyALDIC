@@ -39,15 +39,9 @@ jobs:
         # Accuracy regression tests run in CI; performance (perf) tests
         # are skipped because runner CPU varies. Run locally: pytest -m slow
         run: |
-          # TEMPORARY diagnostic: which group segfaults at exit?
+          # TEMPORARY diagnostic: theme tests, or their interaction?
           set +e
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui > /dev/null 2>&1; echo "RESULT tests/test_gui exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_analysis > /dev/null 2>&1; echo "RESULT tests/test_analysis exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_export > /dev/null 2>&1; echo "RESULT tests/test_export exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_integration > /dev/null 2>&1; echo "RESULT tests/test_integration exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_mesh > /dev/null 2>&1; echo "RESULT tests/test_mesh exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_pipeline > /dev/null 2>&1; echo "RESULT tests/test_pipeline exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_solver > /dev/null 2>&1; echo "RESULT tests/test_solver exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_strain > /dev/null 2>&1; echo "RESULT tests/test_strain exit=$?"
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_unit > /dev/null 2>&1; echo "RESULT tests/test_unit exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui/test_theme.py tests/test_gui/test_theme_palette.py > /dev/null 2>&1; echo "RESULT theme-only exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui --ignore=tests/test_gui/test_theme.py --ignore=tests/test_gui/test_theme_palette.py > /dev/null 2>&1; echo "RESULT gui-minus-theme exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui > /dev/null 2>&1; echo "RESULT gui-all exit=$?"
           exit 0
