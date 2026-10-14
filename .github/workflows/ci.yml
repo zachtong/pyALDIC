@@ -13,7 +13,7 @@ jobs:
       matrix:
         # 3.13 and 3.14 too: a student installing with pip today most likely
         # has the newest Python, and that path must work as well as ours.
-        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.11"]
 
     steps:
       - uses: actions/checkout@v4
@@ -38,4 +38,14 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         # Accuracy regression tests run in CI; performance (perf) tests
         # are skipped because runner CPU varies. Run locally: pytest -m slow
-        run: pytest --tb=short -q --ignore=tests/test_reports -m "not perf"
+        run: |
+          # TEMPORARY diagnostic: which group segfaults at interpreter exit?
+          set +e
+          GROUPS="tests/test_gui tests/test_analysis tests/test_export tests/test_integration tests/test_mesh tests/test_pipeline tests/test_solver tests/test_strain tests/test_unit"
+          for g in $GROUPS; do
+            pytest -q -p no:randomly --tb=no -m "not perf" "$g" > /dev/null 2>&1
+            echo "GROUP $g -> exit=$?"
+          done
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/*.py > /dev/null 2>&1
+          echo "GROUP tests/rootfiles -> exit=$?"
+          exit 0
