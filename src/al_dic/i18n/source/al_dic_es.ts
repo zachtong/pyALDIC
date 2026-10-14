@@ -263,17 +263,17 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>no representada</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="510"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>Sonda «%1» añadida.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="596"/>
         <source>Clear All Probes</source>
         <translation>Borrar todas las sondas</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="597"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>¿Eliminar todas las sondas? Esta acción no se puede deshacer.</translation>
     </message>
@@ -637,12 +637,12 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>no representada: un extremo del calibre está fuera del área medida</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
         <source>Export Probe Data</source>
         <translation>Exportar datos de sonda</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
         <source>CSV Files</source>
         <translation>Archivos CSV</translation>
     </message>
@@ -652,73 +652,73 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>Los datos de carga no se pueden asociar a los fotogramas: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="724"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe export failed: %1</source>
         <translation>Error al exportar la sonda: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="695"/>
         <source>Probe data written to %1</source>
         <translation>Datos de sonda escritos en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="703"/>
         <source>Export Line Data</source>
         <translation>Exportar datos de línea</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line export failed: %1</source>
         <translation>Error al exportar la línea: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="716"/>
         <source>Line data written to %1</source>
         <translation>Datos de línea escritos en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>SVG Images</source>
         <translation>Imágenes SVG</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="733"/>
         <source>Export Chart</source>
         <translation>Exportar gráfico</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="752"/>
         <source>Chart copied to the clipboard.</source>
         <translation>Gráfico copiado al portapapeles.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="760"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>Datos representados copiados al portapapeles.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PNG Images</source>
         <translation>Imágenes PNG</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="723"/>
         <source>PDF Documents</source>
         <translation>Documentos PDF</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart export failed: %1</source>
         <translation>Error al exportar el gráfico: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="746"/>
         <source>Chart written to %1</source>
         <translation>Gráfico escrito en %1</translation>
     </message>
@@ -726,12 +726,12 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1015"/>
+        <location filename="../../gui/app.py" line="1019"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>Región de interés importada para %n fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1029"/>
+        <location filename="../../gui/app.py" line="1033"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>Ejecute primero el DIC — no hay resultados de desplazamiento para posprocesar.</translation>
     </message>
@@ -739,27 +739,27 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1135"/>
+        <location filename="../../gui/app.py" line="1139"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC ha encontrado un error</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1136"/>
+        <location filename="../../gui/app.py" line="1140"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>Se ha producido un error inesperado. Es posible que la aplicación no funcione correctamente a partir de ahora; se recomienda guardar la sesión y reiniciar.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1146"/>
+        <location filename="../../gui/app.py" line="1150"/>
         <source>Details were written to %1</source>
         <translation>Los detalles se han escrito en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1252"/>
+        <location filename="../../gui/app.py" line="1256"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>Preparando los núcleos de cálculo en segundo plano. El primer análisis tras una instalación nueva tarda más que los siguientes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1266"/>
+        <location filename="../../gui/app.py" line="1270"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>Núcleos de cálculo listos (%1 s).</translation>
     </message>
@@ -2359,12 +2359,12 @@ Los resultados se restauraron. Para mostrar las imágenes de fondo, seleccione l
         <translation>Defina primero una región de interés en el fotograma 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="977"/>
+        <location filename="../../gui/app.py" line="981"/>
         <source>  Imported mask for frame %1</source>
         <translation>  Máscara importada para el fotograma %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="987"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>Importación por lotes: %n máscara(s) cargada(s)</translation>
     </message>
@@ -2839,22 +2839,22 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="399"/>
         <source>Ready</source>
         <translation>Listo</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="401"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="492"/>
         <source>ELAPSED  %1</source>
         <translation>TRANSCURRIDO  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="403"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="500"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="504"/>
         <source>REMAINING  %1</source>
         <translation>RESTANTE  %1</translation>
     </message>
@@ -2954,12 +2954,12 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="368"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>Coloque al menos un punto inicial en cada región roja antes de ejecutar (rojo = requiere punto inicial).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  Fotograma %2</translation>
     </message>
@@ -3394,7 +3394,7 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
         <translation>Fallo en el cálculo de deformación</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="659"/>
+        <location filename="../../gui/strain_window.py" line="662"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ Parámetros modificados — haga clic en «Calcular deformación»</translation>
     </message>

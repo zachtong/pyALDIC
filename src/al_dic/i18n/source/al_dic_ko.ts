@@ -263,17 +263,17 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>표시 안 됨</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="510"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>프로브 &apos;%1&apos;을(를) 추가했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="596"/>
         <source>Clear All Probes</source>
         <translation>모든 프로브 지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="597"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>모든 프로브를 삭제하시겠습니까? 되돌릴 수 없습니다.</translation>
     </message>
@@ -637,12 +637,12 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>표시 안 됨: 게이지 끝점이 측정 영역 밖</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
         <source>Export Probe Data</source>
         <translation>프로브 데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
         <source>CSV Files</source>
         <translation>CSV 파일</translation>
     </message>
@@ -652,73 +652,73 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>하중 데이터를 프레임에 맞출 수 없습니다: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="724"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe export failed: %1</source>
         <translation>프로브 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="695"/>
         <source>Probe data written to %1</source>
         <translation>프로브 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="703"/>
         <source>Export Line Data</source>
         <translation>선 데이터 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line export failed: %1</source>
         <translation>선 데이터 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="716"/>
         <source>Line data written to %1</source>
         <translation>선 데이터를 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>SVG Images</source>
         <translation>SVG 이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="733"/>
         <source>Export Chart</source>
         <translation>차트 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="752"/>
         <source>Chart copied to the clipboard.</source>
         <translation>차트를 클립보드에 복사했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="760"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>표시된 데이터를 클립보드에 복사했습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PNG Images</source>
         <translation>PNG 이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="723"/>
         <source>PDF Documents</source>
         <translation>PDF 문서</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart export failed: %1</source>
         <translation>차트 내보내기 실패: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="746"/>
         <source>Chart written to %1</source>
         <translation>차트를 %1에 기록했습니다</translation>
     </message>
@@ -726,12 +726,12 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1015"/>
+        <location filename="../../gui/app.py" line="1019"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>%n 프레임에 관심 영역 가져옴</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1029"/>
+        <location filename="../../gui/app.py" line="1033"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>DIC를 먼저 실행하세요 —— 후처리할 변위 결과가 없습니다.</translation>
     </message>
@@ -739,27 +739,27 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1135"/>
+        <location filename="../../gui/app.py" line="1139"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC에서 오류가 발생했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1136"/>
+        <location filename="../../gui/app.py" line="1140"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>예기치 않은 오류가 발생했습니다. 이후 애플리케이션이 정상적으로 동작하지 않을 수 있으므로 세션을 저장하고 다시 시작하는 것을 권장합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1146"/>
+        <location filename="../../gui/app.py" line="1150"/>
         <source>Details were written to %1</source>
         <translation>자세한 내용을 %1에 기록했습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1252"/>
+        <location filename="../../gui/app.py" line="1256"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>백그라운드에서 계산 커널을 준비하고 있습니다. 새로 설치한 후 첫 번째 분석은 이후보다 오래 걸립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1266"/>
+        <location filename="../../gui/app.py" line="1270"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>계산 커널 준비 완료(%1초).</translation>
     </message>
@@ -2359,12 +2359,12 @@ Results were restored. To show the background images, select the folder that now
         <translation>먼저 프레임 1에서 관심 영역을 정의하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="977"/>
+        <location filename="../../gui/app.py" line="981"/>
         <source>  Imported mask for frame %1</source>
         <translation>  프레임 %1의 마스크를 가져왔습니다</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="987"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>일괄 가져오기: 마스크 %n개를 불러왔습니다</translation>
     </message>
@@ -2839,22 +2839,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="399"/>
         <source>Ready</source>
         <translation>준비됨</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="401"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="492"/>
         <source>ELAPSED  %1</source>
         <translation>경과 시간  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="403"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="500"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="504"/>
         <source>REMAINING  %1</source>
         <translation>남은 시간  %1</translation>
     </message>
@@ -2954,12 +2954,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="368"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>실행 전에 각 빨간 영역에 시드점을 하나 이상 배치하세요(빨강 = 시드점 필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  프레임 %2</translation>
     </message>
@@ -3394,7 +3394,7 @@ Only applies when Method = Plane fitting.</source>
         <translation>변형률 계산 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="659"/>
+        <location filename="../../gui/strain_window.py" line="662"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ 매개변수가 변경됨 — 「변형률 계산」을 클릭하세요</translation>
     </message>

@@ -263,17 +263,17 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未绘制</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="510"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>已添加探针「%1」。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="596"/>
         <source>Clear All Probes</source>
         <translation>清除所有探针</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="597"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>删除所有探针？此操作无法撤销。</translation>
     </message>
@@ -637,12 +637,12 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>未绘制：量规端点不在测量区域内</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
         <source>Export Probe Data</source>
         <translation>导出探针数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
         <source>CSV Files</source>
         <translation>CSV 文件</translation>
     </message>
@@ -652,73 +652,73 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>载荷数据无法与帧对应：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="724"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe export failed: %1</source>
         <translation>探针导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="695"/>
         <source>Probe data written to %1</source>
         <translation>探针数据已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="703"/>
         <source>Export Line Data</source>
         <translation>导出线数据</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line export failed: %1</source>
         <translation>线数据导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="716"/>
         <source>Line data written to %1</source>
         <translation>线数据已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>SVG Images</source>
         <translation>SVG 图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="733"/>
         <source>Export Chart</source>
         <translation>导出图表</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="752"/>
         <source>Chart copied to the clipboard.</source>
         <translation>图表已复制到剪贴板。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="760"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>所绘数据已复制到剪贴板。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PNG Images</source>
         <translation>PNG 图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="723"/>
         <source>PDF Documents</source>
         <translation>PDF 文档</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart export failed: %1</source>
         <translation>图表导出失败：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="746"/>
         <source>Chart written to %1</source>
         <translation>图表已写入 %1</translation>
     </message>
@@ -726,12 +726,12 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1015"/>
+        <location filename="../../gui/app.py" line="1019"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>为 %n 帧导入了感兴趣区域</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1029"/>
+        <location filename="../../gui/app.py" line="1033"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>请先运行 DIC —— 当前没有可后处理的位移结果。</translation>
     </message>
@@ -739,27 +739,27 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1135"/>
+        <location filename="../../gui/app.py" line="1139"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC 发生错误</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1136"/>
+        <location filename="../../gui/app.py" line="1140"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1146"/>
+        <location filename="../../gui/app.py" line="1150"/>
         <source>Details were written to %1</source>
         <translation>详细信息已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1252"/>
+        <location filename="../../gui/app.py" line="1256"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>正在后台准备计算内核。新安装后的首次分析会比之后的耗时更长。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1266"/>
+        <location filename="../../gui/app.py" line="1270"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>计算内核已就绪（%1 秒）。</translation>
     </message>
@@ -2359,12 +2359,12 @@ Results were restored. To show the background images, select the folder that now
         <translation>请先在帧 1 上定义感兴趣区域。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="977"/>
+        <location filename="../../gui/app.py" line="981"/>
         <source>  Imported mask for frame %1</source>
         <translation>  已导入帧 %1 的掩模</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="987"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>批量导入：已加载 %n 个掩模</translation>
     </message>
@@ -2839,22 +2839,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="399"/>
         <source>Ready</source>
         <translation>就绪</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="401"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="492"/>
         <source>ELAPSED  %1</source>
         <translation>已用时间  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="403"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="500"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="504"/>
         <source>REMAINING  %1</source>
         <translation>剩余时间  %1</translation>
     </message>
@@ -2954,12 +2954,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="368"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>运行前请在每个红色区域放置至少一个种子点（红色 = 需要种子点）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 帧</translation>
     </message>
@@ -3394,7 +3394,7 @@ Only applies when Method = Plane fitting.</source>
         <translation>应变计算失败</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="659"/>
+        <location filename="../../gui/strain_window.py" line="662"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ 参数已变更 — 请点击“计算应变”</translation>
     </message>

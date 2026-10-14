@@ -263,17 +263,17 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>未表示</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="508"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="510"/>
         <source>Added probe &apos;%1&apos;.</source>
         <translation>プローブ「%1」を追加しました。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="594"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="596"/>
         <source>Clear All Probes</source>
         <translation>すべてのプローブをクリア</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="595"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="597"/>
         <source>Delete every probe? This cannot be undone.</source>
         <translation>すべてのプローブを削除しますか？この操作は取り消せません。</translation>
     </message>
@@ -637,12 +637,12 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>未表示：ゲージの端点が測定領域の外</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="662"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="664"/>
         <source>Export Probe Data</source>
         <translation>プローブデータをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
         <source>CSV Files</source>
         <translation>CSV ファイル</translation>
     </message>
@@ -652,73 +652,73 @@ FFT 初期推定モードでのみ有効です。</translation>
         <translation>荷重データをフレームに対応付けられません：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="655"/>
-        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="657"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="724"/>
         <source>All Files</source>
         <translation>すべてのファイル</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="691"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
         <source>Probe export failed: %1</source>
         <translation>プローブのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="693"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="695"/>
         <source>Probe data written to %1</source>
         <translation>プローブデータを %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="701"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="703"/>
         <source>Export Line Data</source>
         <translation>線データをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="712"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
         <source>Line export failed: %1</source>
         <translation>線データのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="714"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="716"/>
         <source>Line data written to %1</source>
         <translation>線データを %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="720"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="722"/>
         <source>SVG Images</source>
         <translation>SVG 画像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="731"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="733"/>
         <source>Export Chart</source>
         <translation>グラフをエクスポート</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="750"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="752"/>
         <source>Chart copied to the clipboard.</source>
         <translation>グラフをクリップボードにコピーしました。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="758"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="760"/>
         <source>Plotted data copied to the clipboard.</source>
         <translation>表示中のデータをクリップボードにコピーしました。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="719"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
         <source>PNG Images</source>
         <translation>PNG 画像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="721"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="723"/>
         <source>PDF Documents</source>
         <translation>PDF ドキュメント</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="742"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
         <source>Chart export failed: %1</source>
         <translation>グラフのエクスポートに失敗しました：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/analysis/tab.py" line="744"/>
+        <location filename="../../gui/panels/analysis/tab.py" line="746"/>
         <source>Chart written to %1</source>
         <translation>グラフを %1 に書き込みました</translation>
     </message>
@@ -726,12 +726,12 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1015"/>
+        <location filename="../../gui/app.py" line="1019"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>%n フレームに関心領域をインポートしました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1029"/>
+        <location filename="../../gui/app.py" line="1033"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>先に DIC を実行してください —— 後処理する変位結果がありません。</translation>
     </message>
@@ -739,27 +739,27 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1135"/>
+        <location filename="../../gui/app.py" line="1139"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC でエラーが発生しました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1136"/>
+        <location filename="../../gui/app.py" line="1140"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1146"/>
+        <location filename="../../gui/app.py" line="1150"/>
         <source>Details were written to %1</source>
         <translation>詳細を %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1252"/>
+        <location filename="../../gui/app.py" line="1256"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1266"/>
+        <location filename="../../gui/app.py" line="1270"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>計算カーネルの準備が完了しました（%1 秒）。</translation>
     </message>
@@ -2359,12 +2359,12 @@ Results were restored. To show the background images, select the folder that now
         <translation>まずフレーム 1 で関心領域を定義してください。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="977"/>
+        <location filename="../../gui/app.py" line="981"/>
         <source>  Imported mask for frame %1</source>
         <translation>  フレーム %1 のマスクをインポートしました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="983"/>
+        <location filename="../../gui/app.py" line="987"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>一括インポート: %n 個のマスクを読み込みました</translation>
     </message>
@@ -2839,22 +2839,22 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="396"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="399"/>
         <source>Ready</source>
         <translation>準備完了</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="398"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="489"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="401"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="492"/>
         <source>ELAPSED  %1</source>
         <translation>経過時間  %1</translation>
     </message>
     <message>
         <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="400"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="501"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="403"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="500"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="504"/>
         <source>REMAINING  %1</source>
         <translation>残り時間  %1</translation>
     </message>
@@ -2954,12 +2954,12 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>クリア</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="365"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="368"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>実行前に、各赤色領域に少なくとも 1 つのシード点を配置してください(赤色 = シード点が必要)。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="472"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  フレーム %2</translation>
     </message>
@@ -3394,7 +3394,7 @@ Only applies when Method = Plane fitting.</source>
         <translation>ひずみ計算に失敗しました</translation>
     </message>
     <message>
-        <location filename="../../gui/strain_window.py" line="659"/>
+        <location filename="../../gui/strain_window.py" line="662"/>
         <source>⚠ Params changed -- click Compute Strain</source>
         <translation>⚠ パラメータが変更されました — 「ひずみを計算」をクリックしてください</translation>
     </message>
