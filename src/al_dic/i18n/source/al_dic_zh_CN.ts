@@ -1814,17 +1814,17 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
         <translation>删除 %n 张图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="503"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>Images</source>
         <translation>图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="513"/>
+        <location filename="../../gui/widgets/image_list.py" line="514"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>已选择 %1 个文件用于 %2 帧 — 数量必须匹配</translation>
     </message>

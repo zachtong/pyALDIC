@@ -1814,17 +1814,17 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
         <translation>Eliminar %n imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="503"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="513"/>
+        <location filename="../../gui/widgets/image_list.py" line="514"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>Seleccionados %1 archivos para %2 fotogramas — las cantidades deben coincidir</translation>
     </message>

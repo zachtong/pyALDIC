@@ -1814,17 +1814,17 @@ PNG와 TIFF는 투명도를 유지합니다. JPEG, GIF, MP4는 알파 채널이 
         <translation>%n 개 이미지 삭제</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="503"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>Images</source>
         <translation>이미지</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>All Files</source>
         <translation>모든 파일</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="513"/>
+        <location filename="../../gui/widgets/image_list.py" line="514"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>%2 프레임에 대해 %1 개 파일 선택됨 — 개수가 일치해야 합니다</translation>
     </message>

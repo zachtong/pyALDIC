@@ -1814,17 +1814,17 @@ Bei PNG und TIFF bleibt die Transparenz erhalten; JPEG, GIF und MP4 haben keinen
         <translation>%n Bilder löschen</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="503"/>
+        <location filename="../../gui/widgets/image_list.py" line="504"/>
         <source>Images</source>
         <translation>Bilder</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>All Files</source>
         <translation>Alle Dateien</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="513"/>
+        <location filename="../../gui/widgets/image_list.py" line="514"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>%1 Dateien für %2 Bilder ausgewählt — Anzahl muss übereinstimmen</translation>
     </message>
