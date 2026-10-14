@@ -498,30 +498,39 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_perf)
 
 
-@pytest.hookimpl(trylast=True)
+# Set by pytest_sessionfinish, used by pytest_unconfigure below.
+_SESSION_EXIT_STATUS = {"code": 0}
+
+
 def pytest_sessionfinish(session, exitstatus):
-    """End the process before C++ globals are torn down.
+    _SESSION_EXIT_STATUS["code"] = int(exitstatus)
 
-    Every test has run and its result is already reported by the time this
-    hook is reached. What follows -- the interpreter dropping Python wrappers
-    while Qt is still destroying the C++ objects behind them -- kills the
-    process with SIGSEGV on Linux, turning a green run into exit 139. The GUI
-    tests leave windows alive (a closed window is never freed, the same leak
-    the theme ordering above works around), so there is no Python-side order
-    that makes the teardown safe.
 
-    This exits with the status pytest computed, so a failing run still fails;
-    it skips only the cleanup that happens after the result is known. Nothing
-    is silenced: no test is skipped and no failure is swallowed.
+@pytest.hookimpl(trylast=True)
+def pytest_unconfigure(config):
+    """On Linux, end the process before C++ globals are torn down.
+
+    Every test has run and the summary is printed by the time pytest
+    unconfigures. What follows on Linux -- the interpreter dropping Python
+    wrappers while Qt is still destroying the C++ objects behind them --
+    kills the process with SIGSEGV, turning a green run into exit 139. The
+    GUI tests leave windows alive (a closed window is never freed, the same
+    leak the theme ordering above works around), so no Python-side ordering
+    makes that teardown safe; the leak itself is worth fixing separately.
+
+    Linux only, and deliberately so. ``os._exit`` maps to ``_exit`` there and
+    skips the destructors that crash. On Windows it maps to ``ExitProcess``,
+    which still detaches the Qt DLLs -- and doing that early crashes a run
+    that otherwise exits cleanly, so Windows keeps the normal teardown.
+
+    The status is the one pytest computed, so a failing run still fails and
+    the report is intact; only cleanup after the result is known is skipped.
+    Set PYALDIC_NO_FAST_EXIT=1 to keep the normal teardown on Linux too.
     """
+    if sys.platform != "linux":
+        return
     if os.environ.get("PYALDIC_NO_FAST_EXIT"):
-        return
-    try:
-        from PySide6.QtWidgets import QApplication
-    except Exception:
-        return
-    if QApplication.instance() is None:
         return
     sys.stdout.flush()
     sys.stderr.flush()
-    os._exit(exitstatus)
+    os._exit(_SESSION_EXIT_STATUS["code"])

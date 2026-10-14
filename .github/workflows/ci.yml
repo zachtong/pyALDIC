@@ -13,7 +13,7 @@ jobs:
       matrix:
         # 3.13 and 3.14 too: a student installing with pip today most likely
         # has the newest Python, and that path must work as well as ours.
-        python-version: ["3.11"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     steps:
       - uses: actions/checkout@v4
@@ -38,10 +38,4 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         # Accuracy regression tests run in CI; performance (perf) tests
         # are skipped because runner CPU varies. Run locally: pytest -m slow
-        run: |
-          # TEMPORARY: does the fast exit keep a green run green?
-          set +e
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui > /dev/null 2>&1; echo "RESULT gui exit=$?"
-          pytest --tb=short -q --ignore=tests/test_reports -m "not perf" > /dev/null 2>&1; echo "RESULT fullsuite exit=$?"
-          PYALDIC_NO_FAST_EXIT=1 pytest -q -p no:randomly --tb=no -m "not perf" tests/test_unit > /dev/null 2>&1; echo "RESULT optout-nongui exit=$?"
-          exit 0
+        run: pytest --tb=short -q --ignore=tests/test_reports -m "not perf"
