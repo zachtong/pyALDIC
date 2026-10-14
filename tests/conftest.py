@@ -468,13 +468,6 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(config, items):
-    # The theme tests run first. A theme switch repolishes every live widget,
-    # and the GUI tests leave their windows alive -- a closed window is never
-    # freed (a known leak: callbacks its children hold keep it) -- so late in
-    # the session one switch took minutes; first, it takes a fraction of a
-    # second. A stable sort: the order within each group stays.
-    items[:] = sorted(items, key=lambda item: item.path.name != "test_theme.py")
-
     # `frozen` tests drive a built PyInstaller bundle, which most runs do not
     # have. Skipping them here rather than only inside the fixture keeps a
     # plain `pytest` on a fresh clone from reporting anything unexpected.
@@ -498,39 +491,60 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_perf)
 
 
-# Set by pytest_sessionfinish, used by pytest_unconfigure below.
-_SESSION_EXIT_STATUS = {"code": 0}
+def _destroy_open_windows() -> None:
+    """Delete every window left open, and report how many there were.
+
+    A GUI test that makes a window almost never destroys it: closing one
+    only hides it, and dropping the last Python reference frees nothing
+    while the C++ object is alive. They accumulate -- three MainWindows
+    alone leave 54 top-level widgets -- and that pile is expensive twice
+    over. A theme switch repolishes every live widget, so it grew from a
+    fraction of a second to minutes as a session went on; and at the end
+    Qt tore all of them down at once, which on Linux killed the process
+    with SIGSEGV after every test had already passed.
+
+    deleteLater, then let Qt deliver DeferredDelete. Deleting
+    synchronously instead can run a slot against a half-destroyed widget
+    (a timer stopped after its C++ object is gone). ``close()`` is
+    deliberately not called: that runs the window's own closeEvent, which
+    is application behaviour a cleanup step has no business triggering,
+    and which some tests have stubbed out.
+    """
+    try:
+        import shiboken6
+        from PySide6.QtCore import QEvent
+        from PySide6.QtWidgets import QApplication
+    except Exception:
+        return 0
+
+    app = QApplication.instance()
+    if app is None:
+        return 0
+
+    widgets = list(app.topLevelWidgets())
+    for widget in widgets:
+        try:
+            if shiboken6.isValid(widget):
+                widget.deleteLater()
+        except RuntimeError:
+            pass        # already gone; nothing to do
+    app.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    app.processEvents()
+    return len(widgets)
+
+
+@pytest.fixture(autouse=True)
+def _close_windows_after_each_test():
+    """Leave no windows behind, so the next test starts from a clean screen.
+
+    Session-end cleanup alone is not enough: the cost of the pile is paid
+    *during* the session, by every theme switch that repolishes it. No
+    fixture here outlives a test holding a window -- the shared ones hand
+    out the QApplication only -- so clearing them between tests is safe.
+    """
+    yield
+    _destroy_open_windows()
 
 
 def pytest_sessionfinish(session, exitstatus):
-    _SESSION_EXIT_STATUS["code"] = int(exitstatus)
-
-
-@pytest.hookimpl(trylast=True)
-def pytest_unconfigure(config):
-    """On Linux, end the process before C++ globals are torn down.
-
-    Every test has run and the summary is printed by the time pytest
-    unconfigures. What follows on Linux -- the interpreter dropping Python
-    wrappers while Qt is still destroying the C++ objects behind them --
-    kills the process with SIGSEGV, turning a green run into exit 139. The
-    GUI tests leave windows alive (a closed window is never freed, the same
-    leak the theme ordering above works around), so no Python-side ordering
-    makes that teardown safe; the leak itself is worth fixing separately.
-
-    Linux only, and deliberately so. ``os._exit`` maps to ``_exit`` there and
-    skips the destructors that crash. On Windows it maps to ``ExitProcess``,
-    which still detaches the Qt DLLs -- and doing that early crashes a run
-    that otherwise exits cleanly, so Windows keeps the normal teardown.
-
-    The status is the one pytest computed, so a failing run still fails and
-    the report is intact; only cleanup after the result is known is skipped.
-    Set PYALDIC_NO_FAST_EXIT=1 to keep the normal teardown on Linux too.
-    """
-    if sys.platform != "linux":
-        return
-    if os.environ.get("PYALDIC_NO_FAST_EXIT"):
-        return
-    sys.stdout.flush()
-    sys.stderr.flush()
-    os._exit(_SESSION_EXIT_STATUS["code"])
+    _destroy_open_windows()
