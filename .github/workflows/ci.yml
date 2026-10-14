@@ -39,13 +39,15 @@ jobs:
         # Accuracy regression tests run in CI; performance (perf) tests
         # are skipped because runner CPU varies. Run locally: pytest -m slow
         run: |
-          # TEMPORARY diagnostic: which group segfaults at interpreter exit?
+          # TEMPORARY diagnostic: which group segfaults at exit?
           set +e
-          GROUPS="tests/test_gui tests/test_analysis tests/test_export tests/test_integration tests/test_mesh tests/test_pipeline tests/test_solver tests/test_strain tests/test_unit"
-          for g in $GROUPS; do
-            pytest -q -p no:randomly --tb=no -m "not perf" "$g" > /dev/null 2>&1
-            echo "GROUP $g -> exit=$?"
-          done
-          pytest -q -p no:randomly --tb=no -m "not perf" tests/*.py > /dev/null 2>&1
-          echo "GROUP tests/rootfiles -> exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_gui > /dev/null 2>&1; echo "RESULT tests/test_gui exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_analysis > /dev/null 2>&1; echo "RESULT tests/test_analysis exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_export > /dev/null 2>&1; echo "RESULT tests/test_export exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_integration > /dev/null 2>&1; echo "RESULT tests/test_integration exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_mesh > /dev/null 2>&1; echo "RESULT tests/test_mesh exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_pipeline > /dev/null 2>&1; echo "RESULT tests/test_pipeline exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_solver > /dev/null 2>&1; echo "RESULT tests/test_solver exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_strain > /dev/null 2>&1; echo "RESULT tests/test_strain exit=$?"
+          pytest -q -p no:randomly --tb=no -m "not perf" tests/test_unit > /dev/null 2>&1; echo "RESULT tests/test_unit exit=$?"
           exit 0
