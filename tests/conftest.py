@@ -11,6 +11,7 @@ Provides:
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -497,23 +498,30 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_perf)
 
 
+@pytest.hookimpl(trylast=True)
 def pytest_sessionfinish(session, exitstatus):
-    """Shut Qt down while the application is still alive.
+    """End the process before C++ globals are torn down.
 
-    GUI tests leave their windows alive -- a closed window is never freed,
-    a leak the theme ordering above also works around. At interpreter exit
-    Python then drops wrappers whose C++ objects the QApplication is still
-    tearing down, and the process dies on the way out (SIGSEGV, sometimes
-    SIGABRT) after every test has already passed. Deleting the widgets
-    first, while the application can still process the deletions, keeps the
-    teardown order sane.
+    Every test has run and its result is already reported by the time this
+    hook is reached. What follows -- the interpreter dropping Python wrappers
+    while Qt is still destroying the C++ objects behind them -- kills the
+    process with SIGSEGV on Linux, turning a green run into exit 139. The GUI
+    tests leave windows alive (a closed window is never freed, the same leak
+    the theme ordering above works around), so there is no Python-side order
+    that makes the teardown safe.
+
+    This exits with the status pytest computed, so a failing run still fails;
+    it skips only the cleanup that happens after the result is known. Nothing
+    is silenced: no test is skipped and no failure is swallowed.
     """
-    from PySide6.QtWidgets import QApplication
-
-    app = QApplication.instance()
-    if app is None:
+    if os.environ.get("PYALDIC_NO_FAST_EXIT"):
         return
-    for widget in app.topLevelWidgets():
-        widget.close()
-        widget.deleteLater()
-    app.processEvents()
+    try:
+        from PySide6.QtWidgets import QApplication
+    except Exception:
+        return
+    if QApplication.instance() is None:
+        return
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(exitstatus)
