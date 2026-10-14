@@ -6,6 +6,8 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-10-13
+
 ### Added
 
 - **A light theme.** *Settings > Theme* switches between the dark theme,
@@ -18,6 +20,22 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - The Analysis tab's *Export* button looks like *Load data* beside it.
+- The interface now uses American spelling throughout (*color*, *center*,
+  *gray*, *canceled*, *neighbor*), matching the documentation.
+
+### Fixed
+
+- **Choosing an image folder no longer decodes every image in it.** A user
+  with 3000 frames waited 15-20 minutes for the folder to open. The scan
+  warns when frames have mismatched dimensions, and it was reading each file
+  in full and decoding every pixel just to learn its width and height. It now
+  reads the image header instead: on 2048x2448 TIFFs that is 22.3 ms per
+  frame down to 0.19 ms, so a 3000-frame folder opens in well under a second
+  instead of a minute or more. The saving is larger again on a network or
+  cloud-synced drive, where reading a whole file also pulls it down.
+- Deleting frames left the image controller holding the original file list,
+  so changing the sort order afterwards brought the deleted frames back and
+  rescanned every file.
 
 ## [0.9.0] — 2026-09-24
 
