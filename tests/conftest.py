@@ -495,3 +495,25 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "perf" in item.keywords:
             item.add_marker(skip_perf)
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Shut Qt down while the application is still alive.
+
+    GUI tests leave their windows alive -- a closed window is never freed,
+    a leak the theme ordering above also works around. At interpreter exit
+    Python then drops wrappers whose C++ objects the QApplication is still
+    tearing down, and the process dies on the way out (SIGSEGV, sometimes
+    SIGABRT) after every test has already passed. Deleting the widgets
+    first, while the application can still process the deletions, keeps the
+    teardown order sane.
+    """
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance()
+    if app is None:
+        return
+    for widget in app.topLevelWidgets():
+        widget.close()
+        widget.deleteLater()
+    app.processEvents()
