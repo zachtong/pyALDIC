@@ -541,6 +541,9 @@ def test_seed_propagation_stops_on_untextured_speck(drift, roi0):
     # 1-based frame number: image index 4, the pair solved on ref 3's grid.
     assert info.value.stopped_at_frame == 5
     assert len(partial.result_disp) == 3  # frames 1-3 are kept
+    # The partial result carries the tracking diagnostics of those frames.
+    frames = partial.tracking_diagnostics.frames
+    assert [s.frame for s in frames] == [1, 2, 3]
 
 
 def test_presolve_refinement_and_brush(drift, roi0):

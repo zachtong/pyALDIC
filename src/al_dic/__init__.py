@@ -9,8 +9,11 @@ from .core.data_structures import (
     DICPara,
     FrameResult,
     FrameSchedule,
+    FrameTrackingStats,
     PipelineResult,
+    RefGridExtent,
     StrainResult,
+    TrackingDiagnostics,
 )
 from .core.pipeline import run_aldic
 
@@ -27,4 +30,7 @@ __all__ = [
     "FrameResult",
     "StrainResult",
     "PipelineResult",
+    "TrackingDiagnostics",
+    "FrameTrackingStats",
+    "RefGridExtent",
 ]

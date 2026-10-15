@@ -110,25 +110,58 @@ def scattered_interpolant_uv(
     Returns:
         (disp_u, disp_v), each (M,), identical to the per-field calls.
     """
+    disp_u, disp_v, _, _ = scattered_interpolant_uv_diag(
+        points, u, v, query_points, fill_method=fill_method,
+        tri_cache=tri_cache,
+    )
+    return disp_u, disp_v
+
+
+def scattered_interpolant_uv_diag(
+    points: NDArray[np.float64],
+    u: NDArray[np.float64],
+    v: NDArray[np.float64],
+    query_points: NDArray[np.float64],
+    fill_method: str = "nearest",
+    tri_cache: dict | None = None,
+) -> tuple[
+    NDArray[np.float64], NDArray[np.float64], NDArray[np.bool_],
+    NDArray[np.float64],
+]:
+    """:func:`scattered_interpolant_uv` that also reports extrapolation.
+
+    The values are computed exactly as before; the extra outputs only
+    observe them.
+
+    Returns:
+        ``(disp_u, disp_v, outside, nn_dist)``, each (M,):
+
+        - ``outside``: the query lies outside the convex hull of the valid
+          nodes (the linear interpolant returned NaN there). When u and v
+          drop different nodes, it is the OR of the two fields' hulls.
+        - ``nn_dist``: distance in px from an outside query to the node its
+          nearest-neighbor value was copied from (the larger of the two
+          fields' distances when they drop different nodes); 0 for inside
+          queries and when ``fill_method`` is not ``'nearest'``.
+    """
     finite_pts = np.isfinite(points).all(axis=1)
     valid_u = ~np.isnan(u) & finite_pts
     valid_v = ~np.isnan(v) & finite_pts
 
     # Shared triangulation is only valid when u and v drop the same nodes.
     if not np.array_equal(valid_u, valid_v):
-        return (
-            scattered_interpolant(
-                points, u, query_points, fill_method=fill_method
-            ),
-            scattered_interpolant(
-                points, v, query_points, fill_method=fill_method
-            ),
+        disp_u, out_u, dist_u = _scattered_interpolant_diag(
+            points, u, query_points, fill_method
         )
+        disp_v, out_v, dist_v = _scattered_interpolant_diag(
+            points, v, query_points, fill_method
+        )
+        return disp_u, disp_v, out_u | out_v, np.maximum(dist_u, dist_v)
 
     valid = valid_u
     if not np.any(valid):
         nan = np.full(len(query_points), np.nan)
-        return nan, nan.copy()
+        return nan, nan.copy(), *_no_extrapolation(len(query_points))
 
     pts = points[valid]
     vals = np.column_stack([u[valid], v[valid]])
@@ -148,13 +181,59 @@ def scattered_interpolant_uv(
     interp = LinearNDInterpolator(pts_or_tri, vals, fill_value=np.nan)
     result = interp(query_points)
 
+    outside = np.isnan(result[:, 0])
+    nn_dist = np.zeros(len(query_points))
     if fill_method == "nearest":
         nan_mask = np.isnan(result[:, 0])
         if np.any(nan_mask):
             nn = NearestNDInterpolator(pts, vals)
             result[nan_mask] = nn(query_points[nan_mask])
+            # The interpolator's own KD-tree, queried as __call__ does.
+            nn_dist[nan_mask] = nn.tree.query(query_points[nan_mask])[0]
 
-    return result[:, 0], result[:, 1]
+    return result[:, 0], result[:, 1], outside, nn_dist
+
+
+def _no_extrapolation(
+    n: int,
+) -> tuple[NDArray[np.bool_], NDArray[np.float64]]:
+    """``(outside, nn_dist)`` for ``n`` queries that were not extrapolated."""
+    return np.zeros(n, dtype=bool), np.zeros(n)
+
+
+def _scattered_interpolant_diag(
+    points: NDArray[np.float64],
+    values: NDArray[np.float64],
+    query_points: NDArray[np.float64],
+    fill_method: str,
+) -> tuple[NDArray[np.float64], NDArray[np.bool_], NDArray[np.float64]]:
+    """One field of :func:`scattered_interpolant_uv_diag`'s fallback.
+
+    Values are those of ``scattered_interpolant(points, values,
+    query_points, fill_method=fill_method)`` (same operations, in order);
+    also returns ``(outside, nn_dist)`` as documented there.
+    """
+    valid = ~np.isnan(values) & np.isfinite(points).all(axis=1)
+    if not np.any(valid):
+        return np.full(len(query_points), np.nan), *_no_extrapolation(
+            len(query_points)
+        )
+
+    pts = points[valid]
+    vals = values[valid]
+    interp = LinearNDInterpolator(pts, vals, fill_value=np.nan)
+    result = interp(query_points)
+
+    outside = np.isnan(result)
+    nn_dist = np.zeros(len(query_points))
+    if fill_method == "nearest":
+        nan_mask = np.isnan(result)
+        if np.any(nan_mask):
+            nn = NearestNDInterpolator(pts, vals)
+            result[nan_mask] = nn(query_points[nan_mask])
+            nn_dist[nan_mask] = nn.tree.query(query_points[nan_mask])[0]
+
+    return result, outside, nn_dist
 
 
 def fill_nan_scattered(

@@ -7,6 +7,7 @@ import numpy as np
 from al_dic.utils.interpolation import (
     scattered_interpolant,
     scattered_interpolant_uv,
+    scattered_interpolant_uv_diag,
 )
 
 
@@ -105,3 +106,157 @@ class TestScatteredInterpolantUV:
         au, av = scattered_interpolant_uv(pts, u, v, query)
         np.testing.assert_array_equal(au, eu)
         np.testing.assert_array_equal(av, ev)
+
+
+# ---------------------------------------------------------------------------
+# scattered_interpolant_uv_diag: same values, plus which queries fell outside
+# the convex hull and how far their nearest-neighbor fill came from. Always
+# checked against the independent _ref (two scattered_interpolant calls),
+# never against the uv wrapper, which delegates to the function under test.
+# ---------------------------------------------------------------------------
+
+
+def _hull_truth(points, values, query):
+    """Independent outside mask and nearest distance for one field."""
+    from scipy.spatial import Delaunay, cKDTree
+
+    valid = ~np.isnan(values) & np.isfinite(points).all(axis=1)
+    pts = points[valid]
+    outside = Delaunay(pts).find_simplex(query) < 0
+    dist = np.zeros(len(query))
+    if outside.any():
+        dist[outside] = cKDTree(pts).query(query[outside])[0]
+    return outside, dist
+
+
+def _lattice_case():
+    """Regular lattice (co-circular cells) queried at exact cell midpoints,
+    cell edges and outside the hull: Delaunay ties everywhere."""
+    xs, ys = np.meshgrid(np.arange(6) * 16.0, np.arange(5) * 16.0)
+    pts = np.column_stack([xs.ravel(), ys.ravel()])
+    u = 0.3 * pts[:, 0] - 0.1 * pts[:, 1] + 2.0
+    v = 0.05 * pts[:, 0] * pts[:, 1] / 16.0
+    mx, my = np.meshgrid(np.arange(-1, 7) * 16.0 + 8.0, np.arange(-1, 6) * 16.0)
+    query = np.vstack([
+        np.column_stack([mx.ravel(), my.ravel()]),
+        np.column_stack([mx.ravel(), my.ravel() + 8.0]),
+    ])
+    return pts, u, v, query
+
+
+class TestScatteredInterpolantUVDiag:
+    def _check(self, pts, u, v, query, **kw):
+        eu, ev = _ref(pts, u, v, query)
+        du, dv, outside, nn_dist = scattered_interpolant_uv_diag(
+            pts, u, v, query, **kw,
+        )
+        np.testing.assert_array_equal(du, eu)
+        np.testing.assert_array_equal(dv, ev)
+        assert outside.dtype == bool and outside.shape == (len(query),)
+        assert nn_dist.shape == (len(query),)
+        return outside, nn_dist
+
+    def test_values_outside_and_distance_random(self):
+        pts = _pts(60, 30)
+        rng = np.random.default_rng(31)
+        u, v = rng.standard_normal(60), rng.standard_normal(60)
+        query = _pts(80, 32) * 1.4 - 20.0  # many queries beyond the hull
+        outside, nn_dist = self._check(pts, u, v, query)
+        t_out, t_dist = _hull_truth(pts, u, query)
+        assert t_out.sum() > 10, "fixture must extrapolate"
+        np.testing.assert_array_equal(outside, t_out)
+        np.testing.assert_array_equal(nn_dist, t_dist)
+        assert np.all(nn_dist[~outside] == 0.0)
+
+    def test_distance_is_the_true_nearest_node_distance(self):
+        pts = _pts(50, 33)
+        rng = np.random.default_rng(34)
+        u, v = rng.standard_normal(50), rng.standard_normal(50)
+        query = np.array([[-30.0, 50.0], [150.0, 150.0], [50.0, -7.5]])
+        _, nn_dist = self._check(pts, u, v, query)
+        brute = np.hypot(
+            query[:, None, 0] - pts[None, :, 0], query[:, None, 1] - pts[None, :, 1],
+        ).min(axis=1)
+        np.testing.assert_allclose(nn_dist, brute, rtol=1e-12, atol=0)
+
+    def test_exact_tie_midpoints_on_a_lattice(self):
+        pts, u, v, query = _lattice_case()
+        outside, nn_dist = self._check(pts, u, v, query)
+        t_out, t_dist = _hull_truth(pts, u, query)
+        np.testing.assert_array_equal(outside, t_out)
+        np.testing.assert_array_equal(nn_dist, t_dist)
+        assert 0 < outside.sum() < len(query)
+
+    def test_shared_nan_nodes(self):
+        pts = _pts(60, 35)
+        rng = np.random.default_rng(36)
+        u, v = rng.standard_normal(60), rng.standard_normal(60)
+        bad = rng.random(60) < 0.2
+        u[bad] = np.nan
+        v[bad] = np.nan
+        query = _pts(50, 37) * 1.2 - 10.0
+        outside, nn_dist = self._check(pts, u, v, query)
+        t_out, t_dist = _hull_truth(pts, u, query)
+        np.testing.assert_array_equal(outside, t_out)
+        np.testing.assert_array_equal(nn_dist, t_dist)
+
+    def test_tri_cache_reuse_keeps_values_and_hull(self):
+        pts = _pts(70, 38)
+        query = pts * 1.1 - 5.0
+        rng = np.random.default_rng(39)
+        cache: dict = {}
+        for _ in range(3):
+            u, v = rng.standard_normal(70), rng.standard_normal(70)
+            outside, nn_dist = self._check(pts, u, v, query, tri_cache=cache)
+            t_out, t_dist = _hull_truth(pts, u, query)
+            np.testing.assert_array_equal(outside, t_out)
+            np.testing.assert_array_equal(nn_dist, t_dist)
+        assert len(cache) == 1
+
+    def test_mismatched_nan_fallback_ors_the_two_hulls(self):
+        pts = _pts(40, 40)
+        rng = np.random.default_rng(41)
+        u, v = rng.standard_normal(40), rng.standard_normal(40)
+        # Drop the extreme nodes from one field each, so the two hulls differ.
+        u[np.argmin(pts[:, 0])] = np.nan
+        v[np.argmax(pts[:, 0])] = np.nan
+        query = _pts(60, 42) * 1.2 - 10.0
+        outside, nn_dist = self._check(pts, u, v, query)
+        out_u, dist_u = _hull_truth(pts, u, query)
+        out_v, dist_v = _hull_truth(pts, v, query)
+        assert not np.array_equal(out_u, out_v), "fixture must split the hulls"
+        np.testing.assert_array_equal(outside, out_u | out_v)
+        np.testing.assert_array_equal(nn_dist, np.maximum(dist_u, dist_v))
+
+    def test_all_invalid_gives_nan_and_nothing_outside(self):
+        pts = _pts(20, 43)
+        u = np.full(20, np.nan)
+        v = np.full(20, np.nan)
+        query = _pts(10, 44)
+        outside, nn_dist = self._check(pts, u, v, query)
+        assert not outside.any()
+        assert np.all(nn_dist == 0.0)
+
+    def test_nan_fill_leaves_outside_queries_nan(self):
+        pts = _pts(40, 45)
+        rng = np.random.default_rng(46)
+        u, v = rng.standard_normal(40), rng.standard_normal(40)
+        query = _pts(40, 47) * 1.3 - 15.0
+        du, dv, outside, nn_dist = scattered_interpolant_uv_diag(
+            pts, u, v, query, fill_method="nan",
+        )
+        t_out, _ = _hull_truth(pts, u, query)
+        np.testing.assert_array_equal(outside, t_out)
+        assert np.isnan(du[outside]).all() and np.isnan(dv[outside]).all()
+        assert np.isfinite(du[~outside]).all()
+        assert np.all(nn_dist == 0.0)
+
+    def test_uv_wrapper_returns_the_diag_values(self):
+        pts = _pts(60, 48)
+        rng = np.random.default_rng(49)
+        u, v = rng.standard_normal(60), rng.standard_normal(60)
+        query = _pts(40, 50) * 1.3 - 15.0
+        du, dv, _, _ = scattered_interpolant_uv_diag(pts, u, v, query)
+        au, av = scattered_interpolant_uv(pts, u, v, query)
+        np.testing.assert_array_equal(au, du)
+        np.testing.assert_array_equal(av, dv)

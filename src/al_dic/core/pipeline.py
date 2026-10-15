@@ -51,6 +51,13 @@ from .data_structures import (
     FrameSchedule,
     PipelineResult,
     StrainResult,
+    TrackingDiagnostics,
+)
+from .tracking_diagnostics import (
+    TrackingCollector,
+    far_extrapolation_px,
+    finish_tracking_diagnostics,
+    measurable_box_for,
 )
 from ..io.image_ops import ListFrameProvider, compute_image_gradient
 from ..mesh.criteria.brush_region import BrushRegionCriterion
@@ -81,7 +88,7 @@ from ..solver.subpb2_solver import precompute_subpb2, subpb2_solver
 from ..strain.compute_strain import compute_strain as _compute_strain_fn
 from ..strain.nodal_strain_fem import global_nodal_strain_fem
 from ..strain.smooth_field import compute_node_local_spacing, smooth_field_sparse
-from ..utils.interpolation import scattered_interpolant_uv
+from ..utils.interpolation import scattered_interpolant_uv_diag
 from ..utils.region_analysis import NodeRegionMap, precompute_node_regions
 
 logger = logging.getLogger(__name__)
@@ -442,6 +449,26 @@ def _compute_cumulative_displacements_tree(
     masks: list[NDArray[np.float64]] | None = None,
     crack_radius: float | None = None,
 ) -> list[FrameResult | None]:
+    """Cumulative displacements only: :func:`_compose_cumulative`'s values."""
+    return _compose_cumulative(
+        result_disp, result_fe_mesh, n_frames, schedule,
+        progress_fn=progress_fn, progress_start=progress_start,
+        masks=masks, crack_radius=crack_radius,
+    )[0]
+
+
+def _compose_cumulative(
+    result_disp: list[FrameResult | None],
+    result_fe_mesh: list[DICMesh | None],
+    n_frames: int,
+    schedule: FrameSchedule,
+    progress_fn: Callable[[float, str], None] | None = None,
+    progress_start: float = 0.90,
+    masks: list[NDArray[np.float64]] | None = None,
+    crack_radius: float | None = None,
+    measurable_box: tuple[int, int, int, int] | None = None,
+    far_px: float | None = None,
+) -> tuple[list[FrameResult | None], TrackingDiagnostics | None]:
     """Transform per-pair displacements to cumulative via tree-based composition.
 
     For each deformed frame, traces the reference chain back to frame 0
@@ -482,15 +509,26 @@ def _compute_cumulative_displacements_tree(
             behaviour exactly.
         crack_radius: Suspicion radius in px around masked pixels (typically
             ~2 mesh steps).  ``None`` disables the override.
+        measurable_box: Inclusive ``(x_lo, x_hi, y_lo, y_hi)`` where a
+            whole subset fits; far extrapolations outside it are counted
+            as border ones.  ``None`` disables that split.
+        far_px: Extrapolations whose nearest measured node is farther than
+            this are counted as far.  ``None`` disables that count.
 
     Returns:
-        Updated result_disp with U_accum set for each frame.  With crack
-        awareness enabled, U_accum is NaN at destroyed (in-crack) nodes.
+        ``(result_disp, diagnostics)``: result_disp updated with U_accum set
+        for each frame (with crack awareness enabled, U_accum is NaN at
+        destroyed (in-crack) nodes), and the :class:`TrackingDiagnostics`
+        counted along the way (``None`` when no frame could be composed or
+        the counting failed; the values never depend on it).
     """
     if result_fe_mesh[0] is None or result_disp[0] is None:
-        return result_disp
+        return result_disp, None
 
     ref_coords = result_fe_mesh[0].coordinates_fem
+    tracking = TrackingCollector(
+        len(ref_coords), far_px=far_px, measurable_box=measurable_box,
+    )
 
     crack_aware = (
         masks is not None
@@ -532,6 +570,7 @@ def _compute_cumulative_displacements_tree(
             (masks[0][py0, px0] <= 0.5) & _gap_suspector(0).flag(ref_coords)
         )
         coord0[born_dead] = np.nan
+        tracking.born_dead(born_dead)
 
     # Cache: cum_coords[frame_idx] = absolute coordinates after tracking
     # from frame 0 to frame_idx.  frame 0 = ref_coords.
@@ -594,9 +633,12 @@ def _compute_cumulative_displacements_tree(
             # scattered_interpolant calls when u/v share the same NaN nodes.
             # Rows already dead (NaN from a crack) stay dead: query only the
             # finite rows so NaN coordinates never reach the interpolators.
+            # out_f / dist_f (out-of-hull queries and their nearest-node
+            # distance) only feed the tracking diagnostics.
             finite_q = np.isfinite(coord_curr).all(axis=1)
+            out_f = dist_f = None
             if finite_q.all():
-                disp_x, disp_y = scattered_interpolant_uv(
+                disp_x, disp_y, out_f, dist_f = scattered_interpolant_uv_diag(
                     child_mesh.coordinates_fem, u_inc, v_inc, coord_curr,
                     tri_cache=tri_cache,
                 )
@@ -604,12 +646,16 @@ def _compute_cumulative_displacements_tree(
                 disp_x = np.full(len(coord_curr), np.nan)
                 disp_y = np.full(len(coord_curr), np.nan)
                 if finite_q.any():
-                    dx_f, dy_f = scattered_interpolant_uv(
+                    dx_f, dy_f, out_f, dist_f = scattered_interpolant_uv_diag(
                         child_mesh.coordinates_fem, u_inc, v_inc,
                         coord_curr[finite_q], tri_cache=tri_cache,
                     )
                     disp_x[finite_q] = dx_f
                     disp_y[finite_q] = dy_f
+            tracking.begin_step(
+                child_frame, path[step + 1], coord_curr, finite_q, out_f,
+                dist_f,
+            )
 
             if crack_aware:
                 # Near-gap override: within crack_radius of a masked pixel of
@@ -637,6 +683,7 @@ def _compute_cumulative_displacements_tree(
                     kill = qi[dead]
                     disp_x[kill] = np.nan
                     disp_y[kill] = np.nan
+                    tracking.parent_kills(kill)
                     # Survivors near the gap: re-evaluate inside the pair's
                     # crack-cut elements so the increment never blends the
                     # two crack faces.  Unresolved survivors (boundary
@@ -657,6 +704,7 @@ def _compute_cumulative_displacements_tree(
                         disp_y[sel] = v_b[resolved]
 
             coord_curr = coord_curr + np.column_stack([disp_x, disp_y])
+            tracking.after_increment(coord_curr)
             while len(tri_cache) > _TRI_CACHE_SIZE:
                 tri_cache.pop(next(iter(tri_cache)))  # oldest first
 
@@ -672,9 +720,12 @@ def _compute_cumulative_displacements_tree(
                     dead_c = majority_masked(
                         coord_curr[ci], masks[child_frame],
                     )
+                    tracking.child_kills(ci[dead_c])
                     coord_curr[ci[dead_c]] = np.nan
+            tracking.end_step(coord_curr)
 
             # Cache intermediate result for reuse by descendant frames
+            # (the collector keeps the per-node taint beside it).
             if child_frame not in cum_coords_cache:
                 cum_coords_cache[child_frame] = coord_curr.copy()
 
@@ -686,7 +737,7 @@ def _compute_cumulative_displacements_tree(
 
         result_disp[i] = replace(result_disp[i], U_accum=U_accum)
 
-    return result_disp
+    return result_disp, tracking.result()
 
 
 # ---------------------------------------------------------------------------
@@ -1774,7 +1825,7 @@ def run_aldic(
     progress(_loop_end, "Computing cumulative displacements...")
     logger.info("--- Cumulative displacement transform ---")
 
-    result_disp = _compute_cumulative_displacements_tree(
+    result_disp, tracking = _compose_cumulative(
         result_disp, result_fe_mesh, n_frames, schedule,
         progress_fn=progress, progress_start=_loop_end,
         # Crack-aware near-gap override: keeps composed U_accum from mixing
@@ -1783,6 +1834,12 @@ def run_aldic(
         crack_radius=(
             2.0 * para.winstepsize if para.winstepsize > 0 else None
         ),
+        measurable_box=measurable_box_for((img_h, img_w), para.winsize),
+        far_px=far_extrapolation_px(para.winstepsize),
+    )
+    # Advisory: assessed and logged here, never raises (None on failure).
+    tracking = finish_tracking_diagnostics(
+        tracking, grids, (img_h, img_w), para.winsize, para.winstepsize,
     )
 
     # Validate cumulative result
@@ -1926,6 +1983,7 @@ def run_aldic(
         stopped_early=stopped_early,
         stopped_at_frame=stopped_at_frame,
         stop_reason=stop_reason,
+        tracking_diagnostics=tracking,
     )
 
     progress(1.0, "Pipeline complete.")

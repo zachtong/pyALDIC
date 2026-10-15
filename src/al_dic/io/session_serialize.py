@@ -6,6 +6,10 @@ into a compact JSON manifest.  Arrays are **deduplicated by content**, so the
 per-frame meshes -- identical across every frame in an accumulative run -- are
 stored once instead of N times (a several-hundred-fold saving on big runs).
 
+Records added to ``PipelineResult`` after 0.10.0 are stored beside the
+manifest's ``root`` rather than inside it (``_SIDE_RECORDS``), so that older
+builds, which decode only ``root``, still open the session without them.
+
 Security: the archive is opened with ``allow_pickle=False`` (data only), so
 loading an untrusted session file can never execute code.
 """
@@ -14,7 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import fields, is_dataclass
+from dataclasses import Field, fields, is_dataclass, replace
 from typing import Any, Callable
 
 import numpy as np
@@ -24,9 +28,12 @@ from al_dic.core.data_structures import (
     DICPara,
     FrameResult,
     FrameSchedule,
+    FrameTrackingStats,
     GridxyROIRange,
     PipelineResult,
+    RefGridExtent,
     StrainResult,
+    TrackingDiagnostics,
 )
 
 # Bump when the on-disk encoding changes incompatibly.
@@ -48,6 +55,9 @@ def _build_registry() -> dict[str, type]:
         StrainResult,
         GridxyROIRange,
         FrameSchedule,
+        TrackingDiagnostics,
+        FrameTrackingStats,
+        RefGridExtent,
     ]
     try:  # pragma: no cover - only present on seed-propagation runs
         from al_dic.solver.seed_prop_pipeline import ReseedEvent
@@ -64,6 +74,12 @@ def _build_registry() -> dict[str, type]:
 
 _REGISTRY = _build_registry()
 
+# PipelineResult fields added after 0.10.0, stored beside "root" in the
+# manifest (field name -> record type). Builds up to 0.10.0 decode only
+# "root" and reject record types they do not know, so a record inside
+# "root" would make every session with results unreadable there.
+_SIDE_RECORDS: dict[str, type] = {"tracking_diagnostics": TrackingDiagnostics}
+
 
 def _array_key(arr: np.ndarray) -> str:
     """Content hash (dtype + shape + bytes) -> dedup key for an array."""
@@ -72,6 +88,18 @@ def _array_key(arr: np.ndarray) -> str:
     h.update(str(arr.shape).encode("ascii"))
     h.update(np.ascontiguousarray(arr).tobytes())
     return "arr_" + h.hexdigest()
+
+
+def _omitted(f: Field, value: Any) -> bool:
+    """A ``None`` field whose default is ``None`` is left out of the manifest.
+
+    Decoding falls back to the default, so the round trip is unchanged, and
+    a build that predates a field can still decode a record where it is
+    ``None``: its decoder passes every manifest field to the constructor
+    and would fail on an unknown one. This is what keeps the side records
+    (``_SIDE_RECORDS``) out of ``root``.
+    """
+    return value is None and f.default is None
 
 
 def _encode(obj: Any, arrays: dict[str, np.ndarray]) -> Any:
@@ -105,6 +133,7 @@ def _encode(obj: Any, arrays: dict[str, np.ndarray]) -> Any:
             "fields": {
                 f.name: _encode(getattr(obj, f.name), arrays)
                 for f in fields(obj)
+                if not _omitted(f, getattr(obj, f.name))
             },
         }
     raise TypeError(
@@ -125,16 +154,27 @@ def _decode(val: Any, arrays: dict[str, np.ndarray]) -> Any:
         if "__tuple__" in val:
             return tuple(_decode(v, arrays) for v in val["__tuple__"])
         if "__dataclass__" in val:
-            name = val["__dataclass__"]
-            cls = _REGISTRY.get(name)
-            if cls is None:
-                raise ValueError(
-                    f"Unknown dataclass {name!r} in session archive."
-                )
-            kwargs = {k: _decode(v, arrays) for k, v in val["fields"].items()}
-            return cls(**kwargs)
+            return _decode_dataclass(val, arrays)
         raise ValueError(f"Unrecognized encoded object with keys {list(val)}")
     raise ValueError(f"Cannot decode value of type {type(val).__name__!r}")
+
+
+def _decode_dataclass(val: dict, arrays: dict[str, np.ndarray]) -> Any:
+    """Rebuild a registered dataclass; unknown names or fields are a
+    ``ValueError`` (a session error in the GUI), never a ``TypeError``."""
+    name = val["__dataclass__"]
+    cls = _REGISTRY.get(name)
+    if cls is None:
+        raise ValueError(f"Unknown dataclass {name!r} in session archive.")
+    known = {f.name for f in fields(cls) if f.init}
+    unknown = sorted(set(val["fields"]) - known)
+    if unknown:
+        raise ValueError(
+            f"Unknown field(s) {unknown} of {name!r} in session archive "
+            "(saved by a newer pyALDIC?)."
+        )
+    kwargs = {k: _decode(v, arrays) for k, v in val["fields"].items()}
+    return cls(**kwargs)
 
 
 def serialize_result(
@@ -143,11 +183,18 @@ def serialize_result(
     """Return ``(arrays, manifest)`` for a :class:`PipelineResult`.
 
     *arrays* maps content-hash keys to the (deduplicated) numpy arrays;
-    *manifest* is a JSON-able dict describing the object tree.
+    *manifest* is a JSON-able dict describing the object tree: ``root``,
+    plus each side record (``_SIDE_RECORDS``) that is not ``None``.
     """
     arrays: dict[str, np.ndarray] = {}
-    root = _encode(result, arrays)
-    manifest = {"serialize_version": SERIALIZE_VERSION, "root": root}
+    root = _encode(replace(result, **dict.fromkeys(_SIDE_RECORDS)), arrays)
+    manifest: dict[str, Any] = {
+        "serialize_version": SERIALIZE_VERSION, "root": root,
+    }
+    for name in _SIDE_RECORDS:
+        value = getattr(result, name)
+        if value is not None:
+            manifest[name] = _encode(value, arrays)
     return arrays, manifest
 
 
@@ -164,7 +211,25 @@ def deserialize_result(
     obj = _decode(manifest["root"], arrays)
     if not isinstance(obj, PipelineResult):
         raise ValueError("Session archive root is not a PipelineResult.")
-    return obj
+    side = _decode_side_records(manifest, arrays)
+    return replace(obj, **side) if side else obj
+
+
+def _decode_side_records(
+    manifest: dict, arrays: dict[str, np.ndarray],
+) -> dict[str, Any]:
+    """The side records present in *manifest*, type-checked."""
+    side: dict[str, Any] = {}
+    for name, cls in _SIDE_RECORDS.items():
+        if manifest.get(name) is None:
+            continue
+        value = _decode(manifest[name], arrays)
+        if not isinstance(value, cls):
+            raise ValueError(
+                f"Session record {name!r} is not a {cls.__name__}."
+            )
+        side[name] = value
+    return side
 
 
 def save_result_npz(

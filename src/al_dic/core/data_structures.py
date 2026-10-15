@@ -510,6 +510,107 @@ class StrainResult:
 
 
 @dataclass(frozen=True)
+class FrameTrackingStats:
+    """How the nodes were tracked into one deformed frame.
+
+    Counted by the cumulative composition for the step from ``ref_frame``
+    to ``frame``. Frame indices are 0-based image indices (frame 0 is the
+    first image).
+
+    Attributes:
+        frame: Image index of the deformed frame.
+        ref_frame: Image index of the pair's reference frame.
+        n_queried: Tracked points that entered this step (finite).
+        n_extrapolated: Of those, points outside the convex hull of the
+            pair's measured nodes; their displacement was copied from the
+            nearest measured node.
+        n_extrapolated_far: Extrapolated points farther than
+            ``TrackingDiagnostics.far_extrapolation_px`` from that node.
+        n_extrapolated_border: Far points outside
+            ``TrackingDiagnostics.measurable_box`` (too close to the image
+            edge for a whole subset); a subset of ``n_extrapolated_far``.
+        max_extrapolation_px: Largest distance from an extrapolated point
+            to the node it was copied from, over all ``n_extrapolated``
+            points, near, far and border alike (0.0 when none).
+        n_lost_parent_mask: Points that stopped being tracked because they
+            sit in a masked-out part of the reference frame's mask.
+        n_lost_child_mask: Points that stopped being tracked because they
+            landed in a masked-out part of this frame's mask.
+        n_lost_no_data: Points that stopped being tracked because the pair
+            had no measured value to interpolate.
+        n_tracked: Points still tracked after this step;
+            ``n_queried - n_tracked`` is the sum of the three losses.
+        n_tracked_extrapolated: Tracked points that took a far
+            extrapolation on this step or an earlier one of their path.
+    """
+
+    frame: int
+    ref_frame: int
+    n_queried: int
+    n_extrapolated: int
+    n_extrapolated_far: int
+    n_extrapolated_border: int
+    max_extrapolation_px: float
+    n_lost_parent_mask: int
+    n_lost_child_mask: int
+    n_lost_no_data: int
+    n_tracked: int
+    n_tracked_extrapolated: int
+
+
+@dataclass(frozen=True)
+class RefGridExtent:
+    """Grid of a reference frame that got its own (incremental mode).
+
+    Attributes:
+        ref_frame: Image index of the reference frame.
+        roi: Its grid range (same step and phase as frame 0's grid).
+        n_nodes: Nodes of that grid.
+    """
+
+    ref_frame: int
+    roi: GridxyROIRange
+    n_nodes: int
+
+
+@dataclass(frozen=True)
+class TrackingDiagnostics:
+    """Advisory record of how well the nodes were tracked through a run.
+
+    The displacements do not depend on it. ``PipelineResult`` carries
+    ``None`` instead when it is unknown (no frame composed, or counting
+    failed); ``None`` never means "clean".
+
+    Attributes:
+        n_nodes: Nodes of the frame-0 mesh.
+        n_never_material: Of those, nodes on masked-out pixels of frame 0
+            (never tracked).
+        far_extrapolation_px: Distance above which an extrapolation counts
+            as far; ``None`` when far extrapolations were not classified.
+        measurable_box: ``(x_lo, x_hi, y_lo, y_hi)``, inclusive, where a
+            whole subset fits in the image; ``None`` when not classified.
+        has_later_references: Some composed pair had a reference frame
+            other than frame 0 (incremental tracking).
+        frames: Per composed frame, sorted by ``frame``.
+        grid_extents: Reference frames solved on a grid of their own (only
+            those that some composed frame used as its reference).
+    """
+
+    n_nodes: int
+    n_never_material: int
+    far_extrapolation_px: float | None
+    measurable_box: tuple[int, int, int, int] | None
+    has_later_references: bool
+    frames: tuple[FrameTrackingStats, ...] = ()
+    grid_extents: tuple[RefGridExtent, ...] = ()
+
+    @property
+    def n_material(self) -> int:
+        """Nodes on material in frame 0: the ones there are to track."""
+        return self.n_nodes - self.n_never_material
+
+
+@dataclass(frozen=True)
 class PipelineResult:
     """Aggregated output from the full run_aldic pipeline.
 
@@ -530,6 +631,9 @@ class PipelineResult:
             the pipeline fell back to auto-placing fresh seeds on the
             new reference frame. Empty on non-seed-prop runs and on
             seed-prop runs where every warp succeeded.
+        tracking_diagnostics: How well the nodes were tracked (out-of-hull
+            extrapolations, nodes that stopped being tracked), set on
+            complete and partial runs. ``None`` when unknown.
     """
 
     dic_para: DICPara
@@ -548,6 +652,7 @@ class PipelineResult:
     stopped_early: bool = False
     stopped_at_frame: int | None = None  # 1-based frame index that failed
     stop_reason: str = ""
+    tracking_diagnostics: TrackingDiagnostics | None = None
 
 
 # ---------------------------------------------------------------------------

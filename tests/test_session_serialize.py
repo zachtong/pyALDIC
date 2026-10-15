@@ -1,14 +1,15 @@
 """Round-trip tests for faithful PipelineResult (de)serialization."""
 
 import io
-from dataclasses import fields, is_dataclass
+from dataclasses import dataclass, fields, is_dataclass, replace
 
 import numpy as np
 import pytest
 
 from al_dic.core.data_structures import (
-    DICMesh, DICPara, FrameResult, FrameSchedule, GridxyROIRange,
-    PipelineResult, StrainResult,
+    DICMesh, DICPara, FrameResult, FrameSchedule, FrameTrackingStats,
+    GridxyROIRange, PipelineResult, RefGridExtent, StrainResult,
+    TrackingDiagnostics,
 )
 from al_dic.io.session_serialize import (
     serialize_result, deserialize_result, save_result_npz, load_result_npz,
@@ -178,6 +179,138 @@ def test_save_progress_is_monotonic_to_one():
     assert fracs == sorted(fracs)          # monotonic non-decreasing
     buf.seek(0)
     _assert_eq(res, load_result_npz(buf))  # still round-trips
+
+
+# --------------------------------------------------------------------------
+# tracking diagnostics (plan D13 / D20)
+# --------------------------------------------------------------------------
+
+def _diagnostics(frames=True):
+    stats = tuple(
+        FrameTrackingStats(
+            frame=k, ref_frame=k - 1, n_queried=20, n_extrapolated=3,
+            n_extrapolated_far=2, n_extrapolated_border=1,
+            max_extrapolation_px=17.25 + k, n_lost_parent_mask=0,
+            n_lost_child_mask=k, n_lost_no_data=0, n_tracked=20 - k,
+            n_tracked_extrapolated=1,
+        )
+        for k in (1, 2, 3)
+    ) if frames else ()
+    extents = (
+        RefGridExtent(
+            ref_frame=2, roi=GridxyROIRange(gridx=(16, 239), gridy=(8, 199)),
+            n_nodes=196,
+        ),
+    ) if frames else ()
+    return TrackingDiagnostics(
+        n_nodes=20, n_never_material=0, far_extrapolation_px=16.0,
+        measurable_box=(20, 235, 20, 235), has_later_references=True,
+        frames=stats, grid_extents=extents,
+    )
+
+
+def _with_diag(diag):
+    return replace(_make_result(n_frames=4, accumulative=False), tracking_diagnostics=diag)
+
+
+@pytest.mark.parametrize("diag", [
+    _diagnostics(),
+    _diagnostics(frames=False),
+    replace(_diagnostics(), far_extrapolation_px=None, measurable_box=None),
+    None,
+], ids=["populated", "empty_frames", "unclassified", "none"])
+def test_tracking_diagnostics_roundtrip(diag, tmp_path):
+    res = _with_diag(diag)
+    back = deserialize_result(*serialize_result(res))
+    _assert_eq(res, back)
+    p = tmp_path / "r.npz"
+    save_result_npz(str(p), res)
+    back = load_result_npz(str(p))
+    _assert_eq(res, back)
+    if diag is not None:
+        assert back.tracking_diagnostics == diag  # tuples, ints, floats only
+
+
+def test_diagnostics_are_stored_beside_the_root():
+    """Builds <= 0.10.0 decode only ``manifest["root"]``, and pass every
+    root field to the constructor (a TypeError that ``load_session`` does
+    not turn into a ``SessionError`` on an unknown one). So the record sits
+    beside the root, and the root never names the field."""
+    for diag in (None, _diagnostics()):
+        _, manifest = serialize_result(_with_diag(diag))
+        assert "tracking_diagnostics" not in manifest["root"]["fields"]
+        assert ("tracking_diagnostics" in manifest) == (diag is not None)
+    # Required fields are always written, even when None.
+    _, manifest = serialize_result(
+        _with_diag(replace(_diagnostics(), far_extrapolation_px=None)),
+    )
+    diag_fields = manifest["tracking_diagnostics"]["fields"]
+    assert diag_fields["far_extrapolation_px"] is None
+
+
+def test_manifest_without_the_field_decodes_to_none():
+    arrays, manifest = serialize_result(_make_result())
+    manifest["root"]["fields"].pop("tracking_diagnostics", None)
+    assert deserialize_result(arrays, manifest).tracking_diagnostics is None
+    # A manifest that spells the None out decodes the same way.
+    manifest["root"]["fields"]["tracking_diagnostics"] = None
+    assert deserialize_result(arrays, manifest).tracking_diagnostics is None
+
+
+@dataclass(frozen=True)
+class _PipelineResultBefore:
+    """PipelineResult as builds <= 0.10.0 define it (no diagnostics)."""
+
+    dic_para: DICPara
+    dic_mesh: DICMesh
+    result_disp: list
+    result_def_grad: list
+    result_strain: list
+    result_fe_mesh_each_frame: list
+    frame_schedule: FrameSchedule | None = None
+    ref_switch_frames: tuple = ()
+    reseed_events: tuple = ()
+    stopped_early: bool = False
+    stopped_at_frame: int | None = None
+    stop_reason: str = ""
+
+
+def test_old_build_opens_new_sessions_without_the_record(monkeypatch):
+    """Decode new manifests the way a build <= 0.10.0 does (its registry,
+    ``manifest["root"]`` only): sessions with and without diagnostics both
+    open; the record is simply not read."""
+    import al_dic.io.session_serialize as ss
+
+    sessions = [serialize_result(_with_diag(d)) for d in (None, _diagnostics())]
+    old = {
+        k: v for k, v in ss._REGISTRY.items()
+        if k not in ("TrackingDiagnostics", "FrameTrackingStats", "RefGridExtent")
+    }
+    old["PipelineResult"] = _PipelineResultBefore
+    monkeypatch.setattr(ss, "_REGISTRY", old)
+
+    for arrays, manifest in sessions:
+        assert manifest["serialize_version"] == 1
+        loaded = ss._decode(manifest["root"], arrays)
+        assert isinstance(loaded, _PipelineResultBefore)
+        assert len(loaded.result_disp) == 3
+
+
+def test_record_from_a_newer_build_is_a_value_error():
+    """A field this build does not know (a newer build added it) is the
+    ValueError that ``load_session`` reports as a session error."""
+    arrays, manifest = serialize_result(_with_diag(_diagnostics()))
+    stats = manifest["tracking_diagnostics"]["fields"]["frames"]["__tuple__"][0]
+    stats["fields"]["max_in_region_px"] = 3.0
+    with pytest.raises(ValueError, match="max_in_region_px"):
+        deserialize_result(arrays, manifest)
+
+
+def test_diagnostics_of_another_type_are_rejected():
+    arrays, manifest = serialize_result(_with_diag(_diagnostics()))
+    manifest["tracking_diagnostics"] = {"__tuple__": [1, 2]}
+    with pytest.raises(ValueError, match="TrackingDiagnostics"):
+        deserialize_result(arrays, manifest)
 
 
 def test_load_rejects_pickle(tmp_path):

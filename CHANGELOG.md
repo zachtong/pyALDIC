@@ -6,6 +6,34 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Runs record how well the nodes were tracked through the sequence
+  (API).** `PipelineResult.tracking_diagnostics` holds a
+  `TrackingDiagnostics` record. For every frame it counts the nodes whose
+  displacement was copied from the nearest measured node because they lay
+  outside the measured area of their pair, and how far away that node was.
+  It also counts the nodes that stopped being tracked because they landed
+  outside the Region of Interest or their pair had no measured
+  displacement there. At the end of a run, `run_aldic` logs a one-line
+  summary. It also logs a warning when, on some frame, at least 3 nodes
+  (and at least 0.5% of the tracked nodes) lying half a subset or more
+  from the image edge had their displacement copied from a node more than
+  one grid step away, or when more than half of the specimen's nodes are
+  lost by the last frame, or more than a fifth between two consecutive
+  frames. The displacements themselves are unchanged. The record is
+  advisory: if it cannot be computed, the run still completes and the
+  field is `None`.
+  - New types `TrackingDiagnostics`, `FrameTrackingStats` and
+    `RefGridExtent` are exported from `al_dic`.
+    `al_dic.core.tracking_diagnostics.assess_tracking` returns the
+    findings behind the log lines, with English keys.
+  - **Sessions** keep the record. Earlier versions still open these
+    sessions; they ignore the record. A session whose records hold fields
+    this version does not know (saved by a later version) is now reported
+    as a session that could not be read, naming those fields, instead of
+    with an internal `TypeError` message.
+
 ### Fixed
 
 - **Incremental runs now measure a specimen that moves beyond the bounding
