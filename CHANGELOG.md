@@ -105,6 +105,17 @@ and versioning follows [Semantic Versioning](https://semver.org/).
     grid, `result_disp[i].U` is on that pair's mesh,
     `result_fe_mesh_each_frame[i]`; `U_accum`, strain and exports stay on
     the first frame's mesh.
+- **The Region of Interest hint no longer says that frame 1's region
+  follows the specimen.** With incremental tracking and *Every Frame*
+  reference updates, the hint above the Region of Interest toolbar said
+  that frame 1's region is warped forward to each later frame
+  automatically, so no per-frame drawing was needed. Nothing moves it: a
+  reference frame without a region of its own reuses frame 1's region
+  unchanged, after *Run* lists those frames and you choose to continue.
+  The hint now says so, and suggests giving each frame a region that
+  covers the specimen in that frame when the specimen moves (*Batch
+  Import* assigns regions to many frames at once). The user guide quotes
+  the new hint.
 - **Export, batch-import and load-data dialogs are now closed properly.**
   Each was shown as a child of the window that opened it and was never
   deleted, so every one opened in a session stayed in memory until pyALDIC

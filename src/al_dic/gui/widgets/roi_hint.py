@@ -76,10 +76,16 @@ class ROIHint(QLabel):
         # Incremental: the required ref frames depend on inc_ref_mode
         mode = s.inc_ref_mode
         if mode == "every_frame":
+            # Nothing moves the frame-1 region: a reference frame without
+            # its own region reuses it unchanged once the user confirms
+            # (pipeline_controller._confirm_incomplete_ref_rois).
             self.setText(self.tr(
-                "<b>Incremental, every frame</b> — frame 1 needs a "
-                "Region of Interest. It is automatically warped forward "
-                "to each later frame (no per-frame drawing required)."
+                "<b>Incremental, every frame</b> — each frame is the "
+                "reference for the next one. If the specimen moves, give "
+                "each frame a Region of Interest that covers the specimen "
+                "in that frame (Batch Import can assign many at once); "
+                "reference frames without one reuse frame 1's region after "
+                "you confirm."
             ))
             return
 

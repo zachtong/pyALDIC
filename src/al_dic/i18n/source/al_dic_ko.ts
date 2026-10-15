@@ -2630,27 +2630,27 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>&lt;b&gt;누적 모드&lt;/b&gt; — 관심 영역은 프레임 1에만 필요합니다. 이후 프레임은 모두 직접 비교됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="80"/>
-        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
-        <translation>&lt;b&gt;증분, 매 프레임&lt;/b&gt; — 프레임 1에 관심 영역이 필요합니다. 이후 프레임으로 자동 전진 워프됩니다(프레임별 그리기 불필요).</translation>
+        <location filename="../../gui/widgets/roi_hint.py" line="83"/>
+        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — each frame is the reference for the next one. If the specimen moves, give each frame a Region of Interest that covers the specimen in that frame (Batch Import can assign many at once); reference frames without one reuse frame 1&apos;s region after you confirm.</source>
+        <translation>&lt;b&gt;증분, 매 프레임&lt;/b&gt; — 각 프레임이 다음 프레임의 참조 프레임이 됩니다. 시편이 움직이면 각 프레임에 해당 프레임의 시편을 덮는 관심 영역을 지정하세요(일괄 가져오기로 여러 프레임에 한 번에 지정할 수 있습니다). 관심 영역이 없는 참조 프레임은 확인 후 프레임 1의 영역을 재사용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="97"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="103"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;증분, %1 프레임마다&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%2&lt;/b&gt;(참조 프레임 총 %3개).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="111"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="117"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 사용자 지정 참조 프레임이 설정되지 않았습니다. 프레임 1이 유일한 참조 프레임이 됩니다. 참조 프레임 입력란에 인덱스를 추가하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="121"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="127"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;증분, 사용자 지정&lt;/b&gt; — 다음 프레임에 관심 영역을 그리세요: &lt;b&gt;%1&lt;/b&gt;(참조 프레임 총 %2개).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="135"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>프레임 1에 관심 영역을 그리세요.</translation>
     </message>

@@ -107,7 +107,13 @@ def test_hint_accumulative_says_frame_1_only():
     assert "only" in txt
 
 
-def test_hint_incremental_every_frame_mentions_warping():
+def test_hint_incremental_every_frame_states_the_frame_1_fallback():
+    """Nothing warps the frame-1 region forward (the hint once said so).
+
+    A reference frame without its own Region of Interest reuses frame 1's
+    unchanged after the Run-time confirmation, so the hint points users at
+    per-frame regions (Batch Import) and says what happens without them.
+    """
     state = AppState.instance()
     state.image_files = ["a.tif", "b.tif", "c.tif", "d.tif"]
     state.set_param("tracking_mode", "incremental")
@@ -115,7 +121,10 @@ def test_hint_incremental_every_frame_mentions_warping():
     state.images_changed.emit()
     hint = ROIHint()
     txt = hint.text().lower()
-    assert "warped" in txt or "warp" in txt
+    assert "warp" not in txt
+    assert "batch import" in txt
+    assert "reuse frame 1's region" in txt
+    assert "confirm" in txt
 
 
 def test_hint_every_n_lists_ref_frame_indices():

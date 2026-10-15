@@ -3123,6 +3123,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Actions suggérées :\n- Vérifiez que la région d'intérêt de chaque image couvre l'éprouvette dans cette image.\n- Gardez l'éprouvette dans l'image pendant toute la séquence.\n- Si l'éprouvette se fissure ou comporte des trous, la perte de nœuds le long des fissures ou des trous est normale.",
         "es":    "Acciones sugeridas:\n- Compruebe que la región de interés de cada fotograma cubre la probeta en ese fotograma.\n- Mantenga la probeta dentro de la imagen durante toda la secuencia.\n- Si la probeta se agrieta o tiene agujeros, es normal perder nodos a lo largo de las grietas o los agujeros.",
     },
+    # ===== ROIHint — incremental, every frame (nothing warps frame 1's region)
+    "<b>Incremental, every frame</b> — each frame is the reference for the next one. If the specimen moves, give each frame a Region of Interest that covers the specimen in that frame (Batch Import can assign many at once); reference frames without one reuse frame 1's region after you confirm.": {
+        "zh_CN": "<b>增量模式，每帧</b> — 每一帧都是下一帧的参考帧。如果试样发生移动，请为每一帧指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定）；没有自己感兴趣区域的参考帧会在您确认后沿用第 1 帧的区域。",
+        "zh_TW": "<b>增量模式，每個影格</b> — 每個影格都是下一個影格的參考影格。如果試樣發生移動，請為每個影格指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定）；沒有自己感興趣區域的參考影格會在您確認後沿用第 1 影格的區域。",
+        "ja":    "<b>逐次、毎フレーム</b> — 各フレームが次のフレームの参照フレームになります。試験片が移動する場合は、各フレームにそのフレームの試験片を覆う関心領域を設定してください（一括インポートで多数のフレームにまとめて割り当てられます）。関心領域のない参照フレームは、確認後にフレーム 1 の領域を再利用します。",
+        "ko":    "<b>증분, 매 프레임</b> — 각 프레임이 다음 프레임의 참조 프레임이 됩니다. 시편이 움직이면 각 프레임에 해당 프레임의 시편을 덮는 관심 영역을 지정하세요(일괄 가져오기로 여러 프레임에 한 번에 지정할 수 있습니다). 관심 영역이 없는 참조 프레임은 확인 후 프레임 1의 영역을 재사용합니다.",
+        "de":    "<b>Inkrementell, jedes Bild</b> — jedes Bild ist das Referenzbild für das nächste. Wenn sich die Probe bewegt, geben Sie jedem Bild eine Region of Interest, die die Probe in diesem Bild abdeckt (mit dem Stapelimport lassen sich viele auf einmal zuweisen); Referenzbilder ohne eigene Region of Interest übernehmen nach Ihrer Bestätigung die von Bild 1.",
+        "fr":    "<b>Incrémental, chaque image</b> — chaque image sert de référence à la suivante. Si l'éprouvette se déplace, donnez à chaque image une région d'intérêt qui couvre l'éprouvette dans cette image (l'import par lot permet d'en attribuer plusieurs à la fois) ; les images de référence sans région d'intérêt propre reprennent celle de l'image 1 après votre confirmation.",
+        "es":    "<b>Incremental, cada fotograma</b> — cada fotograma es la referencia del siguiente. Si la probeta se mueve, asigne a cada fotograma una región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar muchas a la vez); los fotogramas de referencia sin una propia reutilizan la región del fotograma 1 tras su confirmación.",
+    },
 }
 
 

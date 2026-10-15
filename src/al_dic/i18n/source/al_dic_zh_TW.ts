@@ -2630,27 +2630,27 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>&lt;b&gt;累積模式&lt;/b&gt; — 只有第 1 影格需要感興趣區域。後續影格都直接與其比較。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="80"/>
-        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
-        <translation>&lt;b&gt;增量模式，每個影格&lt;/b&gt; — 第 1 影格需要感興趣區域。系統會自動將其扭曲到每個後續影格（無需逐影格繪製）。</translation>
+        <location filename="../../gui/widgets/roi_hint.py" line="83"/>
+        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — each frame is the reference for the next one. If the specimen moves, give each frame a Region of Interest that covers the specimen in that frame (Batch Import can assign many at once); reference frames without one reuse frame 1&apos;s region after you confirm.</source>
+        <translation>&lt;b&gt;增量模式，每個影格&lt;/b&gt; — 每個影格都是下一個影格的參考影格。如果試樣發生移動，請為每個影格指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定）；沒有自己感興趣區域的參考影格會在您確認後沿用第 1 影格的區域。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="97"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="103"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;增量模式，每 %1 個影格&lt;/b&gt; — 請在以下影格繪製感興趣區域：&lt;b&gt;%2&lt;/b&gt;（共 %3 個參考影格）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="111"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="117"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;增量模式，自訂&lt;/b&gt; — 未設定自訂參考影格。僅第 1 影格為參考；請在參考影格清單中新增更多索引。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="121"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="127"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;增量模式，自訂&lt;/b&gt; — 請在以下影格繪製感興趣區域：&lt;b&gt;%1&lt;/b&gt;（共 %2 個參考影格）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="135"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>請在第 1 影格繪製感興趣區域。</translation>
     </message>

@@ -2630,27 +2630,27 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>&lt;b&gt;累積モード&lt;/b&gt; — 関心領域はフレーム 1 にのみ必要です。後続フレームはすべて直接比較されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="80"/>
-        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — frame 1 needs a Region of Interest. It is automatically warped forward to each later frame (no per-frame drawing required).</source>
-        <translation>&lt;b&gt;逐次、毎フレーム&lt;/b&gt; — フレーム 1 に関心領域が必要です。後続フレームには自動で前方ワープされます(フレーム単位の描画は不要)。</translation>
+        <location filename="../../gui/widgets/roi_hint.py" line="83"/>
+        <source>&lt;b&gt;Incremental, every frame&lt;/b&gt; — each frame is the reference for the next one. If the specimen moves, give each frame a Region of Interest that covers the specimen in that frame (Batch Import can assign many at once); reference frames without one reuse frame 1&apos;s region after you confirm.</source>
+        <translation>&lt;b&gt;逐次、毎フレーム&lt;/b&gt; — 各フレームが次のフレームの参照フレームになります。試験片が移動する場合は、各フレームにそのフレームの試験片を覆う関心領域を設定してください（一括インポートで多数のフレームにまとめて割り当てられます）。関心領域のない参照フレームは、確認後にフレーム 1 の領域を再利用します。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="97"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="103"/>
         <source>&lt;b&gt;Incremental, every %1 frames&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%2&lt;/b&gt; (%3 reference frames total).</source>
         <translation>&lt;b&gt;逐次、%1 フレームごと&lt;/b&gt; — 次のフレームに関心領域を描画してください: &lt;b&gt;%2&lt;/b&gt;(参照フレーム合計 %3)。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="111"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="117"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — no custom reference frames set. Frame 1 will be the only reference; add more indices in the Reference Frames field.</source>
         <translation>&lt;b&gt;逐次、カスタム&lt;/b&gt; — カスタム参照フレーム未設定。フレーム 1 が唯一の参照となります。参照フレーム欄にインデックスを追加してください。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="121"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="127"/>
         <source>&lt;b&gt;Incremental, custom&lt;/b&gt; — draw a Region of Interest on frames: &lt;b&gt;%1&lt;/b&gt; (%2 reference frames total).</source>
         <translation>&lt;b&gt;逐次、カスタム&lt;/b&gt; — 次のフレームに関心領域を描画してください: &lt;b&gt;%1&lt;/b&gt;(参照フレーム合計 %2)。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/roi_hint.py" line="129"/>
+        <location filename="../../gui/widgets/roi_hint.py" line="135"/>
         <source>Draw a Region of Interest on frame 1.</source>
         <translation>フレーム 1 に関心領域を描画してください。</translation>
     </message>
