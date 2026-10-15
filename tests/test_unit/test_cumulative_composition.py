@@ -525,3 +525,65 @@ class TestCrackAwareComposition:
         # Off-band nodes unaffected.
         off = np.isclose(coords[:, 1], 16.0)
         assert np.isfinite(result[1].U_accum[1::2][off]).all()
+
+
+# ---------------------------------------------------------------------------
+# Tests: bounded Delaunay cache (D24)
+# ---------------------------------------------------------------------------
+
+
+def _cycling_lattice_run(n_pairs: int = 7):
+    """Accumulative run whose pair meshes cycle through 3 distinct lattices.
+
+    Per-reference grids give pairs their own lattices; here pair i lives on
+    lattice i % 3 (jittered, so frame-0 queries are not nodes), so a
+    one-entry cache must rebuild every triangulation while the default
+    cache keeps all three.
+    """
+    rng = np.random.default_rng(7)
+    base = _make_regular_mesh(6, 6, 16.0).coordinates_fem
+    lattices = [base + rng.uniform(-3.0, 3.0, base.shape) for _ in range(3)]
+    meshes, disp = [], []
+    for i in range(n_pairs):
+        pts = lattices[i % 3]
+        meshes.append(DICMesh(
+            coordinates_fem=pts.copy(),
+            elements_fem=np.empty((0, 8), dtype=np.int64),
+        ))
+        u = 0.01 * (i + 1) * pts[:, 0] + 0.3
+        v = -0.02 * pts[:, 1] + 0.1 * i
+        disp.append(_make_frame_result(u, v, ref_frame=0))
+    schedule = FrameSchedule.from_mode("accumulative", n_pairs + 1)
+    return disp, meshes, schedule, n_pairs + 1
+
+
+def _compose_counting_delaunay(monkeypatch, cache_size=None):
+    import al_dic.core.pipeline as pipeline_mod
+    import al_dic.utils.interpolation as interp_mod
+
+    builds: list[int] = []
+    real_delaunay = interp_mod.Delaunay
+
+    def counting(points, *args, **kwargs):
+        builds.append(len(points))
+        return real_delaunay(points, *args, **kwargs)
+
+    with monkeypatch.context() as mp:
+        mp.setattr(interp_mod, "Delaunay", counting)
+        if cache_size is not None:
+            mp.setattr(pipeline_mod, "_TRI_CACHE_SIZE", cache_size)
+        disp, meshes, schedule, n_frames = _cycling_lattice_run()
+        result = _compute_cumulative_displacements_tree(
+            disp, meshes, n_frames, schedule,
+        )
+    return [r.U_accum for r in result], len(builds)
+
+
+def test_tri_cache_bound_is_value_neutral(monkeypatch):
+    """A one-entry cache rebuilds every triangulation, values unchanged."""
+    default, n_default = _compose_counting_delaunay(monkeypatch)
+    tiny, n_tiny = _compose_counting_delaunay(monkeypatch, cache_size=1)
+    assert n_default == 3  # one build per distinct lattice
+    assert n_tiny == 7  # the 3-lattice cycle evicts every entry
+    for a, b in zip(default, tiny):
+        np.testing.assert_array_equal(a, b)

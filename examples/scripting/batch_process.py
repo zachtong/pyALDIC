@@ -137,6 +137,13 @@ def roi_range_from(mask: np.ndarray) -> GridxyROIRange:
 
     ``gridxy_roi_range`` has no usable default -- in the GUI it comes from the
     ROI you draw, so a script must set it explicitly.
+
+    It is the grid of the first frame. In incremental mode a reference frame
+    whose own mask (``roi_dir``) reaches outside this box is solved on a grid
+    of its own that covers that mask, so a specimen that moves across the
+    image stays measured; results are still reported on the first frame's
+    nodes. With ``roi`` or no ROI, every frame shares one mask, so every
+    reference frame keeps the first frame's grid.
     """
     ys, xs = np.where(mask > 0.5)
     if xs.size == 0:
@@ -252,7 +259,7 @@ def process_sample(sample: dict[str, Any], cfg: dict[str, Any]) -> dict[str, Any
         "name": name,
         "frames": sum(r is not None for r in result.result_disp),
         "strain_frames": sum(r is not None for r in result.result_strain),
-        "nodes": len(result.result_disp[-1].U) // 2 if result.result_disp[-1] else 0,
+        "nodes": result.dic_mesh.coordinates_fem.shape[0],
         "written": written,
         "seconds": time.perf_counter() - t0,
         "output": str(dest),

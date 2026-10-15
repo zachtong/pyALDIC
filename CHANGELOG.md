@@ -8,6 +8,54 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **Incremental runs now measure a specimen that moves beyond the bounding
+  box of frame 1's Region of Interest, when later reference frames have
+  regions of their own.** The measurement grid was laid out once, over the
+  bounding box of frame 1's region, and every later reference frame reused
+  it. Where the specimen had slid or rotated beyond that box, the pairs
+  measured from that reference frame did not cover it, so the nodes
+  tracked into that part had their displacement copied from the nearest
+  measured node, or stopped being tracked, with no warning. Now each
+  reference frame whose own region reaches outside that box is solved on a
+  grid of its own that covers the region, with the same node spacing and
+  aligned with frame 1's nodes. Displacement, strain and exports are still
+  reported on frame 1's nodes. On a user's 150-frame cyclic-loading
+  sequence, in which the specimen slides out of frame 1's box and back,
+  the median error at the last frame against direct correlation fell from
+  18.2 px to 0.43 px, and the share of the specimen's nodes lost fell from
+  70% to 7%.
+  - **Who is affected:** incremental runs whose reference frames have
+    Regions of Interest of their own (drawn per frame, Batch Import, or a
+    per-frame mask folder in a script) that reach outside the bounding box
+    of frame 1's region. Results of such runs from earlier versions may be
+    wrong where the specimen had left that box; recompute them.
+  - Runs where every reference frame's region stays inside that box give
+    byte-identical results, and so does every accumulative run. Reference
+    frames that reuse frame 1's region (no region of their own) keep
+    frame 1's grid and gain nothing: give them their own region to
+    benefit.
+  - Pairs on a grid of their own now measure the part of the specimen the
+    old grid skipped, so such runs take longer, use more memory and save
+    larger sessions: on the sequence above, peak memory rose from 18.3 to
+    20.6 GiB. A reference region that reaches beyond frame 1's box gets
+    a grid sized to that region, so a larger region adds nodes; a stray
+    speck far from the specimen enlarges that frame's grid, so keep
+    regions clean. With Starting Points, such a speck over featureless
+    background now stops the run at that frame (the frames before it are
+    kept), because no Starting Point can be placed on it; earlier versions
+    ignored it. Remove the speck from that frame's region and run again.
+  - **API:** `gridxy_roi_range` now sets the grid of the first frame
+    (`masks[0]`). In incremental mode a reference frame whose mask reaches
+    outside it gets a grid of its own; `result.dic_para.gridxy_roi_range`
+    still reports the first frame's. A reference mask keeps the first
+    frame's grid (it still trims that pair's mesh) when it is empty,
+    identical to `masks[0]`, all ones (no mask), touches all four image
+    edges while `masks[0]` does too, or leaves no room for a whole subset,
+    so scripts that pass one mask for every frame, or a first-frame mask
+    and all-ones masks for the rest, are unaffected. For a pair on its own
+    grid, `result_disp[i].U` is on that pair's mesh,
+    `result_fe_mesh_each_frame[i]`; `U_accum`, strain and exports stay on
+    the first frame's mesh.
 - **Export, batch-import and load-data dialogs are now closed properly.**
   Each was shown as a child of the window that opened it and was never
   deleted, so every one opened in a session stayed in memory until pyALDIC

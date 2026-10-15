@@ -42,6 +42,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ._brush_warp import warp_brush_mask_to_ref
+from ._grid_extent import ReferenceGrids, log_grid_plan, plan_reference_grids
 from .data_structures import (
     DICMesh,
     DICPara,
@@ -424,6 +425,13 @@ def _apply_post_solve_corrections(
     return U_subpb2, F_subpb2
 
 
+_TRI_CACHE_SIZE = 4  # max cached Delaunay triangulations in the composition.
+# Per-reference grids give each reference's pairs their own lattice, so an
+# unbounded cache would pin one triangulation per reference frame. Oldest
+# first eviction is value-neutral: Delaunay is deterministic, so a miss
+# rebuilds the identical triangulation.
+
+
 def _compute_cumulative_displacements_tree(
     result_disp: list[FrameResult | None],
     result_fe_mesh: list[DICMesh | None],
@@ -532,7 +540,8 @@ def _compute_cumulative_displacements_tree(
     # the same mesh, and the Delaunay build (~98% of the transform) would
     # otherwise be repeated per frame. Keyed by (points, valid mask) -- one
     # build per uniform-mesh run instead of one per frame, byte-identical
-    # away from any crack-aware override region.
+    # away from any crack-aware override region. Bounded to _TRI_CACHE_SIZE
+    # entries (oldest evicted after each step).
     tri_cache: dict = {}
 
     for i in range(n_frames - 1):
@@ -648,6 +657,8 @@ def _compute_cumulative_displacements_tree(
                         disp_y[sel] = v_b[resolved]
 
             coord_curr = coord_curr + np.column_stack([disp_x, disp_y])
+            while len(tri_cache) > _TRI_CACHE_SIZE:
+                tri_cache.pop(next(iter(tri_cache)))  # oldest first
 
             if crack_aware and child_frame < len(masks):
                 # Child-side death check: material consumed BETWEEN parent and
@@ -716,6 +727,16 @@ def run_aldic(
 
     Args:
         para: Validated DIC parameters (from ``dicpara_default``).
+            ``para.gridxy_roi_range`` is the frame-0 grid: pairs whose
+            reference is frame 0, the canonical mesh and ``U_accum`` use
+            it, and the result reports it. A reference frame K != 0 whose
+            mask has material outside it (incremental mode, a moving
+            specimen) gets its own grid instead: same step and lattice
+            phase, covering that material plus at least one ring of
+            nodes, capped so every subset fits in the image. A reference
+            mask that is empty, equal to ``masks[0]``, has no masked-out
+            pixel, or touches all four image edges while ``masks[0]``
+            does too keeps the frame-0 grid.
         images: List of grayscale images as float64 arrays (H, W),
             normalized to [0, 1].  ``images[0]`` is the reference;
             ``images[1:]`` are deformed frames.
@@ -730,7 +751,8 @@ def run_aldic(
         compute_strain: If ``False``, skip Section 8 (strain computation)
             and return ``PipelineResult`` with empty ``result_strain``.
         mesh: Pre-built DICMesh.  If ``None``, a mesh is generated
-            automatically from the FFT search grid.
+            automatically from the FFT search grid.  A given mesh is used
+            for every pair; no reference frame gets its own grid.
         U0: Initial displacement guess (2*n_nodes,).  If ``None``,
             computed via FFT cross-correlation (``integer_search``).
         refinement_policy: Optional ``RefinementPolicy`` containing
@@ -829,6 +851,23 @@ def run_aldic(
             )
     else:
         schedule = FrameSchedule.from_mode(para.reference_mode, n_frames)
+
+    # --- Plan one grid per reference frame ---
+    # gridxy_roi_range is the frame-0 grid. A reference frame whose mask
+    # leaves it gets its own phase-aligned grid; every other reference
+    # keeps this very object, so a run where nothing leaves it is unchanged.
+    # An external mesh is never replaced, so nothing is planned for it.
+    grid_roi_ref0 = para.gridxy_roi_range
+    if mesh_is_external:
+        grids = ReferenceGrids(roi0=grid_roi_ref0)
+    else:
+        grids = plan_reference_grids(
+            grid_roi_ref0, masks, schedule.ref_frame_set, (img_h, img_w),
+            para.winsize, para.winstepsize,
+        )
+        log_grid_plan(grids, (img_h, img_w), para.winsize, para.winstepsize)
+    assert grids.roi0 is grid_roi_ref0
+    active_roi = grid_roi_ref0  # lattice of the current dic_mesh
 
     # --- Resolve init guess mode ---
     # "auto" / "fft_ref_update" → treated as "previous" in the loop;
@@ -977,6 +1016,20 @@ def run_aldic(
             current_U0 = None
             ref_switch_frames.append(frame_idx)
         prev_ref_idx = ref_idx
+
+        # Solve the pair on its reference frame's grid. A lattice switch
+        # only comes with a ref switch, which already reset the initial
+        # guess above. The mask hash is reset too: two refs can share one
+        # mask but not one grid object, and the fresh untrimmed mesh must
+        # be trimmed again.
+        if not mesh_is_external:
+            pair_roi = grids.roi_for(ref_idx)
+            if pair_roi is not active_roi:
+                para = replace(para, gridxy_roi_range=pair_roi)
+                dic_mesh = None
+                base_mesh = None
+                prev_mask_hash = None
+                active_roi = pair_roi
 
         # --- Load reference image (with cache) ---
         if ref_idx in ref_cache:
@@ -1709,6 +1762,11 @@ def run_aldic(
                 stopped_at_frame = frame_idx + 1
                 stop_reason = str(exc)
                 break
+
+    # Restore the frame-0 grid range, whatever lattice the last pair used:
+    # the result reports it (only the solver loop above reads it).
+    if para.gridxy_roi_range is not grid_roi_ref0:
+        para = replace(para, gridxy_roi_range=grid_roi_ref0)
 
     # =====================================================================
     # Cumulative displacement transform (tree-based)

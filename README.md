@@ -92,7 +92,7 @@ Run traditional local IC-GN (fast, independent nodes) or full AL-DIC with ADMM g
 
 ### Dual Tracking Modes
 
-**Accumulative mode** — every frame compared to the first reference (best for small, monotonic deformation). **Incremental mode** — each frame compared to the previous (handles large cumulative deformation with automatic displacement composition and mask warping).
+**Accumulative mode** — every frame compared to the first reference (best for small, monotonic deformation). **Incremental mode** — each frame compared to the previous (handles large cumulative deformation with automatic displacement composition, a measurement grid that covers each reference frame's own ROI, and refinement-brush warping).
 
 <p align="center">
   <!-- TODO: GIF showing incremental tracking through a multi-frame sequence -->
@@ -332,7 +332,11 @@ masks = load_masks("path/to/masks", pattern="*.tif")
 
 # Configure and run.  gridxy_roi_range is REQUIRED: it is the pixel box to
 # correlate, and it defaults to a zero-size box (the GUI fills it in from the
-# ROI you draw).  Here it is taken from the mask's bounding box.
+# ROI you draw).  Here it is taken from the mask's bounding box.  It sets the
+# grid of the first frame (masks[0]).  In incremental mode (the default),
+# pairs from a reference frame whose own mask reaches outside this box are
+# solved on a grid of their own that covers that mask; U_accum, strain and
+# exports stay on the first frame's nodes.
 ys, xs = np.where(masks[0])
 para = dicpara_default(
     winsize=32,
