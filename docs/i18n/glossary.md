@@ -22,6 +22,9 @@
 > keeps it there), and the English label "Initial Seed Search" became
 > "Starting Point Search" like the rest of the UI.
 
+> **Added 2026-10-15** (tracking-quality warning): rows Node (mesh node),
+> already used this way by every catalog, and Specimen, new to the UI.
+
 Fixed translations for domain-specific DIC terminology and high-frequency
 GUI verbs. Single source of truth for all 7 non-English languages.
 
@@ -86,6 +89,8 @@ established abbreviations stay literal English across all 8 languages:
 | Adaptive mesh | 自适应网格 | 自適應網格 | 適応メッシュ | 적응형 메시 | Adaptives Netz | Maillage adaptatif | Malla adaptativa |
 | Quadtree refinement | 四叉树加密 | 四元樹加密 | 四分木細分化 | 쿼드트리 세분화 | Quadtree-Verfeinerung | Raffinement quadtree | Refinamiento quadtree |
 | Mesh refinement | 网格加密 | 網格加密 | メッシュ細分化 | 메시 세분화 | Netzverfeinerung | Raffinement de maillage | Refinamiento de malla |
+| Node (mesh node) | 节点 | 節點 | ノード | 노드 | Knoten | Nœud | Nodo |
+| Specimen | 试样 | 試樣 | 試験片 | 시편 | Probe | Éprouvette | Probeta |
 | Mask | 掩模 | 遮罩 | マスク | 마스크 | Maske | Masque | Máscara |
 | Region of Interest (ROI) | 感兴趣区域 | 感興趣區域 | 関心領域 | 관심 영역 | Region of Interest | Région d'intérêt | Región de interés |
 | Seed / Starting point | 种子点 | 種子點 | シード点 | 시드점 | Startpunkt | Point de départ | Punto inicial |

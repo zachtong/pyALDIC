@@ -726,12 +726,12 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1019"/>
+        <location filename="../../gui/app.py" line="1024"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>Région d&apos;intérêt importée pour %n images</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1033"/>
+        <location filename="../../gui/app.py" line="1038"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>Exécutez d&apos;abord le DIC — aucun résultat de déplacement à post-traiter.</translation>
     </message>
@@ -739,27 +739,27 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1139"/>
+        <location filename="../../gui/app.py" line="1194"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC a rencontré une erreur</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1140"/>
+        <location filename="../../gui/app.py" line="1195"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>Une erreur inattendue s&apos;est produite. L&apos;application risque de ne plus fonctionner correctement ; il est recommandé d&apos;enregistrer la session et de redémarrer.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1150"/>
+        <location filename="../../gui/app.py" line="1205"/>
         <source>Details were written to %1</source>
         <translation>Les détails ont été écrits dans %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1256"/>
+        <location filename="../../gui/app.py" line="1311"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>Préparation des noyaux de calcul en arrière-plan. La première analyse après une nouvelle installation prend plus de temps que les suivantes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1270"/>
+        <location filename="../../gui/app.py" line="1325"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>Noyaux de calcul prêts (%1 s).</translation>
     </message>
@@ -2141,143 +2141,143 @@ Par défaut (non coché) : lexicographique — idéal pour les noms avec zéros 
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../gui/app.py" line="205"/>
+        <location filename="../../gui/app.py" line="210"/>
         <source>&amp;File</source>
         <translation>Fichier</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="207"/>
+        <location filename="../../gui/app.py" line="212"/>
         <source>Open Session…</source>
         <translation>Ouvrir une session…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="212"/>
+        <location filename="../../gui/app.py" line="217"/>
         <source>Save Session…</source>
         <translation>Enregistrer la session…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="221"/>
+        <location filename="../../gui/app.py" line="226"/>
         <source>Associate .aldic files with pyALDIC…</source>
         <translation>Associer les fichiers .aldic à pyALDIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="223"/>
+        <location filename="../../gui/app.py" line="228"/>
         <source>Register .aldic so double-clicking a session file opens pyALDIC (current user only, no admin rights needed).</source>
         <translation>Enregistre .aldic pour qu&apos;un double-clic sur un fichier de session ouvre pyALDIC (utilisateur actuel uniquement, sans droits administrateur).</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="229"/>
+        <location filename="../../gui/app.py" line="234"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="237"/>
+        <location filename="../../gui/app.py" line="242"/>
         <source>&amp;Settings</source>
         <translation>Paramètres</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="242"/>
+        <location filename="../../gui/app.py" line="247"/>
         <source>Theme</source>
         <translation>Thème</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="247"/>
+        <location filename="../../gui/app.py" line="252"/>
         <source>Dark</source>
         <comment>Color theme</comment>
         <translation>Sombre</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="248"/>
+        <location filename="../../gui/app.py" line="253"/>
         <source>Light</source>
         <comment>Color theme</comment>
         <translation>Clair</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="260"/>
+        <location filename="../../gui/app.py" line="265"/>
         <source>Language</source>
         <translation>Langue</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="295"/>
+        <location filename="../../gui/app.py" line="300"/>
         <source>Language changed</source>
         <translation>Langue modifiée</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="298"/>
+        <location filename="../../gui/app.py" line="303"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation>Langue définie sur %1. Veuillez redémarrer pyALDIC pour que tous les éléments prennent en compte la nouvelle langue.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="312"/>
+        <location filename="../../gui/app.py" line="317"/>
         <source>Save Session</source>
         <translation>Enregistrer la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="314"/>
-        <location filename="../../gui/app.py" line="363"/>
+        <location filename="../../gui/app.py" line="319"/>
+        <location filename="../../gui/app.py" line="368"/>
         <source>pyALDIC Session</source>
         <translation>Session pyALDIC</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="315"/>
-        <location filename="../../gui/app.py" line="364"/>
-        <location filename="../../gui/app.py" line="828"/>
+        <location filename="../../gui/app.py" line="320"/>
+        <location filename="../../gui/app.py" line="369"/>
+        <location filename="../../gui/app.py" line="833"/>
         <source>All Files</source>
         <translation>Tous les fichiers</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="328"/>
+        <location filename="../../gui/app.py" line="333"/>
         <source>large</source>
         <translation>volumineux</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="331"/>
+        <location filename="../../gui/app.py" line="336"/>
         <source>Include Results?</source>
         <translation>Inclure les résultats ?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="333"/>
+        <location filename="../../gui/app.py" line="338"/>
         <source>Include the computed results in this session?</source>
         <translation>Inclure les résultats calculés dans cette session ?</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="336"/>
+        <location filename="../../gui/app.py" line="341"/>
         <source>Including results (about %1 uncompressed) lets you reopen the session without recomputing. Choose No to save a small configuration-only file for sharing.</source>
         <translation>Inclure les résultats (environ %1 non compressé) permet de rouvrir la session sans tout recalculer. Choisissez Non pour enregistrer un petit fichier de configuration seule, à partager.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="349"/>
+        <location filename="../../gui/app.py" line="354"/>
         <source>Saving Session</source>
         <translation>Enregistrement de la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="354"/>
+        <location filename="../../gui/app.py" line="359"/>
         <source>Save Session Failed</source>
         <translation>Échec de l&apos;enregistrement de la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="361"/>
+        <location filename="../../gui/app.py" line="366"/>
         <source>Open Session</source>
         <translation>Ouvrir une session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="376"/>
+        <location filename="../../gui/app.py" line="381"/>
         <source>Loading Session</source>
         <translation>Chargement de la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="379"/>
-        <location filename="../../gui/app.py" line="414"/>
+        <location filename="../../gui/app.py" line="384"/>
+        <location filename="../../gui/app.py" line="419"/>
         <source>Open Session Failed</source>
         <translation>Échec de l&apos;ouverture de la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="388"/>
+        <location filename="../../gui/app.py" line="393"/>
         <source>Locate Session Images</source>
         <translation>Localiser les images de la session</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="391"/>
+        <location filename="../../gui/app.py" line="396"/>
         <source>The image folder saved with this session was not found:
 %1
 
@@ -2288,83 +2288,83 @@ Results were restored. To show the background images, select the folder that now
 Les résultats ont été restaurés. Pour afficher les images de fond, sélectionnez le dossier qui les contient désormais.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="399"/>
+        <location filename="../../gui/app.py" line="404"/>
         <source>Select Image Folder</source>
         <translation>Sélectionner le dossier d&apos;images</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="475"/>
+        <location filename="../../gui/app.py" line="480"/>
         <source>File Association Failed</source>
         <translation>Échec de l&apos;association de fichiers</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="476"/>
+        <location filename="../../gui/app.py" line="481"/>
         <source>Could not register .aldic files: </source>
         <translation>Impossible d&apos;enregistrer les fichiers .aldic : </translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="479"/>
+        <location filename="../../gui/app.py" line="484"/>
         <source>File Association</source>
         <translation>Association de fichiers</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="480"/>
+        <location filename="../../gui/app.py" line="485"/>
         <source>Done. Double-clicking a .aldic file will now open pyALDIC and restore that session.</source>
         <translation>Terminé. Un double-clic sur un fichier .aldic ouvrira désormais pyALDIC et restaurera cette session.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="795"/>
+        <location filename="../../gui/app.py" line="800"/>
         <source>Frame %1 has no Region of Interest of its own — frame 1&apos;s is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.</source>
         <translation>L&apos;image %1 n&apos;a pas de région d&apos;intérêt propre — celle de l&apos;image 1 est utilisée pour le calcul. Passez à l&apos;image 1 pour la modifier, ou importez un masque pour donner à cette image la sienne.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="806"/>
+        <location filename="../../gui/app.py" line="811"/>
         <source>No Region of Interest to save — load images first.</source>
         <translation>Aucune région d&apos;intérêt à enregistrer — chargez d&apos;abord des images.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="813"/>
+        <location filename="../../gui/app.py" line="818"/>
         <source>Region of Interest mask is empty.</source>
         <translation>Le masque de la région d&apos;intérêt est vide.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="825"/>
+        <location filename="../../gui/app.py" line="830"/>
         <source>Save Region of Interest Mask</source>
         <translation>Enregistrer le masque de région d&apos;intérêt</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="827"/>
+        <location filename="../../gui/app.py" line="832"/>
         <source>PNG Images</source>
         <translation>Images PNG</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="836"/>
+        <location filename="../../gui/app.py" line="841"/>
         <source>Mask saved to %1</source>
         <translation>Masque enregistré dans %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="845"/>
+        <location filename="../../gui/app.py" line="850"/>
         <source>No Region of Interest to invert — load images first.</source>
         <translation>Aucune région d&apos;intérêt à inverser — chargez d&apos;abord des images.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="875"/>
-        <location filename="../../gui/app.py" line="928"/>
+        <location filename="../../gui/app.py" line="880"/>
+        <location filename="../../gui/app.py" line="933"/>
         <source>Load images first.</source>
         <translation>Veuillez d&apos;abord charger des images.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="886"/>
+        <location filename="../../gui/app.py" line="891"/>
         <source>Define a Region of Interest on frame 1 first.</source>
         <translation>Définissez d&apos;abord une région d&apos;intérêt sur l&apos;image 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="981"/>
+        <location filename="../../gui/app.py" line="986"/>
         <source>  Imported mask for frame %1</source>
         <translation>  Masque importé pour l&apos;image %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="987"/>
+        <location filename="../../gui/app.py" line="992"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>Import par lot : %n masque(s) chargé(s)</translation>
     </message>
@@ -2563,37 +2563,37 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="394"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="398"/>
         <source>Building pipeline configuration...</source>
         <translation>Construction de la configuration du pipeline…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="556"/>
         <source>Loading images...</source>
         <translation>Chargement des images…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="569"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 images chargées, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="582"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Masque ROI : %1, %2 pixels (%3%)</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="608"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>Exécution annulée : définissez les régions d&apos;intérêt par image pour les images de référence manquantes, ou acceptez le masque hérité de l&apos;image 1 à la prochaine exécution.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="625"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="629"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>  %n images avec des masques ROI personnalisés</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="755"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="759"/>
         <source>Results received: %n frame(s)</source>
         <translation>Résultats reçus : %n images</translation>
     </message>
@@ -2601,18 +2601,18 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="209"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="213"/>
         <source>Starting DIC analysis...</source>
         <translation>Démarrage de l&apos;analyse DIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="257"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="261"/>
         <source>Analysis complete in %1s</source>
         <translation>Analyse terminée en %1 s</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="250"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="265"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="254"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="269"/>
         <source>Analysis stopped by user.</source>
         <translation>Analyse arrêtée par l&apos;utilisateur.</translation>
     </message>
@@ -3427,6 +3427,81 @@ Ne s&apos;applique que lorsque Méthode = Ajustement de plan.</translation>
         <location filename="../../gui/strain_window.py" line="583"/>
         <source>Complete</source>
         <translation>Terminé</translation>
+    </message>
+</context>
+<context>
+    <name>TrackingQuality</name>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="60"/>
+        <source>Tracking Quality Warning</source>
+        <translation>Avertissement sur la qualité du suivi</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="64"/>
+        <source>Some nodes could not be tracked reliably through the image sequence.</source>
+        <translation>Certains nœuds n&apos;ont pas pu être suivis de façon fiable tout au long de la séquence d&apos;images.</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="69"/>
+        <source>In frame %1, %n node(s) were more than %2 px from the nearest node measured on reference frame %3. Their displacement was copied from that node and may be wrong.</source>
+        <translation>
+            <numerusform>Dans l&apos;image %1, %n nœud était à plus de %2 px du nœud le plus proche mesuré sur l&apos;image de référence %3. Son déplacement a été copié depuis ce nœud et peut être erroné.</numerusform>
+            <numerusform>Dans l&apos;image %1, %n nœuds étaient à plus de %2 px du nœud le plus proche mesuré sur l&apos;image de référence %3. Leur déplacement a été copié depuis ce nœud et peut être erroné.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="75"/>
+        <source>%n node(s) (%1% of the tracked material) stopped being tracked by frame %2 because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).</source>
+        <translation>
+            <numerusform>À l&apos;image %2, %n nœud (%1% du matériau suivi) avait cessé d&apos;être suivi, car il était tombé sur des pixels hors de la région d&apos;intérêt. Son déplacement n&apos;est plus mesuré à partir de cette image (NaN dans les données exportées).</numerusform>
+            <numerusform>À l&apos;image %2, %n nœuds (%1% du matériau suivi) avaient cessé d&apos;être suivis, car ils étaient tombés sur des pixels hors de la région d&apos;intérêt. Leur déplacement n&apos;est plus mesuré à partir de cette image (NaN dans les données exportées).</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="82"/>
+        <source>In frame %1 alone, %n node(s) (%2% of the tracked material) stopped being tracked because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).</source>
+        <translation>
+            <numerusform>Dans la seule image %1, %n nœud (%2% du matériau suivi) a cessé d&apos;être suivi, car il est tombé sur des pixels hors de la région d&apos;intérêt. Son déplacement n&apos;est plus mesuré à partir de cette image (NaN dans les données exportées).</numerusform>
+            <numerusform>Dans la seule image %1, %n nœuds (%2% du matériau suivi) ont cessé d&apos;être suivis, car ils sont tombés sur des pixels hors de la région d&apos;intérêt. Leur déplacement n&apos;est plus mesuré à partir de cette image (NaN dans les données exportées).</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="89"/>
+        <source>%n node(s) moved too close to the image edge to be measured. Their displacement there was copied from the nearest measured node.</source>
+        <translation>
+            <numerusform>%n nœud s&apos;est trop approché du bord de l&apos;image pour être mesuré. Son déplacement y a été copié depuis le nœud mesuré le plus proche.</numerusform>
+            <numerusform>%n nœuds se sont trop approchés du bord de l&apos;image pour être mesurés. Leur déplacement y a été copié depuis le nœud mesuré le plus proche.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="95"/>
+        <source>Measurement grid enlarged for %n reference frame(s) to cover their Regions of Interest (largest grid: %1 nodes on frame %2; frame 1 grid: %3 nodes).</source>
+        <translation>
+            <numerusform>Grille de mesure agrandie pour %n image de référence afin de couvrir sa région d&apos;intérêt (plus grande grille : %1 nœuds sur l&apos;image %2 ; grille de l&apos;image 1 : %3 nœuds).</numerusform>
+            <numerusform>Grille de mesure agrandie pour %n images de référence afin de couvrir leurs régions d&apos;intérêt (plus grande grille : %1 nœuds sur l&apos;image %2 ; grille de l&apos;image 1 : %3 nœuds).</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="101"/>
+        <source>Suggested actions:
+- Give every reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once).
+- Keep the specimen inside the image for the whole sequence.
+- If the specimen cracks or has holes, nodes lost along them are expected.</source>
+        <translation>Actions suggérées :
+- Donnez à chaque image de référence sa propre région d&apos;intérêt couvrant l&apos;éprouvette dans cette image (l&apos;import par lot permet d&apos;attribuer des régions d&apos;intérêt à de nombreuses images à la fois).
+- Gardez l&apos;éprouvette dans l&apos;image pendant toute la séquence.
+- Si l&apos;éprouvette se fissure ou comporte des trous, la perte de nœuds le long des fissures ou des trous est normale.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="111"/>
+        <source>Suggested actions:
+- Check that each frame&apos;s Region of Interest covers the specimen in that frame.
+- Keep the specimen inside the image for the whole sequence.
+- If the specimen cracks or has holes, nodes lost along them are expected.</source>
+        <translation>Actions suggérées :
+- Vérifiez que la région d&apos;intérêt de chaque image couvre l&apos;éprouvette dans cette image.
+- Gardez l&apos;éprouvette dans l&apos;image pendant toute la séquence.
+- Si l&apos;éprouvette se fissure ou comporte des trous, la perte de nœuds le long des fissures ou des trous est normale.</translation>
     </message>
 </context>
 <context>

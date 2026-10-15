@@ -3086,6 +3086,43 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "zh_CN": "主题", "zh_TW": "主題", "ja": "テーマ", "ko": "테마",
         "de": "Farbschema", "fr": "Thème", "es": "Tema",
     },
+    # ===== TrackingQuality — warning after a run that tracked poorly ======
+    "Tracking Quality Warning": {
+        "zh_CN": "追踪质量警告",
+        "zh_TW": "追蹤品質警告",
+        "ja":    "追跡品質の警告",
+        "ko":    "추적 품질 경고",
+        "de":    "Warnung zur Tracking-Qualität",
+        "fr":    "Avertissement sur la qualité du suivi",
+        "es":    "Advertencia sobre la calidad del seguimiento",
+    },
+    "Some nodes could not be tracked reliably through the image sequence.": {
+        "zh_CN": "部分节点无法在图像序列中被可靠地追踪。",
+        "zh_TW": "部分節點無法在影像序列中被可靠地追蹤。",
+        "ja":    "一部のノードを画像シーケンス全体で確実に追跡できませんでした。",
+        "ko":    "일부 노드를 이미지 시퀀스 전체에서 신뢰성 있게 추적할 수 없었습니다.",
+        "de":    "Einige Knoten konnten nicht über die gesamte Bildfolge hinweg zuverlässig verfolgt werden.",
+        "fr":    "Certains nœuds n'ont pas pu être suivis de façon fiable tout au long de la séquence d'images.",
+        "es":    "Algunos nodos no se pudieron seguir de forma fiable a lo largo de la secuencia de imágenes.",
+    },
+    "Suggested actions:\n- Give every reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once).\n- Keep the specimen inside the image for the whole sequence.\n- If the specimen cracks or has holes, nodes lost along them are expected.": {
+        "zh_CN": "建议操作：\n- 为每个参考帧单独指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定感兴趣区域）。\n- 在整个序列中让试样保持在图像内。\n- 如果试样开裂或有孔洞，沿裂纹或孔洞丢失节点属于正常现象。",
+        "zh_TW": "建議操作：\n- 為每個參考影格單獨指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定感興趣區域）。\n- 在整個序列中讓試樣保持在影像內。\n- 如果試樣開裂或有孔洞，沿裂紋或孔洞遺失節點屬於正常現象。",
+        "ja":    "推奨される対処：\n- 各参照フレームに、そのフレームの試験片を覆う専用の関心領域を設定してください（一括インポートで多数のフレームに関心領域をまとめて割り当てられます）。\n- シーケンス全体を通して試験片を画像内に収めてください。\n- 試験片にき裂や穴がある場合、それらに沿ってノードが失われるのは正常です。",
+        "ko":    "권장 조치:\n- 각 참조 프레임에 해당 프레임의 시편을 덮는 자체 관심 영역을 지정하세요(일괄 가져오기로 여러 프레임에 관심 영역을 한 번에 지정할 수 있습니다).\n- 시퀀스 전체에서 시편이 이미지 안에 있도록 하세요.\n- 시편에 균열이나 구멍이 있으면 그 부분을 따라 노드가 손실되는 것은 정상입니다.",
+        "de":    "Empfohlene Maßnahmen:\n- Geben Sie jedem Referenzbild eine eigene Region of Interest, die die Probe in diesem Bild abdeckt (mit dem Stapelimport lassen sich vielen Bildern auf einmal Regions of Interest zuweisen).\n- Halten Sie die Probe während der gesamten Bildfolge im Bild.\n- Wenn die Probe reißt oder Löcher hat, ist der Verlust von Knoten entlang dieser Stellen zu erwarten.",
+        "fr":    "Actions suggérées :\n- Donnez à chaque image de référence sa propre région d'intérêt couvrant l'éprouvette dans cette image (l'import par lot permet d'attribuer des régions d'intérêt à de nombreuses images à la fois).\n- Gardez l'éprouvette dans l'image pendant toute la séquence.\n- Si l'éprouvette se fissure ou comporte des trous, la perte de nœuds le long des fissures ou des trous est normale.",
+        "es":    "Acciones sugeridas:\n- Asigne a cada fotograma de referencia su propia región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar regiones de interés a muchos fotogramas a la vez).\n- Mantenga la probeta dentro de la imagen durante toda la secuencia.\n- Si la probeta se agrieta o tiene agujeros, es normal perder nodos a lo largo de las grietas o los agujeros.",
+    },
+    "Suggested actions:\n- Check that each frame's Region of Interest covers the specimen in that frame.\n- Keep the specimen inside the image for the whole sequence.\n- If the specimen cracks or has holes, nodes lost along them are expected.": {
+        "zh_CN": "建议操作：\n- 检查每一帧的感兴趣区域是否覆盖该帧中的试样。\n- 在整个序列中让试样保持在图像内。\n- 如果试样开裂或有孔洞，沿裂纹或孔洞丢失节点属于正常现象。",
+        "zh_TW": "建議操作：\n- 檢查每個影格的感興趣區域是否涵蓋該影格中的試樣。\n- 在整個序列中讓試樣保持在影像內。\n- 如果試樣開裂或有孔洞，沿裂紋或孔洞遺失節點屬於正常現象。",
+        "ja":    "推奨される対処：\n- 各フレームの関心領域が、そのフレームの試験片を覆っているか確認してください。\n- シーケンス全体を通して試験片を画像内に収めてください。\n- 試験片にき裂や穴がある場合、それらに沿ってノードが失われるのは正常です。",
+        "ko":    "권장 조치:\n- 각 프레임의 관심 영역이 해당 프레임의 시편을 덮는지 확인하세요.\n- 시퀀스 전체에서 시편이 이미지 안에 있도록 하세요.\n- 시편에 균열이나 구멍이 있으면 그 부분을 따라 노드가 손실되는 것은 정상입니다.",
+        "de":    "Empfohlene Maßnahmen:\n- Prüfen Sie, ob die Region of Interest jedes Bildes die Probe in diesem Bild abdeckt.\n- Halten Sie die Probe während der gesamten Bildfolge im Bild.\n- Wenn die Probe reißt oder Löcher hat, ist der Verlust von Knoten entlang dieser Stellen zu erwarten.",
+        "fr":    "Actions suggérées :\n- Vérifiez que la région d'intérêt de chaque image couvre l'éprouvette dans cette image.\n- Gardez l'éprouvette dans l'image pendant toute la séquence.\n- Si l'éprouvette se fissure ou comporte des trous, la perte de nœuds le long des fissures ou des trous est normale.",
+        "es":    "Acciones sugeridas:\n- Compruebe que la región de interés de cada fotograma cubre la probeta en ese fotograma.\n- Mantenga la probeta dentro de la imagen durante toda la secuencia.\n- Si la probeta se agrieta o tiene agujeros, es normal perder nodos a lo largo de las grietas o los agujeros.",
+    },
 }
 
 
@@ -3219,6 +3256,72 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     # --- export failure feedback (ExportDialog) ----------------------------
 
     # --- file dialogs that were previously raw literals --------------------
+
+    # === TrackingQuality — warning after a run that tracked poorly ========
+    # Real numerus messages: the source calls self.tr(source, "", n), which
+    # lupdate marks numerus="yes" (QCoreApplication.translate(..., n) is not
+    # marked, and de/fr/es then show English for n >= 2). Forms: one for
+    # CJK; singular then plural for de/fr/es.
+    "In frame %1, %n node(s) were more than %2 px from the nearest node measured on reference frame %3. Their displacement was copied from that node and may be wrong.": {
+        "zh_CN": ("在帧 %1 中，有 %n 个节点距参考帧 %3 上最近的已测量节点超过 %2 px。它们的位移是从该节点复制的，可能不正确。",),
+        "zh_TW": ("在第 %1 影格中，有 %n 個節點與參考影格（第 %3 影格）上最近的已量測節點相距超過 %2 px。它們的位移是從該節點複製而來，可能有誤。",),
+        "ja":    ("フレーム %1 では、%n 個のノードが、参照フレーム %3 で測定された最も近いノードから %2 px を超えて離れていました。これらの変位はそのノードからコピーされたもので、誤っている可能性があります。",),
+        "ko":    ("프레임 %1에서 노드 %n개가 참조 프레임 %3에서 측정된 가장 가까운 노드로부터 %2 px 넘게 떨어져 있었습니다. 이 노드들의 변위는 해당 노드에서 복사되었으며 부정확할 수 있습니다.",),
+        "de":    ("In Bild %1 war %n Knoten mehr als %2 px vom nächstgelegenen auf Referenzbild %3 gemessenen Knoten entfernt. Seine Verschiebung wurde von diesem Knoten übernommen und kann falsch sein.",
+                  "In Bild %1 waren %n Knoten mehr als %2 px vom nächstgelegenen auf Referenzbild %3 gemessenen Knoten entfernt. Ihre Verschiebung wurde von diesem Knoten übernommen und kann falsch sein."),
+        "fr":    ("Dans l'image %1, %n nœud était à plus de %2 px du nœud le plus proche mesuré sur l'image de référence %3. Son déplacement a été copié depuis ce nœud et peut être erroné.",
+                  "Dans l'image %1, %n nœuds étaient à plus de %2 px du nœud le plus proche mesuré sur l'image de référence %3. Leur déplacement a été copié depuis ce nœud et peut être erroné."),
+        "es":    ("En el fotograma %1, %n nodo estaba a más de %2 px del nodo más cercano medido en el fotograma de referencia %3. Su desplazamiento se copió de ese nodo y puede ser incorrecto.",
+                  "En el fotograma %1, %n nodos estaban a más de %2 px del nodo más cercano medido en el fotograma de referencia %3. Sus desplazamientos se copiaron de ese nodo y pueden ser incorrectos."),
+    },
+    "%n node(s) (%1% of the tracked material) stopped being tracked by frame %2 because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).": {
+        "zh_CN": ("到帧 %2 时，有 %n 个节点（占所追踪材料的%1%）因落在感兴趣区域以外的像素上而不再被追踪。从该帧起，它们的位移不再被测量（导出数据中为 NaN）。",),
+        "zh_TW": ("到第 %2 影格時，有 %n 個節點（佔所追蹤材料的%1%）因落在感興趣區域以外的像素上而不再被追蹤。從該影格起，它們的位移不再被量測（匯出資料中為 NaN）。",),
+        "ja":    ("フレーム %2 までに、%n 個のノード（追跡対象の材料の %1%）が関心領域外のピクセルに入ったため、追跡されなくなりました。そのフレーム以降、これらの変位は測定されません（エクスポートデータでは NaN）。",),
+        "ko":    ("프레임 %2까지 노드 %n개(추적 대상 재료의 %1%)가 관심 영역 밖의 픽셀에 놓여 더 이상 추적되지 않았습니다. 해당 프레임부터 이 노드들의 변위는 측정되지 않습니다(내보낸 데이터에서는 NaN).",),
+        "de":    ("Bis einschließlich Bild %2 ist %n Knoten (%1% des verfolgten Materials) aus der Verfolgung gefallen, weil er auf Pixel außerhalb der Region of Interest geraten ist. Seine Verschiebung wird ab diesem Bild nicht mehr gemessen (NaN in exportierten Daten).",
+                  "Bis einschließlich Bild %2 sind %n Knoten (%1% des verfolgten Materials) aus der Verfolgung gefallen, weil sie auf Pixel außerhalb der Region of Interest geraten sind. Ihre Verschiebung wird ab diesem Bild nicht mehr gemessen (NaN in exportierten Daten)."),
+        "fr":    ("À l'image %2, %n nœud (%1% du matériau suivi) avait cessé d'être suivi, car il était tombé sur des pixels hors de la région d'intérêt. Son déplacement n'est plus mesuré à partir de cette image (NaN dans les données exportées).",
+                  "À l'image %2, %n nœuds (%1% du matériau suivi) avaient cessé d'être suivis, car ils étaient tombés sur des pixels hors de la région d'intérêt. Leur déplacement n'est plus mesuré à partir de cette image (NaN dans les données exportées)."),
+        "es":    ("Al llegar al fotograma %2, %n nodo (%1% del material seguido) había dejado de seguirse porque había caído en píxeles fuera de la región de interés. Su desplazamiento no se mide a partir de ese fotograma (NaN en los datos exportados).",
+                  "Al llegar al fotograma %2, %n nodos (%1% del material seguido) habían dejado de seguirse porque habían caído en píxeles fuera de la región de interés. Sus desplazamientos no se miden a partir de ese fotograma (NaN en los datos exportados)."),
+    },
+    "In frame %1 alone, %n node(s) (%2% of the tracked material) stopped being tracked because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).": {
+        "zh_CN": ("仅在帧 %1 中，就有 %n 个节点（占所追踪材料的%2%）因落在感兴趣区域以外的像素上而不再被追踪。从该帧起，它们的位移不再被测量（导出数据中为 NaN）。",),
+        "zh_TW": ("僅在第 %1 影格中，就有 %n 個節點（佔所追蹤材料的%2%）因落在感興趣區域以外的像素上而不再被追蹤。從該影格起，它們的位移不再被量測（匯出資料中為 NaN）。",),
+        "ja":    ("フレーム %1 だけで、%n 個のノード（追跡対象の材料の %2%）が関心領域外のピクセルに入ったため、追跡されなくなりました。そのフレーム以降、これらの変位は測定されません（エクスポートデータでは NaN）。",),
+        "ko":    ("프레임 %1 하나에서만 노드 %n개(추적 대상 재료의 %2%)가 관심 영역 밖의 픽셀에 놓여 더 이상 추적되지 않았습니다. 해당 프레임부터 이 노드들의 변위는 측정되지 않습니다(내보낸 데이터에서는 NaN).",),
+        "de":    ("Allein in Bild %1 ist %n Knoten (%2% des verfolgten Materials) aus der Verfolgung gefallen, weil er auf Pixel außerhalb der Region of Interest geraten ist. Seine Verschiebung wird ab diesem Bild nicht mehr gemessen (NaN in exportierten Daten).",
+                  "Allein in Bild %1 sind %n Knoten (%2% des verfolgten Materials) aus der Verfolgung gefallen, weil sie auf Pixel außerhalb der Region of Interest geraten sind. Ihre Verschiebung wird ab diesem Bild nicht mehr gemessen (NaN in exportierten Daten)."),
+        "fr":    ("Dans la seule image %1, %n nœud (%2% du matériau suivi) a cessé d'être suivi, car il est tombé sur des pixels hors de la région d'intérêt. Son déplacement n'est plus mesuré à partir de cette image (NaN dans les données exportées).",
+                  "Dans la seule image %1, %n nœuds (%2% du matériau suivi) ont cessé d'être suivis, car ils sont tombés sur des pixels hors de la région d'intérêt. Leur déplacement n'est plus mesuré à partir de cette image (NaN dans les données exportées)."),
+        "es":    ("Solo en el fotograma %1, %n nodo (%2% del material seguido) dejó de seguirse porque cayó en píxeles fuera de la región de interés. Su desplazamiento no se mide a partir de ese fotograma (NaN en los datos exportados).",
+                  "Solo en el fotograma %1, %n nodos (%2% del material seguido) dejaron de seguirse porque cayeron en píxeles fuera de la región de interés. Sus desplazamientos no se miden a partir de ese fotograma (NaN en los datos exportados)."),
+    },
+    "%n node(s) moved too close to the image edge to be measured. Their displacement there was copied from the nearest measured node.": {
+        "zh_CN": ("有 %n 个节点移动到离图像边缘过近的位置，无法测量。它们在该处的位移是从最近的已测量节点复制的。",),
+        "zh_TW": ("有 %n 個節點移動到離影像邊緣過近的位置，無法量測。它們在該處的位移是從最近的已量測節點複製而來。",),
+        "ja":    ("%n 個のノードが画像の端に近づきすぎて測定できませんでした。そこでの変位は、最も近い測定済みノードからコピーされました。",),
+        "ko":    ("노드 %n개가 이미지 가장자리에 너무 가까워져 측정할 수 없었습니다. 그 위치의 변위는 가장 가까운 측정된 노드에서 복사되었습니다.",),
+        "de":    ("%n Knoten geriet zu nah an den Bildrand, um gemessen zu werden. Seine Verschiebung dort wurde vom nächstgelegenen gemessenen Knoten übernommen.",
+                  "%n Knoten gerieten zu nah an den Bildrand, um gemessen zu werden. Ihre Verschiebung dort wurde vom nächstgelegenen gemessenen Knoten übernommen."),
+        "fr":    ("%n nœud s'est trop approché du bord de l'image pour être mesuré. Son déplacement y a été copié depuis le nœud mesuré le plus proche.",
+                  "%n nœuds se sont trop approchés du bord de l'image pour être mesurés. Leur déplacement y a été copié depuis le nœud mesuré le plus proche."),
+        "es":    ("%n nodo se acercó demasiado al borde de la imagen para poder medirse. Su desplazamiento allí se copió del nodo medido más cercano.",
+                  "%n nodos se acercaron demasiado al borde de la imagen para poder medirse. Sus desplazamientos allí se copiaron del nodo medido más cercano."),
+    },
+    "Measurement grid enlarged for %n reference frame(s) to cover their Regions of Interest (largest grid: %1 nodes on frame %2; frame 1 grid: %3 nodes).": {
+        "zh_CN": ("已为 %n 个参考帧扩大测量网格，以覆盖其感兴趣区域（最大网格：帧 %2 上的 %1 个节点；帧 1 网格：%3 个节点）。",),
+        "zh_TW": ("已為 %n 個參考影格擴大量測網格，以涵蓋其感興趣區域（最大網格：第 %2 影格上的 %1 個節點；第 1 影格網格：%3 個節點）。",),
+        "ja":    ("%n 個の参照フレームで、関心領域を覆うように測定グリッドを拡大しました（最大のグリッド：フレーム %2 の %1 ノード、フレーム 1 のグリッド：%3 ノード）。",),
+        "ko":    ("참조 프레임 %n개의 관심 영역을 덮도록 측정 격자를 확장했습니다(가장 큰 격자: 프레임 %2의 노드 %1개, 프레임 1 격자: 노드 %3개).",),
+        "de":    ("Messgitter für %n Referenzbild vergrößert, damit es dessen Region of Interest abdeckt (größtes Gitter: %1 Knoten auf Bild %2; Gitter von Bild 1: %3 Knoten).",
+                  "Messgitter für %n Referenzbilder vergrößert, damit es deren Regions of Interest abdeckt (größtes Gitter: %1 Knoten auf Bild %2; Gitter von Bild 1: %3 Knoten)."),
+        "fr":    ("Grille de mesure agrandie pour %n image de référence afin de couvrir sa région d'intérêt (plus grande grille : %1 nœuds sur l'image %2 ; grille de l'image 1 : %3 nœuds).",
+                  "Grille de mesure agrandie pour %n images de référence afin de couvrir leurs régions d'intérêt (plus grande grille : %1 nœuds sur l'image %2 ; grille de l'image 1 : %3 nœuds)."),
+        "es":    ("Cuadrícula de medición ampliada para %n fotograma de referencia a fin de cubrir su región de interés (cuadrícula más grande: %1 nodos en el fotograma %2; cuadrícula del fotograma 1: %3 nodos).",
+                  "Cuadrícula de medición ampliada para %n fotogramas de referencia a fin de cubrir sus regiones de interés (cuadrícula más grande: %1 nodos en el fotograma %2; cuadrícula del fotograma 1: %3 nodos)."),
+    },
 }
 
 

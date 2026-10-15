@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import threading
 import time
 import traceback
@@ -11,9 +12,10 @@ from PySide6.QtCore import QCoreApplication, QThread, Signal
 from PySide6.QtWidgets import QApplication, QMessageBox
 
 from al_dic.core.config import dicpara_default
-from al_dic.core.data_structures import FrameSchedule, GridxyROIRange
+from al_dic.core.data_structures import FrameSchedule, GridxyROIRange, PipelineResult
 from al_dic.core.pipeline import run_aldic
 from al_dic.gui.app_state import AppState, RunState
+from al_dic.gui.controllers.tracking_messages import build_tracking_messages
 from al_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
 from al_dic.solver.seed_propagation import (
     MissingSeedForRegion,
@@ -24,6 +26,8 @@ from al_dic.solver.seed_propagation import (
     SeedQualityError,
     SeedWarpFailure,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # User-facing messages for each SeedPropagationError subclass. Keyed by
@@ -764,6 +768,7 @@ class PipelineController:
                 # Auto-navigate to frame 1 (first result frame) so user
                 # sees the displacement overlay immediately.
                 self._state.set_current_frame(1)
+                self._report_tracking_quality(result)
             else:
                 self._state.set_run_state(RunState.IDLE)
         except Exception as e:
@@ -776,3 +781,19 @@ class PipelineController:
             )
             print(tb, flush=True)
             self._state.set_run_state(RunState.IDLE)
+
+    def _report_tracking_quality(self, result: PipelineResult) -> None:
+        """Log the findings; a complete run's WARNING also asks for the
+        dialog. Advisory: an error is logged, the finished run stands."""
+        try:
+            diag = getattr(result, "tracking_diagnostics", None)  # stubs too
+            messages = None if diag is None else build_tracking_messages(
+                diag, result.dic_para)
+            if messages is None:
+                return
+            for text, level in messages.log_lines:
+                self._state.log_message.emit(text, level)
+            if messages.has_warning and not result.stopped_early:
+                self._state.run_warning.emit(*messages.dialog)
+        except Exception:
+            logger.exception("Tracking-quality report failed; results kept.")

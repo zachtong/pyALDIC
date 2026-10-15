@@ -8,6 +8,27 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **The GUI warns when nodes were not tracked reliably.** At the end of a
+  run, the console log reports, in the interface language, nodes whose
+  displacement was copied from a measured node more than one grid step
+  away (separately for such copies within half a subset of the image edge
+  or outside the image), and nodes that stopped being tracked (their
+  displacement is NaN from then on, in exports too). When, on some frame,
+  at least 3 nodes, and at least 0.5% of the nodes tracked into that
+  frame, away from the image edge had their displacement copied from a
+  far node, or more than half of the specimen's nodes are lost by the
+  last frame, or more than a fifth between two consecutive frames, a
+  *Tracking Quality Warning* dialog also opens, with suggested actions:
+  give every reference frame its own Region of Interest (incremental
+  runs; *Batch Import* assigns them to many frames at once) or check that
+  each frame's Region of Interest covers the specimen (accumulative
+  runs), keep the specimen inside the image, and expect nodes to be lost
+  along cracks and holes. The dialog does not block any window, and
+  starting another run closes it. A canceled run, or one that Starting
+  Points stopped early, only logs the findings, and reopening a session
+  does not repeat them. Incremental runs also log how many reference
+  frames were measured on a grid of their own. The user guide explains
+  each finding under *Running the DIC* and *Troubleshooting*.
 - **Runs record how well the nodes were tracked through the sequence
   (API).** `PipelineResult.tracking_diagnostics` holds a
   `TrackingDiagnostics` record. For every frame it counts the nodes whose

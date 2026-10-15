@@ -726,12 +726,12 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1019"/>
+        <location filename="../../gui/app.py" line="1024"/>
         <source>Imported Region of Interest for %n frame(s)</source>
         <translation>為 %n 個影格匯入了感興趣區域</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1033"/>
+        <location filename="../../gui/app.py" line="1038"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>請先執行 DIC —— 目前沒有可後處理的位移結果。</translation>
     </message>
@@ -739,27 +739,27 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1139"/>
+        <location filename="../../gui/app.py" line="1194"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC 發生錯誤</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1140"/>
+        <location filename="../../gui/app.py" line="1195"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>發生了非預期的錯誤。應用程式之後的行為可能不正常，建議儲存工作階段並重新啟動。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1150"/>
+        <location filename="../../gui/app.py" line="1205"/>
         <source>Details were written to %1</source>
         <translation>詳細資訊已寫入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1256"/>
+        <location filename="../../gui/app.py" line="1311"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>正在背景準備計算核心。新安裝後的首次分析會比之後的耗時更長。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1270"/>
+        <location filename="../../gui/app.py" line="1325"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>計算核心已就緒（%1 秒）。</translation>
     </message>
@@ -2141,143 +2141,143 @@ Default (unchecked): lexicographic — best for zero-padded names</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../gui/app.py" line="205"/>
+        <location filename="../../gui/app.py" line="210"/>
         <source>&amp;File</source>
         <translation>檔案</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="207"/>
+        <location filename="../../gui/app.py" line="212"/>
         <source>Open Session…</source>
         <translation>開啟工作階段…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="212"/>
+        <location filename="../../gui/app.py" line="217"/>
         <source>Save Session…</source>
         <translation>儲存工作階段…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="221"/>
+        <location filename="../../gui/app.py" line="226"/>
         <source>Associate .aldic files with pyALDIC…</source>
         <translation>將 .aldic 檔案關聯到 pyALDIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="223"/>
+        <location filename="../../gui/app.py" line="228"/>
         <source>Register .aldic so double-clicking a session file opens pyALDIC (current user only, no admin rights needed).</source>
         <translation>註冊 .aldic，讓雙擊工作階段檔案即可開啟 pyALDIC（僅目前使用者，無需系統管理員權限）。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="229"/>
+        <location filename="../../gui/app.py" line="234"/>
         <source>Quit</source>
         <translation>離開</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="237"/>
+        <location filename="../../gui/app.py" line="242"/>
         <source>&amp;Settings</source>
         <translation>設定</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="242"/>
+        <location filename="../../gui/app.py" line="247"/>
         <source>Theme</source>
         <translation>主題</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="247"/>
+        <location filename="../../gui/app.py" line="252"/>
         <source>Dark</source>
         <comment>Color theme</comment>
         <translation>深色</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="248"/>
+        <location filename="../../gui/app.py" line="253"/>
         <source>Light</source>
         <comment>Color theme</comment>
         <translation>淺色</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="260"/>
+        <location filename="../../gui/app.py" line="265"/>
         <source>Language</source>
         <translation>語言</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="295"/>
+        <location filename="../../gui/app.py" line="300"/>
         <source>Language changed</source>
         <translation>語言已切換</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="298"/>
+        <location filename="../../gui/app.py" line="303"/>
         <source>Language set to %1. Please restart pyALDIC for all widgets to pick up the new language.</source>
         <translation>語言已切換至 %1。請重新啟動 pyALDIC 以讓所有介面生效。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="312"/>
+        <location filename="../../gui/app.py" line="317"/>
         <source>Save Session</source>
         <translation>儲存工作階段</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="314"/>
-        <location filename="../../gui/app.py" line="363"/>
+        <location filename="../../gui/app.py" line="319"/>
+        <location filename="../../gui/app.py" line="368"/>
         <source>pyALDIC Session</source>
         <translation>pyALDIC 工作階段</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="315"/>
-        <location filename="../../gui/app.py" line="364"/>
-        <location filename="../../gui/app.py" line="828"/>
+        <location filename="../../gui/app.py" line="320"/>
+        <location filename="../../gui/app.py" line="369"/>
+        <location filename="../../gui/app.py" line="833"/>
         <source>All Files</source>
         <translation>所有檔案</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="328"/>
+        <location filename="../../gui/app.py" line="333"/>
         <source>large</source>
         <translation>較大</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="331"/>
+        <location filename="../../gui/app.py" line="336"/>
         <source>Include Results?</source>
         <translation>包含結果？</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="333"/>
+        <location filename="../../gui/app.py" line="338"/>
         <source>Include the computed results in this session?</source>
         <translation>在此工作階段中包含已計算的結果嗎？</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="336"/>
+        <location filename="../../gui/app.py" line="341"/>
         <source>Including results (about %1 uncompressed) lets you reopen the session without recomputing. Choose No to save a small configuration-only file for sharing.</source>
         <translation>包含結果（未壓縮約 %1）可讓你下次直接開啟工作階段而無需重新計算。選擇「否」則只儲存一個小的僅設定檔案，便於分享。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="349"/>
+        <location filename="../../gui/app.py" line="354"/>
         <source>Saving Session</source>
         <translation>正在儲存工作階段</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="354"/>
+        <location filename="../../gui/app.py" line="359"/>
         <source>Save Session Failed</source>
         <translation>儲存工作階段失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="361"/>
+        <location filename="../../gui/app.py" line="366"/>
         <source>Open Session</source>
         <translation>開啟工作階段</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="376"/>
+        <location filename="../../gui/app.py" line="381"/>
         <source>Loading Session</source>
         <translation>正在載入工作階段</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="379"/>
-        <location filename="../../gui/app.py" line="414"/>
+        <location filename="../../gui/app.py" line="384"/>
+        <location filename="../../gui/app.py" line="419"/>
         <source>Open Session Failed</source>
         <translation>開啟工作階段失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="388"/>
+        <location filename="../../gui/app.py" line="393"/>
         <source>Locate Session Images</source>
         <translation>定位工作階段影像</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="391"/>
+        <location filename="../../gui/app.py" line="396"/>
         <source>The image folder saved with this session was not found:
 %1
 
@@ -2288,83 +2288,83 @@ Results were restored. To show the background images, select the folder that now
 結果已還原。若要顯示背景影像，請選擇現在包含這些影像的資料夾。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="399"/>
+        <location filename="../../gui/app.py" line="404"/>
         <source>Select Image Folder</source>
         <translation>選擇影像資料夾</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="475"/>
+        <location filename="../../gui/app.py" line="480"/>
         <source>File Association Failed</source>
         <translation>檔案關聯失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="476"/>
+        <location filename="../../gui/app.py" line="481"/>
         <source>Could not register .aldic files: </source>
         <translation>無法註冊 .aldic 檔案：</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="479"/>
+        <location filename="../../gui/app.py" line="484"/>
         <source>File Association</source>
         <translation>檔案關聯</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="480"/>
+        <location filename="../../gui/app.py" line="485"/>
         <source>Done. Double-clicking a .aldic file will now open pyALDIC and restore that session.</source>
         <translation>完成。現在雙擊 .aldic 檔案即可開啟 pyALDIC 並還原該工作階段。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="795"/>
+        <location filename="../../gui/app.py" line="800"/>
         <source>Frame %1 has no Region of Interest of its own — frame 1&apos;s is used for computation. Switch to frame 1 to edit it, or import a mask to give this frame its own.</source>
         <translation>第 %1 影格沒有自己的感興趣區域 — 計算時使用第 1 影格的感興趣區域。請切換到第 1 影格編輯，或匯入遮罩為此影格單獨指定。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="806"/>
+        <location filename="../../gui/app.py" line="811"/>
         <source>No Region of Interest to save — load images first.</source>
         <translation>沒有可儲存的感興趣區域 — 請先載入影像。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="813"/>
+        <location filename="../../gui/app.py" line="818"/>
         <source>Region of Interest mask is empty.</source>
         <translation>感興趣區域遮罩為空。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="825"/>
+        <location filename="../../gui/app.py" line="830"/>
         <source>Save Region of Interest Mask</source>
         <translation>儲存感興趣區域遮罩</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="827"/>
+        <location filename="../../gui/app.py" line="832"/>
         <source>PNG Images</source>
         <translation>PNG 影像</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="836"/>
+        <location filename="../../gui/app.py" line="841"/>
         <source>Mask saved to %1</source>
         <translation>遮罩已儲存至 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="845"/>
+        <location filename="../../gui/app.py" line="850"/>
         <source>No Region of Interest to invert — load images first.</source>
         <translation>沒有可反轉的感興趣區域 — 請先載入影像。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="875"/>
-        <location filename="../../gui/app.py" line="928"/>
+        <location filename="../../gui/app.py" line="880"/>
+        <location filename="../../gui/app.py" line="933"/>
         <source>Load images first.</source>
         <translation>請先載入影像。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="886"/>
+        <location filename="../../gui/app.py" line="891"/>
         <source>Define a Region of Interest on frame 1 first.</source>
         <translation>請先在第 1 影格上定義感興趣區域。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="981"/>
+        <location filename="../../gui/app.py" line="986"/>
         <source>  Imported mask for frame %1</source>
         <translation>  已匯入影格 %1 的遮罩</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="987"/>
+        <location filename="../../gui/app.py" line="992"/>
         <source>Batch import: %n mask(s) loaded</source>
         <translation>批次匯入：已載入 %n 個遮罩</translation>
     </message>
@@ -2563,37 +2563,37 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="394"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="398"/>
         <source>Building pipeline configuration...</source>
         <translation>正在建立管線設定…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="556"/>
         <source>Loading images...</source>
         <translation>正在載入影像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="569"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已載入 %1 張影像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="578"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="582"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 遮罩：%1，%2 像素（%3%）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="604"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="608"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>已取消執行：請為缺失的參考影格定義逐影格感興趣區域，或在下次執行時接受繼承自第 1 影格的遮罩。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="625"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="629"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>  %n 個影格使用自訂 ROI 遮罩</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="755"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="759"/>
         <source>Results received: %n frame(s)</source>
         <translation>已收到結果：%n 個影格</translation>
     </message>
@@ -2601,18 +2601,18 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="209"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="213"/>
         <source>Starting DIC analysis...</source>
         <translation>開始 DIC 分析…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="257"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="261"/>
         <source>Analysis complete in %1s</source>
         <translation>分析完成，耗時 %1 秒</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="250"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="265"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="254"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="269"/>
         <source>Analysis stopped by user.</source>
         <translation>使用者已停止分析。</translation>
     </message>
@@ -3427,6 +3427,76 @@ Only applies when Method = Plane fitting.</source>
         <location filename="../../gui/strain_window.py" line="583"/>
         <source>Complete</source>
         <translation>已完成</translation>
+    </message>
+</context>
+<context>
+    <name>TrackingQuality</name>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="60"/>
+        <source>Tracking Quality Warning</source>
+        <translation>追蹤品質警告</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="64"/>
+        <source>Some nodes could not be tracked reliably through the image sequence.</source>
+        <translation>部分節點無法在影像序列中被可靠地追蹤。</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="69"/>
+        <source>In frame %1, %n node(s) were more than %2 px from the nearest node measured on reference frame %3. Their displacement was copied from that node and may be wrong.</source>
+        <translation>
+            <numerusform>在第 %1 影格中，有 %n 個節點與參考影格（第 %3 影格）上最近的已量測節點相距超過 %2 px。它們的位移是從該節點複製而來，可能有誤。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="75"/>
+        <source>%n node(s) (%1% of the tracked material) stopped being tracked by frame %2 because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).</source>
+        <translation>
+            <numerusform>到第 %2 影格時，有 %n 個節點（佔所追蹤材料的%1%）因落在感興趣區域以外的像素上而不再被追蹤。從該影格起，它們的位移不再被量測（匯出資料中為 NaN）。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="82"/>
+        <source>In frame %1 alone, %n node(s) (%2% of the tracked material) stopped being tracked because they landed on pixels outside the Region of Interest. Their displacement is not measured from that frame on (NaN in exported data).</source>
+        <translation>
+            <numerusform>僅在第 %1 影格中，就有 %n 個節點（佔所追蹤材料的%2%）因落在感興趣區域以外的像素上而不再被追蹤。從該影格起，它們的位移不再被量測（匯出資料中為 NaN）。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="89"/>
+        <source>%n node(s) moved too close to the image edge to be measured. Their displacement there was copied from the nearest measured node.</source>
+        <translation>
+            <numerusform>有 %n 個節點移動到離影像邊緣過近的位置，無法量測。它們在該處的位移是從最近的已量測節點複製而來。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/tracking_messages.py" line="95"/>
+        <source>Measurement grid enlarged for %n reference frame(s) to cover their Regions of Interest (largest grid: %1 nodes on frame %2; frame 1 grid: %3 nodes).</source>
+        <translation>
+            <numerusform>已為 %n 個參考影格擴大量測網格，以涵蓋其感興趣區域（最大網格：第 %2 影格上的 %1 個節點；第 1 影格網格：%3 個節點）。</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="101"/>
+        <source>Suggested actions:
+- Give every reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once).
+- Keep the specimen inside the image for the whole sequence.
+- If the specimen cracks or has holes, nodes lost along them are expected.</source>
+        <translation>建議操作：
+- 為每個參考影格單獨指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定感興趣區域）。
+- 在整個序列中讓試樣保持在影像內。
+- 如果試樣開裂或有孔洞，沿裂紋或孔洞遺失節點屬於正常現象。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/tracking_messages.py" line="111"/>
+        <source>Suggested actions:
+- Check that each frame&apos;s Region of Interest covers the specimen in that frame.
+- Keep the specimen inside the image for the whole sequence.
+- If the specimen cracks or has holes, nodes lost along them are expected.</source>
+        <translation>建議操作：
+- 檢查每個影格的感興趣區域是否涵蓋該影格中的試樣。
+- 在整個序列中讓試樣保持在影像內。
+- 如果試樣開裂或有孔洞，沿裂紋或孔洞遺失節點屬於正常現象。</translation>
     </message>
 </context>
 <context>

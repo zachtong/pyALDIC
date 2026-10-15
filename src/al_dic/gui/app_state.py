@@ -88,6 +88,10 @@ class AppState(QObject):
     # message is user-facing (plain English, no tracebacks). Stack traces
     # should still go through log_message with level "error".
     fatal_error = Signal(str, str)
+    # A complete run whose tracking quality is poor: (title, text,
+    # informative, details) of a non-blocking warning dialog, all already
+    # translated. The same findings are in the console log.
+    run_warning = Signal(str, str, str, str)
     physical_units_changed = Signal()
     # Emitted when state.seeds is mutated (add/remove/re-snap/clear).
     # Canvas overlay subscribes to redraw the seed markers.

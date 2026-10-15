@@ -16,8 +16,11 @@ from al_dic.core.data_structures import (
     DICMesh,
     DICPara,
     FrameResult,
+    FrameTrackingStats,
     GridxyROIRange,
     PipelineResult,
+    RefGridExtent,
+    TrackingDiagnostics,
 )
 
 
@@ -126,3 +129,108 @@ def make_synthetic_pipeline_result(
         result_fe_mesh_each_frame=[mesh] * (n_frames - 1),
     )
     return result, mask
+
+
+# ---------------------------------------------------------------------------
+# Tracking diagnostics (tracking-quality warning, plan 4.1)
+# ---------------------------------------------------------------------------
+
+#: Nodes of the synthetic diagnostics below (all of them on material): the
+#: frame-0 mesh, refined, so more than its regular lattice has.
+TRACKING_N_NODES = 1000
+#: Nodes of the frame-0 lattice of ``make_tracking_para`` (7 x 7).
+TRACKING_FRAME0_GRID = 49
+#: Counts the "warning" diagnostics report, for tests that look for them.
+TRACKING_GRID_MISS = 37      # far copies inside the measurable area, frame 2
+TRACKING_LOST = 703          # material nodes lost by frame 2 (70.3%)
+TRACKING_LOST_PCT = 70.3
+TRACKING_BORDER = 11         # far copies beyond the measurable area, frame 2
+TRACKING_LARGEST_GRID = 1234  # nodes of reference frame 1's own grid
+#: The "burst" diagnostics lose this many nodes on frame 2 alone (29.0%).
+TRACKING_BURST = 290
+TRACKING_BURST_PCT = 29.0
+
+
+def _tracking_frame(
+    frame: int, ref_frame: int, n_queried: int, n_tracked: int,
+    far: int = 0, border: int = 0, max_px: float = 0.0,
+) -> FrameTrackingStats:
+    return FrameTrackingStats(
+        frame=frame, ref_frame=ref_frame, n_queried=n_queried,
+        n_extrapolated=far + 50, n_extrapolated_far=far,
+        n_extrapolated_border=border, max_extrapolation_px=max_px,
+        n_lost_parent_mask=0, n_lost_child_mask=n_queried - n_tracked,
+        n_lost_no_data=0, n_tracked=n_tracked, n_tracked_extrapolated=0,
+    )
+
+
+def _tracking_frames(kind: str) -> tuple[FrameTrackingStats, ...]:
+    n = TRACKING_N_NODES
+    if kind == "warning":
+        return (
+            _tracking_frame(1, 0, n, 900, max_px=1.0),
+            _tracking_frame(
+                2, 1, 900, n - TRACKING_LOST,
+                far=TRACKING_GRID_MISS + TRACKING_BORDER,
+                border=TRACKING_BORDER, max_px=57.5,
+            ),
+        )
+    if kind == "burst":
+        return (
+            _tracking_frame(1, 0, n, 990),
+            _tracking_frame(2, 0, n, 990 - TRACKING_BURST),
+            _tracking_frame(3, 0, n, 690),
+        )
+    if kind == "notice":
+        return (_tracking_frame(1, 0, n, 980), _tracking_frame(2, 0, n, 950))
+    if kind == "healthy":
+        return (_tracking_frame(1, 0, n, n), _tracking_frame(2, 1, n, n))
+    if kind == "clean":
+        return (_tracking_frame(1, 0, n, n), _tracking_frame(2, 0, n, n))
+    raise ValueError(f"unknown kind {kind!r}")
+
+
+def make_tracking_diagnostics(kind: str) -> TrackingDiagnostics:
+    """Synthetic diagnostics with known findings.
+
+    - ``"warning"``: incremental; frame 2 has grid_miss (WARNING),
+      material_loss over the run (WARNING, cumulative) and
+      left_measurable_area (INFO); reference frame 1 has its own grid.
+    - ``"burst"``: accumulative; material_loss raised by the burst rule
+      on frame 2 alone.
+    - ``"notice"``: accumulative; a small loss (INFO only).
+    - ``"healthy"``: incremental, nothing lost or copied from far; reference
+      frame 1 has its own grid (an INFO line, no finding).
+    - ``"clean"``: accumulative, nothing lost or copied from far, no grid
+      of its own (nothing to report).
+    """
+    frames = _tracking_frames(kind)
+    later = kind in ("warning", "healthy")
+    extents = ()
+    if later:
+        extents = (RefGridExtent(
+            ref_frame=1,
+            roi=GridxyROIRange(gridx=(40, 200), gridy=(60, 180)),
+            n_nodes=TRACKING_LARGEST_GRID,
+        ),)
+    return TrackingDiagnostics(
+        n_nodes=TRACKING_N_NODES, n_never_material=0,
+        far_extrapolation_px=16.0, measurable_box=(16, 367, 16, 239),
+        has_later_references=later, frames=frames, grid_extents=extents,
+    )
+
+
+def make_tracking_para() -> DICPara:
+    """The run parameters of ``make_tracking_diagnostics``.
+
+    A 384 x 256 image, subset 32, step 16; the frame-0 grid range gives a
+    7 x 7 lattice (``TRACKING_FRAME0_GRID`` nodes).
+    """
+    return dicpara_default(
+        winsize=32,
+        winstepsize=16,
+        img_size=(256, 384),
+        gridxy_roi_range=GridxyROIRange(gridx=(16, 112), gridy=(16, 112)),
+        reference_mode="incremental",
+        show_plots=False,
+    )

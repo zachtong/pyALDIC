@@ -33,7 +33,10 @@ class ConsoleLog(QTextEdit):
             "error": COLORS.DANGER,
             "success": COLORS.SUCCESS,
         }.get(level, COLORS.TEXT_SECONDARY)
-        return f'<span style="color:{color}">{timestamp} {message}</span>'
+        # The line is HTML, where a newline is just a space: keep a
+        # multi-line message (the tracking advice) on its own lines.
+        text = message.replace("\n", "<br>")
+        return f'<span style="color:{color}">{timestamp} {text}</span>'
 
     def append_log(self, message: str, level: str = "info") -> None:
         """Append a timestamped, color-coded message to the log."""

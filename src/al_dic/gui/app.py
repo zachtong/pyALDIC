@@ -6,6 +6,7 @@ import sys
 import traceback
 from pathlib import Path
 
+import shiboken6
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QAction, QActionGroup, QKeySequence
 from PySide6.QtWidgets import (
@@ -95,6 +96,10 @@ class MainWindow(QMainWindow):
 
         # Prompt user to open strain window when a pipeline run completes.
         self._state.run_state_changed.connect(self._on_run_state_changed)
+        # Poor tracking quality after a complete run: a modeless dialog,
+        # at most one open (the latest run's).
+        self._run_warning_box: QMessageBox | None = None
+        self._state.run_warning.connect(self._on_run_warning)
 
         # Wire ROI toolbar signals
         roi_tb = self._left_sidebar.roi_toolbar
@@ -1053,9 +1058,46 @@ class MainWindow(QMainWindow):
         displacement, so auto-opening is strictly less friction.
         """
         from al_dic.gui.app_state import RunState
+        if new_state == RunState.RUNNING:
+            # A new run makes the last run's tracking warning stale.
+            self._close_run_warning()
+            return
         if new_state != RunState.DONE or self._state.results is None:
             return
         self._on_open_strain_window()
+
+    def _on_run_warning(
+        self, title: str, text: str, informative: str, details: str,
+    ) -> None:
+        """Show a tracking-quality warning that blocks nothing.
+
+        Modeless ``show()``: a ``QMessageBox`` is modal by default, and
+        ``open()`` would still lock the window it sits over; ``exec()``
+        would also run a nested event loop, so a run that finishes
+        unattended (or headless) would hang on it. The box sits over the
+        strain window when that is showing (it opens on DONE), replaces the
+        previous run's box, and deletes itself once closed. The texts
+        arrive translated.
+        """
+        self._close_run_warning()
+        box = QMessageBox(_warning_parent(self._strain_window, self))
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(title)
+        box.setText(text)
+        box.setInformativeText(informative)
+        box.setDetailedText(details)
+        box.setStandardButtons(QMessageBox.StandardButton.Ok)
+        box.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        box.setWindowModality(Qt.WindowModality.NonModal)
+        self._run_warning_box = box
+        box.show()
+
+    def _close_run_warning(self) -> None:
+        """Close the tracking warning still open, if any (it deletes
+        itself; it is already gone if the user or its parent closed it)."""
+        box, self._run_warning_box = self._run_warning_box, None
+        if box is not None and shiboken6.isValid(box):
+            box.close()
 
     def closeEvent(self, event) -> None:
         """Stop and join any running pipeline worker before closing.
@@ -1071,12 +1113,25 @@ class MainWindow(QMainWindow):
         if worker is not None and worker.isRunning():
             worker.request_stop()
             worker.wait(5000)
+        # The tracking warning first: closing the strain window only hides
+        # it, and that leaves a box parented to it on screen.
+        self._close_run_warning()
         # Cascade close: the strain window is a child top-level we own,
         # so it must close with the main window to keep lifecycle parity.
         if self._strain_window is not None:
             self._strain_window.close()
             self._strain_window = None
         super().closeEvent(event)
+
+
+def _warning_parent(
+    strain_window: QWidget | None, main_window: QWidget,
+) -> QWidget:
+    """The window a run warning belongs over: the strain window when it is
+    showing (the user is looking there), else the main window."""
+    if strain_window is not None and strain_window.isVisible():
+        return strain_window
+    return main_window
 
 
 def user_data_dir() -> Path:

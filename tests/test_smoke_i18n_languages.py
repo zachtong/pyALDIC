@@ -15,6 +15,7 @@ Runs a minimal headless QApplication. No on-screen display.
 from __future__ import annotations
 
 import os
+import re
 
 import pytest
 from PySide6.QtCore import QCoreApplication
@@ -285,3 +286,109 @@ def test_workflow_combobox_codes_stable(qapp, lang):
     assert ref_codes == ["every_frame", "every_n", "custom"], (
         f"[{lang}] Ref-update userData codes drifted: {ref_codes}"
     )
+
+
+# --- Tracking-quality messages (Gate D) -------------------------------------
+
+#: Locales whose decimal separator is a comma ("70,3").
+_DECIMAL_COMMA = ("de", "fr", "es")
+
+
+def _tracking_messages(qapp, lang: str) -> dict:
+    """``build_tracking_messages`` for the synthetic diagnostics, in ``lang``."""
+    from al_dic.gui.controllers.tracking_messages import build_tracking_messages
+    from al_dic.i18n import LanguageManager
+
+    from tests.test_gui._helpers import (
+        make_tracking_diagnostics,
+        make_tracking_para,
+    )
+
+    # Keep the manager alive while building: it parents the translators,
+    # and a collected manager takes them out of the application.
+    mgr = LanguageManager(qapp)
+    assert mgr.load(lang)
+    para = make_tracking_para()
+    return {
+        kind: build_tracking_messages(make_tracking_diagnostics(kind), para)
+        for kind in ("warning", "burst", "notice", "healthy")
+    }
+
+
+def _texts(messages) -> list[str]:
+    return [
+        messages.title, messages.text, messages.informative, messages.details,
+        *(text for text, _level in messages.log_lines),
+    ]
+
+
+def _has_number(number: str, text: str) -> bool:
+    return re.search(rf"(?<![\d.,]){re.escape(number)}(?![\d])", text) is not None
+
+
+@pytest.mark.parametrize("lang", SHIPPED_LANGS)
+def test_tracking_messages_are_translated(qapp, lang):
+    """Every piece of the tracking-quality report comes out in ``lang``.
+
+    No placeholder survives, the counts are there, and the percentages use
+    the language's decimal separator (format_number).
+    """
+    from al_dic.utils.locale_format import format_number
+
+    from tests.test_gui import _helpers as h
+
+    english = _tracking_messages(qapp, "en")
+    local = _tracking_messages(qapp, lang)
+    for kind, messages in local.items():
+        texts = _texts(messages)
+        assert len(texts) == len(_texts(english[kind])), kind
+        for text in texts:
+            assert text, f"[{lang}] {kind}: empty text"
+            assert not re.search(r"%(\d|n)", text), f"[{lang}] {kind}: {text!r}"
+        if lang != "en":
+            for source, text in zip(_texts(english[kind]), texts):
+                assert text != source, f"[{lang}] {kind}: untranslated {text!r}"
+
+    details = local["warning"].details
+    for count in (h.TRACKING_GRID_MISS, h.TRACKING_LOST, h.TRACKING_BORDER):
+        assert _has_number(str(count), details), (lang, count, details)
+    assert format_number(h.TRACKING_LARGEST_GRID) in details, (lang, details)
+    assert _has_number(str(h.TRACKING_FRAME0_GRID), details), (lang, details)
+    lost_pct = format_number(h.TRACKING_LOST_PCT, 1)
+    assert lost_pct == ("70,3" if lang in _DECIMAL_COMMA else "70.3")
+    assert lost_pct in details, (lang, details)
+
+    burst = local["burst"].details
+    assert _has_number(str(h.TRACKING_BURST), burst), (lang, burst)
+    assert format_number(h.TRACKING_BURST_PCT, 1) in burst, (lang, burst)
+
+
+def test_tracking_messages_go_through_the_translator(qapp):
+    """Pseudo-locale: every translated piece is wrapped, so none bypasses tr()."""
+    for kind, messages in _tracking_messages(qapp, "pseudo").items():
+        for text in _texts(messages):
+            assert text.startswith("\u27e6"), f"{kind}: {text!r}"
+            assert text.endswith("\u27e7"), f"{kind}: {text!r}"
+
+
+@pytest.mark.parametrize("lang", _DECIMAL_COMMA)
+def test_tracking_counts_have_singular_and_plural(qapp, lang):
+    """The count sentences are numerus messages in the catalog.
+
+    lupdate marks ``self.tr(source, "", n)`` numerus but not
+    ``QCoreApplication.translate(context, source, "", n)``; a message it
+    does not mark has one form, and for any count the language's plural
+    rule sends to the second form Qt falls back to the English source.
+    """
+    from al_dic.gui.controllers.tracking_messages import TrackingQuality
+    from al_dic.i18n import LanguageManager
+
+    mgr = LanguageManager(qapp)
+    assert mgr.load(lang)
+    t = TrackingQuality()
+    for sentence in (t.grid_miss, t.loss, t.burst, t.edge, t.grid_note):
+        one, many = sentence(1), sentence(7)
+        assert "(s)" not in one and "(s)" not in many, (lang, one, many)
+        assert one.replace("1", "#", 1) != many.replace("7", "#", 1), (
+            f"[{lang}] singular and plural read the same: {many!r}"
+        )
