@@ -92,7 +92,7 @@ Run traditional local IC-GN (fast, independent nodes) or full AL-DIC with ADMM g
 
 ### Dual Tracking Modes
 
-**Accumulative mode** — every frame compared to the first reference (best for small, monotonic deformation). **Incremental mode** — each frame compared to the previous (handles large cumulative deformation with automatic displacement composition, a measurement grid that covers each reference frame's own ROI, and refinement-brush warping).
+**Accumulative mode** — every frame compared to the first reference (best for small, monotonic deformation). **Incremental mode** — each frame compared to the previous (handles large cumulative deformation with automatic displacement composition, a measurement grid that covers each reference frame's own ROI, and refinement-brush warping). After every run, a tracking-quality check reports nodes whose displacement had to be copied from a distant node or that stopped being tracked, and warns when the grid missed the specimen or most of the material was lost.
 
 <p align="center">
   <!-- TODO: GIF showing incremental tracking through a multi-frame sequence -->
@@ -369,7 +369,8 @@ export_mat(out, "result", "run01", result, fields=fields)
 
 ```
 src/al_dic/
-├── core/           Pipeline, config, data structures, frame scheduling
+├── core/           Pipeline, config, data structures, frame scheduling,
+│                   per-reference grid planning, tracking diagnostics
 ├── gui/            PySide6 GUI application
 │   ├── controllers/  Image, ROI, pipeline, visualization controllers
 │   ├── dialogs/      Batch import, export dialogs
@@ -382,7 +383,7 @@ src/al_dic/
 ├── strain/         Strain computation, deformation gradient, smoothing
 └── utils/          Interpolation, outlier detection, mask warping
 
-tests/              128 test files, 1500+ tests
+tests/              180+ test files, 2400+ tests
 ```
 
 </details>
