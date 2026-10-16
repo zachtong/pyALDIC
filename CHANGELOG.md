@@ -134,6 +134,22 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   animation status line of the *Export* dialog, and the console lines
   after a batch import, after importing regions from the image list, when
   a run starts with per-frame regions, and when a run's results arrive.
+- **The question asked at *Run* about reference frames without a Region of
+  Interest is now translated, and describes what the run does.** In
+  incremental mode, when some reference frames have no Region of Interest
+  of their own, *Run* asks before continuing; that dialog was English in
+  every language. It also said those frames "inherit" frame 1's region and
+  that only results near the region's boundary may be inaccurate. It now
+  says, in the interface language, that such a frame reuses frame 1's
+  region unchanged (nothing moves it with the specimen), that where the
+  specimen has moved out of that region the part outside is not measured
+  from that frame and its nodes stop being tracked or have their
+  displacement copied from the nearest measured node, and that the run
+  reports these nodes when it finishes. It suggests giving each reference
+  frame its own region (*Batch Import* assigns many at once) and asks
+  whether to continue with frame 1's region; *No* is still the default.
+  The frames are listed by number, at most ten, followed by how many more
+  there are.
 
 ## [0.10.0] — 2026-10-13
 

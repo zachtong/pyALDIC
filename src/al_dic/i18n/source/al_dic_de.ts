@@ -2594,27 +2594,27 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
         <source>Building pipeline configuration...</source>
         <translation>Pipeline-Konfiguration wird erstellt…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
         <source>Loading images...</source>
         <translation>Bilder werden geladen…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 Bilder geladen, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI-Maske: %1, %2 Pixel (%3%)</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>Lauf abgebrochen: Definieren Sie pro Bild Regions of Interest für die fehlenden Referenzbilder, oder akzeptieren Sie beim nächsten Lauf die vom 1. Bild geerbte Maske.</translation>
     </message>
@@ -2622,7 +2622,7 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n Bild mit benutzerdefinierter ROI-Maske</numerusform>
@@ -2630,29 +2630,66 @@ Betrifft nur die Initialisierung der Startpunkte; andere Knoten verwenden F-awar
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>Ergebnisse empfangen: %n Bild</numerusform>
             <numerusform>Ergebnisse empfangen: %n Bilder</numerusform>
         </translation>
     </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <source>Incomplete Region of Interest Coverage</source>
+        <translation>Unvollständige Regions of Interest</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
+        <translation>
+            <numerusform>Dieser inkrementelle Lauf hat %n Referenzbild ohne eigene Region of Interest: Bild %1.</numerusform>
+            <numerusform>Dieser inkrementelle Lauf hat %n Referenzbilder ohne eigene Region of Interest: Bilder %1.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <source>%1 and %n more</source>
+        <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
+        <translation>
+            <numerusform>%1 und %n weiteres</numerusform>
+            <numerusform>%1 und %n weitere</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
+        <translation>Ein Referenzbild ohne eigene Region of Interest übernimmt die Region von Bild 1 unverändert: Nichts bewegt die Region mit der Probe mit. Wo sich die Probe aus dieser Region hinausbewegt hat, wird der Teil außerhalb von einem solchen Bild aus nicht gemessen, und die Knoten dort fallen aus der Verfolgung oder übernehmen ihre Verschiebung vom nächstgelegenen gemessenen Knoten. Der Lauf meldet diese Knoten, wenn er abgeschlossen ist.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
+        <translation>Um die ganze Probe zu messen, geben Sie jedem Referenzbild eine eigene Region of Interest, die die Probe in diesem Bild abdeckt (mit dem Stapelimport lassen sich vielen Bildern auf einmal Regions of Interest zuweisen). Ein Referenzbild mit eigener Region wird auf einem Gitter gemessen, das diese Region abdeckt.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>Continue with frame 1&apos;s region?</source>
+        <translation>Mit der Region von Bild 1 fortfahren?</translation>
+    </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
         <source>Starting DIC analysis...</source>
         <translation>DIC-Analyse wird gestartet…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
         <source>Analysis complete in %1s</source>
         <translation>Analyse in %1 s abgeschlossen</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
         <source>Analysis stopped by user.</source>
         <translation>Analyse wurde vom Benutzer gestoppt.</translation>
     </message>

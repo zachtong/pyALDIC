@@ -15,7 +15,10 @@ from al_dic.core.config import dicpara_default
 from al_dic.core.data_structures import FrameSchedule, GridxyROIRange, PipelineResult
 from al_dic.core.pipeline import run_aldic
 from al_dic.gui.app_state import AppState, RunState
-from al_dic.gui.controllers.pipeline_messages import PipelineMessages
+from al_dic.gui.controllers.pipeline_messages import (
+    PipelineMessages,
+    missing_roi_dialog,
+)
 from al_dic.gui.controllers.tracking_messages import build_tracking_messages
 from al_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
 from al_dic.solver.seed_propagation import (
@@ -132,47 +135,26 @@ def _confirm_incomplete_ref_rois(
 ) -> bool:
     """Warn the user when some reference frames lack a per-frame ROI mask.
 
+    Such frames reuse frame 0's mask unchanged (``_build_masks``); the
+    dialog's text is ``pipeline_messages.missing_roi_dialog``.
+
     Returns ``True`` if the run should proceed (no missing refs, or user
     explicitly confirmed), ``False`` if the user declined.
 
     The check excludes frame 0 because its ROI is a hard prerequisite
     that PipelineController.start() validates earlier.
     """
-    missing = sorted(
+    missing = [
         f for f in ref_frame_set
         if f != 0 and f not in state.per_frame_rois
-    )
+    ]
     if not missing:
         return True
 
-    # Convert to 1-based frame numbers for display (matches GUI labelling)
-    display_frames = [f + 1 for f in missing]
-    if len(display_frames) <= 10:
-        frames_str = ", ".join(str(f) for f in display_frames)
-    else:
-        head = ", ".join(str(f) for f in display_frames[:10])
-        frames_str = f"{head}, ... ({len(display_frames)} frames total)"
-
-    text = (
-        "<b>Incomplete Region of Interest coverage in incremental mode"
-        "</b><br><br>"
-        f"You are running incremental mode, but {len(display_frames)} "
-        "reference frame(s) do not have their own Region of Interest "
-        "mask:<br>"
-        f"<i>Frame {frames_str}</i><br><br>"
-        "These reference frames will <b>inherit frame 1's Region of "
-        "Interest mask</b>, which is geometrically not strictly correct "
-        "because the material moves between frames. Results near the "
-        "Region of Interest boundary may be inaccurate.<br><br>"
-        "For best accuracy, define a per-frame Region of Interest mask "
-        "for each reference frame.<br><br>"
-        "<b>Continue with the inherited masks?</b>"
-    )
-
-    parent = QApplication.activeWindow()
+    title, text = missing_roi_dialog(missing)
     button = QMessageBox.question(
-        parent,
-        "Incomplete Region of Interest Coverage",
+        QApplication.activeWindow(),
+        title,
         text,
         QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
         QMessageBox.StandardButton.No,

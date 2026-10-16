@@ -2594,27 +2594,27 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
         <source>Building pipeline configuration...</source>
         <translation>Construction de la configuration du pipeline…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
         <source>Loading images...</source>
         <translation>Chargement des images…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 images chargées, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Masque ROI : %1, %2 pixels (%3%)</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>Exécution annulée : définissez les régions d&apos;intérêt par image pour les images de référence manquantes, ou acceptez le masque hérité de l&apos;image 1 à la prochaine exécution.</translation>
     </message>
@@ -2622,7 +2622,7 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n image avec un masque ROI personnalisé</numerusform>
@@ -2630,29 +2630,66 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>Résultats reçus : %n image</numerusform>
             <numerusform>Résultats reçus : %n images</numerusform>
         </translation>
     </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <source>Incomplete Region of Interest Coverage</source>
+        <translation>Régions d&apos;intérêt incomplètes</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
+        <translation>
+            <numerusform>Cette exécution incrémentale compte %n image de référence sans région d&apos;intérêt propre : image %1.</numerusform>
+            <numerusform>Cette exécution incrémentale compte %n images de référence sans région d&apos;intérêt propre : images %1.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <source>%1 and %n more</source>
+        <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
+        <translation>
+            <numerusform>%1 et %n autre</numerusform>
+            <numerusform>%1 et %n autres</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
+        <translation>Une image de référence sans région d&apos;intérêt propre reprend telle quelle la région de l&apos;image 1 : rien ne déplace la région avec l&apos;éprouvette. Là où l&apos;éprouvette est sortie de cette région, la partie extérieure n&apos;est pas mesurée à partir d&apos;une telle image, et les nœuds qui s&apos;y trouvent cessent d&apos;être suivis ou voient leur déplacement copié depuis le nœud mesuré le plus proche. L&apos;exécution signale ces nœuds à la fin.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
+        <translation>Pour mesurer toute l&apos;éprouvette, donnez à chaque image de référence sa propre région d&apos;intérêt couvrant l&apos;éprouvette dans cette image (l&apos;import par lot permet d&apos;attribuer des régions d&apos;intérêt à de nombreuses images à la fois). Une image de référence dotée de sa propre région est mesurée sur une grille qui couvre cette région.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>Continue with frame 1&apos;s region?</source>
+        <translation>Continuer avec la région de l&apos;image 1 ?</translation>
+    </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
         <source>Starting DIC analysis...</source>
         <translation>Démarrage de l&apos;analyse DIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
         <source>Analysis complete in %1s</source>
         <translation>Analyse terminée en %1 s</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
         <source>Analysis stopped by user.</source>
         <translation>Analyse arrêtée par l&apos;utilisateur.</translation>
     </message>

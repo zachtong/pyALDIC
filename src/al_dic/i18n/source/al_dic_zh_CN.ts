@@ -2587,27 +2587,27 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
         <source>Building pipeline configuration...</source>
         <translation>正在构建流水线配置…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
         <source>Loading images...</source>
         <translation>正在加载图像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已加载 %1 张图像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 掩模：%1，%2 像素（%3%）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。</translation>
     </message>
@@ -2615,35 +2615,70 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n 帧使用自定义 ROI 掩模</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>已收到结果：%n 帧</numerusform>
         </translation>
     </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <source>Incomplete Region of Interest Coverage</source>
+        <translation>感兴趣区域覆盖不完整</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
+        <translation>
+            <numerusform>本次增量追踪运行中有 %n 个参考帧没有自己的感兴趣区域：帧 %1。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <source>%1 and %n more</source>
+        <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
+        <translation>
+            <numerusform>%1 以及另外 %n 帧</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
+        <translation>没有自己感兴趣区域的参考帧会原样沿用第 1 帧的区域：该区域不会随试样移动。试样移出该区域后，区域外的部分不会以这类参考帧为基准进行测量，位于其中的节点将不再被追踪，或其位移从最近的已测量节点复制。运行结束时会报告这些节点。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
+        <translation>要测量整个试样，请为每个参考帧单独指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定感兴趣区域）。拥有自己区域的参考帧会在覆盖该区域的测量网格上进行测量。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>Continue with frame 1&apos;s region?</source>
+        <translation>是否沿用第 1 帧的区域继续？</translation>
+    </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
         <source>Starting DIC analysis...</source>
         <translation>开始 DIC 分析…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
         <source>Analysis complete in %1s</source>
         <translation>分析完成，用时 %1 秒</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
         <source>Analysis stopped by user.</source>
         <translation>用户已停止分析。</translation>
     </message>

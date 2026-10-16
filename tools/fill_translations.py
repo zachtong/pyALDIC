@@ -3117,6 +3117,44 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "<b>Incrémental, chaque image</b> — chaque image sert de référence à la suivante. Si l'éprouvette se déplace, donnez à chaque image une région d'intérêt qui couvre l'éprouvette dans cette image (l'import par lot permet d'en attribuer plusieurs à la fois) ; les images de référence sans région d'intérêt propre reprennent celle de l'image 1 après votre confirmation.",
         "es":    "<b>Incremental, cada fotograma</b> — cada fotograma es la referencia del siguiente. Si la probeta se mueve, asigne a cada fotograma una región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar muchas a la vez); los fotogramas de referencia sin una propia reutilizan la región del fotograma 1 tras su confirmación.",
     },
+    # ===== PipelineMessages — Run-time confirmation: reference frames with no
+    # Region of Interest of their own (they reuse frame 1's region unchanged)
+    "Incomplete Region of Interest Coverage": {
+        "zh_CN": "感兴趣区域覆盖不完整",
+        "zh_TW": "感興趣區域涵蓋不完整",
+        "ja":    "関心領域の設定が不完全です",
+        "ko":    "관심 영역 지정 불완전",
+        "de":    "Unvollständige Regions of Interest",
+        "fr":    "Régions d'intérêt incomplètes",
+        "es":    "Regiones de interés incompletas",
+    },
+    "A reference frame without a Region of Interest of its own reuses frame 1's region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.": {
+        "zh_CN": "没有自己感兴趣区域的参考帧会原样沿用第 1 帧的区域：该区域不会随试样移动。试样移出该区域后，区域外的部分不会以这类参考帧为基准进行测量，位于其中的节点将不再被追踪，或其位移从最近的已测量节点复制。运行结束时会报告这些节点。",
+        "zh_TW": "沒有自己感興趣區域的參考影格會原樣沿用第 1 影格的區域：該區域不會隨試樣移動。試樣移出該區域後，區域外的部分不會以這類參考影格為基準進行量測，位於其中的節點將不再被追蹤，或其位移從最近的已量測節點複製而來。執行結束時會報告這些節點。",
+        "ja":    "専用の関心領域がない参照フレームは、フレーム 1 の領域をそのまま再利用します。この領域は試験片に合わせて移動しません。試験片がこの領域の外へ移動すると、その外側の部分はそのような参照フレームからは測定されず、そこにあるノードは追跡されなくなるか、最も近い測定済みノードから変位がコピーされます。これらのノードは実行終了時に報告されます。",
+        "ko":    "자체 관심 영역이 없는 참조 프레임은 프레임 1의 영역을 그대로 재사용합니다. 이 영역은 시편을 따라 움직이지 않습니다. 시편이 이 영역 밖으로 이동하면 영역 밖의 부분은 그러한 참조 프레임에서 측정되지 않으며, 그곳의 노드는 더 이상 추적되지 않거나 가장 가까운 측정된 노드에서 변위가 복사됩니다. 실행이 끝나면 이러한 노드가 보고됩니다.",
+        "de":    "Ein Referenzbild ohne eigene Region of Interest übernimmt die Region von Bild 1 unverändert: Nichts bewegt die Region mit der Probe mit. Wo sich die Probe aus dieser Region hinausbewegt hat, wird der Teil außerhalb von einem solchen Bild aus nicht gemessen, und die Knoten dort fallen aus der Verfolgung oder übernehmen ihre Verschiebung vom nächstgelegenen gemessenen Knoten. Der Lauf meldet diese Knoten, wenn er abgeschlossen ist.",
+        "fr":    "Une image de référence sans région d'intérêt propre reprend telle quelle la région de l'image 1 : rien ne déplace la région avec l'éprouvette. Là où l'éprouvette est sortie de cette région, la partie extérieure n'est pas mesurée à partir d'une telle image, et les nœuds qui s'y trouvent cessent d'être suivis ou voient leur déplacement copié depuis le nœud mesuré le plus proche. L'exécution signale ces nœuds à la fin.",
+        "es":    "Un fotograma de referencia sin región de interés propia reutiliza sin cambios la región del fotograma 1: nada mueve la región junto con la probeta. Donde la probeta ha salido de esa región, la parte exterior no se mide desde dicho fotograma, y los nodos que quedan allí dejan de seguirse o copian su desplazamiento del nodo medido más cercano. La ejecución informa de estos nodos al terminar.",
+    },
+    "To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.": {
+        "zh_CN": "要测量整个试样，请为每个参考帧单独指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定感兴趣区域）。拥有自己区域的参考帧会在覆盖该区域的测量网格上进行测量。",
+        "zh_TW": "要量測整個試樣，請為每個參考影格單獨指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定感興趣區域）。擁有自己區域的參考影格會在涵蓋該區域的量測網格上進行量測。",
+        "ja":    "試験片全体を測定するには、各参照フレームに、そのフレームの試験片を覆う専用の関心領域を設定してください（一括インポートで多数のフレームに関心領域をまとめて割り当てられます）。専用の領域を持つ参照フレームは、その領域を覆う測定グリッド上で測定されます。",
+        "ko":    "시편 전체를 측정하려면 각 참조 프레임에 해당 프레임의 시편을 덮는 자체 관심 영역을 지정하세요(일괄 가져오기로 여러 프레임에 관심 영역을 한 번에 지정할 수 있습니다). 자체 영역이 있는 참조 프레임은 그 영역을 덮는 측정 격자에서 측정됩니다.",
+        "de":    "Um die ganze Probe zu messen, geben Sie jedem Referenzbild eine eigene Region of Interest, die die Probe in diesem Bild abdeckt (mit dem Stapelimport lassen sich vielen Bildern auf einmal Regions of Interest zuweisen). Ein Referenzbild mit eigener Region wird auf einem Gitter gemessen, das diese Region abdeckt.",
+        "fr":    "Pour mesurer toute l'éprouvette, donnez à chaque image de référence sa propre région d'intérêt couvrant l'éprouvette dans cette image (l'import par lot permet d'attribuer des régions d'intérêt à de nombreuses images à la fois). Une image de référence dotée de sa propre région est mesurée sur une grille qui couvre cette région.",
+        "es":    "Para medir toda la probeta, asigne a cada fotograma de referencia su propia región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar regiones de interés a muchos fotogramas a la vez). Un fotograma de referencia con región propia se mide en una cuadrícula que cubre esa región.",
+    },
+    "Continue with frame 1's region?": {
+        "zh_CN": "是否沿用第 1 帧的区域继续？",
+        "zh_TW": "是否沿用第 1 影格的區域繼續？",
+        "ja":    "フレーム 1 の領域で続行しますか？",
+        "ko":    "프레임 1의 영역으로 계속하시겠습니까?",
+        "de":    "Mit der Region von Bild 1 fortfahren?",
+        "fr":    "Continuer avec la région de l'image 1 ?",
+        "es":    "¿Continuar con la región del fotograma 1?",
+    },
 }
 
 
@@ -3337,6 +3375,32 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
                   "Grille de mesure agrandie pour %n images de référence afin de couvrir leurs régions d'intérêt (plus grande grille : %1 nœuds sur l'image %2 ; grille de l'image 1 : %3 nœuds)."),
         "es":    ("Cuadrícula de medición ampliada para %n fotograma de referencia a fin de cubrir su región de interés (cuadrícula más grande: %1 nodos en el fotograma %2; cuadrícula del fotograma 1: %3 nodos).",
                   "Cuadrícula de medición ampliada para %n fotogramas de referencia a fin de cubrir sus regiones de interés (cuadrícula más grande: %1 nodos en el fotograma %2; cuadrícula del fotograma 1: %3 nodos)."),
+    },
+
+    # === PipelineMessages — Run-time confirmation: reference frames with no
+    # Region of Interest of their own. %1 is the frame list: numbers, or the
+    # "%1 and %n more" sentence below when more than ten are missing.
+    "This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.": {
+        "zh_CN": ("本次增量追踪运行中有 %n 个参考帧没有自己的感兴趣区域：帧 %1。",),
+        "zh_TW": ("本次增量追蹤執行中有 %n 個參考影格沒有自己的感興趣區域：影格 %1。",),
+        "ja":    ("この逐次追跡の実行では、%n 個の参照フレームに専用の関心領域がありません：フレーム %1。",),
+        "ko":    ("이번 증분 추적 실행에서 참조 프레임 %n개에 자체 관심 영역이 없습니다: 프레임 %1.",),
+        "de":    ("Dieser inkrementelle Lauf hat %n Referenzbild ohne eigene Region of Interest: Bild %1.",
+                  "Dieser inkrementelle Lauf hat %n Referenzbilder ohne eigene Region of Interest: Bilder %1."),
+        "fr":    ("Cette exécution incrémentale compte %n image de référence sans région d'intérêt propre : image %1.",
+                  "Cette exécution incrémentale compte %n images de référence sans région d'intérêt propre : images %1."),
+        "es":    ("Esta ejecución incremental tiene %n fotograma de referencia sin región de interés propia: fotograma %1.",
+                  "Esta ejecución incremental tiene %n fotogramas de referencia sin región de interés propia: fotogramas %1."),
+    },
+    # A frame list cut short: %1 = the frame numbers shown, %n = the rest.
+    "%1 and %n more": {
+        "zh_CN": ("%1 以及另外 %n 帧",),
+        "zh_TW": ("%1，以及另外 %n 個影格",),
+        "ja":    ("%1 ほか %n フレーム",),
+        "ko":    ("%1 외 %n개",),
+        "de":    ("%1 und %n weiteres", "%1 und %n weitere"),
+        "fr":    ("%1 et %n autre", "%1 et %n autres"),
+        "es":    ("%1 y %n más", "%1 y %n más"),
     },
 }
 

@@ -21,6 +21,7 @@ These tests pin the contracts:
 
 from __future__ import annotations
 
+import re
 import warnings
 
 import numpy as np
@@ -273,3 +274,115 @@ class TestIncompleteROIDialog:
         # Frame 2 (0-based) → "3" in dialog text
         assert "3" in spy.calls[0]["text"]
         assert len(_CapturingWorker.instances) == 0
+
+
+# --- The dialog in every language -------------------------------------------
+
+_LANGS = ("zh_CN", "zh_TW", "ja", "ko", "de", "fr", "es")
+#: 0-based reference frames without a region of their own.
+_ONE_MISSING = (1,)
+_TWO_MISSING = (1, 2)
+#: 25 frames: the first 10 are listed (frames 2 to 11), 15 are not.
+_MANY_MISSING = tuple(range(1, 26))
+_LISTED = "2, 3, 4, 5, 6, 7, 8, 9, 10, 11"
+
+_PARAGRAPH = "<br><br>"
+_TAG = re.compile(r"</?[a-z]+>")
+#: A list of frame numbers, or a single count.
+_NUMBERS = re.compile(r"\d+(?:, \d+)*")
+#: A plural written into one form: "Bild(er)", "image(s)".
+_PLURAL_MARKER = re.compile(r"\w\((?:s|n|e|es|en|er|x)\)")
+
+
+def _dialog(monkeypatch, lang: str, missing: tuple[int, ...]) -> tuple[str, str]:
+    """``(title, text)`` of the Run-time confirmation in ``lang`` when the
+    reference frames ``missing`` (0-based) have no region of their own."""
+    from al_dic.i18n import LanguageManager
+
+    spy = _DialogSpy(QMessageBox.StandardButton.No)
+    monkeypatch.setattr(QMessageBox, "question", spy)
+    state = AppState.instance()
+    state.per_frame_rois = {0: np.ones((8, 8), dtype=bool)}
+    mgr = LanguageManager(QApplication.instance())
+    assert mgr.load(lang)
+    try:
+        go_on = pc_module._confirm_incomplete_ref_rois(state, {0, *missing})
+    finally:
+        mgr.load("en")
+    assert go_on is False
+    (call,) = spy.calls
+    assert call["default_button"] == QMessageBox.StandardButton.No
+    return call["title"], call["text"]
+
+
+def _paragraphs(text: str) -> list[str]:
+    return [_TAG.sub("", p) for p in text.split(_PARAGRAPH)]
+
+
+def _has_number(number: int, text: str) -> bool:
+    return re.search(rf"(?<!\d){number}(?!\d)", text) is not None
+
+
+class TestIncompleteROIDialogLanguages:
+    @pytest.mark.parametrize("lang", _LANGS)
+    @pytest.mark.parametrize(
+        "missing", [_ONE_MISSING, _TWO_MISSING, _MANY_MISSING],
+        ids=["one", "two", "many"],
+    )
+    def test_dialog_is_translated(self, qapp, monkeypatch, lang, missing):
+        """Title and every paragraph come out in ``lang``; the frame
+        numbers (1-based) and counts survive translation."""
+        en_title, en_text = _dialog(monkeypatch, "en", missing)
+        title, text = _dialog(monkeypatch, lang, missing)
+        assert title != en_title
+        english, local = _paragraphs(en_text), _paragraphs(text)
+        assert len(local) == len(english), text
+        for source, paragraph in zip(english, local):
+            assert paragraph != source, f"[{lang}] untranslated: {paragraph!r}"
+            assert not re.search(r"%(\d|n)", paragraph), paragraph
+        shown = [f + 1 for f in missing][:10]
+        assert all(_has_number(f, local[0]) for f in shown), local[0]
+        assert _has_number(len(missing), local[0]), local[0]
+
+    def test_every_piece_goes_through_the_translator(self, qapp, monkeypatch):
+        """Pseudo-locale: the title, each paragraph and the cut-short frame
+        list are wrapped, so none of them bypasses tr()."""
+        title, text = _dialog(monkeypatch, "pseudo", _MANY_MISSING)
+        for piece in (title, *_paragraphs(text)):
+            assert piece.startswith("⟦"), piece
+            assert piece.endswith("⟧"), piece
+        # The "and 15 more" phrase is a sentence of its own inside the first.
+        assert _paragraphs(text)[0].count("⟦") == 2, text
+
+    @pytest.mark.parametrize("lang", ("de", "fr", "es"))
+    def test_one_and_two_missing_frames_read_differently(
+        self, qapp, monkeypatch, lang,
+    ):
+        one = _paragraphs(_dialog(monkeypatch, lang, _ONE_MISSING)[1])[0]
+        two = _paragraphs(_dialog(monkeypatch, lang, _TWO_MISSING)[1])[0]
+        for paragraph in (one, two):
+            assert not _PLURAL_MARKER.search(paragraph), paragraph
+        assert _NUMBERS.sub("#", one) != _NUMBERS.sub("#", two), (
+            f"[{lang}] singular and plural read the same: {two!r}"
+        )
+
+    @pytest.mark.parametrize("lang", ("en", *_LANGS))
+    def test_long_frame_list_is_cut_short(self, qapp, monkeypatch, lang):
+        """Ten frames are listed; the rest are counted, in ``lang``."""
+        first = _paragraphs(_dialog(monkeypatch, lang, _MANY_MISSING)[1])[0]
+        assert _LISTED in first, first
+        assert not _has_number(12, first) and not _has_number(26, first), first
+        assert _has_number(25, first) and _has_number(15, first), first
+        if lang != "en":
+            assert "and 15 more" not in first, first
+
+    @pytest.mark.parametrize("lang", ("de", "fr"))
+    def test_frames_not_listed_have_singular_and_plural(
+        self, qapp, monkeypatch, lang,
+    ):
+        """11 missing frames leave 1 unlisted, 12 leave 2."""
+        one = _paragraphs(_dialog(monkeypatch, lang, tuple(range(1, 12)))[1])[0]
+        two = _paragraphs(_dialog(monkeypatch, lang, tuple(range(1, 13)))[1])[0]
+        assert _NUMBERS.sub("#", one) != _NUMBERS.sub("#", two), (
+            f"[{lang}] 'and 1 more' and 'and 2 more' read the same: {two!r}"
+        )

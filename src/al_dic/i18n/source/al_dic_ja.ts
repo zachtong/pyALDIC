@@ -2587,27 +2587,27 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
         <source>Building pipeline configuration...</source>
         <translation>パイプライン設定を構築中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
         <source>Loading images...</source>
         <translation>画像を読み込み中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 枚の画像を読み込みました、shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI マスク：%1、%2 ピクセル（%3%）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。</translation>
     </message>
@@ -2615,35 +2615,70 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n 個のフレームでカスタム ROI マスクを使用</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>結果を受信：%n フレーム</numerusform>
         </translation>
     </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <source>Incomplete Region of Interest Coverage</source>
+        <translation>関心領域の設定が不完全です</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
+        <translation>
+            <numerusform>この逐次追跡の実行では、%n 個の参照フレームに専用の関心領域がありません：フレーム %1。</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <source>%1 and %n more</source>
+        <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
+        <translation>
+            <numerusform>%1 ほか %n フレーム</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
+        <translation>専用の関心領域がない参照フレームは、フレーム 1 の領域をそのまま再利用します。この領域は試験片に合わせて移動しません。試験片がこの領域の外へ移動すると、その外側の部分はそのような参照フレームからは測定されず、そこにあるノードは追跡されなくなるか、最も近い測定済みノードから変位がコピーされます。これらのノードは実行終了時に報告されます。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
+        <translation>試験片全体を測定するには、各参照フレームに、そのフレームの試験片を覆う専用の関心領域を設定してください（一括インポートで多数のフレームに関心領域をまとめて割り当てられます）。専用の領域を持つ参照フレームは、その領域を覆う測定グリッド上で測定されます。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>Continue with frame 1&apos;s region?</source>
+        <translation>フレーム 1 の領域で続行しますか？</translation>
+    </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
         <source>Starting DIC analysis...</source>
         <translation>DIC 解析を開始します…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
         <source>Analysis complete in %1s</source>
         <translation>解析が完了しました（%1 秒）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
         <source>Analysis stopped by user.</source>
         <translation>ユーザーにより解析が停止されました。</translation>
     </message>
