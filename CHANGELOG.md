@@ -150,6 +150,22 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   whether to continue with frame 1's region; *No* is still the default.
   The frames are listed by number, at most ten, followed by how many more
   there are.
+- **Run errors and Starting Points errors are now translated, and their
+  advice matches the GUI.** The dialogs shown when a run cannot start (too
+  few images; no Region of Interest, an empty one, or one smaller than two
+  Subset Steps; no or invalid Starting Points), when a run fails, and when
+  Starting Points cannot carry a run were English in every language, as
+  were several console lines of a run. They now come out in the interface
+  language and name each control exactly as the GUI labels it. Their
+  advice was also corrected: *Initial Guess* is a section of its own, not
+  part of *Advanced*; regions that still need a Starting Point are shown in
+  red, not yellow; the suggestion to lower the NCC threshold is gone (the
+  GUI has no such setting, and its default is 0.55, not 0.70); and so is
+  the suggestion to place several Starting Points for redundancy (one
+  unreliable Starting Point stops the frame however many there are). When
+  Starting Points stop a run early, the dialog names the frame and keeps
+  the core's message as its details. The console line left by answering
+  *No* to the missing-region question now matches that question.
 
 ## [0.10.0] — 2026-10-13
 

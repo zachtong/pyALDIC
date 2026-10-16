@@ -2594,35 +2594,30 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="283"/>
         <source>Building pipeline configuration...</source>
         <translation>Construyendo configuración del flujo…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="426"/>
         <source>Loading images...</source>
         <translation>Cargando imágenes…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="440"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 imágenes cargadas, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="452"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Máscara ROI: %1, %2 píxeles (%3%)</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
-        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>Ejecución cancelada: defina regiones de interés por fotograma para los fotogramas de referencia que faltan, o acepte la máscara heredada del fotograma 1 en la próxima ejecución.</translation>
     </message>
 </context>
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="73"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n fotograma con máscara ROI personalizada</numerusform>
@@ -2630,20 +2625,135 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="77"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>Resultados recibidos: %n fotograma</numerusform>
             <numerusform>Resultados recibidos: %n fotogramas</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="81"/>
+        <source>  %n image(s), %1</source>
+        <translation>
+            <numerusform>  %n imagen, %1</numerusform>
+            <numerusform>  %n imágenes, %1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="84"/>
+        <source>  ROI range: %1</source>
+        <translation>  Rango de la ROI: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>  Refinement: %1</source>
+        <translation>  Refinamiento de malla: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="91"/>
+        <source>Error: %1</source>
+        <translation>Error: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
+        <translation>Ejecución cancelada. Asigne a los fotogramas de referencia indicados su propia región de interés, o vuelva a ejecutar y continúe con la región del fotograma 1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="102"/>
+        <source>Cannot start analysis</source>
+        <translation>No se puede iniciar el análisis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
+        <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
+        <translation>Se necesitan al menos 2 imágenes. Cargue una carpeta de imágenes en la sección %1 antes de ejecutar la DIC.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
+        <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
+        <translation>Defina primero una región de interés: dibuje o importe una para el fotograma 1 en la sección %1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="116"/>
+        <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
+        <translation>La región de interés del fotograma 1 está vacía (ningún píxel seleccionado). Vuelva a dibujarla en la sección %1.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="121"/>
+        <source>Region of Interest too small</source>
+        <translation>Región de interés demasiado pequeña</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="127"/>
+        <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
+        <translation>La región de interés mide %1×%2 px, pero el %3 actual (%4) requiere al menos %5×%5 px. Amplíe la región de interés o reduzca el %3.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <source>Starting Points required</source>
+        <translation>Se requieren puntos iniciales</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="137"/>
+        <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
+        <translation>Coloque al menos un punto inicial en el lienzo antes de ejecutar: haga clic en «%1» o «%2» en la sección %3.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <source>Invalid Starting Points</source>
+        <translation>Puntos iniciales no válidos</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
+        <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
+        <translation>Uno o más puntos iniciales no están en ninguna parte de la región de interés. Haga clic en «%1» en la sección %2 y vuelva a colocar los puntos iniciales.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <source>DIC analysis failed</source>
+        <translation>El análisis DIC falló</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="158"/>
+        <source>Failed to start analysis</source>
+        <translation>No se pudo iniciar el análisis</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="161"/>
+        <source>Failed to process results</source>
+        <translation>No se pudieron procesar los resultados</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="166"/>
+        <source>The analysis stopped with a runtime error:
+
+%1
+
+See the console log for the full traceback.</source>
+        <translation>El análisis se detuvo con un error de ejecución:
+
+%1
+
+Consulte el registro de la consola para ver la traza completa.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="172"/>
+        <source>%1
+
+See the console log for the full traceback.</source>
+        <translation>%1
+
+Consulte el registro de la consola para ver la traza completa.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
         <source>Incomplete Region of Interest Coverage</source>
-        <translation>Regiones de interés incompletas</translation>
+        <translation>Cobertura incompleta de las regiones de interés</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="182"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>Esta ejecución incremental tiene %n fotograma de referencia sin región de interés propia: fotograma %1.</numerusform>
@@ -2651,7 +2761,7 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2660,17 +2770,17 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>Un fotograma de referencia sin región de interés propia reutiliza sin cambios la región del fotograma 1: nada mueve la región junto con la probeta. Donde la probeta ha salido de esa región, la parte exterior no se mide desde dicho fotograma, y los nodos que quedan allí dejan de seguirse o copian su desplazamiento del nodo medido más cercano. La ejecución informa de estos nodos al terminar.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>Para medir toda la probeta, asigne a cada fotograma de referencia su propia región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar regiones de interés a muchos fotogramas a la vez). Un fotograma de referencia con región propia se mide en una cuadrícula que cubre esa región.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="211"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>¿Continuar con la región del fotograma 1?</translation>
     </message>
@@ -2678,18 +2788,18 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="125"/>
         <source>Starting DIC analysis...</source>
         <translation>Iniciando análisis DIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="173"/>
         <source>Analysis complete in %1s</source>
         <translation>Análisis completado en %1 s</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="166"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="181"/>
         <source>Analysis stopped by user.</source>
         <translation>Análisis detenido por el usuario.</translation>
     </message>
@@ -3039,6 +3149,144 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  Fotograma %2</translation>
+    </message>
+</context>
+<context>
+    <name>SeedErrorMessages</name>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="60"/>
+        <source>Details: %1</source>
+        <translation>Detalles: %1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="63"/>
+        <source>Starting Point match quality too low</source>
+        <translation>Calidad de coincidencia del punto inicial demasiado baja</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="67"/>
+        <source>A Starting Point could not be matched reliably between the reference frame and the deformed frame: the peak of its normalized cross-correlation (NCC) stayed below the acceptance threshold. The texture around it is probably too uniform.
+
+Suggested actions:
+- Move the Starting Point to a more textured area (visible speckle).
+- Or choose “%1” in the %2 section.</source>
+        <translation>No se pudo emparejar de forma fiable un punto inicial entre el fotograma de referencia y el fotograma deformado: el pico de su correlación cruzada normalizada (NCC) quedó por debajo del umbral de aceptación. Es probable que la textura a su alrededor sea demasiado uniforme.
+
+Acciones sugeridas:
+- Mueva el punto inicial a una zona con más textura (moteado visible).
+- O elija «%1» en la sección %2.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="77"/>
+        <source>Starting Point local solver did not converge</source>
+        <translation>El solucionador local del punto inicial no convergió</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="81"/>
+        <source>The IC-GN solve at a Starting Point reached its iteration limit without converging. Common causes: the point is too close to the edge of the Region of Interest, or the texture around it is too weak.
+
+Suggested actions:
+- Move the Starting Point inward, away from the edges of the Region of Interest.
+- Try a smaller %1 (%2 section).
+- Or choose “%3” in the %4 section.</source>
+        <translation>La resolución IC-GN en un punto inicial alcanzó su límite de iteraciones sin converger. Causas habituales: el punto está demasiado cerca del borde de la región de interés o la textura a su alrededor es demasiado débil.
+
+Acciones sugeridas:
+- Mueva el punto inicial hacia el interior, lejos de los bordes de la región de interés.
+- Pruebe un %1 menor (sección %2).
+- O elija «%3» en la sección %4.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="94"/>
+        <source>Starting Point flagged as unreliable</source>
+        <translation>Punto inicial marcado como no fiable</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="98"/>
+        <source>After the frame was solved, the displacement at a Starting Point was rejected as an outlier. The frame&apos;s field was propagated from the Starting Points, so the whole frame is unreliable.
+
+Suggested actions:
+- Move the Starting Point to a cleaner, well-textured area, away from the edges of the Region of Interest and from cracks.
+- Or choose “%1” in the %2 section.</source>
+        <translation>Tras resolver el fotograma, el desplazamiento en un punto inicial se descartó como valor atípico. El campo del fotograma se propagó desde los puntos iniciales, así que todo el fotograma es poco fiable.
+
+Acciones sugeridas:
+- Mueva el punto inicial a una zona más limpia y con buena textura, lejos de los bordes de la región de interés y de las grietas.
+- O elija «%1» en la sección %2.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="109"/>
+        <source>Could not carry Starting Points to the new reference frame</source>
+        <translation>No se pudieron trasladar los puntos iniciales al nuevo fotograma de referencia</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="113"/>
+        <source>When the reference frame changed, the Starting Points could not be carried over to the new reference frame, and none could be placed there automatically. The material at the points has probably moved out of the Region of Interest of the new reference frame.
+
+Suggested actions:
+- Place Starting Points well inside the Region of Interest, away from its edges.
+- Give each reference frame a Region of Interest that covers the specimen in that frame (%1 can assign Regions of Interest to many frames at once).</source>
+        <translation>Al cambiar el fotograma de referencia, los puntos iniciales no se pudieron trasladar al nuevo fotograma de referencia y tampoco se pudo colocar ninguno allí automáticamente. Es probable que el material de esos puntos haya salido de la región de interés del nuevo fotograma de referencia.
+
+Acciones sugeridas:
+- Coloque los puntos iniciales bien dentro de la región de interés, lejos de sus bordes.
+- Asigne a cada fotograma de referencia una región de interés que cubra la probeta en ese fotograma («%1» puede asignar regiones de interés a muchos fotogramas a la vez).</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="126"/>
+        <source>Region without a Starting Point</source>
+        <translation>Región sin punto inicial</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="130"/>
+        <source>At least one region (a separate part of the Region of Interest) has no working Starting Point, even after placing one automatically was tried. The propagation cannot cross from one region to another, so every region needs its own Starting Point.
+
+Suggested actions:
+- Make sure every region shown in red has a Starting Point (“%1” in the %2 section).
+- Or remove small separate pieces from the Region of Interest, so that fewer regions need a Starting Point.</source>
+        <translation>Al menos una región (una parte separada de la región de interés) no tiene ningún punto inicial válido, ni siquiera tras intentar colocar uno automáticamente. La propagación no puede pasar de una región a otra, así que cada región necesita su propio punto inicial.
+
+Acciones sugeridas:
+- Asegúrese de que cada región mostrada en rojo tenga un punto inicial («%1» en la sección %2).
+- O quite de la región de interés las partes pequeñas separadas, para que menos regiones necesiten un punto inicial.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="143"/>
+        <source>Analysis stopped early</source>
+        <translation>Análisis detenido antes de tiempo</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="150"/>
+        <source>Frame %1 could not be computed from the Starting Points, so the run stopped there; the frames completed before it, if any, are kept and shown. The details below name the cause.
+
+Suggested actions:
+- Place Starting Points on well-textured speckle, away from the edges of the Region of Interest and from cracks.
+- Remove small separate pieces from the Regions of Interest: every piece needs a Starting Point, and none can be placed automatically on a piece without usable speckle.
+- Or choose “%2” in the %3 section.</source>
+        <translation>El fotograma %1 no se pudo calcular a partir de los puntos iniciales, así que la ejecución se detuvo allí; los fotogramas completados antes, si los hay, se conservan y se muestran. Los detalles de abajo indican la causa.
+
+Acciones sugeridas:
+- Coloque los puntos iniciales sobre un moteado con buena textura, lejos de los bordes de la región de interés y de las grietas.
+- Quite de las regiones de interés las partes pequeñas separadas: cada parte necesita un punto inicial, y no se puede colocar ninguno automáticamente en una parte sin moteado aprovechable.
+- O elija «%2» en la sección %3.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="163"/>
+        <source>Starting Points error</source>
+        <translation>Error de los puntos iniciales</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="167"/>
+        <source>Propagation from the Starting Points failed.
+
+Suggested actions:
+- Check the positions of the Starting Points.
+- See the console log for details.</source>
+        <translation>La propagación desde puntos iniciales falló.
+
+Acciones sugeridas:
+- Compruebe la posición de los puntos iniciales.
+- Consulte el registro de la consola para más detalles.</translation>
     </message>
 </context>
 <context>

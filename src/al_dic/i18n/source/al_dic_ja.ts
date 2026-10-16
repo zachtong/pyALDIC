@@ -2587,61 +2587,170 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="283"/>
         <source>Building pipeline configuration...</source>
         <translation>パイプライン設定を構築中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="426"/>
         <source>Loading images...</source>
         <translation>画像を読み込み中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="440"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 枚の画像を読み込みました、shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="452"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI マスク：%1、%2 ピクセル（%3%）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
-        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。</translation>
     </message>
 </context>
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="73"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n 個のフレームでカスタム ROI マスクを使用</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="77"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>結果を受信：%n フレーム</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="81"/>
+        <source>  %n image(s), %1</source>
+        <translation>
+            <numerusform>  画像 %n 枚、%1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="84"/>
+        <source>  ROI range: %1</source>
+        <translation>  ROI 範囲：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>  Refinement: %1</source>
+        <translation>  メッシュ細分化：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="91"/>
+        <source>Error: %1</source>
+        <translation>エラー：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
+        <translation>実行をキャンセルしました。一覧の参照フレームにそれぞれ専用の関心領域を設定するか、もう一度実行してフレーム 1 の領域で続行してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="102"/>
+        <source>Cannot start analysis</source>
+        <translation>解析を開始できません</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
+        <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
+        <translation>少なくとも 2 枚の画像が必要です。DIC を実行する前に、「%1」セクションで画像フォルダーを読み込んでください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
+        <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
+        <translation>先に関心領域を定義してください：「%1」セクションでフレーム 1 の関心領域を描画またはインポートします。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="116"/>
+        <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
+        <translation>フレーム 1 の関心領域が空です（ピクセルが選択されていません）。「%1」セクションで描き直してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="121"/>
+        <source>Region of Interest too small</source>
+        <translation>関心領域が小さすぎます</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="127"/>
+        <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
+        <translation>関心領域は %1×%2 px ですが、現在の%3（%4）では少なくとも %5×%5 px が必要です。関心領域を広げるか、%3を小さくしてください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <source>Starting Points required</source>
+        <translation>シード点が必要です</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="137"/>
+        <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
+        <translation>実行前にキャンバス上に少なくとも 1 つのシード点を配置してください：「%3」セクションの「%1」または「%2」をクリックします。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <source>Invalid Starting Points</source>
+        <translation>無効なシード点</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
+        <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
+        <translation>1 つ以上のシード点が関心領域のどの部分にもありません。「%2」セクションの「%1」をクリックしてから、シード点を配置し直してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <source>DIC analysis failed</source>
+        <translation>DIC 解析に失敗しました</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="158"/>
+        <source>Failed to start analysis</source>
+        <translation>解析の開始に失敗しました</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="161"/>
+        <source>Failed to process results</source>
+        <translation>結果の処理に失敗しました</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="166"/>
+        <source>The analysis stopped with a runtime error:
+
+%1
+
+See the console log for the full traceback.</source>
+        <translation>実行時エラーにより解析が停止しました：
+
+%1
+
+完全なトレースバックはコンソールログを参照してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="172"/>
+        <source>%1
+
+See the console log for the full traceback.</source>
+        <translation>%1
+
+完全なトレースバックはコンソールログを参照してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
         <source>Incomplete Region of Interest Coverage</source>
-        <translation>関心領域の設定が不完全です</translation>
+        <translation>関心領域のカバー範囲が不完全です</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="182"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>この逐次追跡の実行では、%n 個の参照フレームに専用の関心領域がありません：フレーム %1。</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2649,17 +2758,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>専用の関心領域がない参照フレームは、フレーム 1 の領域をそのまま再利用します。この領域は試験片に合わせて移動しません。試験片がこの領域の外へ移動すると、その外側の部分はそのような参照フレームからは測定されず、そこにあるノードは追跡されなくなるか、最も近い測定済みノードから変位がコピーされます。これらのノードは実行終了時に報告されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>試験片全体を測定するには、各参照フレームに、そのフレームの試験片を覆う専用の関心領域を設定してください（一括インポートで多数のフレームに関心領域をまとめて割り当てられます）。専用の領域を持つ参照フレームは、その領域を覆う測定グリッド上で測定されます。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="211"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>フレーム 1 の領域で続行しますか？</translation>
     </message>
@@ -2667,18 +2776,18 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="125"/>
         <source>Starting DIC analysis...</source>
         <translation>DIC 解析を開始します…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="173"/>
         <source>Analysis complete in %1s</source>
         <translation>解析が完了しました（%1 秒）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="166"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="181"/>
         <source>Analysis stopped by user.</source>
         <translation>ユーザーにより解析が停止されました。</translation>
     </message>
@@ -3028,6 +3137,144 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  フレーム %2</translation>
+    </message>
+</context>
+<context>
+    <name>SeedErrorMessages</name>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="60"/>
+        <source>Details: %1</source>
+        <translation>詳細：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="63"/>
+        <source>Starting Point match quality too low</source>
+        <translation>シード点のマッチング品質が低すぎます</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="67"/>
+        <source>A Starting Point could not be matched reliably between the reference frame and the deformed frame: the peak of its normalized cross-correlation (NCC) stayed below the acceptance threshold. The texture around it is probably too uniform.
+
+Suggested actions:
+- Move the Starting Point to a more textured area (visible speckle).
+- Or choose “%1” in the %2 section.</source>
+        <translation>参照フレームと変形フレームの間でシード点を確実にマッチングできませんでした：正規化相互相関（NCC）のピークが受け入れしきい値を下回りました。周囲のテクスチャが均一すぎる可能性があります。
+
+推奨される対処：
+- シード点をよりテクスチャの多い領域（スペックルが見える領域）に移動してください。
+- または「%2」セクションで「%1」を選択してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="77"/>
+        <source>Starting Point local solver did not converge</source>
+        <translation>シード点の局所ソルバーが収束しませんでした</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="81"/>
+        <source>The IC-GN solve at a Starting Point reached its iteration limit without converging. Common causes: the point is too close to the edge of the Region of Interest, or the texture around it is too weak.
+
+Suggested actions:
+- Move the Starting Point inward, away from the edges of the Region of Interest.
+- Try a smaller %1 (%2 section).
+- Or choose “%3” in the %4 section.</source>
+        <translation>シード点での IC-GN の求解が反復回数の上限に達しても収束しませんでした。主な原因：点が関心領域の端に近すぎる、または周囲のテクスチャが弱すぎる。
+
+推奨される対処：
+- シード点を関心領域の端から離れた内側へ移動してください。
+- より小さい%1を試してください（「%2」セクション）。
+- または「%4」セクションで「%3」を選択してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="94"/>
+        <source>Starting Point flagged as unreliable</source>
+        <translation>シード点が信頼できないと判定されました</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="98"/>
+        <source>After the frame was solved, the displacement at a Starting Point was rejected as an outlier. The frame&apos;s field was propagated from the Starting Points, so the whole frame is unreliable.
+
+Suggested actions:
+- Move the Starting Point to a cleaner, well-textured area, away from the edges of the Region of Interest and from cracks.
+- Or choose “%1” in the %2 section.</source>
+        <translation>フレームの求解後、シード点での変位が外れ値として除外されました。このフレームの場はシード点から伝播されたため、フレーム全体の結果が信頼できません。
+
+推奨される対処：
+- シード点を、関心領域の端やき裂から離れた、きれいでテクスチャの良い領域に移動してください。
+- または「%2」セクションで「%1」を選択してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="109"/>
+        <source>Could not carry Starting Points to the new reference frame</source>
+        <translation>シード点を新しい参照フレームに引き継げませんでした</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="113"/>
+        <source>When the reference frame changed, the Starting Points could not be carried over to the new reference frame, and none could be placed there automatically. The material at the points has probably moved out of the Region of Interest of the new reference frame.
+
+Suggested actions:
+- Place Starting Points well inside the Region of Interest, away from its edges.
+- Give each reference frame a Region of Interest that covers the specimen in that frame (%1 can assign Regions of Interest to many frames at once).</source>
+        <translation>参照フレームが切り替わったとき、シード点を新しい参照フレームに引き継げず、そこに自動で配置することもできませんでした。点の位置の材料が新しい参照フレームの関心領域の外へ移動した可能性があります。
+
+推奨される対処：
+- シード点は関心領域の内側、端から十分離れた位置に配置してください。
+- 各参照フレームに、そのフレームの試験片を覆う関心領域を設定してください（「%1」で多数のフレームに関心領域をまとめて割り当てられます）。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="126"/>
+        <source>Region without a Starting Point</source>
+        <translation>シード点のない領域</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="130"/>
+        <source>At least one region (a separate part of the Region of Interest) has no working Starting Point, even after placing one automatically was tried. The propagation cannot cross from one region to another, so every region needs its own Starting Point.
+
+Suggested actions:
+- Make sure every region shown in red has a Starting Point (“%1” in the %2 section).
+- Or remove small separate pieces from the Region of Interest, so that fewer regions need a Starting Point.</source>
+        <translation>少なくとも 1 つの領域（関心領域の独立した部分）に、自動配置を試みた後も有効なシード点がありません。伝播は領域をまたげないため、各領域に専用のシード点が必要です。
+
+推奨される対処：
+- 赤色で表示された各領域にシード点があることを確認してください（「%2」セクションの「%1」）。
+- または関心領域から小さな独立部分を取り除き、シード点が必要な領域を減らしてください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="143"/>
+        <source>Analysis stopped early</source>
+        <translation>解析が途中で停止しました</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="150"/>
+        <source>Frame %1 could not be computed from the Starting Points, so the run stopped there; the frames completed before it, if any, are kept and shown. The details below name the cause.
+
+Suggested actions:
+- Place Starting Points on well-textured speckle, away from the edges of the Region of Interest and from cracks.
+- Remove small separate pieces from the Regions of Interest: every piece needs a Starting Point, and none can be placed automatically on a piece without usable speckle.
+- Or choose “%2” in the %3 section.</source>
+        <translation>シード点からフレーム %1 を計算できなかったため、実行はそこで停止しました。それより前に完了したフレームがあれば、保持されて表示されます。原因は下の詳細に記載されています。
+
+推奨される対処：
+- シード点を、関心領域の端やき裂から離れた、テクスチャの良いスペックル上に配置してください。
+- 関心領域から小さな独立部分を取り除いてください：各部分にシード点が必要で、使えるスペックルのない部分には自動で配置できません。
+- または「%3」セクションで「%2」を選択してください。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="163"/>
+        <source>Starting Points error</source>
+        <translation>シード点のエラー</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="167"/>
+        <source>Propagation from the Starting Points failed.
+
+Suggested actions:
+- Check the positions of the Starting Points.
+- See the console log for details.</source>
+        <translation>シード伝播に失敗しました。
+
+推奨される対処：
+- シード点の位置を確認してください。
+- 詳細はコンソールログを参照してください。</translation>
     </message>
 </context>
 <context>

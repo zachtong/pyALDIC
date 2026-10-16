@@ -2587,61 +2587,170 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="381"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="283"/>
         <source>Building pipeline configuration...</source>
         <translation>正在构建流水线配置…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="539"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="426"/>
         <source>Loading images...</source>
         <translation>正在加载图像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="552"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="440"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已加载 %1 张图像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="565"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="452"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 掩模：%1，%2 像素（%3%）</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="591"/>
-        <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
-        <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。</translation>
     </message>
 </context>
 <context>
     <name>PipelineMessages</name>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="44"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="73"/>
         <source>  %n frame(s) with custom ROI masks</source>
         <translation>
             <numerusform>  %n 帧使用自定义 ROI 掩模</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="48"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="77"/>
         <source>Results received: %n frame(s)</source>
         <translation>
             <numerusform>已收到结果：%n 帧</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="81"/>
+        <source>  %n image(s), %1</source>
+        <translation>
+            <numerusform>  %n 张图像，%1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="53"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="84"/>
+        <source>  ROI range: %1</source>
+        <translation>  ROI 范围：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <source>  Refinement: %1</source>
+        <translation>  网格加密：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="91"/>
+        <source>Error: %1</source>
+        <translation>错误：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
+        <translation>已取消运行。请为列出的参考帧指定各自的感兴趣区域，或重新运行并沿用第 1 帧的区域继续。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="102"/>
+        <source>Cannot start analysis</source>
+        <translation>无法开始分析</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
+        <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
+        <translation>至少需要 2 张图像。请先在“%1”部分加载图像文件夹，再运行 DIC。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
+        <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
+        <translation>请先定义感兴趣区域：在“%1”部分为第 1 帧绘制或导入一个。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="116"/>
+        <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
+        <translation>第 1 帧的感兴趣区域为空（未选中任何像素）。请在“%1”部分重新绘制。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="121"/>
+        <source>Region of Interest too small</source>
+        <translation>感兴趣区域过小</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="127"/>
+        <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
+        <translation>感兴趣区域为 %1×%2 px，但当前的%3（%4）至少需要 %5×%5 px。请扩大感兴趣区域或减小%3。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <source>Starting Points required</source>
+        <translation>需要种子点</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="137"/>
+        <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
+        <translation>运行前请在画布上放置至少一个种子点：点击“%3”部分中的“%1”或“%2”。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <source>Invalid Starting Points</source>
+        <translation>种子点无效</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
+        <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
+        <translation>有一个或多个种子点不在感兴趣区域的任何部分内。请点击“%2”部分中的“%1”，然后重新放置种子点。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <source>DIC analysis failed</source>
+        <translation>DIC 分析失败</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="158"/>
+        <source>Failed to start analysis</source>
+        <translation>启动分析失败</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="161"/>
+        <source>Failed to process results</source>
+        <translation>处理结果失败</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="166"/>
+        <source>The analysis stopped with a runtime error:
+
+%1
+
+See the console log for the full traceback.</source>
+        <translation>分析因运行时错误而停止：
+
+%1
+
+完整的回溯信息请参见控制台日志。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="172"/>
+        <source>%1
+
+See the console log for the full traceback.</source>
+        <translation>%1
+
+完整的回溯信息请参见控制台日志。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>感兴趣区域覆盖不完整</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="58"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="182"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>本次增量追踪运行中有 %n 个参考帧没有自己的感兴趣区域：帧 %1。</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="64"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2649,17 +2758,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="70"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>没有自己感兴趣区域的参考帧会原样沿用第 1 帧的区域：该区域不会随试样移动。试样移出该区域后，区域外的部分不会以这类参考帧为基准进行测量，位于其中的节点将不再被追踪，或其位移从最近的已测量节点复制。运行结束时会报告这些节点。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="80"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>要测量整个试样，请为每个参考帧单独指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定感兴趣区域）。拥有自己区域的参考帧会在覆盖该区域的测量网格上进行测量。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="87"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="211"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>是否沿用第 1 帧的区域继续？</translation>
     </message>
@@ -2667,18 +2776,18 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="196"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="125"/>
         <source>Starting DIC analysis...</source>
         <translation>开始 DIC 分析…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="244"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="173"/>
         <source>Analysis complete in %1s</source>
         <translation>分析完成，用时 %1 秒</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="237"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="252"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="166"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="181"/>
         <source>Analysis stopped by user.</source>
         <translation>用户已停止分析。</translation>
     </message>
@@ -3028,6 +3137,144 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <location filename="../../gui/panels/right_sidebar.py" line="475"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 帧</translation>
+    </message>
+</context>
+<context>
+    <name>SeedErrorMessages</name>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="60"/>
+        <source>Details: %1</source>
+        <translation>详细信息：%1</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="63"/>
+        <source>Starting Point match quality too low</source>
+        <translation>种子点匹配质量过低</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="67"/>
+        <source>A Starting Point could not be matched reliably between the reference frame and the deformed frame: the peak of its normalized cross-correlation (NCC) stayed below the acceptance threshold. The texture around it is probably too uniform.
+
+Suggested actions:
+- Move the Starting Point to a more textured area (visible speckle).
+- Or choose “%1” in the %2 section.</source>
+        <translation>无法在参考帧与变形帧之间可靠地匹配一个种子点：其归一化互相关（NCC）峰值低于接受阈值。其周围的纹理可能过于均匀。
+
+建议操作：
+- 将种子点移到纹理更丰富的区域（可见散斑）。
+- 或在“%2”部分选择“%1”。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="77"/>
+        <source>Starting Point local solver did not converge</source>
+        <translation>种子点局部求解未收敛</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="81"/>
+        <source>The IC-GN solve at a Starting Point reached its iteration limit without converging. Common causes: the point is too close to the edge of the Region of Interest, or the texture around it is too weak.
+
+Suggested actions:
+- Move the Starting Point inward, away from the edges of the Region of Interest.
+- Try a smaller %1 (%2 section).
+- Or choose “%3” in the %4 section.</source>
+        <translation>种子点处的 IC-GN 求解达到迭代上限仍未收敛。常见原因：该点离感兴趣区域边缘太近，或其周围纹理太弱。
+
+建议操作：
+- 将种子点向内移动，远离感兴趣区域的边缘。
+- 尝试更小的%1（“%2”部分）。
+- 或在“%4”部分选择“%3”。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="94"/>
+        <source>Starting Point flagged as unreliable</source>
+        <translation>种子点被判定为不可靠</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="98"/>
+        <source>After the frame was solved, the displacement at a Starting Point was rejected as an outlier. The frame&apos;s field was propagated from the Starting Points, so the whole frame is unreliable.
+
+Suggested actions:
+- Move the Starting Point to a cleaner, well-textured area, away from the edges of the Region of Interest and from cracks.
+- Or choose “%1” in the %2 section.</source>
+        <translation>该帧求解后，一个种子点处的位移被判定为异常值而被剔除。该帧的场是从种子点传播得到的，因此整帧结果都不可靠。
+
+建议操作：
+- 将种子点移到更干净、纹理良好的区域，远离感兴趣区域的边缘和裂纹。
+- 或在“%2”部分选择“%1”。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="109"/>
+        <source>Could not carry Starting Points to the new reference frame</source>
+        <translation>无法将种子点带到新的参考帧</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="113"/>
+        <source>When the reference frame changed, the Starting Points could not be carried over to the new reference frame, and none could be placed there automatically. The material at the points has probably moved out of the Region of Interest of the new reference frame.
+
+Suggested actions:
+- Place Starting Points well inside the Region of Interest, away from its edges.
+- Give each reference frame a Region of Interest that covers the specimen in that frame (%1 can assign Regions of Interest to many frames at once).</source>
+        <translation>参考帧切换时，种子点无法带到新的参考帧，也无法在那里自动放置新的种子点。这些点处的材料很可能已移出新参考帧的感兴趣区域。
+
+建议操作：
+- 将种子点放在感兴趣区域内部较深处，远离其边缘。
+- 为每个参考帧指定一个覆盖该帧中试样的感兴趣区域（“%1”可一次为多帧指定感兴趣区域）。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="126"/>
+        <source>Region without a Starting Point</source>
+        <translation>区域缺少种子点</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="130"/>
+        <source>At least one region (a separate part of the Region of Interest) has no working Starting Point, even after placing one automatically was tried. The propagation cannot cross from one region to another, so every region needs its own Starting Point.
+
+Suggested actions:
+- Make sure every region shown in red has a Starting Point (“%1” in the %2 section).
+- Or remove small separate pieces from the Region of Interest, so that fewer regions need a Starting Point.</source>
+        <translation>至少有一个区域（感兴趣区域中独立的一部分）没有可用的种子点，即使已尝试自动放置。传播无法从一个区域跨越到另一个区域，因此每个区域都需要自己的种子点。
+
+建议操作：
+- 确保每个以红色显示的区域都有种子点（“%2”部分中的“%1”）。
+- 或从感兴趣区域中移除细小的独立部分，以减少需要种子点的区域。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="143"/>
+        <source>Analysis stopped early</source>
+        <translation>分析提前停止</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="150"/>
+        <source>Frame %1 could not be computed from the Starting Points, so the run stopped there; the frames completed before it, if any, are kept and shown. The details below name the cause.
+
+Suggested actions:
+- Place Starting Points on well-textured speckle, away from the edges of the Region of Interest and from cracks.
+- Remove small separate pieces from the Regions of Interest: every piece needs a Starting Point, and none can be placed automatically on a piece without usable speckle.
+- Or choose “%2” in the %3 section.</source>
+        <translation>无法从种子点出发计算第 %1 帧，因此运行在该帧停止；之前已完成的帧（如有）会被保留并显示。下方的详细信息说明了原因。
+
+建议操作：
+- 将种子点放在纹理良好的散斑上，远离感兴趣区域的边缘和裂纹。
+- 从感兴趣区域中移除细小的独立部分：每个部分都需要种子点，而在没有可用散斑的部分上无法自动放置种子点。
+- 或在“%3”部分选择“%2”。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="163"/>
+        <source>Starting Points error</source>
+        <translation>种子点错误</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/seed_error_messages.py" line="167"/>
+        <source>Propagation from the Starting Points failed.
+
+Suggested actions:
+- Check the positions of the Starting Points.
+- See the console log for details.</source>
+        <translation>种子传播失败。
+
+建议操作：
+- 检查种子点的位置。
+- 详细信息请参见控制台日志。</translation>
     </message>
 </context>
 <context>

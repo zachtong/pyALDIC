@@ -19,84 +19,14 @@ from al_dic.gui.controllers.pipeline_messages import (
     PipelineMessages,
     missing_roi_dialog,
 )
+from al_dic.gui.controllers.seed_error_messages import seed_error_dialog
 from al_dic.gui.controllers.tracking_messages import build_tracking_messages
+from al_dic.i18n import tr_args
 from al_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
-from al_dic.solver.seed_propagation import (
-    MissingSeedForRegion,
-    PartialResultError,
-    SeedICGNDiverged,
-    SeedNCCBelowThreshold,
-    SeedPropagationError,
-    SeedQualityError,
-    SeedWarpFailure,
-)
+from al_dic.solver.seed_propagation import SeedPropagationError
+from al_dic.utils.locale_format import format_number
 
 logger = logging.getLogger(__name__)
-
-
-# User-facing messages for each SeedPropagationError subclass. Keyed by
-# exception type so subclasses are matched exactly; the generic
-# SeedPropagationError base is the fallback for any untagged subclass
-# (e.g., 'window out of image bounds' — raised but not via a subclass).
-_SEED_ERROR_MESSAGES: dict[type, tuple[str, str]] = {
-    SeedNCCBelowThreshold: (
-        "Starting Point match quality too low",
-        "A Starting Point could not be reliably matched between the "
-        "reference and the deformed frame. This usually means the local "
-        "texture is too uniform for cross-correlation.\n\n"
-        "Suggested actions:\n"
-        "  - Move the point to a more textured area (visible speckle).\n"
-        "  - Lower the NCC threshold (currently defaults to 0.70).\n"
-        "  - Or switch back to FFT mode in ADVANCED > Initial Guess.",
-    ),
-    SeedICGNDiverged: (
-        "Starting Point local solver did not converge",
-        "A Starting Point's IC-GN iteration hit the max without "
-        "converging. Common causes: seed too close to a mask edge, "
-        "insufficient local texture, or an oversized subset window.\n\n"
-        "Suggested actions:\n"
-        "  - Move the Starting Point inward, away from mask boundaries.\n"
-        "  - Try a smaller subset size.\n"
-        "  - Or switch back to FFT mode.",
-    ),
-    SeedQualityError: (
-        "Starting Point flagged as unreliable after run",
-        "After the frame completed, a Starting Point was marked as a "
-        "statistical outlier by the bad-point detector. Because the "
-        "propagation uses this seed as a root, the whole frame's result "
-        "is suspect.\n\n"
-        "Suggested actions:\n"
-        "  - Move the Starting Point to a cleaner textured region.\n"
-        "  - Place multiple Starting Points for redundancy.",
-    ),
-    SeedWarpFailure: (
-        "Could not carry Starting Points to the new reference",
-        "When the reference frame changed, one or more Starting Points "
-        "could not be mapped to the new reference. The material point "
-        "may have moved outside the new ROI.\n\n"
-        "Suggested actions:\n"
-        "  - Place Starting Points well inside the ROI interior.\n"
-        "  - Ensure the new reference's ROI covers the warped position.",
-    ),
-    MissingSeedForRegion: (
-        "Region without a Starting Point",
-        "At least one connected mask region has no Starting Point. "
-        "The propagation cannot cross mask boundaries, so every region "
-        "needs at least one seed.\n\n"
-        "Suggested actions:\n"
-        "  - Add a Starting Point in each yellow region before running.\n"
-        "  - Or unify the mask so only one connected region exists.",
-    ),
-    PartialResultError: (
-        "Analysis stopped early — partial results kept",
-        "A region could not be given a Starting Point even after "
-        "auto-placement, so the run stopped at that frame. The frames that "
-        "completed before it have been kept and are shown.\n\n"
-        "Suggested actions:\n"
-        "  - Add a Starting Point in the region that failed, then re-run.\n"
-        "  - Or adjust the ROI so that region has usable speckle texture.",
-    ),
-}
 
 
 def _build_masks(
@@ -192,7 +122,6 @@ class PipelineWorker(QThread):
         self._pause_event.set()  # not paused initially
 
     def run(self) -> None:
-        from al_dic.i18n import tr_args
         self.log.emit(self.tr("Starting DIC analysis..."), "info")
         # Raw parameter dumps mirror the key=value style used in log
         # panels across the project; keep the English keys (images,
@@ -242,7 +171,7 @@ class PipelineWorker(QThread):
                 self.log.emit(
                     tr_args(
                         self.tr("Analysis complete in %1s"),
-                        f"{elapsed:.1f}",
+                        format_number(elapsed, 1),
                     ),
                     "success",
                 )
@@ -251,53 +180,33 @@ class PipelineWorker(QThread):
             if "abort" in str(e).lower() or "stop" in str(e).lower():
                 self.log.emit(self.tr("Analysis stopped by user."), "warn")
             else:
-                tb = traceback.format_exc()
-                self.log.emit(f"RuntimeError: {e}", "error")
-                self.log.emit(tb, "error")
-                print(tb, flush=True)
+                self._log_failure(f"RuntimeError: {e}")
+                m = PipelineMessages()
                 self.fatal_error.emit(
-                    "DIC analysis failed",
-                    f"The pipeline raised a runtime error:\n\n{e}\n\n"
-                    "See the console log for the full traceback.",
-                )
+                    m.analysis_failed_title(), m.runtime_error(str(e)))
             self.finished_result.emit(None)
         except SeedPropagationError as e:
-            # Starting-Points specific failure — show a tailored dialog
-            # with suggested actions before falling through to the
-            # generic error path. Exception subclass lookup matches the
-            # most specific type first; unrecognised subclasses fall
-            # back to the base-class message.
-            tb = traceback.format_exc()
-            self.log.emit(f"{type(e).__name__}: {e}", "error")
-            self.log.emit(tb, "error")
-            print(tb, flush=True)
-            title, suggestions = _SEED_ERROR_MESSAGES.get(
-                type(e),
-                (
-                    "Starting Points error",
-                    "Seed propagation raised an error.\n\n"
-                    "Suggested actions:\n"
-                    "  - Re-check Starting Point positions.\n"
-                    "  - See console log for details.",
-                ),
-            )
-            self.fatal_error.emit(
-                title, f"{suggestions}\n\nDetails: {e}",
-            )
+            # Starting Points failure: a dialog chosen by the exception's
+            # exact type, with suggested actions and the core's message.
+            self._log_failure(f"{type(e).__name__}: {e}")
+            self.fatal_error.emit(*seed_error_dialog(e))
             # PartialResultError carries the frames that completed before the
             # failing one — deliver those instead of discarding the whole run.
             self.finished_result.emit(getattr(e, "partial_result", None))
         except Exception as e:
-            tb = traceback.format_exc()
-            self.log.emit(f"Error: {type(e).__name__}: {e}", "error")
-            self.log.emit(tb, "error")
-            print(tb, flush=True)
+            m = PipelineMessages()
+            detail = f"{type(e).__name__}: {e}"
+            self._log_failure(m.error_line(detail))
             self.fatal_error.emit(
-                "DIC analysis failed",
-                f"{type(e).__name__}: {e}\n\n"
-                "See the console log for the full traceback.",
-            )
+                m.analysis_failed_title(), m.see_traceback(detail))
             self.finished_result.emit(None)
+
+    def _log_failure(self, line: str) -> None:
+        """Console: ``line``, then the traceback being handled."""
+        tb = traceback.format_exc()
+        self.log.emit(line, "error")
+        self.log.emit(tb, "error")
+        print(tb, flush=True)
 
     def _on_progress(self, fraction: float, message: str) -> None:
         self._pause_event.wait()  # block if paused
@@ -357,19 +266,12 @@ class PipelineController:
                 self._worker.wait(5000)
             self._worker = None
 
+        m = PipelineMessages()
         if len(state.image_files) < 2:
-            self._fatal(
-                "Cannot start analysis",
-                "Need at least 2 images. Drop an image folder into the "
-                "Images panel before running DIC."
-            )
+            self._fatal(m.cannot_start_title(), m.too_few_images())
             return
         if state.roi_mask is None:
-            self._fatal(
-                "Cannot start analysis",
-                "Define a Region of Interest first. Use the Region of "
-                "Interest toolbar to draw or import one for frame 1."
-            )
+            self._fatal(m.cannot_start_title(), m.no_roi())
             return
 
         try:
@@ -390,12 +292,16 @@ class PipelineController:
                 f", admm_iter={state.admm_max_iter}" if state.use_admm else ""
             )
             # Parameter dump: key=value pairs stay literal (English keys
-            # are the canonical parameter names); only wrap the prose
-            # prefix when we add one.
+            # are the canonical parameter names); only the prose around
+            # them is translated.
             state.log_message.emit(
-                f"  {n_images} images, subset={state.subset_size}, "
-                f"step={state.subset_step}, search={state.search_range}, "
-                f"mode={state.tracking_mode}, solver={solver_label}{admm_info}",
+                m.run_parameters(
+                    n_images,
+                    f"subset={state.subset_size}, "
+                    f"step={state.subset_step}, search={state.search_range}, "
+                    f"mode={state.tracking_mode}, "
+                    f"solver={solver_label}{admm_info}",
+                ),
                 "info",
             )
 
@@ -420,22 +326,14 @@ class PipelineController:
             # Validate frame 0 ROI exists
             roi_mask_0 = state.per_frame_rois.get(0)
             if roi_mask_0 is None:
-                self._fatal(
-                    "Cannot start analysis",
-                    "Frame 1 has no Region of Interest. Draw one on the "
-                    "first frame before running DIC."
-                )
+                self._fatal(m.cannot_start_title(), m.no_roi())
                 return
 
             # Compute gridxy_roi_range from ROI mask bounding box
             roi_mask = roi_mask_0
             rows, cols = np.where(roi_mask)
             if len(rows) == 0:
-                self._fatal(
-                    "Cannot start analysis",
-                    "The Region of Interest for frame 1 is empty "
-                    "(no pixels selected). Redraw it or Clear + retry."
-                )
+                self._fatal(m.cannot_start_title(), m.empty_roi())
                 return
             roi_range = GridxyROIRange(
                 gridx=(int(cols.min()), int(cols.max())),
@@ -448,18 +346,15 @@ class PipelineController:
             min_dim = 2 * state.subset_step
             if roi_width < min_dim or roi_height < min_dim:
                 self._fatal(
-                    "Region of Interest too small",
-                    f"The Region of Interest is "
-                    f"{roi_width}\u00d7{roi_height} px, but the current "
-                    f"Subset Step ({state.subset_step}) requires at least "
-                    f"{min_dim}\u00d7{min_dim} px. Either enlarge the "
-                    f"Region of Interest or reduce Subset Step."
+                    m.roi_too_small_title(),
+                    m.roi_too_small(roi_width, roi_height, state.subset_step),
                 )
                 return
 
             state.log_message.emit(
-                f"  ROI range: x=[{roi_range.gridx[0]}, {roi_range.gridx[1]}], "
-                f"y=[{roi_range.gridy[0]}, {roi_range.gridy[1]}]",
+                m.roi_range(
+                    f"x=[{roi_range.gridx[0]}, {roi_range.gridx[1]}], "
+                    f"y=[{roi_range.gridy[0]}, {roi_range.gridy[1]}]"),
                 "info",
             )
 
@@ -479,12 +374,7 @@ class PipelineController:
                 dic_fft_reset = 0
                 if not state.seeds:
                     state.fatal_error.emit(
-                        "Starting Points required",
-                        "Place at least one Starting Point on the canvas "
-                        "before running (select the 'Starting Points' mode "
-                        "in ADVANCED → Initial Guess, then click 'Place "
-                        "Starting Points').",
-                    )
+                        m.points_required_title(), m.points_required())
                     return
                 # Count regions that are unseeded. Same logic as
                 # SeedController.all_regions_seeded, but computed
@@ -501,10 +391,7 @@ class PipelineController:
                 # just collected (e.g. negative), drop the run.
                 if unseeded:
                     state.fatal_error.emit(
-                        "Invalid seed region ids",
-                        "One or more Starting Points reference an invalid "
-                        "region. Re-place the points in the ROI.",
-                    )
+                        m.invalid_points_title(), m.invalid_points())
                     return
                 from al_dic.solver.seed_propagation import Seed, SeedSet
                 seed_set_for_para = SeedSet(
@@ -549,11 +436,10 @@ class PipelineController:
                 list(state.image_files), para.gridxy_roi_range,
             )
             state.log_message.emit(
-                QCoreApplication.translate(
-                    "PipelineController",
-                    "  Loaded %1 images, shape=%2",
-                ).replace("%1", str(len(provider))).replace(
-                    "%2", str(roi_mask_0.shape)
+                tr_args(
+                    QCoreApplication.translate(
+                        "PipelineController", "  Loaded %1 images, shape=%2"),
+                    format_number(len(provider)), roi_mask_0.shape,
                 ),
                 "info",
             )
@@ -562,14 +448,13 @@ class PipelineController:
             mask_pixels = int(np.sum(roi_mask_0))
             pct = 100 * mask_pixels / roi_mask_0.size
             state.log_message.emit(
-                QCoreApplication.translate(
-                    "PipelineController",
-                    "  ROI mask: %1, %2 pixels (%3%)",
-                ).replace(
-                    "%1", str(roi_mask_0.shape)
-                ).replace(
-                    "%2", str(mask_pixels)
-                ).replace("%3", f"{pct:.1f}"),
+                tr_args(
+                    QCoreApplication.translate(
+                        "PipelineController",
+                        "  ROI mask: %1, %2 pixels (%3%)"),
+                    roi_mask_0.shape, format_number(mask_pixels),
+                    format_number(pct, 1),
+                ),
                 "info",
             )
 
@@ -587,15 +472,7 @@ class PipelineController:
                     state, ref_frame_set
                 )
             ):
-                state.log_message.emit(
-                    QCoreApplication.translate(
-                        "PipelineController",
-                        "Run canceled: define per-frame Regions of Interest "
-                        "for the missing reference frames or accept the "
-                        "inherited frame-1 mask in the next run.",
-                    ),
-                    "warn",
-                )
+                state.log_message.emit(m.run_canceled(), "warn")
                 return
 
             masks = _build_masks(
@@ -638,9 +515,10 @@ class PipelineController:
                 if brush_mask_f64 is not None:
                     bits.append("brush")
                 state.log_message.emit(
-                    f"  Refinement: {'+'.join(bits)} "
-                    f"(level={state.refinement_level}, "
-                    f"min_size={state.compute_refinement_min_size()} px)",
+                    m.refinement(
+                        f"{'+'.join(bits)} "
+                        f"(level={state.refinement_level}, "
+                        f"min_size={state.compute_refinement_min_size()} px)"),
                     "info",
                 )
 
@@ -695,9 +573,8 @@ class PipelineController:
         except Exception as e:
             tb = traceback.format_exc()
             self._fatal(
-                "Failed to start analysis",
-                f"{type(e).__name__}: {e}\n\n"
-                "See the console log for the full traceback.",
+                m.failed_to_start_title(),
+                m.see_traceback(f"{type(e).__name__}: {e}"),
                 detail=tb,
             )
             print(tb, flush=True)
@@ -740,10 +617,10 @@ class PipelineController:
                 self._state.set_run_state(RunState.IDLE)
         except Exception as e:
             tb = traceback.format_exc()
+            m = PipelineMessages()
             self._fatal(
-                "Failed to process results",
-                f"{type(e).__name__}: {e}\n\n"
-                "See the console log for the full traceback.",
+                m.failed_to_process_title(),
+                m.see_traceback(f"{type(e).__name__}: {e}"),
                 detail=tb,
             )
             print(tb, flush=True)
