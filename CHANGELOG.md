@@ -122,6 +122,18 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   quit. The export dialog kept the whole result set with it, so exporting
   five times held five copies; each dialog also left widgets behind, which
   made switching the theme slower the longer a session ran.
+- **Messages with a count now read correctly in every language.** In
+  German, French and Spanish, such a message showed in English whenever
+  the count was 2 or more ("Delete 2 image(s)"), and in the plural for a
+  count of 1 ("1 Bilder löschen"). Two of them, the title of the mask-file
+  picker ("Select 2 Mask File(s)") and the export status "Exported 2
+  animation(s)", were English in every language. All now use the
+  language's singular and plural forms. They appear in the image list's
+  right-click menu (*Delete*, *Import Region of Interest for*) and the
+  file picker it opens, the size warning of the *Batch Import* dialog, the
+  animation status line of the *Export* dialog, and the console lines
+  after a batch import, after importing regions from the image list, when
+  a run starts with per-frame regions, and when a run's results arrive.
 
 ## [0.10.0] — 2026-10-13
 

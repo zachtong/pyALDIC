@@ -726,12 +726,7 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1024"/>
-        <source>Imported Region of Interest for %n frame(s)</source>
-        <translation>为 %n 帧导入了感兴趣区域</translation>
-    </message>
-    <message>
-        <location filename="../../gui/app.py" line="1038"/>
+        <location filename="../../gui/app.py" line="1029"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>请先运行 DIC —— 当前没有可后处理的位移结果。</translation>
     </message>
@@ -739,27 +734,27 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1194"/>
+        <location filename="../../gui/app.py" line="1185"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC 发生错误</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1195"/>
+        <location filename="../../gui/app.py" line="1186"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>发生了意外错误。应用程序之后的行为可能不正常，建议保存会话并重新启动。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1205"/>
+        <location filename="../../gui/app.py" line="1196"/>
         <source>Details were written to %1</source>
         <translation>详细信息已写入 %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1311"/>
+        <location filename="../../gui/app.py" line="1302"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>正在后台准备计算内核。新安装后的首次分析会比之后的耗时更长。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1325"/>
+        <location filename="../../gui/app.py" line="1316"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>计算内核已就绪（%1 秒）。</translation>
     </message>
@@ -886,18 +881,20 @@ Only relevant for the FFT init-guess mode.</source>
         <source>Mismatched shape: %1×%2 (expected %3×%4)</source>
         <translation>尺寸不匹配：%1×%2（期望 %3×%4）</translation>
     </message>
-    <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="667"/>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="666"/>
         <source>%n mask(s) have mismatched sizes and are disabled.</source>
-        <translation>%n 个掩模尺寸不匹配，已禁用。</translation>
+        <translation>
+            <numerusform>%n 个掩模尺寸不匹配，已禁用。</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="726"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="719"/>
         <source>Invalid assignment</source>
         <translation>无效的分配</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="728"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="721"/>
         <source>A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.</source>
         <translation>一个帧只能对应一个掩模。请选择恰好一个掩模，或者选择多个帧以把同一个掩模应用到多个帧。</translation>
     </message>
@@ -1642,8 +1639,8 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1934"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1976"/>
         <source>Error: %1</source>
         <translation>错误：%1</translation>
     </message>
@@ -1675,8 +1672,15 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
         <source>No animation was written. See the log for details.</source>
         <translation>未写入任何动画。详情请查看日志。</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/export_dialog.py" line="1926"/>
+        <source>Exported %n animation(s) → %1</source>
+        <translation>
+            <numerusform>已导出 %n 个动画 → %1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1969"/>
         <source>Report saved → %1</source>
         <translation>报告已保存 → %1</translation>
     </message>
@@ -1793,38 +1797,49 @@ PNG 和 TIFF 会保留透明度；JPEG、GIF 和 MP4 没有 alpha 通道，将�
         <source>Need</source>
         <translation>待绘</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="369"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="368"/>
         <source>Import Region of Interest for %n frame(s)</source>
-        <translation>为 %n 帧导入感兴趣区域</translation>
+        <translation>
+            <numerusform>为 %n 帧导入感兴趣区域</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="385"/>
+        <location filename="../../gui/widgets/image_list.py" line="379"/>
         <source>Clear Region of Interest (%1 with region)</source>
         <translation>清除感兴趣区域（%1 帧已有区域）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="389"/>
+        <location filename="../../gui/widgets/image_list.py" line="383"/>
         <source>Clear Region of Interest</source>
         <translation>清除感兴趣区域</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="400"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="394"/>
         <source>Delete %n image(s)</source>
-        <translation>删除 %n 张图像</translation>
+        <translation>
+            <numerusform>删除 %n 张图像</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="490"/>
+        <source>Select %n Mask File(s)</source>
+        <translation>
+            <numerusform>选择 %n 个掩模文件</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="495"/>
         <source>Images</source>
         <translation>图像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="505"/>
+        <location filename="../../gui/widgets/image_list.py" line="496"/>
         <source>All Files</source>
         <translation>所有文件</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="514"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>已选择 %1 个文件用于 %2 帧 — 数量必须匹配</translation>
     </message>
@@ -2363,10 +2378,19 @@ Results were restored. To show the background images, select the folder that now
         <source>  Imported mask for frame %1</source>
         <translation>  已导入帧 %1 的掩模</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../../gui/app.py" line="992"/>
         <source>Batch import: %n mask(s) loaded</source>
-        <translation>批量导入：已加载 %n 个掩模</translation>
+        <translation>
+            <numerusform>批量导入：已加载 %n 个掩模</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/app.py" line="1019"/>
+        <source>Imported Region of Interest for %n frame(s)</source>
+        <translation>
+            <numerusform>为 %n 帧导入了感兴趣区域</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2563,56 +2587,63 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="398"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
         <source>Building pipeline configuration...</source>
         <translation>正在构建流水线配置…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="556"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
         <source>Loading images...</source>
         <translation>正在加载图像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="569"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已加载 %1 张图像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="582"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 掩模：%1，%2 像素（%3%）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="608"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>已取消运行：请为缺失的参考帧定义逐帧感兴趣区域，或在下次运行时接受继承自第 1 帧的掩模。</translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="629"/>
+</context>
+<context>
+    <name>PipelineMessages</name>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
         <source>  %n frame(s) with custom ROI masks</source>
-        <translation>  %n 帧使用自定义 ROI 掩模</translation>
+        <translation>
+            <numerusform>  %n 帧使用自定义 ROI 掩模</numerusform>
+        </translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="759"/>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
         <source>Results received: %n frame(s)</source>
-        <translation>已收到结果：%n 帧</translation>
+        <translation>
+            <numerusform>已收到结果：%n 帧</numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="213"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
         <source>Starting DIC analysis...</source>
         <translation>开始 DIC 分析…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="261"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
         <source>Analysis complete in %1s</source>
         <translation>分析完成，用时 %1 秒</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="254"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="269"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
         <source>Analysis stopped by user.</source>
         <translation>用户已停止分析。</translation>
     </message>

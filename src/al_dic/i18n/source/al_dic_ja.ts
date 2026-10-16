@@ -726,12 +726,7 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1024"/>
-        <source>Imported Region of Interest for %n frame(s)</source>
-        <translation>%n フレームに関心領域をインポートしました</translation>
-    </message>
-    <message>
-        <location filename="../../gui/app.py" line="1038"/>
+        <location filename="../../gui/app.py" line="1029"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>先に DIC を実行してください —— 後処理する変位結果がありません。</translation>
     </message>
@@ -739,27 +734,27 @@ FFT 初期推定モードでのみ有効です。</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1194"/>
+        <location filename="../../gui/app.py" line="1185"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC でエラーが発生しました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1195"/>
+        <location filename="../../gui/app.py" line="1186"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>予期しないエラーが発生しました。以降アプリケーションが正しく動作しない可能性があるため、セッションを保存して再起動することを推奨します。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1205"/>
+        <location filename="../../gui/app.py" line="1196"/>
         <source>Details were written to %1</source>
         <translation>詳細を %1 に書き込みました</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1311"/>
+        <location filename="../../gui/app.py" line="1302"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>バックグラウンドで計算カーネルを準備しています。新規インストール後の最初の解析は、以降より時間がかかります。</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1325"/>
+        <location filename="../../gui/app.py" line="1316"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>計算カーネルの準備が完了しました（%1 秒）。</translation>
     </message>
@@ -886,18 +881,20 @@ FFT 初期推定モードでのみ有効です。</translation>
         <source>Mismatched shape: %1×%2 (expected %3×%4)</source>
         <translation>形状が一致しません: %1×%2 (期待値 %3×%4)</translation>
     </message>
-    <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="667"/>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="666"/>
         <source>%n mask(s) have mismatched sizes and are disabled.</source>
-        <translation>%n 個のマスクはサイズが一致しないため無効化されました。</translation>
+        <translation>
+            <numerusform>%n 個のマスクはサイズが一致しないため無効化されました。</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="726"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="719"/>
         <source>Invalid assignment</source>
         <translation>無効な割り当て</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="728"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="721"/>
         <source>A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.</source>
         <translation>1 つのフレームに割り当てられるマスクは 1 つだけです。マスクを 1 つだけ選択するか、複数のフレームを選択して 1 つのマスクを複数に割り当ててください。</translation>
     </message>
@@ -1642,8 +1639,8 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1934"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1976"/>
         <source>Error: %1</source>
         <translation>エラー：%1</translation>
     </message>
@@ -1675,8 +1672,15 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
         <source>No animation was written. See the log for details.</source>
         <translation>アニメーションは書き込まれませんでした。詳細はログを参照してください。</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/export_dialog.py" line="1926"/>
+        <source>Exported %n animation(s) → %1</source>
+        <translation>
+            <numerusform>%n 個のアニメーションをエクスポートしました → %1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1969"/>
         <source>Report saved → %1</source>
         <translation>レポートを保存しました → %1</translation>
     </message>
@@ -1793,38 +1797,49 @@ PNG と TIFF では透明度が保持されます。JPEG、GIF、MP4 にはア�
         <source>Need</source>
         <translation>未設定</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="369"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="368"/>
         <source>Import Region of Interest for %n frame(s)</source>
-        <translation>%n フレームに関心領域をインポート</translation>
+        <translation>
+            <numerusform>%n フレームに関心領域をインポート</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="385"/>
+        <location filename="../../gui/widgets/image_list.py" line="379"/>
         <source>Clear Region of Interest (%1 with region)</source>
         <translation>関心領域をクリア（%1 フレームに領域あり）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="389"/>
+        <location filename="../../gui/widgets/image_list.py" line="383"/>
         <source>Clear Region of Interest</source>
         <translation>関心領域をクリア</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="400"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="394"/>
         <source>Delete %n image(s)</source>
-        <translation>%n 個の画像を削除</translation>
+        <translation>
+            <numerusform>%n 個の画像を削除</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="490"/>
+        <source>Select %n Mask File(s)</source>
+        <translation>
+            <numerusform>%n 個のマスクファイルを選択</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="495"/>
         <source>Images</source>
         <translation>画像</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="505"/>
+        <location filename="../../gui/widgets/image_list.py" line="496"/>
         <source>All Files</source>
         <translation>すべてのファイル</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="514"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>%2 フレームに対し %1 個のファイルが選択されました — 数量が一致する必要があります</translation>
     </message>
@@ -2363,10 +2378,19 @@ Results were restored. To show the background images, select the folder that now
         <source>  Imported mask for frame %1</source>
         <translation>  フレーム %1 のマスクをインポートしました</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../../gui/app.py" line="992"/>
         <source>Batch import: %n mask(s) loaded</source>
-        <translation>一括インポート: %n 個のマスクを読み込みました</translation>
+        <translation>
+            <numerusform>一括インポート: %n 個のマスクを読み込みました</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/app.py" line="1019"/>
+        <source>Imported Region of Interest for %n frame(s)</source>
+        <translation>
+            <numerusform>%n フレームに関心領域をインポートしました</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2563,56 +2587,63 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="398"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
         <source>Building pipeline configuration...</source>
         <translation>パイプライン設定を構築中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="556"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
         <source>Loading images...</source>
         <translation>画像を読み込み中…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="569"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 枚の画像を読み込みました、shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="582"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI マスク：%1、%2 ピクセル（%3%）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="608"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>実行をキャンセルしました：欠けている参照フレームに対してフレーム別の関心領域を定義するか、次回実行時にフレーム 1 のマスクを継承してください。</translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="629"/>
+</context>
+<context>
+    <name>PipelineMessages</name>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
         <source>  %n frame(s) with custom ROI masks</source>
-        <translation>  %n 個のフレームでカスタム ROI マスクを使用</translation>
+        <translation>
+            <numerusform>  %n 個のフレームでカスタム ROI マスクを使用</numerusform>
+        </translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="759"/>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
         <source>Results received: %n frame(s)</source>
-        <translation>結果を受信：%n フレーム</translation>
+        <translation>
+            <numerusform>結果を受信：%n フレーム</numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="213"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
         <source>Starting DIC analysis...</source>
         <translation>DIC 解析を開始します…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="261"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
         <source>Analysis complete in %1s</source>
         <translation>解析が完了しました（%1 秒）</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="254"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="269"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
         <source>Analysis stopped by user.</source>
         <translation>ユーザーにより解析が停止されました。</translation>
     </message>

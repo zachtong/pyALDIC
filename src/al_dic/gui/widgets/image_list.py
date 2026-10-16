@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import QCoreApplication, QEvent, Qt, Signal
+from PySide6.QtCore import QEvent, Qt, Signal
 from PySide6.QtGui import QAction, QColor, QFont
 from PySide6.QtWidgets import (
     QHeaderView,
@@ -364,14 +364,8 @@ class ImageList(QWidget):
 
         # --- ROI batch operations (when frames are selected) ---
         if n_sel > 0:
-            # %n triggers Qt's numerusform machinery so translators can
-            # supply the right singular / plural form per locale.
-            import_label = QCoreApplication.translate(
-                "ImageList",
-                "Import Region of Interest for %n frame(s)",
-                "",
-                n_sel,
-            )
+            import_label = self.tr(
+                "Import Region of Interest for %n frame(s)", "", n_sel)
             import_action = QAction(import_label, self)
             import_action.triggered.connect(self._import_roi_selected)
             menu.addAction(import_action)
@@ -397,9 +391,7 @@ class ImageList(QWidget):
         # --- Delete option ---
         if selected:
             count = len(selected)
-            label = QCoreApplication.translate(
-                "ImageList", "Delete %n image(s)", "", count,
-            )
+            label = self.tr("Delete %n image(s)", "", count)
             delete_action = QAction(label, self)
             delete_action.triggered.connect(self._delete_selected)
             menu.addAction(delete_action)
@@ -494,9 +486,8 @@ class ImageList(QWidget):
             return
         from PySide6.QtWidgets import QFileDialog
 
-        title = QCoreApplication.translate(
-            "ImageList", "Select %n Mask File(s)", "", len(frames),
-        )
+        n_frames = len(frames)
+        title = self.tr("Select %n Mask File(s)", "", n_frames)
         paths, _ = QFileDialog.getOpenFileNames(
             self,
             title,

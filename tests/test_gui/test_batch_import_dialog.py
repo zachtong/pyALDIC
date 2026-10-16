@@ -82,3 +82,24 @@ def test_get_assignments_returns_dict(dialog):
     # Modifying the returned dict should not affect internal state
     result[99] = "fake"
     assert 99 not in dialog.get_assignments()
+
+
+def test_size_warning_has_singular_and_plural_in_german(dialog):
+    """The warning is a plural message in the dialog's own context: German
+    reads "1 Maske hat", "2 Masken haben", never the English source."""
+    from al_dic.i18n import LanguageManager
+
+    mgr = LanguageManager(app)
+    assert mgr.load("de")
+    try:
+        texts = []
+        for masks in ({"/masks/a.png"}, {"/masks/a.png", "/masks/b.png"}):
+            dialog._mismatched = set(masks)
+            dialog._update_size_warning()
+            texts.append(dialog._size_warning.text())
+    finally:
+        mgr.load("en")
+    assert texts == [
+        "1 Maske hat eine abweichende Größe und ist deaktiviert.",
+        "2 Masken haben abweichende Größen und sind deaktiviert.",
+    ]

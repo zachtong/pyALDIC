@@ -377,14 +377,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr": "Forme incompatible : %1×%2 (attendu %3×%4)",
         "es": "Forma no coincide: %1×%2 (se esperaba %3×%4)",
     },
-    "%n mask(s) have mismatched sizes and are disabled.": {
-        "zh_TW": "%n 個遮罩尺寸不符，已停用。",
-        "ja": "%n 個のマスクはサイズが一致しないため無効化されました。",
-        "ko": "크기가 일치하지 않는 마스크 %n개가 비활성화되었습니다.",
-        "de": "%n Maske(n) haben abweichende Größen und sind deaktiviert.",
-        "fr": "%n masque(s) ont des tailles incompatibles et sont désactivés.",
-        "es": "%n máscara(s) tienen tamaños no coincidentes y están deshabilitadas.",
-    },
     "Invalid assignment": {
         "zh_TW": "無效的分配", "ja": "無効な割り当て", "ko": "잘못된 할당",
         "de": "Ungültige Zuordnung", "fr": "Affectation non valide",
@@ -405,14 +397,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de": "  Maske für Bild %1 importiert",
         "fr": "  Masque importé pour l'image %1",
         "es": "  Máscara importada para el fotograma %1",
-    },
-    "Batch import: %n mask(s) loaded": {
-        "zh_TW": "批次匯入：已載入 %n 個遮罩",
-        "ja": "一括インポート: %n 個のマスクを読み込みました",
-        "ko": "일괄 가져오기: 마스크 %n개를 불러왔습니다",
-        "de": "Stapelimport: %n Maske(n) geladen",
-        "fr": "Import par lot : %n masque(s) chargé(s)",
-        "es": "Importación por lotes: %n máscara(s) cargada(s)",
     },
     "Preview": {
         "zh_TW": "預覽", "ja": "プレビュー", "ko": "미리보기",
@@ -3156,6 +3140,10 @@ DISAMBIGUATED: dict[tuple[str, str], dict[str, str]] = {
 # Chinese/Japanese/Korean only need a single form; Romance/Germanic need two;
 # in principle some Slavic languages need three, but none of our target langs
 # are Slavic, so the two-form layout covers everything.
+# The catalog marks a message numerus only when the source says
+# self.tr(source, "", n) with a plain local n (CLAUDE.md R2); written as
+# QCoreApplication.translate(ctx, source, "", n) it stays plain, and Qt shows
+# English wherever the language needs a second form.
 NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
     "Import Region of Interest for %n frame(s)": {
         "zh_CN": ("为 %n 帧导入感兴趣区域",),
@@ -3238,13 +3226,31 @@ NUMERUS_TRANSLATIONS: dict[str, dict[str, tuple[str, ...]]] = {
                   "Exportadas %n animaciones → %1"),
     },
 
-    # zh_CN-only numerus entries for batch-import dialog (size pre-scan
-    # warning + completion log). Other languages await contributors.
+    # Batch import: size pre-scan warning (BatchImportDialog) and the
+    # completion log line (MainWindow).
     "%n mask(s) have mismatched sizes and are disabled.": {
         "zh_CN": ("%n 个掩模尺寸不匹配，已禁用。",),
+        "zh_TW": ("%n 個遮罩尺寸不符，已停用。",),
+        "ja":    ("%n 個のマスクはサイズが一致しないため無効化されました。",),
+        "ko":    ("크기가 일치하지 않는 마스크 %n개가 비활성화되었습니다.",),
+        "de":    ("%n Maske hat eine abweichende Größe und ist deaktiviert.",
+                  "%n Masken haben abweichende Größen und sind deaktiviert."),
+        "fr":    ("%n masque a une taille incompatible et est désactivé.",
+                  "%n masques ont des tailles incompatibles et sont désactivés."),
+        "es":    ("%n máscara tiene un tamaño no coincidente y está deshabilitada.",
+                  "%n máscaras tienen tamaños no coincidentes y están deshabilitadas."),
     },
     "Batch import: %n mask(s) loaded": {
         "zh_CN": ("批量导入：已加载 %n 个掩模",),
+        "zh_TW": ("批次匯入：已載入 %n 個遮罩",),
+        "ja":    ("一括インポート: %n 個のマスクを読み込みました",),
+        "ko":    ("일괄 가져오기: 마스크 %n개를 불러왔습니다",),
+        "de":    ("Stapelimport: %n Maske geladen",
+                  "Stapelimport: %n Masken geladen"),
+        "fr":    ("Import par lot : %n masque chargé",
+                  "Import par lot : %n masques chargés"),
+        "es":    ("Importación por lotes: %n máscara cargada",
+                  "Importación por lotes: %n máscaras cargadas"),
     },
 
     # === Post-processing analysis tab ====================================
@@ -3352,6 +3358,15 @@ UNFIN_NUMERUS = re.compile(
     r"<translation\s+type=\"unfinished\">\s*((?:<numerusform></numerusform>\s*)+)</translation>",
     re.DOTALL,
 )
+# A plural translation the table fills: every form empty, or unfinished. When
+# a plain message becomes numerus, lupdate keeps its old translation as the
+# first form, leaves the rest empty and marks it unfinished; the table's
+# forms replace all of them. A finished plural translation is left alone.
+NUMERUS_FILLABLE = re.compile(
+    r"<translation[^>]*>\s*(?:<numerusform></numerusform>\s*)+</translation>"
+    r"|<translation\s+type=\"unfinished\">\s*(?:<numerusform>.*?</numerusform>\s*)+</translation>",
+    re.DOTALL,
+)
 
 
 def check_tables() -> None:
@@ -3416,13 +3431,7 @@ def fill_ts(lang: str) -> tuple[int, int]:
             new_translation = (
                 f"<translation>\n{joined}\n        </translation>"
             )
-            new_body = re.sub(
-                r"<translation[^>]*>\s*(?:<numerusform></numerusform>\s*)+</translation>",
-                new_translation,
-                body,
-                count=1,
-                flags=re.DOTALL,
-            )
+            new_body = NUMERUS_FILLABLE.sub(new_translation, body, count=1)
             if new_body == body:
                 skipped += 1
                 return match.group(0)
@@ -3442,10 +3451,10 @@ def fill_ts(lang: str) -> tuple[int, int]:
             entry = DISAMBIGUATED.get((source, unescape(comment_m.group(1))))
         if entry is None:
             entry = TRANSLATIONS.get(source)
-        # Fall back to the first numerusform if lupdate didn't tag the
-        # message as numerus="yes". Qt still substitutes %n → count,
-        # we just miss the plural-form branching — which is acceptable
-        # because %n is only interesting for >1 case anyway.
+        # A plural entry for a message lupdate did not mark numerus: write
+        # its last form. Not a fix -- for a %n message the language's second
+        # form is still missing, so Qt shows English for those counts, and
+        # test_every_count_message_is_numerus fails the catalog.
         if entry is None and source in NUMERUS_TRANSLATIONS:
             forms = NUMERUS_TRANSLATIONS[source].get(lang)
             if forms:

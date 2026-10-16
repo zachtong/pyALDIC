@@ -726,12 +726,7 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>App</name>
     <message>
-        <location filename="../../gui/app.py" line="1024"/>
-        <source>Imported Region of Interest for %n frame(s)</source>
-        <translation>Región de interés importada para %n fotogramas</translation>
-    </message>
-    <message>
-        <location filename="../../gui/app.py" line="1038"/>
+        <location filename="../../gui/app.py" line="1029"/>
         <source>Run DIC first -- no displacement results to post-process.</source>
         <translation>Ejecute primero el DIC — no hay resultados de desplazamiento para posprocesar.</translation>
     </message>
@@ -739,27 +734,27 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>Application</name>
     <message>
-        <location filename="../../gui/app.py" line="1194"/>
+        <location filename="../../gui/app.py" line="1185"/>
         <source>pyALDIC has hit an error</source>
         <translation>pyALDIC ha encontrado un error</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1195"/>
+        <location filename="../../gui/app.py" line="1186"/>
         <source>An unexpected error occurred. The application may not behave correctly from here on, so saving your session and restarting is recommended.</source>
         <translation>Se ha producido un error inesperado. Es posible que la aplicación no funcione correctamente a partir de ahora; se recomienda guardar la sesión y reiniciar.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1205"/>
+        <location filename="../../gui/app.py" line="1196"/>
         <source>Details were written to %1</source>
         <translation>Los detalles se han escrito en %1</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1311"/>
+        <location filename="../../gui/app.py" line="1302"/>
         <source>Preparing compute kernels in the background. The first analysis on a new installation takes longer than the rest.</source>
         <translation>Preparando los núcleos de cálculo en segundo plano. El primer análisis tras una instalación nueva tarda más que los siguientes.</translation>
     </message>
     <message>
-        <location filename="../../gui/app.py" line="1325"/>
+        <location filename="../../gui/app.py" line="1316"/>
         <source>Compute kernels ready (%1 s).</source>
         <translation>Núcleos de cálculo listos (%1 s).</translation>
     </message>
@@ -886,18 +881,21 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <source>Mismatched shape: %1×%2 (expected %3×%4)</source>
         <translation>Forma no coincide: %1×%2 (se esperaba %3×%4)</translation>
     </message>
-    <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="667"/>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="666"/>
         <source>%n mask(s) have mismatched sizes and are disabled.</source>
-        <translation>%n máscara(s) tienen tamaños no coincidentes y están deshabilitadas.</translation>
+        <translation>
+            <numerusform>%n máscara tiene un tamaño no coincidente y está deshabilitada.</numerusform>
+            <numerusform>%n máscaras tienen tamaños no coincidentes y están deshabilitadas.</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="726"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="719"/>
         <source>Invalid assignment</source>
         <translation>Asignación no válida</translation>
     </message>
     <message>
-        <location filename="../../gui/dialogs/batch_import_dialog.py" line="728"/>
+        <location filename="../../gui/dialogs/batch_import_dialog.py" line="721"/>
         <source>A frame can only have one mask. Select exactly one mask, or select multiple frames to assign one mask to many.</source>
         <translation>Un fotograma solo puede tener una máscara. Seleccione exactamente una máscara, o seleccione varios fotogramas para asignar una máscara a muchos.</translation>
     </message>
@@ -1642,8 +1640,8 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
     <message>
         <location filename="../../gui/dialogs/export_dialog.py" line="1719"/>
         <location filename="../../gui/dialogs/export_dialog.py" line="1849"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1938"/>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1980"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1934"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1976"/>
         <source>Error: %1</source>
         <translation>Error: %1</translation>
     </message>
@@ -1675,8 +1673,16 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
         <source>No animation was written. See the log for details.</source>
         <translation>No se ha escrito ninguna animación. Consulte el registro para más detalles.</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../../gui/dialogs/export_dialog.py" line="1926"/>
+        <source>Exported %n animation(s) → %1</source>
+        <translation>
+            <numerusform>Exportada %n animación → %1</numerusform>
+            <numerusform>Exportadas %n animaciones → %1</numerusform>
+        </translation>
+    </message>
     <message>
-        <location filename="../../gui/dialogs/export_dialog.py" line="1973"/>
+        <location filename="../../gui/dialogs/export_dialog.py" line="1969"/>
         <source>Report saved → %1</source>
         <translation>Informe guardado → %1</translation>
     </message>
@@ -1793,38 +1799,52 @@ La transparencia se conserva para PNG y TIFF; JPEG, GIF y MP4 no tienen canal al
         <source>Need</source>
         <translation>Falta</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="369"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="368"/>
         <source>Import Region of Interest for %n frame(s)</source>
-        <translation>Importar región de interés para %n fotogramas</translation>
+        <translation>
+            <numerusform>Importar región de interés para %n fotograma</numerusform>
+            <numerusform>Importar región de interés para %n fotogramas</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="385"/>
+        <location filename="../../gui/widgets/image_list.py" line="379"/>
         <source>Clear Region of Interest (%1 with region)</source>
         <translation>Borrar región de interés (%1 con región)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="389"/>
+        <location filename="../../gui/widgets/image_list.py" line="383"/>
         <source>Clear Region of Interest</source>
         <translation>Borrar región de interés</translation>
     </message>
-    <message>
-        <location filename="../../gui/widgets/image_list.py" line="400"/>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="394"/>
         <source>Delete %n image(s)</source>
-        <translation>Eliminar %n imágenes</translation>
+        <translation>
+            <numerusform>Eliminar %n imagen</numerusform>
+            <numerusform>Eliminar %n imágenes</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/widgets/image_list.py" line="490"/>
+        <source>Select %n Mask File(s)</source>
+        <translation>
+            <numerusform>Seleccionar %n archivo de máscara</numerusform>
+            <numerusform>Seleccionar %n archivos de máscara</numerusform>
+        </translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="504"/>
+        <location filename="../../gui/widgets/image_list.py" line="495"/>
         <source>Images</source>
         <translation>Imágenes</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="505"/>
+        <location filename="../../gui/widgets/image_list.py" line="496"/>
         <source>All Files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/image_list.py" line="514"/>
+        <location filename="../../gui/widgets/image_list.py" line="505"/>
         <source>Selected %1 files for %2 frames — count must match</source>
         <translation>Seleccionados %1 archivos para %2 fotogramas — las cantidades deben coincidir</translation>
     </message>
@@ -2363,10 +2383,21 @@ Los resultados se restauraron. Para mostrar las imágenes de fondo, seleccione l
         <source>  Imported mask for frame %1</source>
         <translation>  Máscara importada para el fotograma %1</translation>
     </message>
-    <message>
+    <message numerus="yes">
         <location filename="../../gui/app.py" line="992"/>
         <source>Batch import: %n mask(s) loaded</source>
-        <translation>Importación por lotes: %n máscara(s) cargada(s)</translation>
+        <translation>
+            <numerusform>Importación por lotes: %n máscara cargada</numerusform>
+            <numerusform>Importación por lotes: %n máscaras cargadas</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../gui/app.py" line="1019"/>
+        <source>Imported Region of Interest for %n frame(s)</source>
+        <translation>
+            <numerusform>Región de interés importada para %n fotograma</numerusform>
+            <numerusform>Región de interés importada para %n fotogramas</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2563,56 +2594,65 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
 <context>
     <name>PipelineController</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="398"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="399"/>
         <source>Building pipeline configuration...</source>
         <translation>Construyendo configuración del flujo…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="556"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="557"/>
         <source>Loading images...</source>
         <translation>Cargando imágenes…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="569"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="570"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 imágenes cargadas, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="582"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="583"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Máscara ROI: %1, %2 píxeles (%3%)</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="608"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="609"/>
         <source>Run canceled: define per-frame Regions of Interest for the missing reference frames or accept the inherited frame-1 mask in the next run.</source>
         <translation>Ejecución cancelada: defina regiones de interés por fotograma para los fotogramas de referencia que faltan, o acepte la máscara heredada del fotograma 1 en la próxima ejecución.</translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="629"/>
+</context>
+<context>
+    <name>PipelineMessages</name>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="31"/>
         <source>  %n frame(s) with custom ROI masks</source>
-        <translation>  %n fotogramas con máscaras ROI personalizadas</translation>
+        <translation>
+            <numerusform>  %n fotograma con máscara ROI personalizada</numerusform>
+            <numerusform>  %n fotogramas con máscaras ROI personalizadas</numerusform>
+        </translation>
     </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="759"/>
+    <message numerus="yes">
+        <location filename="../../gui/controllers/pipeline_messages.py" line="35"/>
         <source>Results received: %n frame(s)</source>
-        <translation>Resultados recibidos: %n fotogramas</translation>
+        <translation>
+            <numerusform>Resultados recibidos: %n fotograma</numerusform>
+            <numerusform>Resultados recibidos: %n fotogramas</numerusform>
+        </translation>
     </message>
 </context>
 <context>
     <name>PipelineWorker</name>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="213"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="214"/>
         <source>Starting DIC analysis...</source>
         <translation>Iniciando análisis DIC…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="261"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="262"/>
         <source>Analysis complete in %1s</source>
         <translation>Análisis completado en %1 s</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="254"/>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="269"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="255"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="270"/>
         <source>Analysis stopped by user.</source>
         <translation>Análisis detenido por el usuario.</translation>
     </message>

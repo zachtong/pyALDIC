@@ -15,6 +15,7 @@ from al_dic.core.config import dicpara_default
 from al_dic.core.data_structures import FrameSchedule, GridxyROIRange, PipelineResult
 from al_dic.core.pipeline import run_aldic
 from al_dic.gui.app_state import AppState, RunState
+from al_dic.gui.controllers.pipeline_messages import PipelineMessages
 from al_dic.gui.controllers.tracking_messages import build_tracking_messages
 from al_dic.mesh.refinement import RefinementPolicy, build_refinement_policy
 from al_dic.solver.seed_propagation import (
@@ -626,14 +627,7 @@ class PipelineController:
             )
             if n_custom > 0:
                 state.log_message.emit(
-                    QCoreApplication.translate(
-                        "PipelineController",
-                        "  %n frame(s) with custom ROI masks",
-                        "",
-                        n_custom,
-                    ),
-                    "info",
-                )
+                    PipelineMessages().custom_roi_frames(n_custom), "info")
 
             # Build refinement policy from GUI state. The factory returns
             # None when no refinement levers are active, which makes
@@ -751,18 +745,9 @@ class PipelineController:
         self._worker = None
         try:
             if result is not None:
-                # pyside6-lupdate's Python parser can miss translate()
-                # calls whose count argument is a complex expression;
-                # bind `n` to a local first so the call's signature
-                # looks identical to the other numerus translate() sites.
-                n = len(result.result_disp)
-                _msg = QCoreApplication.translate(
-                    "PipelineController",
-                    "Results received: %n frame(s)",
-                    "",
-                    n,
-                )
-                self._state.log_message.emit(_msg, "success")
+                n_frames = len(result.result_disp)
+                self._state.log_message.emit(
+                    PipelineMessages().results_received(n_frames), "success")
                 self._state.set_results(result)
                 self._state.set_run_state(RunState.DONE)
                 # Auto-navigate to frame 1 (first result frame) so user

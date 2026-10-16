@@ -14,8 +14,11 @@ Runs a minimal headless QApplication. No on-screen display.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import re
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 import pytest
 from PySide6.QtCore import QCoreApplication
@@ -390,5 +393,120 @@ def test_tracking_counts_have_singular_and_plural(qapp, lang):
         one, many = sentence(1), sentence(7)
         assert "(s)" not in one and "(s)" not in many, (lang, one, many)
         assert one.replace("1", "#", 1) != many.replace("7", "#", 1), (
+            f"[{lang}] singular and plural read the same: {many!r}"
+        )
+
+
+# --- Counted (numerus) messages ---------------------------------------------
+
+_TS_DIR = Path(__file__).resolve().parents[1] / "src" / "al_dic" / "i18n" / "source"
+
+#: Locales with a singular and a plural form (CJK have one form).
+_TWO_FORMS = ("de", "fr", "es")
+
+#: A plural written into one form: "Maske(n)", "masque(s)", "chargé(s)".
+_PLURAL_MARKER = re.compile(r"\w\((?:s|n|e|es|en|x)\)")
+
+#: Counted messages once written as QCoreApplication.translate(ctx, src, "", n)
+#: (extracted as plain messages: English for n >= 2 in de/fr/es) or with the
+#: count as an expression (not extracted at all: English everywhere).
+#: (context, source); the context is the class whose self.tr() says it.
+_COUNTED = (
+    ("MainWindow", "Imported Region of Interest for %n frame(s)"),
+    ("MainWindow", "Batch import: %n mask(s) loaded"),
+    ("BatchImportDialog", "%n mask(s) have mismatched sizes and are disabled."),
+    ("ImageList", "Import Region of Interest for %n frame(s)"),
+    ("ImageList", "Delete %n image(s)"),
+    ("ImageList", "Select %n Mask File(s)"),
+    ("ExportDialog", "Exported %n animation(s) → %1"),
+    ("PipelineMessages", "  %n frame(s) with custom ROI masks"),
+    ("PipelineMessages", "Results received: %n frame(s)"),
+)
+
+
+@pytest.mark.parametrize("lang", SHIPPED_LANGS[1:])
+def test_every_count_message_is_numerus(lang):
+    """Every ``%n`` message in the catalog has plural forms.
+
+    lupdate marks numerus only ``tr(source, "", n)`` with a plain local
+    count (CLAUDE.md R2). A ``%n`` message it left plain has one form,
+    and for any count the language's rule sends to another form Qt shows
+    the English source.
+    """
+    tree = ET.parse(_TS_DIR / f"al_dic_{lang}.ts")
+    plain = [
+        f"{context.findtext('name')}: {message.findtext('source')!r}"
+        for context in tree.getroot().iter("context")
+        for message in context.iter("message")
+        if "%n" in (message.findtext("source") or "")
+        and message.get("numerus") != "yes"
+    ]
+    assert not plain, (
+        f"[{lang}] %n messages without plural forms (write them as "
+        f"self.tr(source, '', n)):\n" + "\n".join(plain)
+    )
+
+
+@contextlib.contextmanager
+def _language(qapp, lang: str):
+    """``lang`` installed for the block, and taken out after it, even when
+    the block fails.
+
+    A failed test's traceback keeps its manager, and so its translators,
+    alive: the next test then read Chinese where French had no plural form.
+    """
+    from al_dic.i18n import LanguageManager
+
+    mgr = LanguageManager(qapp)
+    assert mgr.load(lang)
+    try:
+        yield mgr
+    finally:
+        mgr.load("en")
+
+
+@pytest.mark.parametrize("lang", SHIPPED_LANGS[1:])
+def test_counted_messages_are_translated_for_every_count(qapp, lang):
+    """No count shows the English source, as ``n >= 2`` did in de/fr/es
+    (one form) and every count did where the message was not extracted."""
+    with _language(qapp, lang):
+        english = [
+            f"{context}, n={n}: {text!r}"
+            for context, source in _COUNTED
+            for n in (1, 2, 7)
+            if (text := QCoreApplication.translate(context, source, "", n))
+            == source.replace("%n", str(n)) or "%n" in text
+        ]
+    assert not english, f"[{lang}] untranslated:\n" + "\n".join(english)
+
+
+@pytest.mark.parametrize("lang", _TWO_FORMS)
+def test_counted_messages_have_singular_and_plural(qapp, lang):
+    """One and two read differently, and neither hedges with "(s)"."""
+    bad = []
+    with _language(qapp, lang):
+        for context, source in _COUNTED:
+            one = QCoreApplication.translate(context, source, "", 1)
+            many = QCoreApplication.translate(context, source, "", 2)
+            if (_PLURAL_MARKER.search(one) or _PLURAL_MARKER.search(many)
+                    or one.replace("1", "#", 1) == many.replace("2", "#", 1)):
+                bad.append(f"{context}: {one!r} / {many!r}")
+    assert not bad, f"[{lang}] no singular/plural pair:\n" + "\n".join(bad)
+
+
+@pytest.mark.parametrize("lang", _TWO_FORMS)
+def test_pipeline_counts_have_singular_and_plural(qapp, lang):
+    """The run's console lines come from ``PipelineMessages``, a QObject:
+    PipelineController is not one, and only ``self.tr`` is extracted as a
+    plural."""
+    from al_dic.gui.controllers.pipeline_messages import PipelineMessages
+
+    with _language(qapp, lang):
+        m = PipelineMessages()
+        pairs = [(say(1), say(2)) for say in (m.custom_roi_frames,
+                                              m.results_received)]
+    for one, many in pairs:
+        assert "(s)" not in one and "(s)" not in many, (lang, one, many)
+        assert one.replace("1", "#", 1) != many.replace("2", "#", 1), (
             f"[{lang}] singular and plural read the same: {many!r}"
         )

@@ -662,15 +662,8 @@ class BatchImportDialog(QDialog):
         if n == 0:
             self._size_warning.hide()
             return
-        from PySide6.QtCore import QCoreApplication
-        self._size_warning.setText(
-            QCoreApplication.translate(
-                "BatchImportDialog",
-                "%n mask(s) have mismatched sizes and are disabled.",
-                "",
-                n,
-            )
-        )
+        self._size_warning.setText(self.tr(
+            "%n mask(s) have mismatched sizes and are disabled.", "", n))
         self._size_warning.show()
 
     # ------------------------------------------------------------------

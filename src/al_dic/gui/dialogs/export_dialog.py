@@ -1919,15 +1919,11 @@ class ExportDialog(QDialog):
                 "color: {DANGER}; font-size: 11px;"
             )
             return
+        from al_dic.i18n import tr_args
         folder = self._folder_edit.text().strip()
-        self._anim_status_lbl.setText(
-            QCoreApplication.translate(
-                "ExportDialog",
-                "Exported %n animation(s) → %1",
-                "",
-                len(paths),
-            ).replace("%1", folder)
-        )
+        n_paths = len(paths)
+        self._anim_status_lbl.setText(tr_args(
+            self.tr("Exported %n animation(s) → %1", "", n_paths), folder))
         themed(self._anim_status_lbl, "color: {SUCCESS}; font-size: 11px;")
         self._open_folder_btn.setEnabled(True)
 

@@ -989,12 +989,7 @@ class MainWindow(QMainWindow):
             )
         n_masks = len(masks)
         state.log_message.emit(
-            QCoreApplication.translate(
-                "MainWindow",
-                "Batch import: %n mask(s) loaded",
-                "",
-                n_masks,
-            ),
+            self.tr("Batch import: %n mask(s) loaded", "", n_masks),
             "success",
         )
         state.roi_changed.emit()
@@ -1021,12 +1016,8 @@ class MainWindow(QMainWindow):
 
         if count:
             state.log_message.emit(
-                QCoreApplication.translate(
-                    "App",
-                    "Imported Region of Interest for %n frame(s)",
-                    "",
-                    count,
-                ),
+                self.tr("Imported Region of Interest for %n frame(s)", "",
+                        count),
                 "success",
             )
             state.roi_changed.emit()
