@@ -79,6 +79,13 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- **Starting Points no longer reuse the node neighborhoods of an earlier
+  mesh.** Seed propagation cached each mesh's node neighborhoods under the
+  memory address of its element array. Now that every reference frame of
+  an incremental run gets a grid of its own, a new mesh could land at a
+  freed one's address and receive the old, smaller neighborhood table,
+  stopping the run with an internal `IndexError`. The table is now cached
+  by the mesh's content, and only the current mesh is kept.
 - **The export preview uses the export's mask in the deformed view.** It
   now clips the field with the frame's own Region of Interest, or the
   reference Region of Interest warped forward, exactly as the exported

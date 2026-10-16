@@ -16,6 +16,7 @@ slim. Public functions:
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING
@@ -72,9 +73,10 @@ class SeedPropagationState:
             None until the first successful frame completes.
         prev_U_2d: (n_nodes, 2) converged displacements from the most
             recent successful frame, in its mesh's node ordering.
-        adjacency_cache: Cache of node_adjacency results keyed by
-            ``id(elements_fem)`` — the same elements_fem array means
-            the same adjacency; no need to rebuild per frame.
+        adjacency_cache: node_adjacency of the current mesh, keyed by its
+            content (node count + element-array digest) -- see
+            :func:`node_adjacency_for`.  One entry: incremental runs give
+            every reference frame its own grid, so meshes come and go.
         reseed_events: Auto-reseed log for the current run. Populated
             each time a ref-switch warp fails and the pipeline falls
             back to ``auto_place_seeds_on_mesh``.
@@ -83,7 +85,7 @@ class SeedPropagationState:
     current_seeds: SeedSet
     prev_coords_fem: NDArray[np.float64] | None = None
     prev_U_2d: NDArray[np.float64] | None = None
-    adjacency_cache: dict[int, list[set[int]]] = field(default_factory=dict)
+    adjacency_cache: dict[tuple, list[set[int]]] = field(default_factory=dict)
     reseed_events: list[ReseedEvent] = field(default_factory=list)
 
     @classmethod
@@ -136,6 +138,32 @@ def build_grid_for_roi(
     return x0, y0
 
 
+def node_adjacency_for(
+    state: SeedPropagationState,
+    elements_fem: NDArray[np.int64],
+    n_nodes: int,
+) -> list[set[int]]:
+    """Node adjacency of a mesh, cached by the mesh's CONTENT.
+
+    The cache used to be keyed by ``id(elements_fem)``.  Since every
+    incremental reference frame gets a grid of its own, meshes are freed and
+    rebuilt during a run, and a new element array can be allocated at a freed
+    one's address: the stale adjacency of a smaller mesh then came back
+    (IndexError in propagate_from_seeds).  Keying by node count + a digest of
+    the element array is immune to address reuse; only the current mesh is
+    kept, so the cache cannot grow with the number of reference frames.
+    """
+    arr = np.ascontiguousarray(elements_fem)
+    key = (int(n_nodes), arr.shape, str(arr.dtype),
+           hashlib.blake2b(arr.view(np.uint8), digest_size=16).digest())
+    hit = state.adjacency_cache.get(key)
+    if hit is None:
+        hit = build_node_adjacency(elements_fem, n_nodes)
+        state.adjacency_cache.clear()
+        state.adjacency_cache[key] = hit
+    return hit
+
+
 def compute_seed_prop_init_guess(
     state: SeedPropagationState,
     dic_mesh: DICMesh,
@@ -173,12 +201,7 @@ def compute_seed_prop_init_guess(
 
     n_nodes = dic_mesh.coordinates_fem.shape[0]
 
-    mesh_key = id(dic_mesh.elements_fem)
-    if mesh_key not in state.adjacency_cache:
-        state.adjacency_cache[mesh_key] = build_node_adjacency(
-            dic_mesh.elements_fem, n_nodes,
-        )
-    adjacency = state.adjacency_cache[mesh_key]
+    adjacency = node_adjacency_for(state, dic_mesh.elements_fem, n_nodes)
 
     region_map = precompute_node_regions(
         dic_mesh.coordinates_fem, f_mask, f_img.shape,
