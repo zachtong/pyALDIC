@@ -70,8 +70,8 @@ A complete desktop application built with PySide6. Three-column layout with imag
 
 <p align="center">
   <b>📘 User manual (PDF)</b> &nbsp;|&nbsp;
-  <a href="docs/pyALDIC_v0.10.0_user_guide.pdf">Full user guide</a> ·
-  <a href="docs/pyALDIC_v0.10.0_quick_guide.pdf">Quick reference</a>
+  <a href="docs/pyALDIC_v1.0.0_user_guide.pdf">Full user guide</a> ·
+  <a href="docs/pyALDIC_v1.0.0_quick_guide.pdf">Quick reference</a>
 </p>
 
 ### Adaptive Spatial Refinement
@@ -152,7 +152,7 @@ Save a whole project to a single `.aldic` file — the image list, ROIs, paramet
 | **Grid** | <mark>**Adaptive refined grid**</mark> | Uniform grid | Uniform grid | Uniform grid | Uniform grid |
 | **GUI** | <mark>**Built-in desktop**</mark> | Built-in desktop¹ | Built-in desktop | Built-in desktop | Built-in desktop |
 | **Platform** | <mark>**Windows, macOS, Linux**</mark> | Windows, macOS, Linux¹ | Windows, macOS, Linux | Windows only | Windows only |
-| **Latest release**² | <mark>**v0.10.0 (2026)**</mark> | v1.2.2 (2017) | v3.0-beta (2023) | VIC-2D 7 (2022) | MatchID 2D (2026) |
+| **Latest release**² | <mark>**v1.0.0 (2026)**</mark> | v1.2.2 (2017) | v3.0-beta (2023) | VIC-2D 7 (2022) | MatchID 2D (2026) |
 | **Cost** | <mark>**Free**</mark> | Free¹ | Free | Commercial | Commercial |
 
 <sub>¹ Requires a MATLAB license.</sub><br/>

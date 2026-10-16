@@ -6,6 +6,8 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-10-16
+
 ### Added
 
 - **Hide untracked regions.** A new checkbox, on by default, in the main
