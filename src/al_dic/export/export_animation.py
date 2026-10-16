@@ -56,6 +56,7 @@ def export_animation(
     margin_color: str = "white",
     fill_trimmed_edges: bool = False,
     hidden_bg_color: str = "black",
+    hide_untracked: bool = True,
 ) -> list[Path]:
     """Export one animation file per enabled field.
 
@@ -87,6 +88,9 @@ def export_animation(
         fill_trimmed_edges: When True, re-interpolate the edge-trimmed strain
                      band from reliable interior nodes instead of blanking it
                      (matches the strain window's toggle).  Default False.
+        hide_untracked: Leave regions without a tracked node transparent
+                     (matches the "Hide untracked regions" display toggle).
+                     Default True.
 
     Returns:
         List of Paths to written animation files (one per enabled field).
@@ -95,7 +99,7 @@ def export_animation(
         render_field_frame, _extract_field_values, _load_frame_image,
         _compute_warped_mask, scale_field_values, colorbar_label,
         attach_colorbar, ColorbarStyle, add_margin, _DISPLACEMENT_FIELDS,
-        output_shape_for, hidden_bg_fill,
+        output_shape_for, hidden_bg_fill, tracked_nodes,
     )
 
     cb_style = colorbar_style if colorbar_style is not None else ColorbarStyle()
@@ -234,6 +238,9 @@ def export_animation(
                     output_shape=out_shape,
                     blank_invalid_nodes=not fill_trimmed_edges,
                     hidden_bg_color=hidden_bg_color,
+                    hide_untracked=hide_untracked,
+                    tracked=tracked_nodes(fr),
+                    mesh_step=results.dic_para.winstepsize,
                 )
 
                 # Append the styled colorbar

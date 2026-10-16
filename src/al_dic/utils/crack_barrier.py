@@ -143,37 +143,101 @@ def crack_aware_nearest_fill(
     need_fill = np.asarray(need_fill, dtype=bool)
     if not need_fill.any() or len(node_pts) == 0:
         return out
+    chosen = crack_aware_nearest_index(
+        np.asarray(x_grid)[need_fill], np.asarray(y_grid)[need_fill], node_pts, mask,
+    )
+    out[need_fill] = node_vals[chosen]
+    return out
 
-    qx = np.asarray(x_grid)[need_fill]
-    qy = np.asarray(y_grid)[need_fill]
+
+def crack_aware_nearest_index(
+    qx: NDArray[np.float64],
+    qy: NDArray[np.float64],
+    node_pts: NDArray[np.float64],
+    mask: NDArray | None,
+) -> NDArray[np.intp]:
+    """Index of the node :func:`crack_aware_nearest_fill` copies into each query.
+
+    Depends only on geometry, so a caller rendering several fields of the same
+    frame computes it once.  Candidates are the 16 nearest nodes in distance
+    order; the first whose segment to the query does not cross the barrier wins,
+    and the plain nearest node is the fallback when every candidate crosses.
+    Vectorised over queries (one candidate rank at a time) and bit-identical to
+    walking the queries one by one with :func:`segment_crosses_barrier`.
+    """
     query = np.column_stack([qx, qy])
     tree = cKDTree(node_pts)
-
     if mask is None:
         _, idx = tree.query(query, k=1)
-        out[need_fill] = node_vals[np.asarray(idx)]
-        return out
+        return np.asarray(idx, dtype=np.intp)
 
     kk = int(min(16, len(node_pts)))
     _, idx = tree.query(query, k=kk)
     idx = np.atleast_2d(idx)
     if idx.shape[0] == 1 and query.shape[0] != 1:
         idx = idx.T  # k==1 edge case: query returns (M,)
+    idx = np.asarray(idx, dtype=np.intp)
 
-    filled = np.empty(query.shape[0], dtype=np.float64)
-    for j in range(query.shape[0]):
-        cx, cy = float(qx[j]), float(qy[j])
-        chosen = int(idx[j, 0])  # fallback: plain nearest
-        for c in range(idx.shape[1]):
-            ni = int(idx[j, c])
-            if not segment_crosses_barrier(
-                cx, cy, float(node_pts[ni, 0]), float(node_pts[ni, 1]), mask
-            ):
-                chosen = ni
-                break
-        filled[j] = node_vals[chosen]
+    chosen = idx[:, 0].copy()  # fallback: plain nearest
+    pending = np.arange(query.shape[0])
+    for c in range(idx.shape[1]):
+        if pending.size == 0:
+            break
+        ni = idx[pending, c]
+        crosses = _segments_cross_barrier(
+            query[pending, 0], query[pending, 1],
+            node_pts[ni, 0], node_pts[ni, 1], mask,
+        )
+        clear = ~crosses
+        chosen[pending[clear]] = ni[clear]
+        pending = pending[crosses]
+    return chosen
 
-    out[need_fill] = filled
+
+# Batching in _segments_cross_barrier: at most this many rows, and at most
+# this many sample points (rows x longest segment) per batch.  Rows are
+# processed in order of length, so one long segment does not inflate a batch
+# of short ones (the scalar loop held one segment at a time).
+_SEGMENT_CHUNK = 65536
+_SEGMENT_SAMPLE_BUDGET = 2_000_000
+
+
+def _segments_cross_barrier(
+    x0: NDArray[np.float64], y0: NDArray[np.float64],
+    x1: NDArray[np.float64], y1: NDArray[np.float64],
+    mask: NDArray,
+) -> NDArray[np.bool_]:
+    """Vectorised :func:`segment_crosses_barrier` for many segments.
+
+    Reproduces the scalar sampling exactly: ``n = int(length)`` and the interior
+    points of ``np.linspace(0, 1, n + 1)``, which numpy evaluates as
+    ``i * (1.0 / n)``.  Segments shorter than 2 px never cross.
+    """
+    out = np.zeros(len(x0), dtype=bool)
+    if len(x0) == 0:
+        return out
+    dx = x1 - x0
+    dy = y1 - y0
+    n = np.hypot(dx, dy).astype(np.int64)
+    hm, wm = mask.shape
+    order = np.argsort(n, kind="stable")
+    order = order[n[order] >= 2]                    # shorter segments never cross
+    start = 0
+    while start < len(order):
+        stop = min(start + _SEGMENT_CHUNK, len(order))
+        # Sorted by length: the batch's longest segment is its last row.
+        while stop > start + 1 and (stop - start) * int(n[order[stop - 1]]) > _SEGMENT_SAMPLE_BUDGET:
+            stop = start + max(1, (stop - start) // 2)
+        rows = order[start:stop]
+        nr = n[rows]
+        i = np.arange(1, int(nr.max()), dtype=np.float64)[None, :]   # 1 .. max(n)-1
+        valid = i < nr[:, None]
+        t = i * (1.0 / nr[:, None])
+        xs = np.clip(np.round(x0[rows, None] + t * dx[rows, None]).astype(np.int64), 0, wm - 1)
+        ys = np.clip(np.round(y0[rows, None] + t * dy[rows, None]).astype(np.int64), 0, hm - 1)
+        hit = (mask[ys, xs] < 0.5) & valid
+        out[rows] = hit.any(axis=1)
+        start = stop
     return out
 
 

@@ -189,6 +189,18 @@ class RightSidebar(QWidget):
         fill_row.addWidget(self._hidden_bg_combo, 1)
         layout.addLayout(fill_row)
 
+        self._hide_untracked_cb = QCheckBox(self.tr("Hide untracked regions"))
+        self._hide_untracked_cb.setChecked(True)
+        self._hide_untracked_cb.setToolTip(self.tr(
+            "Leave areas without a tracked node transparent, for example "
+            "material that left the field of view, instead of filling them "
+            "with values copied from distant nodes. Also used for exported "
+            "images and animations; data files always keep NaN there."
+        ))
+        self._hide_untracked_cb.stateChanged.connect(
+            self._on_hide_untracked_toggled)
+        layout.addWidget(self._hide_untracked_cb)
+
         # --- Visualization section ---
         self._add_section_label(layout, self.tr("VISUALIZATION"))
 
@@ -322,6 +334,7 @@ class RightSidebar(QWidget):
             show_deformed=self._state.show_deformed,
             show_background=self._state.show_background,
             hidden_bg_color=self._state.hidden_bg_color,
+            hide_untracked=self._state.hide_untracked,
             overlay_alpha=self._state.overlay_alpha,
             use_physical_units=self._state.use_physical_units,
             pixel_size=self._state.pixel_size,
@@ -416,6 +429,11 @@ class RightSidebar(QWidget):
         self._hidden_bg_combo.setEnabled(not shown)
         self._state.display_changed.emit()
 
+    def _on_hide_untracked_toggled(self, state: int) -> None:
+        """Hide or fill areas that no tracked node covers."""
+        self._state.hide_untracked = state == Qt.CheckState.Checked.value
+        self._state.display_changed.emit()
+
     def _on_hidden_bg_changed(self, index: int) -> None:
         """Pick what replaces a hidden background image."""
         self._state.hidden_bg_color = str(
@@ -440,6 +458,10 @@ class RightSidebar(QWidget):
             self._background_cb.setChecked(self._state.show_background)
             self._background_cb.blockSignals(False)
         self._hidden_bg_combo.setEnabled(not self._state.show_background)
+        if self._hide_untracked_cb.isChecked() != self._state.hide_untracked:
+            self._hide_untracked_cb.blockSignals(True)
+            self._hide_untracked_cb.setChecked(self._state.hide_untracked)
+            self._hide_untracked_cb.blockSignals(False)
         fill = self._hidden_bg_combo.findData(self._state.hidden_bg_color)
         if fill >= 0 and self._hidden_bg_combo.currentIndex() != fill:
             self._hidden_bg_combo.blockSignals(True)

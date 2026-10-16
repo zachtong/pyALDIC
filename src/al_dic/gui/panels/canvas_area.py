@@ -1738,6 +1738,8 @@ class CanvasArea(QWidget):
                 deformed=is_deformed,
                 ref_uv=ref_uv,
                 deformed_mask=def_mask,
+                hide_untracked=state.hide_untracked,
+                tracked=np.isfinite(u) & np.isfinite(v),
             )
 
             overlay.setPixmap(pixmap)

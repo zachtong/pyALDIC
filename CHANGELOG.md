@@ -8,6 +8,26 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **Hide untracked regions.** A new checkbox, on by default, in the main
+  window's FIELD section, in the strain window, and on the export
+  dialog's Images and Animation tabs. Areas that no tracked node covers
+  (material that left the field of view or the Region of Interest during
+  incremental tracking, or material that was not visible in frame 0) are
+  left transparent instead of being filled with values copied from
+  distant nodes, on screen and in exported images and animations. A cell
+  is drawn when a tracked node lies within one grid cell of it (diagonal
+  included); within that reach the field now runs up to the Region of
+  Interest and crack edges, so exported images no longer stop short of
+  the specimen edge by up to a grid step. Crack faces are filled from
+  their own side only. Without a Region of Interest nothing is drawn
+  beyond the node cloud. Sessions save the setting; older sessions open
+  with it on. Data files are unchanged (NaN where nodes were not
+  tracked). API: `export_png` / `export_animation` take
+  `hide_untracked=True`; `render_field_frame` and
+  `VizController.render_field` take `hide_untracked` (default False,
+  historical output) plus `tracked`; the rule lives in
+  `al_dic.utils.tracked_region`.
+
 - **The GUI warns when nodes were not tracked reliably.** At the end of a
   run, the console log reports, in the interface language, nodes whose
   displacement was copied from a measured node more than one grid step
@@ -56,6 +76,14 @@ and versioning follows [Semantic Versioning](https://semver.org/).
     with an internal `TypeError` message.
 
 ### Fixed
+
+- **The export preview uses the export's mask in the deformed view.** It
+  now clips the field with the frame's own Region of Interest, or the
+  reference Region of Interest warped forward, exactly as the exported
+  file does; it used to show the field unclipped.
+- **Filling trimmed strain edges is about 10x faster.** The same-side
+  (crack-aware) fill behind *Fill trimmed edges* is vectorized; it picks
+  exactly the same source node for every pixel as before.
 
 - **Incremental runs now measure a specimen that moves beyond the bounding
   box of frame 1's Region of Interest, when later reference frames have

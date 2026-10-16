@@ -432,6 +432,7 @@ def scatter_to_grid(
     max_output_pixels: int = 0,
     fill_outside: str = "nan",
     interpolator: FieldInterpolator | None = None,
+    margin: int | None = None,
 ) -> tuple[NDArray[np.float64], dict]:
     """Interpolate scattered node values onto a regular pixel grid.
 
@@ -477,6 +478,10 @@ def scatter_to_grid(
         How to fill points outside the node convex hull.
     interpolator : FieldInterpolator or None
         Pre-built interpolator to reuse.  If None, one is created internally.
+    margin : int or None
+        Pixels added around the node bounding box.  None (default) keeps the
+        historical ``mesh_step // 2``; "Hide untracked regions" widens it to
+        its reach so the field can be painted up to the ROI edge.
 
     Returns
     -------
@@ -498,7 +503,7 @@ def scatter_to_grid(
     # --- Build output grid covering node bounding box ---
     # nanmin/nanmax: crack-destroyed nodes carry NaN deformed coordinates and
     # must not blow up the extent computation (identical when all finite).
-    margin = mesh_step // 2
+    margin = mesh_step // 2 if margin is None else int(margin)
     x_min = max(0, int(math.floor(np.nanmin(nodes[:, 0]))) - margin)
     x_max = min(w, int(math.ceil(np.nanmax(nodes[:, 0]))) + margin)
     y_min = max(0, int(math.floor(np.nanmin(nodes[:, 1]))) - margin)

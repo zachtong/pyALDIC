@@ -49,7 +49,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from al_dic.core.data_structures import PipelineResult, StrainResult
+from al_dic.core.data_structures import PipelineResult, StrainResult, split_uv
 from al_dic.gui.app_state import AppState
 from al_dic.gui.controllers.image_controller import ImageController
 from al_dic.gui.controllers.strain_controller import (
@@ -352,6 +352,7 @@ class StrainWindow(QMainWindow):
         # Start from the main window's choice, then stay independent -- the
         # same contract as this panel's colormap, opacity and geometry.
         self._viz_panel.set_hidden_bg_color(self._state.hidden_bg_color)
+        self._viz_panel.set_hide_untracked(self._state.hide_untracked)
         self._viz_panel.viz_changed.connect(self._on_viz_panel_changed)
         self._viz_panel.auto_disabled.connect(self._on_auto_range_disabled)
         self._viz_section.add_widget(self._viz_panel)
@@ -637,6 +638,7 @@ class StrainWindow(QMainWindow):
             show_background=bool(viz.get("show_background", True)),
             hidden_bg_color=str(viz.get("hidden_bg_color", "white")),
             fill_trimmed_edges=bool(viz.get("fill_trimmed_edges", False)),
+            hide_untracked=bool(viz.get("hide_untracked", True)),
             overlay_alpha=self._state.overlay_alpha,
             use_physical_units=self._state.use_physical_units,
             pixel_size=self._state.pixel_size,
@@ -1000,6 +1002,7 @@ class StrainWindow(QMainWindow):
                 cmap=str(viz["colormap"]),
                 alpha=float(viz["alpha"]),
                 fill_trimmed=bool(viz.get("fill_trimmed_edges", False)),
+                hide_untracked=bool(viz.get("hide_untracked", True)),
                 range_of=self._resolve_range,
             )
             if image is None:
@@ -1057,6 +1060,7 @@ class StrainWindow(QMainWindow):
             cmap=str(fs.colormap),
             alpha=float(viz["alpha"]),
             fill_trimmed=bool(viz.get("fill_trimmed_edges", False)),
+            hide_untracked=bool(viz.get("hide_untracked", True)),
             range_of=range_of,
         )
 
@@ -1071,6 +1075,7 @@ class StrainWindow(QMainWindow):
         alpha: float,
         fill_trimmed: bool,
         range_of: Callable[[NDArray[np.float64]], tuple[float, float]],
+        hide_untracked: bool = True,
     ) -> FieldImage | None:
         """Render *field_name* at *frame*: the one path both tabs draw through.
 
@@ -1103,6 +1108,17 @@ class StrainWindow(QMainWindow):
         # frame is the image-file index (0=reference, 1..N=deformed).
         # result_disp index = frame - 1.
         disp_idx = frame - 1
+        # Tracked nodes (finite displacement) for "Hide untracked regions",
+        # whichever configuration is drawn; frame 0 is tracked everywhere.
+        # None (a frame without any displacement) lets render_field fall back
+        # to "finite value".
+        tracked = (np.ones(len(ref_nodes), dtype=bool) if frame < 1 else None)
+        if frame >= 1 and disp_idx < len(result.result_disp):
+            fr_t = result.result_disp[disp_idx]
+            U_t = fr_t.U_accum if fr_t.U_accum is not None else fr_t.U
+            if U_t is not None:
+                u_t, v_t = split_uv(U_t)
+                tracked = np.isfinite(u_t) & np.isfinite(v_t)
         if deformed and frame >= 1 and disp_idx < len(result.result_disp):
             fr_d = result.result_disp[disp_idx]
             U = fr_d.U_accum if fr_d.U_accum is not None else fr_d.U
@@ -1144,6 +1160,8 @@ class StrainWindow(QMainWindow):
             blank_invalid_nodes=(
                 field_name not in DISP_FIELD_NAMES and not fill_trimmed
             ),
+            hide_untracked=hide_untracked,
+            tracked=tracked,
         )
         has_grid = xg is not None and yg is not None
         return FieldImage(

@@ -135,6 +135,8 @@ class VizExportHint:
     # nodes instead of blanking it (image/animation export only; data stays
     # NaN).  Mirrors the strain window's "Fill trimmed edges" toggle.
     fill_trimmed_edges: bool = False
+    #: "Hide untracked regions" of the window the dialog was opened from.
+    hide_untracked: bool = True
     overlay_alpha: float = 0.7
     use_physical_units: bool = False
     pixel_size: float = 1.0
@@ -183,6 +185,8 @@ class ExportConfig:
     # Fill (re-interpolate) the edge-trimmed strain band instead of blanking
     # it, for both image + animation export.  Data export always stays NaN.
     fill_trimmed_edges: bool = False
+    #: Leave regions without a tracked node transparent (images).
+    hide_untracked: bool = True
 
     # Animation Tab
     export_animation: bool = False
@@ -193,6 +197,8 @@ class ExportConfig:
     anim_frame_step: int = 1         # keep every Nth frame (1 = all)
     anim_show_deformed: bool = False
     anim_bg_mode: str = "ref_frame"  # "ref_frame" | "current_frame" | "none"
+    #: Leave regions without a tracked node transparent (animation).
+    anim_hide_untracked: bool = True
     #: Fill used by images and animation alike when the background is hidden.
     hidden_bg_color: str = "white"
     anim_frame_start: int = 0
@@ -336,6 +342,7 @@ class ExportImagesWorker(QThread):
                 margin_ratio=self._config.export_margin_ratio,
                 margin_color=self._config.export_margin_color,
                 fill_trimmed_edges=self._config.fill_trimmed_edges,
+                hide_untracked=self._config.hide_untracked,
             )
             self.finished.emit(paths)
         except Exception as exc:  # pragma: no cover
@@ -404,6 +411,7 @@ class ExportAnimationWorker(QThread):
                 margin_ratio=self._config.export_margin_ratio,
                 margin_color=self._config.export_margin_color,
                 fill_trimmed_edges=self._config.fill_trimmed_edges,
+                hide_untracked=self._config.anim_hide_untracked,
             )
             self.finished.emit(paths)
         except Exception as exc:  # pragma: no cover
@@ -962,6 +970,14 @@ class ExportDialog(QDialog):
         config_row.addWidget(self._img_bg_check)
         config_row.addStretch()
         img_form.addRow(self.tr("Render as"), config_row)
+        self._img_hide_check = QCheckBox(self.tr("Hide untracked regions"))
+        self._img_hide_check.setChecked(self._hint.hide_untracked)
+        self._img_hide_check.setToolTip(self.tr(
+            "Leave areas without a tracked node transparent instead of "
+            "filling them with values copied from distant nodes."
+        ))
+        self._img_hide_check.toggled.connect(self._schedule_preview)
+        img_form.addRow(self._img_hide_check)
         layout.addWidget(img_group)
 
         # FRAME RANGE
@@ -1110,6 +1126,13 @@ class ExportDialog(QDialog):
         anim_config_row.addWidget(self._anim_bg_check)
         anim_config_row.addStretch()
         anim_form.addRow(self.tr("Render as"), anim_config_row)
+        self._anim_hide_check = QCheckBox(self.tr("Hide untracked regions"))
+        self._anim_hide_check.setChecked(self._hint.hide_untracked)
+        self._anim_hide_check.setToolTip(self.tr(
+            "Leave areas without a tracked node transparent instead of "
+            "filling them with values copied from distant nodes."
+        ))
+        anim_form.addRow(self._anim_hide_check)
         layout.addWidget(anim_group)
 
         layout.addWidget(self._build_frame_range_widget("anim"))
@@ -1515,7 +1538,8 @@ class ExportDialog(QDialog):
         from al_dic.export.export_png import (
             render_field_frame, _extract_field_values, _load_frame_image,
             colorbar_label, attach_colorbar, add_margin, output_shape_for,
-            _DISPLACEMENT_FIELDS, scale_field_values,
+            _DISPLACEMENT_FIELDS, scale_field_values, _compute_warped_mask,
+            tracked_nodes,
         )
         from al_dic.core.data_structures import split_uv
 
@@ -1549,9 +1573,18 @@ class ExportDialog(QDialog):
               if self._image_files else None)
 
         deformed_coords = None
+        deformed_mask = None
         if show_def and fr.U_accum is not None:
             u, v = split_uv(fr.U_accum)
             deformed_coords = coords + np.column_stack([u, v])
+            # Same mask the export uses (export_png): the frame's own ROI, else
+            # the reference ROI warped forward -- the hide-untracked edge fill
+            # needs it, and the preview has to match the file.
+            if self._per_frame_rois is not None:
+                deformed_mask = self._per_frame_rois.get(frame + 1)
+            if deformed_mask is None and self._roi_mask is not None:
+                deformed_mask = _compute_warped_mask(
+                    coords, deformed_coords, self._roi_mask, img_shape)
 
         use_phys = self._phys_units_check.isChecked()
         values = raw
@@ -1572,8 +1605,12 @@ class ExportDialog(QDialog):
         img = render_field_frame(
             coords, values, img_shape, bg, render_cfg,
             roi_mask=self._roi_mask, deformed_coords=deformed_coords,
+            deformed_mask=deformed_mask,
             render_max_dim=512, output_shape=out_shape,
-            hidden_bg_color=self._pv_hidden_bg_combo.currentData())
+            hidden_bg_color=self._pv_hidden_bg_combo.currentData(),
+            hide_untracked=self._img_hide_check.isChecked(),
+            tracked=tracked_nodes(fr),
+            mesh_step=results.dic_para.winstepsize)
 
         if self._img_colorbar_check.isChecked():
             lbl_txt = colorbar_label(
@@ -2060,6 +2097,8 @@ class ExportDialog(QDialog):
             # (single switch governs both display and export; no separate
             # dialog control).  Defaults to False for main-window exports.
             fill_trimmed_edges=self._hint.fill_trimmed_edges,
+            hide_untracked=self._img_hide_check.isChecked(),
+            anim_hide_untracked=self._anim_hide_check.isChecked(),
             img_include_colorbar=self._img_colorbar_check.isChecked(),
             anim_include_colorbar=self._anim_colorbar_check.isChecked(),
             use_physical_units=self._phys_units_check.isChecked(),

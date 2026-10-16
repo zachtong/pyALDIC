@@ -149,6 +149,7 @@ _VIEW_SCALAR_KEYS = (
     "show_deformed",
     "show_background",
     "hidden_bg_color",
+    "hide_untracked",
     "overlay_alpha",
     "show_mesh",
     "mesh_line_color",

@@ -126,7 +126,7 @@ The classical whole-field initial-guess method is also built in. Each node carri
 
 ### Visualization & Export
 
-Full-field displacement and strain overlay with configurable colormaps, alpha blending, and deformed configuration display. Export to MATLAB `.mat`, NumPy `.npz`, CSV, JPEG/PNG/TIFF field maps, animated GIF/MP4, and PDF reports — with a selectable output resolution and quality so large batches stay small and fast. A WYSIWYG **Preview & Colorbar** tab previews frames through the real export path and styles the colorbar (position, font, thickness, background, margin), and GIF/MP4 animations encode frame-by-frame — with optional frame-step decimation — so long sequences export without a RAM spike.
+Full-field displacement and strain overlay with configurable colormaps, alpha blending, and deformed configuration display. Export to MATLAB `.mat`, NumPy `.npz`, CSV, JPEG/PNG/TIFF field maps, animated GIF/MP4, and PDF reports — with a selectable output resolution and quality so large batches stay small and fast. A WYSIWYG **Preview & Colorbar** tab previews frames through the real export path and styles the colorbar (position, font, thickness, background, margin), and GIF/MP4 animations encode frame-by-frame — with optional frame-step decimation — so long sequences export without a RAM spike. **Hide untracked regions** (on by default) keeps areas with no tracked node — material that left the field of view or the ROI, or was never in the first frame — transparent on screen and in exported images instead of filling them with colors copied from distant nodes, while the measured field is drawn right up to the ROI and crack edges.
 
 <p align="center">
   <!-- TODO: Screenshot of the GUI with displacement overlay and export dialog -->

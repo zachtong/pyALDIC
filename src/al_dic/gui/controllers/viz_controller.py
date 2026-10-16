@@ -17,6 +17,8 @@ Warped mask cache: deformed-coordinate ROI masks.
 
 from __future__ import annotations
 
+import math
+
 from al_dic.core.colormaps import resolve
 import numpy as np
 from numpy.typing import NDArray
@@ -25,6 +27,11 @@ from scipy.interpolate import NearestNDInterpolator
 
 from al_dic.utils.crack_barrier import crack_aware_nearest_fill
 from al_dic.utils.interpolation import FieldInterpolator, scatter_to_grid
+from al_dic.utils.tracked_region import (
+    paint_tracked_region,
+    tracked_reach_px,
+    trimmed_cells,
+)
 
 
 def apply_colormap(
@@ -104,6 +111,9 @@ class VizController:
         # node positions + the barrier (ROI/crack) mask, so it is cleared
         # whenever results or mask content change.
         self._crack_cache: dict[tuple, NDArray[np.bool_] | None] = {}
+        # Hide-untracked, deformed view without a per-frame ROI: the reference
+        # ROI warped forward at image resolution, exactly as the export does.
+        self._warped_roi_cache: dict[int, NDArray[np.bool_]] = {}
 
     def clear_all(self) -> None:
         """Clear both cache tiers (results changed)."""
@@ -112,16 +122,22 @@ class VizController:
         self._interpolator = None
         self._warp_cache.clear()
         self._crack_cache.clear()
+        self._warped_roi_cache.clear()
 
     def clear_pixmap_cache(self) -> None:
         """Clear Tier 2 only (colormap/range changed)."""
         self._pixmap_cache.clear()
 
     def invalidate_masks(self) -> None:
-        """Clear caches that depend on ROI mask content (pixmap + warp + crack)."""
+        """Clear caches that depend on ROI mask content (pixmap + warp + crack),
+        and the interpolated grids that were filled up to a mask edge
+        (extrapolated "fill trimmed edges" and hide-untracked renders)."""
         self._pixmap_cache.clear()
         self._warp_cache.clear()
         self._crack_cache.clear()
+        self._warped_roi_cache.clear()
+        for key in [k for k in self._interp_cache if k[3] is True or k[3] == "tracked"]:
+            del self._interp_cache[key]
 
     def store_interp_result(
         self,
@@ -159,6 +175,8 @@ class VizController:
         ref_uv: tuple[NDArray[np.float64], NDArray[np.float64]] | None = None,
         deformed_mask: NDArray[np.bool_] | None = None,
         blank_invalid_nodes: bool = False,
+        hide_untracked: bool = False,
+        tracked: NDArray[np.bool_] | None = None,
     ) -> tuple[QPixmap, NDArray[np.float64] | None, NDArray[np.float64] | None, int]:
         """Render a displacement field to a QPixmap overlay.
 
@@ -182,6 +200,15 @@ class VizController:
                 NaN value are made transparent (strain edge-trim / plane-fit
                 failures).  Prevents the interpolator's back-fill from hiding
                 the trim.  Leave False for displacement fields.
+            hide_untracked: "Hide untracked regions" -- paint a cell only if a
+                tracked node lies within one grid cell (diagonal included);
+                fill the rest of that reach up to the ROI / crack edge from the
+                same side, leave everything farther transparent
+                (:mod:`al_dic.utils.tracked_region`).  False keeps the
+                historical rendering byte for byte.
+            tracked: Per-node "has displacement" flags used by hide_untracked
+                (independent of strain trimming).  None = nodes with a finite
+                position and a finite value.
 
         Returns:
             (pixmap, x_grid, y_grid, output_step) -- pixmap for display,
@@ -191,14 +218,35 @@ class VizController:
         # actually has trimmed nodes: extrapolate beyond the shrunken
         # interpolation hull so the fill reaches the full ROI, not just the
         # kept-node hull.  Displacement fields (no NaN) are unaffected.
+        # Hide-untracked in the deformed view needs the deformed ROI as its
+        # fill boundary.  Without a per-frame ROI, warp the reference ROI the
+        # way the export does (export_png._compute_warped_mask), so the screen
+        # and the exported file are clipped and filled identically.
+        if (hide_untracked and deformed and deformed_mask is None
+                and roi_mask is not None and ref_uv is not None):
+            deformed_mask = self._warped_roi_cache.get(frame_idx)
+            if deformed_mask is None:
+                from al_dic.export.export_png import _compute_warped_mask
+                ref_nodes = nodes - np.column_stack(
+                    [np.asarray(ref_uv[0], dtype=np.float64),
+                     np.asarray(ref_uv[1], dtype=np.float64)])
+                deformed_mask = _compute_warped_mask(
+                    ref_nodes, nodes, np.asarray(roi_mask, dtype=bool), img_shape)
+                self._warped_roi_cache[frame_idx] = deformed_mask
+
         extrapolate = (
-            not blank_invalid_nodes
+            not hide_untracked
+            and not blank_invalid_nodes
             and bool(np.isnan(np.asarray(values, dtype=np.float64)).any())
         )
-        interp_key = (frame_idx, field_name, deformed, extrapolate)
+        # Hide-untracked renders replace the extrapolation with the tracked-
+        # region paint, so they cache under their own key; legacy keys are
+        # unchanged.
+        interp_key = (frame_idx, field_name, deformed,
+                      "tracked" if hide_untracked else extrapolate)
         has_mask = roi_mask is not None
         has_def_mask = deformed_mask is not None
-        pixmap_key = (frame_idx, field_name, cmap, round(vmin, 6), round(vmax, 6), has_mask, deformed, has_def_mask, blank_invalid_nodes)
+        pixmap_key = (frame_idx, field_name, cmap, round(vmin, 6), round(vmax, 6), has_mask, deformed, has_def_mask, blank_invalid_nodes, hide_untracked)
 
         # Tier 2: exact pixmap hit
         cached_interp = self._interp_cache.get(interp_key)
@@ -219,6 +267,7 @@ class VizController:
                 if self._interpolator is None:
                     self._interpolator = FieldInterpolator(nodes)
                 interpolator = self._interpolator
+            reach = tracked_reach_px(mesh_step)
             grid_data, info = scatter_to_grid(
                 nodes,
                 values,
@@ -227,6 +276,7 @@ class VizController:
                 output_mode="auto",
                 oversample=4,
                 interpolator=interpolator,
+                margin=int(math.ceil(reach)) if hide_untracked else None,
             )
             xg = info["x_grid"]
             yg = info["y_grid"]
@@ -273,6 +323,32 @@ class VizController:
                     gd = np.where(need, fill, gd)
                 grid_data = gd
                 crack_grid = None  # consumed by the fill; do not blank again
+
+            # "Hide untracked regions": paint only within reach of a tracked
+            # node, filling that reach up to the ROI / crack edge from the same
+            # side; the crack band is refilled here, so its flag is consumed.
+            if hide_untracked and xg is not None and yg is not None:
+                gd = np.array(grid_data, dtype=np.float64, copy=True)
+                if crack_grid is not None:
+                    gd[crack_grid] = np.nan
+                vals_arr = np.asarray(values, dtype=np.float64)
+                pos_ok = np.isfinite(nodes).all(axis=1)
+                is_tracked = (np.isfinite(vals_arr) if tracked is None
+                              else np.asarray(tracked, dtype=bool))
+                # No mask = no edge to fill toward: only cells the
+                # interpolation already reached may stay (no halo).
+                inside = np.isfinite(gd)
+                if barrier is not None:
+                    b = np.asarray(barrier)
+                    bx = np.clip(np.round(xg).astype(np.int64), 0, b.shape[1] - 1)
+                    by = np.clip(np.round(yg).astype(np.int64), 0, b.shape[0] - 1)
+                    inside = b[by, bx] > 0.5
+                fill_ok = pos_ok & np.isfinite(vals_arr)
+                grid_data = paint_tracked_region(
+                    gd, xg, yg, inside, nodes[pos_ok & is_tracked],
+                    nodes[fill_ok], vals_arr[fill_ok], barrier, reach,
+                )
+                crack_grid = None
 
             self._interp_cache[interp_key] = (grid_data, xg, yg, out_step)
             self._crack_cache[interp_key] = crack_grid
@@ -323,7 +399,16 @@ class VizController:
         # neighbours, making the trim invisible and the trimmed band show
         # extrapolated (abnormal) values instead of a transparent boundary.
         if blank_invalid_nodes and xg is not None and yg is not None:
-            invalid_grid = _invalid_node_grid(nodes, values, xg, yg)
+            if hide_untracked:
+                # Only TRACKED nodes without a value are trimmed; untracked
+                # ones were already handled by the reach rule.
+                invalid_grid = trimmed_cells(
+                    xg, yg, nodes, values,
+                    np.isfinite(np.asarray(values, dtype=np.float64))
+                    if tracked is None else tracked,
+                )
+            else:
+                invalid_grid = _invalid_node_grid(nodes, values, xg, yg)
             if invalid_grid is not None:
                 mask_to_use = (
                     invalid_grid if mask_to_use is None

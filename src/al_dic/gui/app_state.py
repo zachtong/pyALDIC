@@ -156,6 +156,10 @@ class AppState(QObject):
         #: What replaces the image when it is hidden: "white", "black" or
         #: "transparent".  See export_png.HIDDEN_BG_COLORS.
         self.hidden_bg_color: str = "white"
+        #: "Hide untracked regions": leave areas without a tracked node
+        #: transparent instead of filling them from distant nodes
+        #: (al_dic.utils.tracked_region).  Display and image export.
+        self.hide_untracked: bool = True
         self.roi_editing: bool = False
         # Per-field color state (colormap + auto/manual range).
         # Access via get_field_state() or the proxy properties below.

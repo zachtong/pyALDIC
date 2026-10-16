@@ -1610,6 +1610,35 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "Arrière-plan masqué",
         "es":    "Fondo oculto",
     },
+    # "Hide untracked regions" (2026-10-16): terms follow the TrackingQuality
+    # strings -- tracked = 追踪/追蹤/追跡/추적/verfolgt/suivi/seguido.
+    "Hide untracked regions": {
+        "zh_CN": "隐藏未追踪区域",
+        "zh_TW": "隱藏未追蹤區域",
+        "ja":    "追跡されていない領域を隠す",
+        "ko":    "추적되지 않은 영역 숨기기",
+        "de":    "Nicht verfolgte Bereiche ausblenden",
+        "fr":    "Masquer les zones non suivies",
+        "es":    "Ocultar las zonas no seguidas",
+    },
+    "Leave areas without a tracked node transparent, for example material that left the field of view, instead of filling them with values copied from distant nodes. Also used for exported images and animations; data files always keep NaN there.": {
+        "zh_CN": "让没有已追踪节点的区域（例如已移出视场的材料）保持透明，而不是用从远处节点复制的值填充。导出的图像和动画也采用此设置；数据文件中这些区域始终为 NaN。",
+        "zh_TW": "讓沒有已追蹤節點的區域（例如已移出視野的材料）保持透明，而不是以從遠處節點複製的值填滿。匯出的影像與動畫也採用此設定；資料檔中這些區域一律為 NaN。",
+        "ja":    "追跡済みノードのない領域（視野の外に出た材料など）を、遠くのノードからコピーした値で埋めずに透明のままにします。エクスポートする画像とアニメーションにも適用されます。データファイルでは、これらの領域は常に NaN のままです。",
+        "ko":    "추적된 노드가 없는 영역(예: 시야 밖으로 나간 재료)을 먼 노드에서 복사한 값으로 채우지 않고 투명하게 둡니다. 내보내는 이미지와 애니메이션에도 적용되며, 데이터 파일에서는 이 영역이 항상 NaN으로 유지됩니다.",
+        "de":    "Bereiche ohne verfolgten Knoten, etwa Material, das das Sichtfeld verlassen hat, bleiben transparent, statt mit Werten entfernter Knoten gefüllt zu werden. Gilt auch für exportierte Bilder und Animationen; in Datendateien steht dort immer NaN.",
+        "fr":    "Laisser transparentes les zones sans nœud suivi, par exemple le matériau sorti du champ de vision, au lieu de les remplir avec des valeurs copiées depuis des nœuds éloignés. S'applique aussi aux images et animations exportées ; les fichiers de données y gardent toujours NaN.",
+        "es":    "Deja transparentes las zonas sin ningún nodo seguido, por ejemplo el material que salió del campo de visión, en lugar de rellenarlas con valores copiados de nodos lejanos. También se aplica a las imágenes y animaciones exportadas; los archivos de datos siempre conservan NaN en ellas.",
+    },
+    "Leave areas without a tracked node transparent instead of filling them with values copied from distant nodes.": {
+        "zh_CN": "让没有已追踪节点的区域保持透明，而不是用从远处节点复制的值填充。",
+        "zh_TW": "讓沒有已追蹤節點的區域保持透明，而不是以從遠處節點複製的值填滿。",
+        "ja":    "追跡済みノードのない領域を、遠くのノードからコピーした値で埋めずに透明のままにします。",
+        "ko":    "추적된 노드가 없는 영역을 먼 노드에서 복사한 값으로 채우지 않고 투명하게 둡니다.",
+        "de":    "Bereiche ohne verfolgten Knoten bleiben transparent, statt mit Werten entfernter Knoten gefüllt zu werden.",
+        "fr":    "Laisser transparentes les zones sans nœud suivi au lieu de les remplir avec des valeurs copiées depuis des nœuds éloignés.",
+        "es":    "Deja transparentes las zonas sin ningún nodo seguido en lugar de rellenarlas con valores copiados de nodos lejanos.",
+    },
     "Plot the field at the deformed node positions, or at their positions in the reference frame.": {
         "zh_CN": "将场绘制在变形后的节点位置，或绘制在其在参考帧中的位置。",
         "zh_TW": "將場繪製在變形後的節點位置，或繪製在其於參考影格中的位置。",

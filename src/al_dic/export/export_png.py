@@ -36,13 +36,20 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
-from scipy.spatial import Delaunay
+from scipy.spatial import Delaunay, cKDTree
 
 from al_dic.core.data_structures import PipelineResult, split_uv
 from al_dic.export.export_utils import ensure_dir, frame_tag
 from al_dic.utils.crack_barrier import (
     crack_aware_nearest_fill,
     cross_crack_cell_mask,
+)
+from al_dic.utils.tracked_region import (
+    mask_fingerprint,
+    paint_tracked_region,
+    tracked_reach_px,
+    trimmed_cells,
+    untracked_cells,
 )
 # Colorbar rendering lives in its own module (no cycle); re-export
 # render_colorbar_strip here for backward-compatible imports.
@@ -237,6 +244,9 @@ def render_field_frame(
     output_shape: tuple[int, int] | None = None,
     blank_invalid_nodes: bool = True,
     hidden_bg_color: str = "black",
+    hide_untracked: bool = False,
+    tracked: NDArray | None = None,
+    mesh_step: float | None = None,
 ) -> NDArray:
     """Render a single field frame to a BGR (or BGRA) uint8 image.
 
@@ -284,6 +294,17 @@ def render_field_frame(
                          the interpolator re-fill the trimmed band from reliable
                          interior nodes ("fill trimmed edges").  No-op for
                          fields without trimmed nodes (e.g. displacement).
+        hide_untracked:  "Hide untracked regions": paint a cell only within one
+                         grid cell (diagonal included) of a TRACKED node, fill
+                         that reach up to the ROI / crack edge from the same
+                         side, leave everything farther transparent -- the same
+                         rule as the on-screen view (al_dic.utils.tracked_region).
+                         Trim blanking then applies only to tracked nodes
+                         without a value.  False keeps the historical output.
+        tracked:         (N,) bool, node has a displacement this frame.  None =
+                         finite value and finite render position.
+        mesh_step:       Mesh node spacing (px) setting the reach; None = the
+                         median nearest-neighbour spacing of *coords*.
 
     Returns:
         (Ho, Wo, 3) BGR uint8 image (Ho, Wo = *output_shape* or *image_shape*).
@@ -347,57 +368,64 @@ def render_field_frame(
         interp = LinearNDInterpolator(tri, values[valid], fill_value=np.nan)
         grid_vals = interp(grid_x, grid_y)  # (rh, rw), NaN outside hull
 
-        # Blank cells whose nearest node was edge-trimmed (NaN value).  The
-        # interpolator above drops those nodes and back-fills their cells from
-        # valid neighbours, which would hide the strain edge-trim in the
-        # exported image/animation -- unlike the on-screen view, where
-        # VizController blanks them.  Rasterise node finite-ness by nearest
-        # neighbour (matching VizController._invalid_node_grid) and NaN the
-        # trimmed cells so display and export agree.  No-op when nothing is
-        # trimmed (e.g. displacement fields), so those exports are unchanged.
-        # Skipped when *blank_invalid_nodes* is False ("fill trimmed edges"):
-        # the back-fill above then becomes the desired re-interpolation.
-        node_ok = np.isfinite(render_coords).all(axis=1)
-        has_trim = node_ok.any() and not bool(valid[node_ok].all())
-        if blank_invalid_nodes and has_trim:
-            nn = NearestNDInterpolator(
-                render_coords[node_ok], valid[node_ok].astype(np.float64)
+        if hide_untracked:
+            grid_vals = _hide_untracked_grid(
+                grid_vals, grid_x, grid_y, tri, pts, values, valid, render_coords,
+                coords, tracked, deformed_mask if deformed_coords is not None else roi_mask,
+                mesh_step, blank_invalid_nodes, tri_cache,
             )
-            keep = nn(grid_x, grid_y) >= 0.5
-            grid_vals = np.where(keep, grid_vals, np.nan)
-
-        # Crack-aware rendering: the fresh Delaunay above reconnects nodes on
-        # opposite sides of a crack that the mesh split, smearing the
-        # discontinuity.  Blank grid cells inside a triangle whose edge crosses
-        # the barrier (crack / hole) so the render respects it like the mesh
-        # does.  Barrier is in the same coordinate space as render_coords:
-        # deformed_mask in deformed mode, else roi_mask.  Bit-exact (returns
-        # None) when no triangle crosses a barrier -- crack-free exports are
-        # unchanged.
-        barrier = deformed_mask if deformed_coords is not None else roi_mask
-        crack_blank = cross_crack_cell_mask(tri, pts, grid_x, grid_y, barrier)
-        if crack_blank is not None:
-            grid_vals = np.where(crack_blank, np.nan, grid_vals)
-
-        # "Fill trimmed edges" (fill ON): recover every trimmed cell from
-        # reliable nodes -- the ROI OUTER edge (beyond the shrunken hull) AND
-        # the crack INNER edge (just blanked above).  Runs AFTER the crack pass
-        # and fills each cell from the nearest node reachable WITHOUT crossing
-        # the crack, so the two crack faces are filled from their own side and
-        # the crack stays a sharp line.  Restricted to inside the barrier ROI;
-        # the crack void itself (barrier < 0.5) is left transparent.
-        if not blank_invalid_nodes and has_trim:
-            need = np.isnan(grid_vals)
-            if barrier is not None:
-                b = np.asarray(barrier)
-                bx = np.clip(np.round(grid_x).astype(np.int64), 0, b.shape[1] - 1)
-                by = np.clip(np.round(grid_y).astype(np.int64), 0, b.shape[0] - 1)
-                need &= b[by, bx] > 0.5
-            if need.any():
-                fill = crack_aware_nearest_fill(
-                    grid_x, grid_y, need, pts, values[valid], barrier,
+        else:
+            # Blank cells whose nearest node was edge-trimmed (NaN value).  The
+            # interpolator above drops those nodes and back-fills their cells from
+            # valid neighbours, which would hide the strain edge-trim in the
+            # exported image/animation -- unlike the on-screen view, where
+            # VizController blanks them.  Rasterise node finite-ness by nearest
+            # neighbour (matching VizController._invalid_node_grid) and NaN the
+            # trimmed cells so display and export agree.  No-op when nothing is
+            # trimmed (e.g. displacement fields), so those exports are unchanged.
+            # Skipped when *blank_invalid_nodes* is False ("fill trimmed edges"):
+            # the back-fill above then becomes the desired re-interpolation.
+            node_ok = np.isfinite(render_coords).all(axis=1)
+            has_trim = node_ok.any() and not bool(valid[node_ok].all())
+            if blank_invalid_nodes and has_trim:
+                nn = NearestNDInterpolator(
+                    render_coords[node_ok], valid[node_ok].astype(np.float64)
                 )
-                grid_vals = np.where(need, fill, grid_vals)
+                keep = nn(grid_x, grid_y) >= 0.5
+                grid_vals = np.where(keep, grid_vals, np.nan)
+
+            # Crack-aware rendering: the fresh Delaunay above reconnects nodes on
+            # opposite sides of a crack that the mesh split, smearing the
+            # discontinuity.  Blank grid cells inside a triangle whose edge crosses
+            # the barrier (crack / hole) so the render respects it like the mesh
+            # does.  Barrier is in the same coordinate space as render_coords:
+            # deformed_mask in deformed mode, else roi_mask.  Bit-exact (returns
+            # None) when no triangle crosses a barrier -- crack-free exports are
+            # unchanged.
+            barrier = deformed_mask if deformed_coords is not None else roi_mask
+            crack_blank = cross_crack_cell_mask(tri, pts, grid_x, grid_y, barrier)
+            if crack_blank is not None:
+                grid_vals = np.where(crack_blank, np.nan, grid_vals)
+
+            # "Fill trimmed edges" (fill ON): recover every trimmed cell from
+            # reliable nodes -- the ROI OUTER edge (beyond the shrunken hull) AND
+            # the crack INNER edge (just blanked above).  Runs AFTER the crack pass
+            # and fills each cell from the nearest node reachable WITHOUT crossing
+            # the crack, so the two crack faces are filled from their own side and
+            # the crack stays a sharp line.  Restricted to inside the barrier ROI;
+            # the crack void itself (barrier < 0.5) is left transparent.
+            if not blank_invalid_nodes and has_trim:
+                need = np.isnan(grid_vals)
+                if barrier is not None:
+                    b = np.asarray(barrier)
+                    bx = np.clip(np.round(grid_x).astype(np.int64), 0, b.shape[1] - 1)
+                    by = np.clip(np.round(grid_y).astype(np.int64), 0, b.shape[0] - 1)
+                    need &= b[by, bx] > 0.5
+                if need.any():
+                    fill = crack_aware_nearest_fill(
+                        grid_x, grid_y, need, pts, values[valid], barrier,
+                    )
+                    grid_vals = np.where(need, fill, grid_vals)
     except Exception:
         return bg_bgr.copy()
 
@@ -455,6 +483,80 @@ def render_field_frame(
     result = np.where(inside[:, :, None], blended, bg_bgr)
 
     return result
+
+
+def tracked_nodes(fr) -> NDArray | None:
+    """Per-node "has a displacement" flags of a frame (U_accum, else U)."""
+    ua = fr.U_accum if fr.U_accum is not None else fr.U
+    if ua is None:
+        return None
+    u, v = split_uv(ua)
+    return np.isfinite(u) & np.isfinite(v)
+
+
+def _node_spacing(coords: NDArray) -> float:
+    """Median nearest-neighbour spacing of the finite nodes (mesh step proxy)."""
+    pts = coords[np.isfinite(coords).all(axis=1)]
+    if len(pts) < 2:
+        return 1.0
+    d, _ = cKDTree(pts).query(pts, k=2)
+    return float(np.median(d[:, 1]))
+
+
+def _hide_untracked_grid(
+    grid_vals: NDArray,
+    grid_x: NDArray,
+    grid_y: NDArray,
+    tri,
+    pts: NDArray,
+    values: NDArray,
+    valid: NDArray,
+    render_coords: NDArray,
+    coords: NDArray,
+    tracked: NDArray | None,
+    barrier: NDArray | None,
+    mesh_step: float | None,
+    blank_invalid_nodes: bool,
+    tri_cache: dict | None,
+) -> NDArray:
+    """render_field_frame's "Hide untracked regions" pass (see tracked_region)."""
+    crack_blank = cross_crack_cell_mask(tri, pts, grid_x, grid_y, barrier)
+    if crack_blank is not None:
+        grid_vals = np.where(crack_blank, np.nan, grid_vals)
+    node_ok = np.isfinite(render_coords).all(axis=1)
+    is_tracked = (np.isfinite(values) if tracked is None
+                  else np.asarray(tracked, dtype=bool))
+    tracked_pts = render_coords[node_ok & is_tracked]
+    reach = tracked_reach_px(mesh_step if mesh_step else _node_spacing(coords))
+    # No mask = no edge to fill toward: only cells the interpolation already
+    # reached may stay (no halo around the node cloud).
+    inside = np.isfinite(grid_vals)
+    if barrier is not None:
+        b = np.asarray(barrier)
+        bx = np.clip(np.round(grid_x).astype(np.int64), 0, b.shape[1] - 1)
+        by = np.clip(np.round(grid_y).astype(np.int64), 0, b.shape[0] - 1)
+        inside = b[by, bx] > 0.5
+    # The reach mask depends on geometry only: share it between the fields of
+    # a frame (one entry, so a long reference-view export cannot accumulate).
+    far = None
+    if tri_cache is not None:
+        key = (tracked_pts.tobytes(), inside.tobytes(), grid_vals.shape, reach,
+               mask_fingerprint(barrier))
+        hit = tri_cache.get("_untracked")
+        if hit is not None and hit[0] == key:
+            far = hit[1]
+        else:
+            far = untracked_cells(grid_x, grid_y, tracked_pts, reach, where=inside)
+            tri_cache["_untracked"] = (key, far)
+    grid_vals = paint_tracked_region(
+        grid_vals, grid_x, grid_y, inside, tracked_pts, pts, values[valid],
+        barrier, reach, far=far, cache=tri_cache,
+    )
+    if blank_invalid_nodes:
+        trimmed = trimmed_cells(grid_x, grid_y, render_coords, values, is_tracked)
+        if trimmed is not None:
+            grid_vals = np.where(trimmed, np.nan, grid_vals)
+    return grid_vals
 
 
 def _compute_warped_mask(
@@ -537,6 +639,7 @@ def export_png(
     margin_color: str = "white",
     fill_trimmed_edges: bool = False,
     hidden_bg_color: str = "black",
+    hide_untracked: bool = True,
 ) -> list[Path]:
     """Render and save images for each enabled field and frame.
 
@@ -571,6 +674,9 @@ def export_png(
         fill_trimmed_edges: When True, re-interpolate the edge-trimmed strain
                      band from reliable interior nodes instead of blanking it
                      (matches the strain window's toggle).  Default False.
+        hide_untracked: Leave regions without a tracked node transparent
+                     instead of filling them from distant nodes (matches the
+                     "Hide untracked regions" display toggle).  Default True.
 
     Returns:
         List of Paths to written PNG files.
@@ -676,6 +782,7 @@ def export_png(
         # Deformed frames each carry their own render coordinates -> per-frame
         # cache; non-deformed frames share the constant reference cache.
         frame_tri_cache = {} if deformed_coords is not None else shared_tri_cache
+        tracked = tracked_nodes(fr)
 
         for cfg in enabled_configs:
             raw_values = _extract_field_values(cfg.field_name, t, results, fr)
@@ -721,6 +828,9 @@ def export_png(
                 output_shape=out_shape,
                 blank_invalid_nodes=not fill_trimmed_edges,
                 hidden_bg_color=hidden_bg_color,
+                hide_untracked=hide_untracked,
+                tracked=tracked,
+                mesh_step=results.dic_para.winstepsize,
             )
 
             # Append the styled colorbar (position/font/thickness/background)

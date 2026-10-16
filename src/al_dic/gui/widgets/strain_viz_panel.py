@@ -151,6 +151,18 @@ class StrainVizPanel(QWidget):
         ))
         layout.addRow(self.tr("Edges"), self._fill_edges_check)
 
+        # --- Hide untracked regions (display + image export) ---
+        self._hide_untracked_check = QCheckBox(self.tr("Hide untracked regions"))
+        self._hide_untracked_check.setChecked(True)
+        self._hide_untracked_check.setToolTip(self.tr(
+            "Leave areas without a tracked node transparent, for example "
+            "material that left the field of view, instead of filling them "
+            "with values copied from distant nodes. Also used for exported "
+            "images and animations; data files always keep NaN there."
+        ))
+        # Field column, under "Fill trimmed edges" (same group of edge options).
+        layout.addRow("", self._hide_untracked_check)
+
         # Wire signals
         self._cmap_combo.currentIndexChanged.connect(self._emit_changed)
         self._auto_check.toggled.connect(self._on_auto_toggled)
@@ -161,6 +173,7 @@ class StrainVizPanel(QWidget):
         self._background_check.toggled.connect(self._on_background_toggled)
         self._hidden_bg_combo.currentIndexChanged.connect(self._emit_changed)
         self._fill_edges_check.toggled.connect(self._emit_changed)
+        self._hide_untracked_check.toggled.connect(self._emit_changed)
 
     # ------------------------------------------------------------------
     # Public API
@@ -178,11 +191,20 @@ class StrainVizPanel(QWidget):
             "show_background": self._background_check.isChecked(),
             "hidden_bg_color": str(self._hidden_bg_combo.currentData()),
             "fill_trimmed_edges": self._fill_edges_check.isChecked(),
+            "hide_untracked": self._hide_untracked_check.isChecked(),
         }
 
     def _on_background_toggled(self, shown: bool) -> None:
         self._hidden_bg_combo.setEnabled(not shown)
         self._emit_changed()
+
+    def set_hide_untracked(self, hide: bool) -> None:
+        """Adopt the main window's choice without re-emitting a change."""
+        if self._hide_untracked_check.isChecked() == bool(hide):
+            return
+        self._hide_untracked_check.blockSignals(True)
+        self._hide_untracked_check.setChecked(bool(hide))
+        self._hide_untracked_check.blockSignals(False)
 
     def set_hidden_bg_color(self, color: str) -> None:
         """Adopt the shared fill without re-emitting a change."""

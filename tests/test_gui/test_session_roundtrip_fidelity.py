@@ -70,7 +70,7 @@ PHYSICAL = dict(use_physical_units=True, pixel_size=2.5, pixel_unit="um",
                 frame_rate=30.0)
 VIEW = dict(display_field="strain_eyy", show_deformed=False,
             overlay_alpha=0.35, show_mesh=False, mesh_line_color="#ff0000",
-            mesh_line_width=3, show_subset_window=True)
+            mesh_line_width=3, show_subset_window=True, hide_untracked=False)
 
 # AppState fields that are deliberately not persisted, with the reason.
 TRANSIENT = {

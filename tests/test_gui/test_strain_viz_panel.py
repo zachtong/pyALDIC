@@ -29,7 +29,7 @@ def test_default_state(panel):
 def test_state_keys(panel):
     expected = {"colormap", "vmin", "vmax", "alpha", "use_percentile",
                 "show_deformed", "show_background", "hidden_bg_color",
-                "fill_trimmed_edges"}
+                "fill_trimmed_edges", "hide_untracked"}
     assert set(panel.get_state().keys()) == expected
 
 
