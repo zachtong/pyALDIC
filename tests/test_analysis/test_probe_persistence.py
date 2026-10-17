@@ -28,6 +28,36 @@ def test_a_deleted_id_is_not_reused_after_a_round_trip():
     assert back.add("point", PointGeom(3.0, 3.0)).id == 4
 
 
+def test_the_name_counter_survives_a_round_trip():
+    ps = ProbeSet()
+    for i in range(2):
+        ps.add("point", PointGeom(float(i), 0.0))
+    ps.clear()
+    ps.add("point", PointGeom(5.0, 5.0))             # P1 again, as id 3
+    back = ProbeSet.from_payload(ps.to_payload())
+    p = back.add("point", PointGeom(6.0, 6.0))
+    assert (p.label, p.id) == ("P2", 4)
+
+
+def test_a_saved_empty_set_restarts_names_at_p1():
+    ps = ProbeSet()
+    ps.remove(ps.add("point", PointGeom(1.0, 1.0)).id)
+    back = ProbeSet.from_payload(ps.to_payload())
+    assert back.add("point", PointGeom(2.0, 2.0)).label == "P1"
+
+
+def test_files_without_the_name_counter_continue_their_names():
+    """Sessions written before the counter existed named every probe P<id>;
+    the next name still follows the id counter there."""
+    ps = ProbeSet()
+    ps.add("point", PointGeom(1.0, 1.0))
+    ps.add("point", PointGeom(2.0, 2.0))
+    payload = ps.to_payload()
+    payload.pop("next_number", None)
+    back = ProbeSet.from_payload(payload)
+    assert back.add("point", PointGeom(3.0, 3.0)).label == "P3"
+
+
 def test_duplicate_ids_are_refused():
     ps = ProbeSet()
     ps.add("point", PointGeom(1.0, 1.0))

@@ -219,6 +219,43 @@ def test_a_new_probe_takes_a_colour_nobody_is_using():
     assert len(set(fresh)) == 3
 
 
+def test_default_names_restart_at_p1_once_every_probe_is_deleted():
+    """Deleting P1-P3 and drawing again gave P4. Names count the probes added
+    since the set was last empty; ids keep counting, so nothing keyed on an
+    id can take the new P1 for the old one."""
+    s = ProbeSet()
+    old = [s.add("point", PointGeom(float(i), 0.0)) for i in range(3)]
+    for p in old:
+        s.remove(p.id)
+    new = s.add("line", LineGeom(0.0, 0.0, 5.0, 5.0))
+    assert new.label == "P1"
+    assert new.id not in {p.id for p in old}
+
+
+def test_clear_all_restarts_default_names():
+    s = ProbeSet()
+    s.add("point", PointGeom(1.0, 1.0))
+    s.add("point", PointGeom(2.0, 2.0))
+    s.clear()
+    names = [s.add("point", PointGeom(float(i), 3.0)).label for i in range(2)]
+    assert names == ["P1", "P2"]
+
+
+def test_names_are_not_reused_while_a_probe_remains():
+    """With P1 and P3 still on screen, a new P2 would give one session two
+    different probes of that name."""
+    s = ProbeSet()
+    probes = [s.add("point", PointGeom(float(i), 0.0)) for i in range(3)]
+    s.remove(probes[1].id)
+    assert s.add("point", PointGeom(9.0, 9.0)).label == "P4"
+
+
+def test_a_given_label_still_counts_towards_the_default_names():
+    s = ProbeSet()
+    s.add("point", PointGeom(1.0, 1.0), label="tip")
+    assert s.add("point", PointGeom(2.0, 2.0)).label == "P2"
+
+
 def test_replace_updates_in_place_by_id():
     s = ProbeSet()
     p = s.add("point", PointGeom(1.0, 1.0))

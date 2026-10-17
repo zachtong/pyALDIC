@@ -266,11 +266,14 @@ class ProbeSet:
     """Ordered probes with unique ids.
 
     Ids are unique across every kind and are never reused, so a probe can be
-    deleted, referenced or coloured by id alone.
+    deleted, referenced or coloured by id alone. Default names (P1, P2, ...)
+    count the probes added since the set was last empty: deleting every probe
+    starts them again at P1 while the ids keep counting.
     """
 
     _probes: list[Probe] = field(default_factory=list)
     _next_id: int = 1
+    _next_number: int = 1
 
     def __iter__(self) -> Iterator[Probe]:
         return iter(self._probes)
@@ -297,11 +300,13 @@ class ProbeSet:
     ) -> Probe:
         probe_id = self._next_id
         self._next_id += 1
+        number = self._next_number
+        self._next_number += 1
         probe = Probe(
             id=probe_id,
             kind=kind,
             geometry=geometry,
-            label=label if label else f"P{probe_id}",
+            label=label if label else f"P{number}",
             color=color or self._free_colour(probe_id),
         )
         self._probes.append(probe)
@@ -331,26 +336,33 @@ class ProbeSet:
         for i, existing in enumerate(self._probes):
             if existing.id == probe_id:
                 del self._probes[i]
+                if not self._probes:
+                    self._next_number = 1
                 return
         raise KeyError(f"No probe with id {probe_id}.")
 
     def clear(self) -> None:
         self._probes.clear()
+        self._next_number = 1
 
     def to_list(self) -> list[dict[str, Any]]:
         return [probe_to_dict(p) for p in self._probes]
 
     def to_payload(self) -> dict[str, Any]:
-        """What a session file stores: the probes and the id counter.
+        """What a session file stores: the probes and both counters.
 
-        The counter matters: rebuilt from the surviving ids alone, a deleted
-        probe's id comes back after a reload.
+        The id counter matters: rebuilt from the surviving ids alone, a
+        deleted probe's id comes back after a reload. The name counter keeps
+        the next default name where it was.
         """
-        return {"items": self.to_list(), "next_id": int(self._next_id)}
+        return {"items": self.to_list(), "next_id": int(self._next_id),
+                "next_number": int(self._next_number)}
 
     @staticmethod
     def from_list(
-        items: Sequence[dict[str, Any]], next_id: int | None = None
+        items: Sequence[dict[str, Any]],
+        next_id: int | None = None,
+        next_number: int | None = None,
     ) -> "ProbeSet":
         if not isinstance(items, (list, tuple)):
             raise ValueError("Probe items must be a list.")
@@ -364,7 +376,15 @@ class ProbeSet:
             raise ValueError(f"Probe ids must be unique; duplicate in {ids}.")
         floor = max(ids, default=0) + 1
         start = max(int(next_id), floor) if next_id is not None else floor
-        return ProbeSet(_probes=probes, _next_id=start)
+        # Files written before the name counter named every probe P<id>, so
+        # their next name follows the id counter; an empty set starts at P1.
+        if not probes:
+            number = 1
+        elif next_number is not None:
+            number = max(int(next_number), 1)
+        else:
+            number = start
+        return ProbeSet(_probes=probes, _next_id=start, _next_number=number)
 
     @staticmethod
     def from_payload(payload: Any) -> "ProbeSet":
@@ -373,7 +393,8 @@ class ProbeSet:
             return ProbeSet()
         if isinstance(payload, dict):
             return ProbeSet.from_list(
-                payload.get("items", []), payload.get("next_id")
+                payload.get("items", []), payload.get("next_id"),
+                payload.get("next_number"),
             )
         return ProbeSet.from_list(payload)
 
