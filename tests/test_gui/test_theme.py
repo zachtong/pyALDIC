@@ -20,6 +20,7 @@ from al_dic.gui.theme import (
     ARROWS_DIR,
     COLORS,
     DARK,
+    DEFAULT_THEME,
     LIGHT,
     THEMES,
     build_stylesheet,
@@ -56,15 +57,16 @@ LIGHT_ONLY = (_hexes(LIGHT) - _hexes(DARK) - {"#ffffff"}) | {LIGHT.OVERLAY_BG.lo
 
 
 @pytest.fixture
-def dark_again(tmp_path):
-    """Every test starts dark with nothing saved, and leaves it that way:
-    other modules expect the default, and the user's own settings are never
-    touched (QSettings is redirected to a temporary folder)."""
+def start_dark(tmp_path):
+    """Every test starts dark with nothing saved -- a known theme for the switch
+    tests to flip from -- and leaves the default theme in place: other modules
+    expect the default, and the user's own settings are never touched
+    (QSettings is redirected to a temporary folder)."""
     QSettings.setDefaultFormat(QSettings.Format.IniFormat)
     QSettings.setPath(QSettings.Format.IniFormat, QSettings.Scope.UserScope, str(tmp_path))
     theme_manager(app).set_theme("dark", persist=False)
     yield
-    theme_manager(app).set_theme("dark", persist=False)
+    theme_manager(app).set_theme(DEFAULT_THEME, persist=False)
     app.setStyleSheet("")
     QSettings.setDefaultFormat(QSettings.Format.NativeFormat)
 
@@ -81,17 +83,24 @@ def _contrast(a: str, b: str) -> float:
 
 
 # ---------------------------------------------------------------- palettes, stylesheet
-def test_the_dark_theme_is_the_default_and_its_stylesheet_is_the_original_one():
+def test_the_light_theme_is_the_default():
+    assert DEFAULT_THEME == "light" and THEMES[DEFAULT_THEME] is LIGHT
+
+
+def test_the_dark_stylesheet_is_the_original_one():
     assert set(THEMES) == {"dark", "light"} and THEMES["dark"] is DARK
     set_current_theme("dark")
-    assert current_theme() == "dark" and current_colors() is DARK
-    css = build_stylesheet(DARK)
-    assert css == build_stylesheet()  # the theme in use
-    # the original dark theme: no transparent containers, the style's own selection
-    assert "QComboBoxPrivateContainer" not in css and "\nQAbstractItemView {" not in css
-    assert "#0b0f1a" in css and "spin_up.svg" in css
-    with pytest.raises(ValueError):
-        set_current_theme("sepia")
+    try:
+        assert current_theme() == "dark" and current_colors() is DARK
+        css = build_stylesheet(DARK)
+        assert css == build_stylesheet()  # the theme in use
+        # the original dark theme: no transparent containers, the style's own selection
+        assert "QComboBoxPrivateContainer" not in css and "\nQAbstractItemView {" not in css
+        assert "#0b0f1a" in css and "spin_up.svg" in css
+        with pytest.raises(ValueError):
+            set_current_theme("sepia")
+    finally:
+        set_current_theme(DEFAULT_THEME)
 
 
 def test_the_light_stylesheet_is_white_with_grey_sidebars_and_dark_arrows():
@@ -121,12 +130,12 @@ def test_the_light_palette_is_readable():
 
 
 def test_colors_reads_the_theme_in_use():
-    set_current_theme("light")
+    set_current_theme("dark")
     try:
-        assert COLORS.ACCENT == LIGHT.ACCENT and COLORS.IS_DARK is False
+        assert COLORS.ACCENT == DARK.ACCENT and COLORS.IS_DARK is True
     finally:
-        set_current_theme("dark")
-    assert COLORS.ACCENT == DARK.ACCENT
+        set_current_theme("light")
+    assert COLORS.ACCENT == LIGHT.ACCENT and COLORS.IS_DARK is False
     with pytest.raises(AttributeError):
         COLORS.NOT_A_COLOUR  # noqa: B018 -- a missing token still fails loudly
 
@@ -144,7 +153,7 @@ def test_qcolor_reads_both_forms_the_palette_holds():
 
 
 # ---------------------------------------------------------------- the Settings menu
-def test_the_settings_menu_offers_both_themes(dark_again):
+def test_the_settings_menu_offers_both_themes(start_dark):
     from al_dic.gui.app import MainWindow
 
     window = MainWindow()
@@ -212,7 +221,7 @@ def _offenders(windows, forbidden) -> list[str]:
     return bad
 
 
-def test_a_live_switch_leaves_no_colour_of_the_other_theme(dark_again):
+def test_a_live_switch_leaves_no_colour_of_the_other_theme(start_dark):
     windows = _windows()
     try:
         theme_manager(app).set_theme("light", persist=False)
@@ -226,7 +235,7 @@ def test_a_live_switch_leaves_no_colour_of_the_other_theme(dark_again):
             win.close()
 
 
-def test_a_window_built_in_the_light_theme_is_light_throughout(dark_again):
+def test_a_window_built_in_the_light_theme_is_light_throughout(start_dark):
     theme_manager(app).set_theme("light", persist=False)
     windows = _windows()
     try:
@@ -248,7 +257,7 @@ def _icon_brightness(toolbar) -> float:
     return sum(values) / len(values)
 
 
-def test_the_chart_toolbar_icons_follow_the_theme(dark_again):
+def test_the_chart_toolbar_icons_follow_the_theme(start_dark):
     """matplotlib draws white toolbar icons on a background it finds dark, and
     it found the light theme's transparent containers black: white on white."""
     from al_dic.gui.widgets.mpl_chart import MplChart
@@ -268,7 +277,7 @@ def test_the_chart_toolbar_icons_follow_the_theme(dark_again):
             chart.close()
 
 
-def test_a_themed_widget_is_restyled_on_a_switch(dark_again):
+def test_a_themed_widget_is_restyled_on_a_switch(start_dark):
     from PySide6.QtWidgets import QLabel
 
     label = themed(QLabel("x"), "QLabel {{ color: {TEXT_PRIMARY}; }}")
@@ -281,16 +290,16 @@ def test_a_themed_widget_is_restyled_on_a_switch(dark_again):
 
 
 # ---------------------------------------------------------------- the start-up theme
-def test_the_saved_theme_is_applied_at_start_up(dark_again, monkeypatch):
+def test_the_saved_theme_is_applied_at_start_up(start_dark, monkeypatch):
     monkeypatch.delenv(ENV_THEME, raising=False)
-    assert startup_theme() == "dark"  # nothing saved
-    QSettings().setValue(SETTINGS_KEY, "light")
-    assert startup_theme() == "light"
-    QSettings().setValue(SETTINGS_KEY, "sepia")  # an unknown value falls back
+    assert startup_theme() == "light"  # nothing saved: the default
+    QSettings().setValue(SETTINGS_KEY, "dark")
     assert startup_theme() == "dark"
+    QSettings().setValue(SETTINGS_KEY, "sepia")  # an unknown value falls back
+    assert startup_theme() == "light"
 
 
-def test_the_environment_pins_the_start_theme(dark_again, monkeypatch):
+def test_the_environment_pins_the_start_theme(start_dark, monkeypatch):
     QSettings().setValue(SETTINGS_KEY, "dark")
     monkeypatch.setenv(ENV_THEME, "light")
     assert startup_theme() == "light"

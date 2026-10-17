@@ -100,7 +100,7 @@ LIGHT = Colors(
     IS_DARK=False,
 )
 THEMES: dict[str, Colors] = {"dark": DARK, "light": LIGHT}
-DEFAULT_THEME = "dark"
+DEFAULT_THEME = "light"
 _current = {"name": DEFAULT_THEME}  # one per process, like the application stylesheet
 
 

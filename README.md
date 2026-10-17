@@ -49,7 +49,7 @@ Standard subset-based DIC (IC-GN) solves each node independently — accurate fo
 
 ### User-Friendly GUI
 
-A complete desktop application built with PySide6. Three-column layout with image list, ROI tools, and parameter controls on the left — interactive zoom/pan canvas in the center — run controls, field overlay, and console log on the right. Load images, draw ROIs, configure parameters, run DIC, and visualize results — all without writing a single line of code. Dark or light: **Settings → Theme** switches every open window at once and remembers the choice.
+A complete desktop application built with PySide6. Three-column layout with image list, ROI tools, and parameter controls on the left — interactive zoom/pan canvas in the center — run controls, field overlay, and console log on the right. Load images, draw ROIs, configure parameters, run DIC, and visualize results — all without writing a single line of code. Light by default, or dark: **Settings → Theme** switches every open window at once and remembers the choice.
 
 <p align="center">
   <img src="assets/pyALDIC_demo.gif" alt="pyALDIC end-to-end workflow demo — import images, pick workflow, draw / batch-import ROI, refine mesh, run DIC, inspect displacement and strain fields" width="90%"/>

@@ -65,7 +65,7 @@ __all__ = [
 
 def startup_theme() -> str:
     """The theme to start with: ``$PYALDIC_THEME`` when it names one, else the
-    choice saved last time, else the dark default."""
+    choice saved last time, else the light default."""
     forced = os.environ.get(ENV_THEME, "")
     if forced in THEMES:
         return forced
