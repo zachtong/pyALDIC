@@ -22,6 +22,29 @@ def frame_tag(i: int, n_frames: int) -> str:
     return f"frame_{i + 1:0{width}d}"
 
 
+def result_frame_number(t: int) -> int:
+    """The frame number of ``result_disp[t]`` as the GUI shows it.
+
+    ``result_disp[t]`` holds image ``t + 1``; the frame navigator, the
+    analysis tab and the export dialog count the reference image as frame 1,
+    so this result is frame ``t + 2``.
+    """
+    return t + 2
+
+
+def result_frame_tag(t: int, n_results: int) -> str:
+    """File label of ``result_disp[t]``, numbered like the frame navigator.
+
+    ``n_results`` is ``len(result_disp)``; the sequence has one more image
+    (the reference), which sets the zero padding.
+
+    Examples:
+        result_frame_tag(0, 26)  -> "frame_02"   (first deformed image)
+        result_frame_tag(9, 26)  -> "frame_11"
+    """
+    return frame_tag(result_frame_number(t) - 1, n_results + 1)
+
+
 def make_prefix(image_folder: Path | None) -> str:
     """Derive a safe export filename prefix from the image folder name.
 

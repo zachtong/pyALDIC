@@ -18,9 +18,13 @@ Directory structure:
     dest_dir/
       {prefix}_images_{timestamp}/
         {field_name}/
-          frame_001.png
           frame_002.png
+          frame_003.png
           ...
+
+Files are numbered like the frame navigator: frame 1 is the reference image,
+which has no field, so the first file is frame_002 (zero-padded to the number
+of images).
 """
 
 from __future__ import annotations
@@ -39,7 +43,7 @@ from scipy.interpolate import LinearNDInterpolator, NearestNDInterpolator
 from scipy.spatial import Delaunay, cKDTree
 
 from al_dic.core.data_structures import PipelineResult, split_uv
-from al_dic.export.export_utils import ensure_dir, frame_tag
+from al_dic.export.export_utils import ensure_dir, result_frame_tag
 from al_dic.utils.crack_barrier import (
     crack_aware_nearest_fill,
     cross_crack_cell_mask,
@@ -737,7 +741,7 @@ def export_png(
         if stop_event is not None and stop_event.is_set():
             break
 
-        tag = frame_tag(t, n_frames)
+        tag = result_frame_tag(t, n_frames)
         fr = results.result_disp[t]
 
         # Deformed node positions (optional)

@@ -22,7 +22,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from al_dic.core.data_structures import PipelineResult, split_uv
-from al_dic.export.export_utils import ensure_dir
+from al_dic.export.export_utils import ensure_dir, result_frame_number
 
 # Canonical field availability sets
 _DISP_FIELDS: frozenset[str] = frozenset([
@@ -145,12 +145,12 @@ def _build_stats_table_html(
     rows = ["<table>", "<tr><th>Frame</th><th>Min</th><th>Max</th><th>Mean</th><th>Std</th></tr>"]
     for t, vals in enumerate(frame_values):
         if vals is None or not np.any(np.isfinite(vals)):
-            rows.append(f"<tr><td>{t + 1}</td><td colspan='4'>N/A</td></tr>")
+            rows.append(f"<tr><td>{result_frame_number(t)}</td><td colspan='4'>N/A</td></tr>")
             continue
         finite = vals[np.isfinite(vals)]
         rows.append(
             f"<tr>"
-            f"<td>{t + 1}</td>"
+            f"<td>{result_frame_number(t)}</td>"
             f"<td>{finite.min():.4g}</td>"
             f"<td>{finite.max():.4g}</td>"
             f"<td>{finite.mean():.4g}</td>"
@@ -256,7 +256,8 @@ def export_html_report(
                     if b64:
                         sections.append(
                             f'<img src="data:image/png;base64,{b64}" '
-                            f'title="Frame {t + 1}" alt="Frame {t + 1}">'
+                            f'title="Frame {result_frame_number(t)}" '
+                            f'alt="Frame {result_frame_number(t)}">'
                         )
                 sections.append("</div>")
 

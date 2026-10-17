@@ -499,6 +499,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "5+ = rendimientos decrecientes en la mayoría de los casos.",
     },
 
+    # ========== ExportDialog — frame range, numbered like the frame slider ==========
+    "Numbered like the frame slider: frame 1 is the reference image, so the first frame with a field is 2.": {
+        "zh_CN": "与帧滑块的编号一致：第 1 帧是参考图像，因此第一个有场的帧是第 2 帧。",
+        "zh_TW": "與影格滑桿的編號一致：第 1 影格是參考影像，因此第一個有場的影格是第 2 影格。",
+        "ja":    "フレームスライダーと同じ番号です。フレーム 1 は参照画像なので、場のある最初のフレームは 2 です。",
+        "ko":    "프레임 슬라이더와 같은 번호입니다. 프레임 1은 참조 이미지이므로 필드가 있는 첫 프레임은 2입니다.",
+        "de":    "Nummeriert wie der Bildschieberegler: Bild 1 ist das Referenzbild, daher ist das erste Bild mit einem Feld Bild 2.",
+        "fr":    "Numérotées comme le curseur d'images : l'image 1 est l'image de référence, la première image avec un champ est donc la 2.",
+        "es":    "Numerados como el control deslizante de fotogramas: el fotograma 1 es la imagen de referencia, así que el primer fotograma con campo es el 2.",
+    },
+
     # ========== ExportDialog — column headers / short labels ==========
     "Auto": {
         "zh_CN": "自动", "zh_TW": "自動", "ja": "自動", "ko": "자동",

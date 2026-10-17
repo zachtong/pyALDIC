@@ -15,7 +15,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from al_dic.core.data_structures import PipelineResult
-from al_dic.export.export_utils import ensure_dir, frame_tag, world_disp
+from al_dic.export.export_utils import ensure_dir, result_frame_tag, world_disp
 
 # Canonical displacement field names (excluding coordinates)
 _DISP_FIELDS: frozenset[str] = frozenset([
@@ -144,7 +144,7 @@ def _write_per_frame(
     paths: list[Path] = []
 
     for t in range(n_frames):
-        tag = frame_tag(t, n_frames)
+        tag = result_frame_tag(t, n_frames)
         frame_data: dict[str, NDArray] = {}
 
         for key, mat in all_arrays.items():

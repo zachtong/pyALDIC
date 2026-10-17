@@ -21,6 +21,12 @@ def test_csv_per_frame_count(tmp_path, minimal_result):
     assert len(paths) == 2
 
 
+def test_csv_files_are_numbered_like_the_frame_slider(tmp_path, minimal_result):
+    # Two results, three images: frame 1 is the reference, so frames 2 and 3.
+    paths = export_csv(tmp_path, "exp", "ts", minimal_result, fields=_ALL_DISP)
+    assert [p.name for p in paths] == ["frame_2.csv", "frame_3.csv"]
+
+
 def test_csv_files_exist(tmp_path, minimal_result):
     paths = export_csv(tmp_path, "exp", "ts", minimal_result,
                        fields=_ALL_DISP + _ALL_STRAIN)

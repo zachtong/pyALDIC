@@ -58,6 +58,7 @@ from PySide6.QtWidgets import (
 
 from al_dic.core.data_structures import PipelineResult
 from al_dic.export.colorbar import ColorbarStyle
+from al_dic.export.export_utils import result_frame_number
 from al_dic.gui.app_state import AppState
 from al_dic.core.colormaps import COLORMAP_NAMES
 from al_dic.gui.theme_manager import themed
@@ -664,13 +665,15 @@ class ExportDialog(QDialog):
         self._folder_edit.textChanged.connect(self._on_folder_changed)
         path_row.addWidget(self._folder_edit, 1)
 
+        # A minimum, not a fixed width: the label must fit at any display
+        # scaling and in every language (a fixed 90 px cut "Open Folder").
         browse_btn = QPushButton(self.tr("Browse…"))
-        browse_btn.setFixedWidth(90)
+        browse_btn.setMinimumWidth(90)
         browse_btn.clicked.connect(self._on_browse)
         path_row.addWidget(browse_btn)
 
         self._open_folder_btn = QPushButton(self.tr("Open Folder"))
-        self._open_folder_btn.setFixedWidth(90)
+        self._open_folder_btn.setMinimumWidth(90)
         self._open_folder_btn.setEnabled(False)
         self._open_folder_btn.clicked.connect(self._on_open_folder)
         path_row.addWidget(self._open_folder_btn)
@@ -732,8 +735,11 @@ class ExportDialog(QDialog):
         self._tabs.addTab(self._build_images_tab(), self.tr("Images"))
         self._tabs.addTab(self._build_animation_tab(), self.tr("Animation"))
         self._tabs.addTab(self._build_report_tab(), self.tr("Report"))
+        # A tab label turns "&" into a keyboard mnemonic ("Preview _Colorbar");
+        # doubling it shows the ampersand, in every translation.
         self._preview_tab_index = self._tabs.addTab(
-            self._build_preview_tab(), self.tr("Preview & Colorbar"))
+            self._build_preview_tab(),
+            self.tr("Preview & Colorbar").replace("&", "&&"))
         # Render the preview lazily the first time the tab is opened.
         self._tabs.currentChanged.connect(self._on_tab_changed)
 
@@ -1644,22 +1650,30 @@ class ExportDialog(QDialog):
         all_chk.setChecked(True)
         vl.addWidget(all_chk)
 
+        # Frames are numbered like the frame slider: frame 1 is the reference
+        # image, which has no field, so the range runs from frame 2.
         n = len(self._results.result_disp)
+        first = result_frame_number(0)
+        last = max(first, result_frame_number(n - 1))
+        tip = self.tr("Numbered like the frame slider: frame 1 is the reference "
+                      "image, so the first frame with a field is 2.")
         range_row = QHBoxLayout()
         range_row.addWidget(QLabel(self.tr("From", "Frame range: starting frame")))
 
         start_spin = QSpinBox()
-        start_spin.setRange(1, max(1, n))
-        start_spin.setValue(1)
+        start_spin.setRange(first, last)
+        start_spin.setValue(first)
         start_spin.setEnabled(False)
+        start_spin.setToolTip(tip)
         range_row.addWidget(start_spin)
 
         range_row.addWidget(QLabel(self.tr("to", "Frame range: ending frame")))
 
         end_spin = QSpinBox()
-        end_spin.setRange(1, max(1, n))
-        end_spin.setValue(max(1, n))
+        end_spin.setRange(first, last)
+        end_spin.setValue(last)
         end_spin.setEnabled(False)
+        end_spin.setToolTip(tip)
         range_row.addWidget(end_spin)
         range_row.addStretch()
         vl.addLayout(range_row)
@@ -2033,13 +2047,16 @@ class ExportDialog(QDialog):
             timestamp = make_timestamp()
             self._timestamp = timestamp
 
+        # The spin boxes show frame-slider numbers; the exporters take
+        # result_disp indices (frame k is result_disp[k - 2]).
+        first = result_frame_number(0)
         img_all = self._img_all_frames_check.isChecked()
-        img_start = 0 if img_all else self._img_frame_start_spin.value() - 1
-        img_end = -1 if img_all else self._img_frame_end_spin.value() - 1
+        img_start = 0 if img_all else self._img_frame_start_spin.value() - first
+        img_end = -1 if img_all else self._img_frame_end_spin.value() - first
 
         anim_all = self._anim_all_frames_check.isChecked()
-        anim_start = 0 if anim_all else self._anim_frame_start_spin.value() - 1
-        anim_end = -1 if anim_all else self._anim_frame_end_spin.value() - 1
+        anim_start = 0 if anim_all else self._anim_frame_start_spin.value() - first
+        anim_end = -1 if anim_all else self._anim_frame_end_spin.value() - first
 
         data_fields = [
             k for k, chk in {**self._data_disp_checks,

@@ -18,6 +18,10 @@ you want — the correlation is never repeated.
 The .npz holds ``coordinates`` (N, 2) plus one (N, T) matrix per field — N mesh
 nodes, T frames — so anything below is plain matplotlib on those arrays. Use it
 as a starting point for your own figures.
+
+Frames are numbered like pyALDIC's frame slider: frame 1 is the reference image,
+which is not stored (its displacement is zero), so column ``t`` of a field is
+frame ``t + 2``. Titles and file names below use that number.
 """
 
 from __future__ import annotations
@@ -72,7 +76,9 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("npz", type=Path, help="exported *_results_*.npz")
     ap.add_argument("--field", help="field to plot (omit to just list contents)")
-    ap.add_argument("--frame", type=int, help="frame index; -1 = last; omit = all")
+    ap.add_argument("--frame", type=int,
+                    help="column of the field (0 = frame 2, the first deformed "
+                         "image); -1 = last; omit = all")
     ap.add_argument("--cmap", default="jet")
     ap.add_argument("--vmin", type=float, help="fixed colour range minimum")
     ap.add_argument("--vmax", type=float, help="fixed colour range maximum")
@@ -118,12 +124,12 @@ def main(argv: list[str] | None = None) -> int:
 
     for t in frames:
         fig = plot_frame(coords, field[:, t],
-                         f"{args.field} — frame {t + 1}/{n_frames}",
+                         f"{args.field} — frame {t + 2}/{n_frames + 1}",
                          args.cmap, vmin, vmax, args.levels)
         if args.show:
             plt.show()
         else:
-            dest = out_dir / f"{args.field}_frame_{t + 1:03d}.png"
+            dest = out_dir / f"{args.field}_frame_{t + 2:03d}.png"
             fig.savefig(dest, dpi=args.dpi)
             print(f"wrote {dest}")
         plt.close(fig)

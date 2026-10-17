@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 
 from al_dic.core.data_structures import PipelineResult
-from al_dic.export.export_utils import ensure_dir, frame_tag, world_disp
+from al_dic.export.export_utils import ensure_dir, result_frame_tag, world_disp
 
 # Canonical field name sets
 _DISP_FIELDS: frozenset[str] = frozenset([
@@ -73,7 +73,7 @@ def export_csv(
 
     paths: list[Path] = []
     for t in range(n_frames):
-        tag = frame_tag(t, n_frames)
+        tag = result_frame_tag(t, n_frames)
         out = csv_dir / f"{tag}.csv"
 
         fr = results.result_disp[t]

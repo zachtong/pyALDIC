@@ -2,7 +2,13 @@
 
 from pathlib import Path
 
-from al_dic.export.export_utils import frame_tag, make_prefix, make_timestamp
+from al_dic.export.export_utils import (
+    frame_tag,
+    make_prefix,
+    make_timestamp,
+    result_frame_number,
+    result_frame_tag,
+)
 
 
 def test_frame_tag_1based_zero_padded_small():
@@ -17,6 +23,17 @@ def test_frame_tag_1based_zero_padded_large():
 
 def test_frame_tag_single_frame():
     assert frame_tag(0, 1) == "frame_1"
+
+
+def test_results_are_numbered_like_the_frame_slider():
+    """result_disp[t] holds image t + 1; the slider calls the reference
+    image frame 1, so the first result is frame 2 -- in every export."""
+    assert result_frame_number(0) == 2
+    assert result_frame_tag(0, 26) == "frame_02"   # 27 images: two digits
+    assert result_frame_tag(9, 26) == "frame_11"   # PC_1000N in the ASE 375 set
+    assert result_frame_tag(25, 26) == "frame_27"
+    assert result_frame_tag(0, 9) == "frame_02"    # 10 images pad to two digits
+    assert result_frame_tag(0, 8) == "frame_2"     # 9 images: one digit
 
 
 def test_make_prefix_uses_folder_name():
