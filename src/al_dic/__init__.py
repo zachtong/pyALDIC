@@ -1,6 +1,6 @@
 """AL-DIC: Augmented Lagrangian DIC with adaptive quadtree mesh."""
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 # Public API — stable imports for external consumers
 from .core.config import dicpara_default, validate_dicpara

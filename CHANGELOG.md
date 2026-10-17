@@ -6,6 +6,16 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.2] — 2026-10-17
+
+### Changed
+
+- **Probe names start again at P1 once every probe is deleted** (one by
+  one or with *Clear All*). Before, deleting P1–P3 and drawing again
+  gave P4. While other probes remain, a deleted probe's name is still
+  not reused. Internal probe ids keep counting, and sessions save the
+  name counter; older sessions continue their names as before.
+
 ## [1.0.1] — 2026-10-17
 
 ### Changed
