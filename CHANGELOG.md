@@ -6,6 +6,35 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-10-17
+
+### Changed
+
+- **The light theme is now the default.** A new installation starts
+  light, and so does anyone who never chose a theme in
+  *Settings > Theme*. A dark theme chosen there stays dark.
+- **Exported frames are numbered like the frame slider** (breaking for
+  scripts that read frame numbers from file names). Frame 1 is the
+  reference image. It has no field, so the first frame you can export is
+  frame 2.
+  - The export dialog's *FRAME RANGE* on the Images and Animation tabs
+    uses these numbers. Before, it counted the deformed images from 1, so
+    the image shown as FRAME 11 on the slider was frame 10 in the export.
+  - Per-frame file names follow: image, CSV and per-frame NPZ exports
+    start at `frame_02` (they started at `frame_01`), and so does the
+    report's frame column.
+  - `examples/scripting/plot_results.py` titles and names its plots the
+    same way.
+  - API: `export_utils.result_frame_number` / `result_frame_tag`.
+
+### Fixed
+
+- The export dialog's *Preview & Colorbar* tab read "Preview _Colorbar":
+  the ampersand was taken as a keyboard shortcut marker.
+- *Browse…* and *Open Folder* in the export dialog no longer cut their
+  labels at high display scaling or in longer translations. They had a
+  fixed width.
+
 ## [1.0.0] — 2026-10-16
 
 ### Added
