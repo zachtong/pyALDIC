@@ -6,6 +6,18 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.3] — 2026-10-18
+
+### Fixed
+
+- **The run progress no longer passes 100 %.** The frame loop split its
+  share of the bar over one frame fewer than it ran, so the last frame
+  pushed the label past 100 % (103 % with 28 images, far more with only
+  a few) and it stayed there until the run ended. When strains are
+  computed in the same run (scripts; `compute_strain=True`), their stage
+  and the final assembly now come after the frame loop on the bar instead
+  of jumping back to 65 % and 95 %.
+
 ## [1.0.2] — 2026-10-17
 
 ### Changed
