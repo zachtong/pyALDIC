@@ -49,6 +49,17 @@ class TestAppState:
         s2 = AppState.instance()
         assert s1 is s2
 
+    @pytest.mark.parametrize("given, shown", [(1.03, 1.0), (-0.2, 0.0), (0.4, 0.4)])
+    def test_progress_is_kept_between_0_and_1(self, qapp, given, shown):
+        """The bar and its "N%" label assume [0, 1]; a fraction past 1 read
+        "103%" and, held by the monotonic guard, stayed there to the end."""
+        state = AppState.instance()
+        received = []
+        state.progress_updated.connect(lambda f, m: received.append(f))
+        state.set_progress(given, "Frame 27/27")
+        assert state.progress == shown
+        assert received == [shown]
+
     def test_image_folder_signal(self, qapp):
         state = AppState.instance()
         received = []

@@ -351,6 +351,8 @@ class AppState(QObject):
         self.run_state_changed.emit(state)
 
     def set_progress(self, fraction: float, message: str = "") -> None:
+        # The bar and its "N%" label assume [0, 1].
+        fraction = min(max(fraction, 0.0), 1.0)
         self.progress = fraction
         self.progress_message = message
         self.progress_updated.emit(fraction, message)

@@ -467,6 +467,7 @@ def _compose_cumulative(
     masks: list[NDArray[np.float64]] | None = None,
     crack_radius: float | None = None,
     measurable_box: tuple[int, int, int, int] | None = None,
+    progress_end: float = 1.0,
     far_px: float | None = None,
 ) -> tuple[list[FrameResult | None], TrackingDiagnostics | None]:
     """Transform per-pair displacements to cumulative via tree-based composition.
@@ -587,13 +588,13 @@ def _compose_cumulative(
         frame = i + 1  # 1-based deformed frame index
         if progress_fn is not None and n_frames > 1:
             # The main frame loop fills 0.0-progress_start (see _loop_end);
-            # map this cumulative phase to [progress_start, 1.0]. Now that the
-            # transform is fast (cross-frame Delaunay cache), progress_start is
-            # near 1.0 so this final sliver is imperceptible rather than a
+            # map this cumulative phase to [progress_start, progress_end].
+            # Now that the transform is fast (cross-frame Delaunay cache),
+            # the slice is thin, an imperceptible sliver rather than a
             # jarring 90%->100% jump on a slow-looking tail.
             progress_fn(
                 progress_start
-                + (1.0 - progress_start) * (i + 1) / (n_frames - 1),
+                + (progress_end - progress_start) * (i + 1) / (n_frames - 1),
                 "Composing cumulative displacements...",
             )
         if result_disp[i] is None or result_fe_mesh[i] is None:
@@ -1016,12 +1017,18 @@ def run_aldic(
     # =====================================================================
     # Main frame loop (Sections 3-6)
     # =====================================================================
-    # Progress budget: frame loop (incl. per-frame strain, Section 8) fills
-    # 0–99%; the cumulative transform is the final phase and, now that it is
-    # fast (cross-frame Delaunay cache), only needs the last 1%. This keeps
-    # the bar advancing smoothly to completion instead of jumping 90->100.
-    _loop_end = 0.99
-    _n_pairs = max(1, n_frames - 2)
+    # Progress, in run order: the frame loop fills [0, _loop_end], the
+    # cumulative transform [_loop_end, _cum_end] and the strains (Section 8,
+    # when computed) [_cum_end, 1]. Without strains the loop takes nearly all
+    # of it: the transform is fast (cross-frame Delaunay cache), so the bar
+    # runs smoothly to completion instead of jumping 90->100.
+    if compute_strain:
+        _loop_end, _cum_end = 0.75, 0.80
+    else:
+        _loop_end, _cum_end = 0.99, 1.0
+    # The loop runs frames 1 .. n_frames-1: one budget slot per pair. (Split
+    # over n_frames - 2 slots, the last frame ran past 100 %.)
+    _n_pairs = max(1, n_frames - 1)
     _frame_budget = _loop_end / _n_pairs
 
     for frame_idx in range(1, n_frames):
@@ -1827,7 +1834,7 @@ def run_aldic(
 
     result_disp, tracking = _compose_cumulative(
         result_disp, result_fe_mesh, n_frames, schedule,
-        progress_fn=progress, progress_start=_loop_end,
+        progress_fn=progress, progress_start=_loop_end, progress_end=_cum_end,
         # Crack-aware near-gap override: keeps composed U_accum from mixing
         # the two faces of an open crack (smeared wake strain otherwise).
         masks=masks,
@@ -1859,7 +1866,7 @@ def run_aldic(
     # Section 8: Compute strains (optional)
     # =====================================================================
     if compute_strain and result_fe_mesh[0] is not None:
-        progress(0.65, "Section 8: Computing strains...")
+        progress(_cum_end, "Section 8: Computing strains...")
         logger.info("--- Section 8 Start ---")
 
         # Strain is total Lagrangian: coordinates + U_accum both live in the
@@ -1936,7 +1943,7 @@ def run_aldic(
                 neighbors=platefit_neighbors,
             )
 
-            s8_frac = 0.65 + 0.25 * (i + 1) / (n_frames - 1)
+            s8_frac = _cum_end + (1.0 - _cum_end) * (i + 1) / (n_frames - 1)
             progress(s8_frac, f"S8: Frame {i + 2}/{n_frames}")
 
         logger.info("--- Section 8 Done ---")
@@ -1944,7 +1951,7 @@ def run_aldic(
     # =====================================================================
     # Assemble output
     # =====================================================================
-    progress(0.95, "Assembling results...")
+    progress(1.0, "Assembling results...")
 
     # Filter None entries (from interrupted runs)
     valid_disp = [r for r in result_disp if r is not None]

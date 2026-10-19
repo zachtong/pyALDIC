@@ -469,6 +469,35 @@ class TestRunALDICProgressCallback:
         # Last call should be completion
         assert calls[-1][0] == 1.0
 
+    @pytest.mark.parametrize("compute_strain", [False, True])
+    @pytest.mark.parametrize("n_frames", [2, 3, 5])
+    def test_progress_stays_in_range_and_never_goes_back(self, n_frames, compute_strain):
+        """The frame loop split its budget over n_frames - 2 pairs instead of
+        n_frames - 1, so the last frame ran past 100 % (103 % for 28 images,
+        ~190 % for 3); strains and assembly then reported lower values."""
+        h, w = 64, 64
+        ref = np.random.RandomState(42).rand(h, w).astype(np.float64)
+        para = _make_default_para(h, w, use_global_step=False)
+        mesh = _make_simple_mesh(h, w, step=16)
+        U0 = np.zeros(2 * mesh.coordinates_fem.shape[0])
+
+        calls = []
+        run_aldic(
+            para,
+            [ref] * n_frames,
+            [np.ones((h, w))] * n_frames,
+            progress_fn=lambda f, m: calls.append((f, m)),
+            mesh=mesh,
+            U0=U0,
+            compute_strain=compute_strain,
+        )
+
+        fractions = [f for f, _ in calls]
+        assert min(fractions) >= 0.0
+        assert max(fractions) <= 1.0, calls
+        assert all(b >= a for a, b in zip(fractions, fractions[1:])), calls
+        assert fractions[-1] == 1.0
+
 
 # ---------------------------------------------------------------------------
 # Tests: helper functions
