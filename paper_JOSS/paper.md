@@ -51,7 +51,7 @@ Ncorr [@blaber2015ncorr]             MATLAB           Yes        Yes           N
 
 DICe [@turner2015dice]               C++              Yes        Yes           Yes           No            Partial
 
-μDIC [@olufsen2020mudic]             Python           No         No            Yes           No            No
+μDIC [@olufsen2020mudic]             Python           Partial    No            Yes           No            No
 
 OpenCorr [@li7088402opencorr]        C++              Yes        Yes           No            No            No
 
@@ -69,7 +69,7 @@ ALDIC [@yang2019augmented]           MATLAB           No         Yes           Y
 [@pyaldic_zenodo]
 ---------------------------------------------------------------------------------------------------------------------------
 
-: Comparison of representative open-source DIC software packages. "Local method" and "Global method" indicate whether a package provides a local subset-based correlation formulation, a global finite-element or regularized formulation, or both. "Mask-aware subsets" denotes treatment of correlation subsets that intersect mask boundaries associated with cracks, holes, or ROI boundaries; "Partial" indicates that masked pixels can be excluded from the correlation calculation, whereas "Yes" indicates connected-component-based subset splitting that retains only the valid region containing the subset center.\label{tab:comparison}
+: Comparison of representative open-source DIC software packages. For GUI, "Partial" indicates a meshing-only interface. "Local method" and "Global method" indicate whether a package provides a local subset-based correlation formulation, a global finite-element or regularized formulation, or both. "Mask-aware subsets" denotes treatment of correlation subsets that intersect mask boundaries associated with cracks, holes, or ROI boundaries; "Partial" indicates that masked pixels can be excluded from the correlation calculation, whereas "Yes" indicates connected-component-based subset splitting that retains only the valid region containing the subset center.\label{tab:comparison}
 
 # Software design
 
