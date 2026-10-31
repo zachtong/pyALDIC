@@ -214,6 +214,23 @@ def _default_stop() -> bool:
     return False
 
 
+def _untrimmed_copy(mesh: DICMesh) -> DICMesh:
+    """Copy of ``mesh`` kept untrimmed, so each mask trims it from scratch.
+
+    The field set is the one the mask trim carries over; ``dirichlet``,
+    ``neumann`` and ``coordinates_fem_world`` fall back to their defaults.
+    """
+    return DICMesh(
+        coordinates_fem=mesh.coordinates_fem.copy(),
+        elements_fem=mesh.elements_fem.copy(),
+        irregular=mesh.irregular,
+        mark_coord_hole_edge=mesh.mark_coord_hole_edge.copy(),
+        x0=mesh.x0,
+        y0=mesh.y0,
+        element_min_size=mesh.element_min_size,
+    )
+
+
 def _smooth_disp(
     U: NDArray[np.float64],
     coords: NDArray[np.float64],
@@ -890,7 +907,9 @@ def run_aldic(
 
     # Untrimmed mesh stored for re-trimming when mask changes across frames
     # (e.g., ref-switch in incremental mode with per-frame ROIs/masks).
-    base_mesh: DICMesh | None = None
+    # An external mesh is kept here too: without it every mask change
+    # trimmed the previous trim, and cells cut once never came back.
+    base_mesh: DICMesh | None = _untrimmed_copy(mesh) if mesh_is_external else None
     prev_mask_hash: int | None = None
 
     # --- Resolve frame schedule ---
@@ -1270,15 +1289,7 @@ def run_aldic(
         # when the mask changes (e.g., ref-switch in incremental mode).
         if dic_mesh is None:
             dic_mesh = mesh_setup(x0, y0, para)
-            base_mesh = DICMesh(
-                coordinates_fem=dic_mesh.coordinates_fem.copy(),
-                elements_fem=dic_mesh.elements_fem.copy(),
-                irregular=dic_mesh.irregular,
-                mark_coord_hole_edge=dic_mesh.mark_coord_hole_edge.copy(),
-                x0=dic_mesh.x0,
-                y0=dic_mesh.y0,
-                element_min_size=dic_mesh.element_min_size,
-            )
+            base_mesh = _untrimmed_copy(dic_mesh)
 
         # Re-trim mesh when mask changes (handles ref-switch in
         # incremental mode where different frames have different masks).

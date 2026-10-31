@@ -12,6 +12,8 @@ pairs. These tests pin:
 - byte-identity of every run where no reference needs a larger grid;
 - that an external mesh is never replaced, and that the mesh is trimmed
   again after every lattice switch;
+- that each reference trims an external mesh from the given mesh, not from
+  the previous reference's trim (with and without pre-solve refinement);
 - that the switch works with seed propagation, refinement, every-N
   schedules and the pyramid search.
 
@@ -474,6 +476,99 @@ def test_schedule_returning_to_ref0(mode):
     ident = run_counted(para, imgs, masks, identity=True)
     assert real.n_mesh_setup == 4  # frame 0, ref 2, back to 0, ref 3
     assert_identical(ref0_pair_arrays(real.result), ref0_pair_arrays(ident.result))
+
+
+# ---------------------------------------------------------------------------
+# External mesh: each reference trims the given mesh, not the previous trim
+# ---------------------------------------------------------------------------
+
+BAND_X = (112, 144)  # columns [x0, x1) that mask "B" cuts out of the specimen
+
+
+def _external_band_case(ref_masks: str):
+    """External mesh, incremental refs 0, 1, 2 on a translating speckle.
+
+    ``ref_masks`` names the masks of frames 0-3: "A" is the specimen
+    rectangle, "B" the same with the vertical band ``BAND_X`` cut out.
+    With "ABAA" the band leaves at ref 1 and comes back at ref 2.
+    """
+    h, w = RT_SHAPE
+    imgs = _translating_speckle(h, w, seed=23, n_frames=4, step_xy=(1.5, 0.5))
+    a = _rect(RT_SHAPE, 40, 216, 40, 152)
+    b = a.copy()
+    b[:, BAND_X[0]:BAND_X[1]] = 0.0
+    masks = [(a if c == "A" else b).copy() for c in ref_masks]
+    para = dicpara_default(
+        winsize=WIN, winstepsize=STEP, winsize_min=16, img_size=RT_SHAPE,
+        gridxy_roi_range=range_of(a), reference_mode="incremental",
+        size_of_fft_search_region=16, init_guess_mode="fft", show_plots=False,
+    )
+    x0, y0 = build_grid_for_roi(para, h, w)
+    mesh = mesh_setup(x0, y0, para)
+    U0 = np.empty(2 * len(mesh.coordinates_fem))
+    U0[0::2], U0[1::2] = 1.5, 0.5
+    return para, imgs, masks, mesh, U0
+
+
+@pytest.mark.parametrize("ref_masks", ["ABAA", "AAAA"])
+def test_external_mesh_trimmed_per_reference(ref_masks):
+    """Every pair's mesh is the given mesh trimmed by its reference's mask
+    alone. Up to 1.0.3 each mask change trimmed the previous trim, so the
+    band cut at ref 1 stayed missing at ref 2 ("ABAA"). "AAAA" pins that
+    one mask for every reference keeps the given mesh's single trim."""
+    para, imgs, masks, mesh, U0 = _external_band_case(ref_masks)
+    run = run_counted(para, imgs, masks, mesh=mesh, U0=U0)
+    assert run.n_mesh_setup == 0
+    result = run.result
+    coords, elems = mesh.coordinates_fem, mesh.elements_fem
+    refs = result.frame_schedule.ref_indices
+    expected = {
+        r: elems[trimmed_keep_indices(coords, elems, np.asarray(masks[r], np.float64))]
+        for r in set(refs)
+    }
+    for i, ref in enumerate(refs):
+        pair_mesh = result.result_fe_mesh_each_frame[i]
+        np.testing.assert_array_equal(pair_mesh.coordinates_fem, coords)
+        np.testing.assert_array_equal(
+            pair_mesh.elements_fem, expected[ref], err_msg=f"pair {i} (ref {ref})",
+        )
+    if ref_masks == "ABAA":
+        assert len(expected[1]) < len(expected[0]), "fixture must cut the band"
+        assert len(expected[2]) == len(expected[0])
+        # The band's nodes are solved again once it is back (pair 2, ref 2).
+        U = result.result_disp[refs.index(2)].U
+        x = coords[:, 0]
+        band = (x > BAND_X[0]) & (x < BAND_X[1] - 1)
+        assert band.any()
+        u, v = U[0::2][band], U[1::2][band]
+        assert np.isfinite(u).all() and np.isfinite(v).all()
+        assert np.median(np.abs(u - 1.5)) < 0.05
+        assert np.median(np.abs(v - 0.5)) < 0.05
+
+
+@pytest.mark.parametrize("ref_masks", ["ABAA", "AAAA"])
+def test_external_mesh_presolve_refinement_per_reference(ref_masks):
+    """With pre-solve refinement every pair refines the given mesh trimmed
+    by its own mask, as for an engine-built mesh. Refs 0 and 2 share mask
+    "A", so their refined meshes are equal; up to 1.0.3 ref 2 refined the
+    previous pair's mesh and the band cut at ref 1 stayed missing."""
+    para, imgs, masks, mesh, U0 = _external_band_case(ref_masks)
+    policy = build_refinement_policy(
+        refine_outer_boundary=True, min_element_size=4, half_win=HW,
+    )
+    result = run_counted(
+        para, imgs, masks, mesh=mesh, U0=U0, refinement_policy=policy,
+    ).result
+    refs = result.frame_schedule.ref_indices
+    m0 = result.result_fe_mesh_each_frame[refs.index(0)]
+    m2 = result.result_fe_mesh_each_frame[refs.index(2)]
+    assert len(m0.elements_fem) > len(mesh.elements_fem), "fixture must refine"
+    np.testing.assert_array_equal(m2.coordinates_fem, m0.coordinates_fem)
+    np.testing.assert_array_equal(m2.elements_fem, m0.elements_fem)
+    for i, ref in enumerate(refs):
+        U = result.result_disp[i].U
+        assert np.nanmedian(np.abs(U[0::2] - 1.5)) < 0.05, f"pair {i} (ref {ref})"
+        assert np.nanmedian(np.abs(U[1::2] - 0.5)) < 0.05, f"pair {i} (ref {ref})"
 
 
 # ---------------------------------------------------------------------------
