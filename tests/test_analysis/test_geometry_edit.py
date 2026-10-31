@@ -144,5 +144,7 @@ def test_translation_moves_every_point_by_the_same_amount(geom):
     moved = translate(geom, 5.0, -3.0)
     before = control_points(geom)
     after = control_points(moved)
-    assert [(x + 5.0, y - 3.0) for x, y in before] == pytest.approx(after)
+    # approx takes flat sequences only (pytest >= 9.2 rejects nested ones).
+    expected = [c for x, y in before for c in (x + 5.0, y - 3.0)]
+    assert expected == pytest.approx([c for p in after for c in p])
     assert type(moved) is type(geom)
