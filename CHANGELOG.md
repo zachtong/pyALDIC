@@ -6,6 +6,18 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.4] — 2026-10-30
+
+### Fixed
+
+- **A mesh passed to `run_aldic(mesh=...)` is trimmed from scratch at
+  every reference frame.** Each change of reference mask trimmed the mesh
+  the previous reference had already trimmed, so in incremental runs
+  whose reference masks change, the cells one reference cut never came
+  back for the later ones. With a pre-solve refinement policy, each frame
+  likewise refines the given mesh again instead of the previous frame's
+  refined mesh. The GUI builds its own mesh and is not affected.
+
 ## [1.0.3] — 2026-10-18
 
 ### Fixed
