@@ -6,6 +6,8 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.5] — 2026-11-11
+
 ### Fixed
 
 - **The initial-guess search now covers the nodes near the image border.**
