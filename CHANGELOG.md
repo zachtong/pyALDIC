@@ -6,6 +6,21 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **The initial-guess search now covers the nodes near the image border.**
+  A node was searched only if its whole search box (half a subset plus the
+  search radius on each side) fit inside the image; any other node was
+  skipped and filled in from the middle of the field. When the search
+  widened for a large motion, that skipped most of a specimen that reaches
+  the image edges, and the filled values missed any rotation or bending,
+  so the ends of the specimen started tens of pixels off and their nodes
+  were lost. Each node now searches the part of its box that lies in the
+  image, and a match is kept only if it is unique and a search back from
+  the deformed image returns to the node; otherwise the node is filled as
+  before. Nodes whose search box fits in the image give the same result as
+  before. The pyramid search does the same at full resolution.
+
 ## [1.0.4] — 2026-10-30
 
 ### Fixed

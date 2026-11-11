@@ -129,6 +129,8 @@ def integer_search(
     f_img: NDArray[np.float64],
     g_img: NDArray[np.float64],
     para: DICPara,
+    *,
+    clamp_border: bool = True,
 ) -> tuple[
     NDArray[np.float64],  # x0 (M,)
     NDArray[np.float64],  # y0 (N,)
@@ -146,6 +148,9 @@ def integer_search(
         g_img: Deformed image (H, W), float64.
         para: DIC parameters.  Uses ``gridxy_roi_range``, ``winsize``,
             ``winstepsize``, ``size_of_fft_search_region``.
+        clamp_border: Search nodes near the border with a window clamped to
+            the image (default). False skips them as before, for images
+            whose border is not real data (coarse pyramid levels).
 
     Returns:
         ``(x0, y0, u, v, info)`` where:
@@ -199,10 +204,9 @@ def integer_search(
 
     # Generate grid points (node centers)
     # Mesh padding only requires `half_w` (full subset fits in image).
-    # Edge nodes too close to the image border for NCC search (needing
-    # `half_w + search`) will be left as NaN by `_batch_ncc_search` and
-    # filled by `_inpaint_nans` downstream.  IC-GN handles the resulting
-    # partial-edge subsets via the masked-subset code path.
+    # Nodes closer to the border than `half_w + search` are searched with
+    # a window clamped to the image by `_batch_ncc_search`; only those whose
+    # best match sits at the image edge are left NaN for `_inpaint_nans`.
     min_x = max(roi.gridx[0], half_w)
     max_x = min(roi.gridx[1], w - 1 - half_w)
     min_y = max(roi.gridy[0], half_w)
@@ -264,6 +268,7 @@ def integer_search(
     # Vectorized NCC search (low-coverage nodes excluded via skip_mask)
     u_grid, v_grid, cc_max, qfactors = _batch_ncc_search(
         f_img, g_img, x0, y0, half_w, search, skip_mask=skip_mask,
+        clamp_border=clamp_border,
     )
 
     # Mask application: NaN for nodes whose center is outside the mask
@@ -451,8 +456,11 @@ def integer_search_pyramid(
         img_ref_mask=mask_pyr[-1],
     )
 
+    # cv2.pyrDown reflects the border, so a coarse level holds artificial
+    # content near its edges: border nodes are searched only at full
+    # resolution (clamp_border=False on the coarse levels).
     x0_c, y0_c, u_c, v_c, info_c = integer_search(
-        f_pyr[-1], g_pyr[-1], coarse_para,
+        f_pyr[-1], g_pyr[-1], coarse_para, clamp_border=False,
     )
 
     # Refine through intermediate levels
@@ -473,6 +481,7 @@ def integer_search_pyramid(
             img_f, img_g, x0_l, y0_l, u_l, v_l,
             half_w=max(2, winsize // scale_l // 2),
             search=refine_search,
+            clamp_border=False,
         )
         x0_c, y0_c, u_c, v_c = x0_l, y0_l, u_l, v_l
 
@@ -534,6 +543,7 @@ def _batch_ncc_search(
     half_w: int,
     search: int,
     skip_mask: NDArray[np.bool_] | None = None,
+    clamp_border: bool = True,
 ) -> tuple[
     NDArray[np.float64],
     NDArray[np.float64],
@@ -561,12 +571,18 @@ def _batch_ncc_search(
     cy_all = np.round(y0).astype(np.intp)  # (ny,)
     CX, CY = np.meshgrid(cx_all, cy_all)   # (ny, nx) each
 
-    # Boundary: search region must fit in image
+    # Full search box inside the image: the batch path below. A node whose
+    # box crosses the border (but whose template fits) is searched with a
+    # clamped window instead of being skipped (see _clamped_window_search).
     boundary_ok = (
         (CY - half_w - search >= 0) &
         (CX - half_w - search >= 0) &
         (CY + half_w + 1 + search <= h) &
         (CX + half_w + 1 + search <= w)
+    )
+    template_ok = (
+        (CY - half_w >= 0) & (CX - half_w >= 0)
+        & (CY + half_w + 1 <= h) & (CX + half_w + 1 <= w)
     )
 
     # Template std via integral images (O(1) per node, O(H*W) total)
@@ -580,9 +596,9 @@ def _batch_ncc_search(
     T_x1 = CX + half_w + 1
     n_pix = float((2 * half_w + 1) ** 2)
 
-    # Compute variance only for boundary-ok nodes
+    # Compute variance for every node whose template fits
     ok_mask = boundary_ok
-    ok_idx = np.where(ok_mask)
+    ok_idx = np.where(template_ok)
     var_f = np.zeros((ny, nx), dtype=np.float64)
 
     if len(ok_idx[0]) > 0:
@@ -596,9 +612,11 @@ def _batch_ncc_search(
                 - int_f2[ty1, tx0] + int_f2[ty0, tx0])
         var_f[ok_idx] = np.maximum(s_f2 / n_pix - (s_f / n_pix) ** 2, 0.0)
 
-    valid = ok_mask & (np.sqrt(var_f) > 1e-6)
+    textured = np.sqrt(var_f) > 1e-6
     if skip_mask is not None:
-        valid = valid & ~skip_mask
+        textured = textured & ~skip_mask
+    valid = ok_mask & textured
+    clamped = template_ok & ~ok_mask & textured & clamp_border
 
     # --- Stage 2: matchTemplate for valid nodes (chunked) ---
     valid_iy, valid_ix = np.where(valid)
@@ -682,6 +700,27 @@ def _batch_ncc_search(
         qfactors[valid_iy, valid_ix, 0] = pce_all
         qfactors[valid_iy, valid_ix, 1] = ppe_all
 
+    # --- Border nodes: clamped search window ---
+    c_iy, c_ix = np.where(clamped)
+    if len(c_iy) > 0:
+        tcx, tcy = cx_all[c_ix], cy_all[c_iy]
+        px, py, pv, pc, pp = _clamped_window_search(
+            f32, g32, tcx, tcy, tcx, tcy, half_w, search,
+        )
+        found = np.isfinite(px)
+        iy, ix = c_iy[found], c_ix[found]
+        u_grid[iy, ix] = px[found] - float(search)
+        v_grid[iy, ix] = py[found] - float(search)
+        cc_max[iy, ix] = pv[found]
+        qfactors[iy, ix, 0] = pc[found]
+        qfactors[iy, ix, 1] = pp[found]
+        logger.info(
+            "NCC search: %d node(s) near the image border searched with a "
+            "clamped window; %d of them gave no reliable match and are left "
+            "for the fill.",
+            len(c_iy), int(np.sum(~found)),
+        )
+
     return u_grid, v_grid, cc_max, qfactors
 
 
@@ -751,6 +790,153 @@ def _match_one(
     ipeak_x[k] = max_loc[0]  # column
     ipeak_y[k] = max_loc[1]  # row
     ipeak_val[k] = max_val
+
+
+# Acceptance tests for a peak found in a clamped window (see
+# _clamped_window_search). On synthetic shifts with the true match outside
+# the image for some nodes, reverse consistency alone kept ~20% of the
+# spurious peaks and a primary/secondary peak ratio alone kept even more;
+# together (1 px, 1.3) they kept 1-3 of 100-178 spurious peaks while keeping
+# 99.5-100% of the true ones. 1.3 sits in the usual PIV range of 1.2-1.5.
+_REVERSE_TOL_PX = 1
+_MIN_PEAK_RATIO = 1.3
+
+
+def _reverse_consistent(
+    f32: NDArray[np.float32],
+    g32: NDArray[np.float32],
+    tcx: int,
+    tcy: int,
+    mcx: int,
+    mcy: int,
+    half_w: int,
+    search: int,
+) -> bool:
+    """True if the deformed subset centred at (mcx, mcy), searched back in
+    the reference within ``search`` of (tcx, tcy), lands on (tcx, tcy).
+
+    A spurious match is a piece of the deformed image whose real origin is
+    elsewhere, so the reverse search usually finds that origin instead.
+    """
+    h, w = f32.shape
+    template = g32[mcy - half_w: mcy + half_w + 1, mcx - half_w: mcx + half_w + 1]
+    x0, x1 = max(0, tcx - half_w - search), min(w, tcx + half_w + 1 + search)
+    y0, y1 = max(0, tcy - half_w - search), min(h, tcy + half_w + 1 + search)
+    ncc = cv2.matchTemplate(f32[y0:y1, x0:x1], template, cv2.TM_CCOEFF_NORMED)
+    _, _, _, (px, py) = cv2.minMaxLoc(ncc)
+    return (abs(x0 + px + half_w - tcx) <= _REVERSE_TOL_PX
+            and abs(y0 + py + half_w - tcy) <= _REVERSE_TOL_PX)
+
+
+def _clamped_window_search(
+    f32: NDArray[np.float32],
+    g32: NDArray[np.float32],
+    tcx: NDArray[np.intp],
+    tcy: NDArray[np.intp],
+    scx: NDArray[np.intp],
+    scy: NDArray[np.intp],
+    half_w: int,
+    search: int,
+) -> tuple[
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+    NDArray[np.float64],
+]:
+    """NCC search for nodes whose search box crosses the image border.
+
+    The box ``search centre +- (half_w + search)`` is clamped to the deformed
+    image, so the node still tries every displacement whose subset lies in
+    the image (an asymmetric window), as ``seed_propagation`` does for a
+    Starting Point. Templates (centred at ``tcx, tcy``) must fit in the
+    reference image; search centres are ``scx, scy``.
+
+    Returns per node ``(peak_x, peak_y, peak_val, pce, ppe)``. The peak is
+    sub-pixel and in FULL-map coordinates, the frame of the unclamped search
+    (index ``search`` = zero offset from the search centre). PCE/PPE come
+    from the node's own map with the usual formulas.
+
+    A clamped window may have lost the true match (it lies outside the image)
+    and then holds only a spurious peak, so a peak is kept only if it passes
+    three tests; otherwise it is NaN and the node is filled as before:
+
+    - along an axis whose window was clamped, it is more than half a pixel
+      from either end of the map. This includes the far, unclamped end: a
+      node whose true match left the image often puts a spurious peak
+      there, so an end peak on such an axis is unreliable and must not be
+      reported as clipped either, or the search would widen for nothing.
+      Along an unclamped axis a radius-edge peak is left to the caller's
+      usual clipped test;
+    - searching the matched deformed subset back in the reference, with the
+      same radius, returns to the template within ``_REVERSE_TOL_PX``;
+    - the peak is at least ``_MIN_PEAK_RATIO`` times the best value farther
+      than ``half_w`` from it on the same map.
+
+    The peak is also NaN when the window is smaller than the template or the
+    best correlation is not positive.
+    """
+    h, w = g32.shape
+    n = len(tcx)
+    peak_x = np.full(n, np.nan)
+    peak_y = np.full(n, np.nan)
+    peak_val = np.zeros(n)
+    pce = np.full(n, np.inf)
+    ppe = np.full(n, np.inf)
+    tpl = 2 * half_w + 1
+
+    def _one(k: int) -> None:
+        asked_x0 = int(scx[k]) - half_w - search
+        asked_y0 = int(scy[k]) - half_w - search
+        asked_x1 = int(scx[k]) + half_w + 1 + search
+        asked_y1 = int(scy[k]) + half_w + 1 + search
+        x0, x1 = max(0, asked_x0), min(w, asked_x1)
+        y0, y1 = max(0, asked_y0), min(h, asked_y1)
+        if x1 - x0 < tpl or y1 - y0 < tpl:
+            return
+        template = f32[tcy[k] - half_w: tcy[k] + half_w + 1,
+                       tcx[k] - half_w: tcx[k] + half_w + 1]
+        ncc = cv2.matchTemplate(g32[y0:y1, x0:x1], template, cv2.TM_CCOEFF_NORMED)
+        _, max_val, _, (px, py) = cv2.minMaxLoc(ncc)
+        if max_val <= 0.0:  # no positive correlation anywhere: nothing to keep
+            return
+        nh, nw = ncc.shape
+        sx, sy, sv = _batch_subpixel(
+            ncc[None], np.array([px], dtype=np.intp), np.array([py], dtype=np.intp),
+            np.array([max_val], dtype=np.float64), nh, nw,
+        )
+        x_clamped = x0 > asked_x0 or x1 < asked_x1
+        y_clamped = y0 > asked_y0 or y1 < asked_y1
+        x_end = sx[0] <= 0.5 or sx[0] >= nw - 1.5
+        y_end = sy[0] <= 0.5 or sy[0] >= nh - 1.5
+        if (x_clamped and x_end) or (y_clamped and y_end):
+            return
+        # A radius-edge peak on an open axis is handled as in a full window:
+        # the caller reports it as clipped (wider search) and drops it.
+        if not (x_end or y_end):
+            if not _reverse_consistent(f32, g32, tcx[k], tcy[k], x0 + px + half_w,
+                                       y0 + py + half_w, half_w, search):
+                return
+            far = np.ones_like(ncc, dtype=bool)
+            far[max(0, py - half_w): py + half_w + 1,
+                max(0, px - half_w): px + half_w + 1] = False
+            if far.any() and max_val < _MIN_PEAK_RATIO * float(ncc[far].max()):
+                return
+        pc, pp = _batch_qfactors(ncc[None], sv, 1)
+        peak_x[k] = sx[0] + (x0 - asked_x0)
+        peak_y[k] = sy[0] + (y0 - asked_y0)
+        peak_val[k] = sv[0]
+        pce[k] = pc[0]
+        ppe[k] = pp[0]
+
+    if n >= 500:
+        n_workers = min(os.cpu_count() or 4, max(1, n // 100))
+        with ThreadPoolExecutor(max_workers=n_workers) as pool:
+            list(pool.map(_one, range(n)))
+    else:
+        for k in range(n):
+            _one(k)
+    return peak_x, peak_y, peak_val, pce, ppe
 
 
 # ---------------------------------------------------------------------------
@@ -1084,6 +1270,7 @@ def _refine_at_level(
     v_init: NDArray[np.float64],
     half_w: int,
     search: int,
+    clamp_border: bool = True,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """Refine displacement at a single pyramid level via NCC.
 
@@ -1103,6 +1290,8 @@ def _refine_at_level(
         v_init: Initial v-displacement (N, M).
         half_w: Half subset size.
         search: Search radius.
+        clamp_border: Search border nodes with a clamped window (default);
+            False drops them, for levels whose border is not real data.
 
     Returns:
         (u_refined, v_refined, cc_max) all shape (N, M).
@@ -1134,7 +1323,9 @@ def _refine_at_level(
     pred_CX = np.round(CX + np.where(nan_init, 0, u_init)).astype(np.intp)
     pred_CY = np.round(CY + np.where(nan_init, 0, v_init)).astype(np.intp)
 
-    # Full search region must fit in deformed image
+    # Full search region inside the deformed image: the batch path below.
+    # A node whose region crosses the border is searched with a clamped
+    # window instead of being dropped (see _clamped_window_search).
     search_ok = (
         (pred_CY - half_w - search >= 0)
         & (pred_CX - half_w - search >= 0)
@@ -1154,7 +1345,7 @@ def _refine_at_level(
     n_pix = float((2 * half_w + 1) ** 2)
 
     pre_ok = template_ok & search_ok & ~nan_init
-    ok_idx = np.where(pre_ok)
+    ok_idx = np.where(template_ok & ~nan_init)
     var_f = np.zeros((ny, nx), dtype=np.float64)
 
     if len(ok_idx[0]) > 0:
@@ -1168,12 +1359,35 @@ def _refine_at_level(
                 - int_f2[ty1, tx0] + int_f2[ty0, tx0])
         var_f[ok_idx] = np.maximum(s_f2 / n_pix - (s_f / n_pix) ** 2, 0.0)
 
-    valid = pre_ok & (np.sqrt(var_f) > 1e-6)
+    textured = np.sqrt(var_f) > 1e-6
+    valid = pre_ok & textured
+    # A border node is searched only if its predicted match still lies in
+    # the deformed image; otherwise it cannot be measured at this level.
+    pred_fits = (
+        (pred_CY - half_w >= 0) & (pred_CX - half_w >= 0)
+        & (pred_CY + half_w + 1 <= h) & (pred_CX + half_w + 1 <= w)
+    )
+    clamped = template_ok & ~search_ok & ~nan_init & textured & pred_fits & clamp_border
 
     # Mark all invalid nodes as NaN
     invalid = ~valid
     u_out[invalid] = np.nan
     v_out[invalid] = np.nan
+
+    # --- Border nodes: clamped search window around the prediction ---
+    c_iy, c_ix = np.where(clamped)
+    if len(c_iy) > 0:
+        tcx, tcy = cx_all[c_ix], cy_all[c_iy]
+        pcx, pcy = pred_CX[c_iy, c_ix], pred_CY[c_iy, c_ix]
+        px, py, pv, _, _ = _clamped_window_search(
+            f32, g32, tcx, tcy, pcx, pcy, half_w, search,
+        )
+        found = np.isfinite(px)
+        iy, ix = c_iy[found], c_ix[found]
+        # Same conversion as the batch path: window origin + peak - template.
+        u_out[iy, ix] = (pcx[found] - half_w - search) + px[found] + half_w - tcx[found]
+        v_out[iy, ix] = (pcy[found] - half_w - search) + py[found] + half_w - tcy[found]
+        cc_out[iy, ix] = pv[found]
 
     # --- Threaded matchTemplate for valid nodes ---
     valid_iy, valid_ix = np.where(valid)

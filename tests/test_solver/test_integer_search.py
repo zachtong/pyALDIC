@@ -92,8 +92,8 @@ class TestIntegerSearchZeroDisplacement:
         x0, y0, u, v, info = integer_search(img, img, para)
 
         # Mesh now extends to `half_w` from image edges; nodes too close
-        # to the border for NCC search region are left as NaN (to be
-        # inpainted downstream).  Interior nodes must be finite & near-zero.
+        # to the border for a full search box use a clamped window, and
+        # any left NaN are inpainted downstream.  Found nodes must be ~zero.
         valid = np.isfinite(u) & np.isfinite(v)
         assert np.sum(valid) > 0
         np.testing.assert_allclose(u[valid], 0.0, atol=0.1)
@@ -182,8 +182,8 @@ class TestGridGeneration:
         """All grid points should lie within `half_w` of image edges.
 
         Mesh padding was reduced to `half_w` (from `half_w + search`) to
-        allow IC-GN edge nodes; NCC for those edge nodes is skipped and
-        displacements are inpainted downstream.
+        allow IC-GN edge nodes; NCC searches them with a window clamped to
+        the image (see test_integer_search_border.py).
         """
         img = _make_speckle()
         para = _make_dicpara()
@@ -349,8 +349,8 @@ class TestWinsizeTooLarge:
             integer_search(img, img, para)
 
     def test_reduced_search_still_works(self):
-        """Large search region (but not winsize) is fine; mesh just gets
-        many NaN edge nodes which the downstream inpaint fills in.
+        """Large search region (but not winsize) is fine; edge nodes are
+        searched with clamped windows, any left NaN are inpainted downstream.
         """
         img = _make_speckle(h=64, w=64)
         para = _make_dicpara(h=64, w=64, search=30)
