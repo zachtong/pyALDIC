@@ -31,6 +31,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import zipfile
 from pathlib import Path
 
@@ -235,9 +236,30 @@ def _dmg() -> Path:
     print(f"\nimaging -> {out.name} ...")
     subprocess.run(["hdiutil", "create", "-volname", "pyALDIC", "-srcfolder",
                     str(stage), "-ov", "-format", "UDZO", str(out)], check=True)
-    subprocess.run(["hdiutil", "verify", str(out)], check=True)
+    _verify_dmg(out)
     print(f"  {out.stat().st_size / 1024 ** 2:.0f} MB")
     return out
+
+
+_VERIFY_TRIES = 5
+_VERIFY_WAIT_S = 5
+
+
+def _verify_dmg(path: Path) -> None:
+    """``hdiutil verify``, retried while the fresh image is still held.
+
+    Right after ``hdiutil create`` the disk-image helper can still hold the
+    file, and verify then fails with "Resource temporarily unavailable"
+    (seen on the macos-15 runner). A damaged image fails every try.
+    """
+    for attempt in range(1, _VERIFY_TRIES + 1):
+        if subprocess.run(["hdiutil", "verify", str(path)]).returncode == 0:
+            return
+        if attempt < _VERIFY_TRIES:
+            print(f"  hdiutil verify failed (try {attempt}/{_VERIFY_TRIES}), "
+                  f"retrying in {_VERIFY_WAIT_S} s")
+            time.sleep(_VERIFY_WAIT_S)
+    raise SystemExit(f"hdiutil verify failed {_VERIFY_TRIES} times: {path}")
 
 
 def main() -> None:
