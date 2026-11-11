@@ -160,7 +160,11 @@ jobs:
 
   build-macos:
     name: macOS disk image (Apple silicon)
-    runs-on: macos-14
+    # GitHub retired the macos-14 image. The build machine's macOS does not
+    # set the app's floor (LSMinimumSystemVersion in packaging/pyaldic.spec
+    # does), but it decides which wheels pip may pick -- the step after the
+    # build checks that none of them needs a newer macOS than that floor.
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
@@ -195,6 +199,34 @@ jobs:
 
       - name: Build
         run: python tools/build_exe.py
+
+      - name: Check no binary needs a newer macOS than the app declares
+        # The app says it runs on macOS 14. A wheel built for a newer macOS
+        # would still be bundled, and the app would then fail on a Mac the
+        # download page says is supported.
+        run: |
+          FLOOR=$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" dist-exe/pyALDIC.app/Contents/Info.plist)
+          echo "LSMinimumSystemVersion=$FLOOR"
+          find dist-exe/pyALDIC.app -type f -print0 \
+            | xargs -0 file | grep "Mach-O" | cut -d: -f1 | sort -u \
+            | while read -r f; do
+                xcrun vtool -show-build "$f" 2>/dev/null | awk -v f="$f" '$1 == "minos" {print $2, f}'
+              done | sort -u > "$RUNNER_TEMP/minos.txt"
+          N=$(cut -d' ' -f2- "$RUNNER_TEMP/minos.txt" | sort -u | wc -l | tr -d ' ')
+          echo "binaries checked: $N"
+          if [ "$N" -eq 0 ]; then
+            echo "::error::No Mach-O binary reported a minimum macOS; the check did not run"
+            exit 1
+          fi
+          cut -d' ' -f1 "$RUNNER_TEMP/minos.txt" | sort -V | uniq -c
+          TOO_NEW=$(awk -v floor="$FLOOR" '{ split($1, a, "."); split(floor, b, ".");
+                      if (a[1] + 0 > b[1] + 0 || (a[1] + 0 == b[1] + 0 && a[2] + 0 > b[2] + 0)) print }' \
+                    "$RUNNER_TEMP/minos.txt")
+          if [ -n "$TOO_NEW" ]; then
+            echo "$TOO_NEW"
+            echo "::error::Some bundled binaries need a newer macOS than $FLOOR"
+            exit 1
+          fi
 
       - name: Check the ad-hoc signature is intact
         # A bundle whose signature no longer matches its contents is reported
