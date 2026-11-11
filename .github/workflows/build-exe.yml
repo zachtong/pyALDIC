@@ -204,6 +204,13 @@ jobs:
         # The app says it runs on macOS 14. A wheel built for a newer macOS
         # would still be bundled, and the app would then fail on a Mac the
         # download page says is supported.
+        #
+        # Known exception: PySide6 6.11's binding libraries (PySide6/*,
+        # shiboken6/*) are marked 15.0 although their only macOS wheel is
+        # tagged 13.0. dyld does not enforce a library's minos, and these
+        # same files passed the bundle self-test (QApplication, QtWidgets,
+        # QtSvg) on macOS 14 in every macos-14 build up to v1.0.4. They are
+        # accepted up to 15.0 only; anything else above the floor fails.
         run: |
           FLOOR=$(/usr/libexec/PlistBuddy -c "Print :LSMinimumSystemVersion" dist-exe/pyALDIC.app/Contents/Info.plist)
           echo "LSMinimumSystemVersion=$FLOOR"
@@ -220,6 +227,7 @@ jobs:
           fi
           cut -d' ' -f1 "$RUNNER_TEMP/minos.txt" | sort -V | uniq -c
           TOO_NEW=$(awk -v floor="$FLOOR" '{ split($1, a, "."); split(floor, b, ".");
+                      if ($1 == "15.0" && $0 ~ /\/Frameworks\/(PySide6|shiboken6)\//) next
                       if (a[1] + 0 > b[1] + 0 || (a[1] + 0 == b[1] + 0 && a[2] + 0 > b[2] + 0)) print }' \
                     "$RUNNER_TEMP/minos.txt")
           if [ -n "$TOO_NEW" ]; then
