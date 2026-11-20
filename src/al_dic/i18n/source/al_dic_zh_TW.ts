@@ -965,62 +965,77 @@ Only relevant for the FFT init-guess mode.</source>
 <context>
     <name>CanvasConfigOverlay</name>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="45"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
         <source>Mode</source>
         <translation>模式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
         <source>Solver</source>
         <translation>求解器</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="48"/>
+        <source>Shape Function</source>
+        <translation>形函數</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="49"/>
         <source>Init</source>
         <translation>初始猜測</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="97"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="100"/>
         <source>Accumulative</source>
         <translation>累積式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="98"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="101"/>
         <source>Incremental</source>
         <translation>增量式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="105"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="108"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="107"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="110"/>
         <source>ADMM (%1 iter)</source>
         <translation>ADMM（%1 次迭代）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="117"/>
+        <source>2nd order</source>
+        <translation>二階</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <source>1st order</source>
+        <translation>一階</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
         <source>Starting Points</source>
         <translation>種子點</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Previous frame</source>
         <translation>上一影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>FFT every frame</source>
         <translation>每影格 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every %1 fr</source>
         <translation>每 %1 影格 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="121"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2609,17 +2624,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>正在建立管線設定…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="426"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="434"/>
         <source>Loading images...</source>
         <translation>正在載入影像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="440"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="448"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已載入 %1 張影像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="452"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="460"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 遮罩：%1，%2 像素（%3%）</translation>
     </message>
@@ -3870,17 +3885,17 @@ Only applies when Method = Plane fitting.</source>
 <context>
     <name>WorkflowTypePanel</name>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="51"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
         <source>Incremental</source>
         <translation>增量式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="53"/>
         <source>Accumulative</source>
         <translation>累積式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="57"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="58"/>
         <source>Incremental: each frame is compared to the previous reference frame.
 Suitable for large accumulated deformation, required for large rotations.
 
@@ -3893,17 +3908,17 @@ Accurate for small, monotonic deformation only.</source>
 僅適用於小的、單調的變形。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="64"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="65"/>
         <source>Tracking Mode</source>
         <translation>追蹤模式</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="75"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="76"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="78"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
         <source>Local DIC: Independent subset matching (IC-GN). Fast,
 preserves sharp local features. Best for small
 deformations or high-quality images.
@@ -3921,27 +3936,65 @@ AL-DIC：全域 FEM 正則化的增廣拉格朗日方法。
 含雜訊的影像，或對應變精度要求高的場景。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="87"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="88"/>
         <source>Solver</source>
         <translation>求解器</translation>
     </message>
     <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="98"/>
+        <source>1st order</source>
+        <translation>一階</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="99"/>
+        <source>2nd order</source>
+        <translation>二階</translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <source>1st order: each subset can translate, stretch, shear and
+rotate. The standard choice.
+
+2nd order: each subset can also bend. Removes the error a
+1st-order subset makes where strain changes within the
+subset, at about twice the noise. Most useful with a larger
+subset and low image noise. A subset that cannot support it
+keeps its 1st-order result.
+
+Available for Local DIC only.</source>
+        <translation>一階：每個子集可以平移、拉伸、剪切和旋轉。
+標準選擇。
+
+二階：每個子集還可以彎曲。可消除一階子集在
+應變於子集內變化處產生的誤差，
+代價是雜訊約為兩倍。搭配較大的子集和
+較低的影像雜訊時最有用。無法支援二階的子集
+保留其一階結果。
+
+僅適用於 Local DIC。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="114"/>
+        <source>Shape Function</source>
+        <translation>形函數</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
         <source>Every Frame</source>
         <translation>每個影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="105"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="133"/>
         <source>Every N Frames</source>
         <translation>每 N 個影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="134"/>
         <source>Custom Frames</source>
         <translation>自訂影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="109"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -3954,27 +4007,27 @@ Custom Frames: user-defined list of reference frame indices.</source>
 自訂影格：由使用者指定參考影格索引清單。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="146"/>
         <source>Reference Update</source>
         <translation>參考影格更新</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
         <source>Update reference every N frames</source>
         <translation>每 N 個影格更新一次參考影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="158"/>
         <source>Interval</source>
         <translation>間隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="139"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="167"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>用作參考影格的影格索引清單（0 為起始），用逗號分隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
         <source>Reference Frames</source>
         <translation>參考影格清單</translation>
     </message>

@@ -15,6 +15,7 @@ Exposes:
 * ``tracking_mode`` -> AppState.tracking_mode  ("incremental" or
   "accumulative")
 * ``use_admm`` / ``admm_max_iter`` -> ``AppState`` (Solver choice)
+* ``shape_function_order`` -> AppState (subset shape function, Local DIC)
 * ``inc_ref_mode``   -> AppState.inc_ref_mode
 * ``inc_ref_interval``, ``inc_custom_refs`` -> AppState
 """
@@ -90,6 +91,33 @@ class WorkflowTypePanel(QWidget):
         solver_row.addWidget(self._solver)
         layout.addLayout(solver_row)
 
+        # --- Shape function (Local DIC only) ---
+        # Stable codes as userData; AL-DIC always runs first order, so the
+        # control is disabled there and keeps the user's Local DIC choice.
+        self._shape_order = QComboBox()
+        self._shape_order.addItem(self.tr("1st order"), "first")
+        self._shape_order.addItem(self.tr("2nd order"), "second")
+        _shape_idx = self._shape_order.findData(state.shape_function_order)
+        if _shape_idx >= 0:
+            self._shape_order.setCurrentIndex(_shape_idx)
+        self._shape_order.setToolTip(self.tr(
+            "1st order: each subset can translate, stretch, shear and\n"
+            "rotate. The standard choice.\n\n"
+            "2nd order: each subset can also bend. Removes the error a\n"
+            "1st-order subset makes where strain changes within the\n"
+            "subset, at about twice the noise. Most useful with a larger\n"
+            "subset and low image noise. A subset that cannot support it\n"
+            "keeps its 1st-order result.\n\n"
+            "Available for Local DIC only."
+        ))
+        shape_row = QHBoxLayout()
+        shape_lbl = QLabel(self.tr("Shape Function"))
+        shape_lbl.setFixedWidth(120)
+        shape_row.addWidget(shape_lbl)
+        shape_row.addWidget(self._shape_order)
+        layout.addLayout(shape_row)
+        self._shape_order.setEnabled(not state.use_admm)
+
         # ADMM iterations moved to ADVANCED > AdvancedTuningWidget —
         # it's a numerical tuning knob, not a workflow choice.
 
@@ -153,6 +181,9 @@ class WorkflowTypePanel(QWidget):
             self._on_tracking_mode_changed
         )
         self._solver.currentIndexChanged.connect(self._on_solver_changed)
+        self._shape_order.currentIndexChanged.connect(
+            self._on_shape_order_changed
+        )
         self._ref_mode.currentIndexChanged.connect(self._on_ref_mode_changed)
         self._interval_spin.valueChanged.connect(
             lambda v: state.set_param("inc_ref_interval", v)
@@ -165,7 +196,7 @@ class WorkflowTypePanel(QWidget):
 
         # Block scroll-wheel changes on unfocused widgets
         for widget in [
-            self._tracking_mode, self._solver,
+            self._tracking_mode, self._solver, self._shape_order,
             self._ref_mode, self._interval_spin,
         ]:
             widget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -177,7 +208,15 @@ class WorkflowTypePanel(QWidget):
         """Toggle solver kind in state (read from combobox userData code)."""
         state = AppState.instance()
         use_admm = self._solver.currentData() == "aldic"
+        self._shape_order.setEnabled(not use_admm)
         state.set_param("use_admm", use_admm)
+
+    def _on_shape_order_changed(self, _index: int) -> None:
+        """Store the chosen shape-function order (combobox userData code)."""
+        state = AppState.instance()
+        state.set_param(
+            "shape_function_order", self._shape_order.currentData() or "first",
+        )
 
     def _on_tracking_mode_changed(self, _index: int) -> None:
         """Set tracking mode and swap init-guess default + inc sub-panel."""

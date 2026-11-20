@@ -61,7 +61,7 @@ PARAMS = dict(
     subset_size=24, subset_step=8, search_range=14,
     tracking_mode="incremental", inc_ref_mode="interval",
     inc_ref_interval=3, inc_custom_refs=[1, 2],
-    use_admm=False, admm_max_iter=7,
+    use_admm=False, admm_max_iter=7, shape_function_order="second",
     init_guess_mode="fft_every", fft_reset_interval=2, fft_auto_expand=False,
     seed_ncc_threshold=0.42,
     refine_inner=True, refine_outer=True, refinement_level=2,

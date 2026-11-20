@@ -90,6 +90,10 @@ Run traditional local IC-GN (fast, independent nodes) or full AL-DIC with ADMM g
   <img src="assets/local-vs-aldic.gif" alt="Local DIC vs AL-DIC Comparison" width="80%"/>
 </p>
 
+### 2nd-Order Shape Function (Local DIC)
+
+By default each subset can translate, stretch, shear and rotate (1st order, 6 parameters). With **Shape Function → 2nd order** a subset can also bend (12 parameters). This removes the systematic error a 1st-order subset makes where the strain changes within the subset — next to holes and notches, in localization bands, in bending — at the price of about twice the random error, so it pays off with a larger subset and low image noise. Every node starts from its converged 1st-order result and keeps it whenever the 2nd-order solve cannot be trusted; the result records which order each node ended with. In scripts: `dicpara_default(use_global_step=False, shape_function_order="second")`.
+
 ### Dual Tracking Modes
 
 **Accumulative mode** — every frame compared to the first reference (best for small, monotonic deformation). **Incremental mode** — each frame compared to the previous (handles large cumulative deformation with automatic displacement composition, a measurement grid that covers each reference frame's own ROI, and refinement-brush warping). After every run, a tracking-quality check reports nodes whose displacement had to be copied from a distant node or that stopped being tracked, and warns when the grid missed the specimen or most of the material was lost.
@@ -379,7 +383,7 @@ src/al_dic/
 ├── io/             Image I/O and utilities
 ├── mesh/           Quadtree mesh generation, refinement criteria
 │   └── criteria/   Mask boundary, ROI edge, brush region, manual selection
-├── solver/         IC-GN, ADMM (Subpb1/Subpb2), FFT search, FEM assembly
+├── solver/         IC-GN (1st- and 2nd-order shape function), ADMM (Subpb1/Subpb2), FFT search, FEM assembly
 ├── strain/         Strain computation, deformation gradient, smoothing
 └── utils/          Interpolation, outlier detection, mask warping
 

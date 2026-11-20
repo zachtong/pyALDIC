@@ -122,6 +122,7 @@ _PARAM_KEYS = (
     "inc_custom_refs",
     "use_admm",
     "admm_max_iter",
+    "shape_function_order",
     "init_guess_mode",
     "fft_reset_interval",
     "fft_auto_expand",

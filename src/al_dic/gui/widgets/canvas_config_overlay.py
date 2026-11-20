@@ -1,8 +1,8 @@
 """Top-left canvas overlay that summarises the current DIC configuration.
 
-The overlay is a small always-visible legend showing the three
-decisions that shape a run — tracking mode, solver, and initial-guess
-method. It updates live as the user edits the sidebar, so a glance at
+The overlay is a small always-visible legend showing the decisions
+that shape a run — tracking mode, solver, subset shape function, and
+initial-guess method. It updates live as the user edits the sidebar, so a glance at
 the canvas tells you what will happen if you press Run.
 
 Invisible until at least two images are loaded.
@@ -19,7 +19,8 @@ from al_dic.gui.theme_manager import themed
 class CanvasConfigOverlay(QFrame):
     """Small semi-transparent panel pinned to the canvas top-left.
 
-    Shows three labelled rows: ``Mode``, ``Solver``, ``Init``.
+    Shows four labelled rows: ``Mode``, ``Solver``, ``Shape Function``,
+    ``Init``.
     Values follow whatever is currently selected in the sidebar.
     """
 
@@ -44,6 +45,7 @@ class CanvasConfigOverlay(QFrame):
 
         self._mode_lbl = self._make_row(layout, self.tr("Mode"))
         self._solver_lbl = self._make_row(layout, self.tr("Solver"))
+        self._shape_lbl = self._make_row(layout, self.tr("Shape Function"))
         self._init_lbl = self._make_row(layout, self.tr("Init"))
         self.adjustSize()
 
@@ -85,6 +87,7 @@ class CanvasConfigOverlay(QFrame):
             return
         self._mode_lbl.setText(self._format_mode())
         self._solver_lbl.setText(self._format_solver())
+        self._shape_lbl.setText(self._format_shape())
         self._init_lbl.setText(self._format_init())
         self.adjustSize()
         self.setVisible(True)
@@ -105,6 +108,14 @@ class CanvasConfigOverlay(QFrame):
             return self.tr("Local DIC")
         iters = int(getattr(self._state, "admm_max_iter", 3))
         return tr_args(self.tr("ADMM (%1 iter)"), iters)
+
+    def _format_shape(self) -> str:
+        # The order the run will actually use: AL-DIC is always first order.
+        use_admm = getattr(self._state, "use_admm", False)
+        order = str(getattr(self._state, "shape_function_order", "first"))
+        if not use_admm and order == "second":
+            return self.tr("2nd order")
+        return self.tr("1st order")
 
     def _format_init(self) -> str:
         from al_dic.i18n import tr_args

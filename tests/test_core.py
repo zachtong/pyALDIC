@@ -185,6 +185,22 @@ class TestDICPara:
         p = dicpara_default(frame_schedule=sched)
         assert p.frame_schedule is sched
 
+    def test_shape_function_order_defaults_to_first_order(self):
+        # None means first order; see DICPara for why the default is None.
+        assert dicpara_default().shape_function_order is None
+
+    def test_shape_function_order_second_with_local_dic(self):
+        p = dicpara_default(shape_function_order="second", use_global_step=False)
+        assert p.shape_function_order == "second"
+
+    def test_shape_function_order_second_needs_local_dic(self):
+        with pytest.raises(ValueError, match="shape_function_order"):
+            dicpara_default(shape_function_order="second", use_global_step=True)
+
+    def test_shape_function_order_rejects_unknown_value(self):
+        with pytest.raises(ValueError, match="shape_function_order"):
+            dicpara_default(shape_function_order="third", use_global_step=False)
+
 
 # ---------------------------------------------------------------------------
 # Interleaved vector utilities

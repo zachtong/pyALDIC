@@ -966,62 +966,77 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
 <context>
     <name>CanvasConfigOverlay</name>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="45"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
         <source>Mode</source>
         <translation>Modo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="46"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
         <source>Solver</source>
         <translation>Solucionador</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="47"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="48"/>
+        <source>Shape Function</source>
+        <translation>Función de forma</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="49"/>
         <source>Init</source>
         <translation>Estimación inicial</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="97"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="100"/>
         <source>Accumulative</source>
         <translation>Acumulativo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="98"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="101"/>
         <source>Incremental</source>
         <translation>Incremental</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="105"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="108"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="107"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="110"/>
         <source>ADMM (%1 iter)</source>
         <translation>ADMM (%1 iter.)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="114"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="117"/>
+        <source>2nd order</source>
+        <translation>2.º orden</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <source>1st order</source>
+        <translation>1.er orden</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
         <source>Starting Points</source>
         <translation>Puntos iniciales</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="116"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Previous frame</source>
         <translation>Fotograma anterior</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>FFT every frame</source>
         <translation>FFT cada fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every %1 fr</source>
         <translation>FFT cada %1 fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="121"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2616,17 +2631,17 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>Construyendo configuración del flujo…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="426"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="434"/>
         <source>Loading images...</source>
         <translation>Cargando imágenes…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="440"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="448"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 imágenes cargadas, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="452"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="460"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Máscara ROI: %1, %2 píxeles (%3%)</translation>
     </message>
@@ -3887,17 +3902,17 @@ Solo se aplica cuando Método = Ajuste de plano.</translation>
 <context>
     <name>WorkflowTypePanel</name>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="51"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
         <source>Incremental</source>
         <translation>Incremental</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="52"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="53"/>
         <source>Accumulative</source>
         <translation>Acumulativo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="57"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="58"/>
         <source>Incremental: each frame is compared to the previous reference frame.
 Suitable for large accumulated deformation, required for large rotations.
 
@@ -3910,17 +3925,17 @@ Acumulativo: cada fotograma se compara con el fotograma 1.
 Preciso solo para deformaciones pequeñas y monótonas.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="64"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="65"/>
         <source>Tracking Mode</source>
         <translation>Modo de seguimiento</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="75"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="76"/>
         <source>Local DIC</source>
         <translation>Local DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="78"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
         <source>Local DIC: Independent subset matching (IC-GN). Fast,
 preserves sharp local features. Best for small
 deformations or high-quality images.
@@ -3939,27 +3954,66 @@ entre subconjuntos. Ideal para grandes deformaciones, imágenes
 con ruido o cuando la precisión de la deformación es importante.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="87"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="88"/>
         <source>Solver</source>
         <translation>Solucionador</translation>
     </message>
     <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="98"/>
+        <source>1st order</source>
+        <translation>1.er orden</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="99"/>
+        <source>2nd order</source>
+        <translation>2.º orden</translation>
+    </message>
+    <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <source>1st order: each subset can translate, stretch, shear and
+rotate. The standard choice.
+
+2nd order: each subset can also bend. Removes the error a
+1st-order subset makes where strain changes within the
+subset, at about twice the noise. Most useful with a larger
+subset and low image noise. A subset that cannot support it
+keeps its 1st-order result.
+
+Available for Local DIC only.</source>
+        <translation>1.er orden: cada subconjunto puede trasladarse, estirarse, cizallarse
+y rotar. La opción estándar.
+
+2.º orden: cada subconjunto también puede curvarse. Elimina el error
+que comete un subconjunto de 1.er orden donde la deformación cambia
+dentro del subconjunto, a costa de aproximadamente el doble de ruido.
+Es más útil con un subconjunto mayor y poco ruido de imagen.
+Un subconjunto que no puede admitirlo conserva su resultado
+de 1.er orden.
+
+Disponible solo para Local DIC.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="114"/>
+        <source>Shape Function</source>
+        <translation>Función de forma</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
         <source>Every Frame</source>
         <translation>Cada fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="105"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="133"/>
         <source>Every N Frames</source>
         <translation>Cada N fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="134"/>
         <source>Custom Frames</source>
         <translation>Fotogramas personalizados</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="109"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -3972,27 +4026,27 @@ Cada N fotogramas: reiniciar cada N fotogramas (equilibrio entre velocidad y rob
 Fotogramas personalizados: lista de índices definida por el usuario.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="146"/>
         <source>Reference Update</source>
         <translation>Actualización de la referencia</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="128"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
         <source>Update reference every N frames</source>
         <translation>Actualizar la referencia cada N fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="158"/>
         <source>Interval</source>
         <translation>Intervalo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="139"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="167"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>Índices de fotograma separados por comas para usar como fotogramas de referencia (base 0)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="143"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
         <source>Reference Frames</source>
         <translation>Fotogramas de referencia</translation>
     </message>

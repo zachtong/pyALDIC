@@ -22,7 +22,7 @@ import numpy as np
 import scipy.io
 
 from al_dic.core.data_structures import PipelineResult
-from al_dic.export.export_utils import ensure_dir, world_disp
+from al_dic.export.export_utils import ensure_dir, shape_order_matrix, world_disp
 
 # Canonical strain field names (match StrainResult attribute names)
 _STRAIN_FIELDS: frozenset[str] = frozenset([
@@ -106,6 +106,12 @@ def export_mat(
         "n_frames": n_frames,
         "n_nodes": n_nodes,
     }
+
+    # Which shape-function order each node ended with; present only when
+    # the second-order stage ran (see ``shape_order_matrix``).
+    order_mat = shape_order_matrix(results)
+    if order_mat is not None:
+        mat_dict["shape_order"] = order_mat
 
     fields_set = set(fields)
     requested_disp = fields_set & _DISP_FIELDS

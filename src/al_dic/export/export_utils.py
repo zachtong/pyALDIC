@@ -6,8 +6,13 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 from numpy.typing import NDArray
+
+if TYPE_CHECKING:
+    from al_dic.core.data_structures import PipelineResult
 
 
 def frame_tag(i: int, n_frames: int) -> str:
@@ -89,3 +94,19 @@ def world_disp(
         (u, v) each (N,): ``u = U_x * um2px``, ``v = -U_y * um2px``.
     """
     return U[0::2] * um2px, -U[1::2] * um2px
+
+
+def shape_order_matrix(results: "PipelineResult") -> NDArray[np.int8] | None:
+    """Per-node shape-function order as an (N, T) int8 matrix, or ``None``.
+
+    Column ``t`` is frame ``t``: 0 = not solved (value filled from
+    neighbours), 1 = first order, 2 = second order. ``None`` when the
+    second-order stage did not run for every frame, or when some frame pair
+    was solved on a mesh other than the exported one (its per-node array
+    then has no meaning on the exported node list).
+    """
+    n_nodes = results.dic_mesh.coordinates_fem.shape[0]
+    columns = [fr.shape_order for fr in results.result_disp]
+    if not columns or any(c is None or c.shape != (n_nodes,) for c in columns):
+        return None
+    return np.column_stack(columns).astype(np.int8)

@@ -1,6 +1,7 @@
 """Round-trip tests for faithful PipelineResult (de)serialization."""
 
 import io
+import json
 from dataclasses import dataclass, fields, is_dataclass, replace
 
 import numpy as np
@@ -141,6 +142,31 @@ def test_para_arrays_roundtrip():
     res = _make_result(para_arrays=True)
     back = deserialize_result(*serialize_result(res))
     _assert_eq(res, back)
+
+
+def test_first_order_session_has_no_shape_order_keys():
+    """Builds <= 1.0.5 reject unknown fields, so a run that never used the
+    second-order stage must not write the fields added for it."""
+    _, manifest = serialize_result(_make_result())
+    text = json.dumps(manifest)
+    assert "shape_function_order" not in text
+    assert "shape_order" not in text
+
+
+def test_shape_order_roundtrip():
+    res = _make_result()
+    n = res.dic_mesh.coordinates_fem.shape[0]
+    order = (np.arange(n) % 3).astype(np.int8)
+    res = replace(
+        res,
+        dic_para=replace(res.dic_para, shape_function_order="second",
+                         use_global_step=False),
+        result_disp=[replace(fr, shape_order=order) for fr in res.result_disp],
+    )
+    back = deserialize_result(*serialize_result(res))
+    _assert_eq(res, back)
+    assert back.dic_para.shape_function_order == "second"
+    assert back.result_disp[0].shape_order.dtype == np.int8
 
 
 def test_save_load_npz_roundtrip(tmp_path):

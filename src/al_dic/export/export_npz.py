@@ -15,7 +15,9 @@ import numpy as np
 from numpy.typing import NDArray
 
 from al_dic.core.data_structures import PipelineResult
-from al_dic.export.export_utils import ensure_dir, result_frame_tag, world_disp
+from al_dic.export.export_utils import (
+    ensure_dir, result_frame_tag, shape_order_matrix, world_disp,
+)
 
 # Canonical displacement field names (excluding coordinates)
 _DISP_FIELDS: frozenset[str] = frozenset([
@@ -51,6 +53,12 @@ def _collect_all_arrays(
 
     if n_frames == 0:
         return arrays
+
+    # Which shape-function order each node ended with; present only when
+    # the second-order stage ran (see ``shape_order_matrix``).
+    order_mat = shape_order_matrix(results)
+    if order_mat is not None:
+        arrays["shape_order"] = order_mat
 
     fields_set = set(fields)
     requested_disp = fields_set & _DISP_FIELDS

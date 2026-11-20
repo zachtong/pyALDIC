@@ -291,6 +291,13 @@ class PipelineController:
             admm_info = (
                 f", admm_iter={state.admm_max_iter}" if state.use_admm else ""
             )
+            # Second order exists for Local DIC only; AL-DIC is first order.
+            shape_order = (
+                "second"
+                if not state.use_admm and state.shape_function_order == "second"
+                else None
+            )
+            shape_info = ", shape=second" if shape_order else ""
             # Parameter dump: key=value pairs stay literal (English keys
             # are the canonical parameter names); only the prose around
             # them is translated.
@@ -300,7 +307,7 @@ class PipelineController:
                     f"subset={state.subset_size}, "
                     f"step={state.subset_step}, search={state.search_range}, "
                     f"mode={state.tracking_mode}, "
-                    f"solver={solver_label}{admm_info}",
+                    f"solver={solver_label}{admm_info}{shape_info}",
                 ),
                 "info",
             )
@@ -418,6 +425,7 @@ class PipelineController:
                 fft_auto_expand_search=state.fft_auto_expand,
                 use_global_step=state.use_admm,
                 admm_max_iter=state.admm_max_iter,
+                shape_function_order=shape_order,
                 seed_set=seed_set_for_para,
             )
 

@@ -102,6 +102,8 @@ def _correlate_tiny_pair() -> None:
     problem size, so taking the path the real run takes is the only reliable
     way to compile the signatures the real run will need.
     """
+    from dataclasses import replace
+
     import numpy as np
     from scipy.ndimage import gaussian_filter
 
@@ -134,3 +136,11 @@ def _correlate_tiny_pair() -> None:
         # means nothing for a warm-up.
         warnings.simplefilter("ignore")
         run_aldic(para, [ref, deformed], [mask, mask], compute_strain=False)
+        # Second pass, Local DIC with the second-order shape function: the
+        # AL-DIC pass above never reaches its refinement kernel, and Local
+        # DIC is what a new project starts on.
+        second_order = replace(
+            para, use_global_step=False, shape_function_order="second",
+        )
+        run_aldic(second_order, [ref, deformed], [mask, mask],
+                  compute_strain=False)

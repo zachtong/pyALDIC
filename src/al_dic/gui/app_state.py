@@ -123,8 +123,11 @@ class AppState(QObject):
         self.inc_ref_interval: int = 5
         self.inc_custom_refs: list[int] = []
         # Solver selection
-        self.use_admm: bool = True       # True = AL-DIC (ADMM), False = Local DIC
+        self.use_admm: bool = False      # False = Local DIC (default), True = AL-DIC (ADMM)
         self.admm_max_iter: int = 3      # ADMM iteration count (1-10)
+        # Subset shape function for Local DIC: "first" | "second".
+        # AL-DIC always runs first order, whatever is stored here.
+        self.shape_function_order: str = "first"
         # Initial guess parameters
         # Modes: "previous" | "fft_ref_update" | "fft_every" | "fft_reset_n"
         # | "seed_propagation"

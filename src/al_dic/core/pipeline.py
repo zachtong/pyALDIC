@@ -72,7 +72,7 @@ from ..mesh.rasterize import crack_mask_from_deformed
 from ..mesh.refinement import RefinementContext, RefinementPolicy, refine_mesh
 from ..solver.init_disp import init_disp
 from ..solver.integer_search import integer_search, integer_search_pyramid
-from ..solver.local_icgn import local_icgn
+from ..solver.local_icgn import local_icgn_full
 from ..solver.seed_prop_pipeline import (
     SeedPropagationState,
     build_grid_for_roi,
@@ -1565,13 +1565,21 @@ def run_aldic(
                 icgn_ctx_cache.popitem(last=False)  # evict LRU
         else:
             icgn_ctx_cache.move_to_end(_icgn_key)
-        (
-            U_subpb1, F_subpb1, local_time, conv_iter_s4,
-            bad_pt_num_s4, mark_hole_strain,
-        ) = local_icgn(
+        _s4 = local_icgn_full(
             current_U0, dic_mesh.coordinates_fem, Df, f_img_raw, g_img_icgn, para, tol,
             ctx=icgn_ctx,
         )
+        U_subpb1, F_subpb1, local_time = _s4.U, _s4.F, _s4.local_time
+        mark_hole_strain = _s4.mark_hole_strain
+        shape_order_s4 = _s4.shape_order
+        if shape_order_s4 is not None:
+            logger.info(
+                "Shape function: second order at %d of %d nodes, first order "
+                "at %d, not solved %d",
+                int(np.sum(shape_order_s4 == 2)), n_nodes,
+                int(np.sum(shape_order_s4 == 1)),
+                int(np.sum(shape_order_s4 == 0)),
+            )
 
         assert not np.all(np.isnan(U_subpb1)), "Section 4: USubpb1 is entirely NaN"
         assert len(F_subpb1) == 4 * n_nodes, (
@@ -1807,7 +1815,7 @@ def run_aldic(
 
         # Store frame results (with ref_frame metadata)
         result_disp[frame_idx - 1] = FrameResult(
-            U=U_final, ref_frame=ref_idx,
+            U=U_final, ref_frame=ref_idx, shape_order=shape_order_s4,
         )
         result_def_grad[frame_idx - 1] = FrameResult(
             U=U_final, F=F_final, ref_frame=ref_idx,

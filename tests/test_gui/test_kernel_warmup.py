@@ -36,6 +36,8 @@ REQUIRED_KERNELS = (
     "icgn_6dof_parallel",
     "precompute_subsets_2dof_numba",
     "icgn_2dof_parallel",
+    # Second-order shape-function stage (Local DIC), in icgn2_kernels.
+    "icgn2_refine_parallel",
 )
 
 
@@ -58,18 +60,22 @@ def test_warmup_geometry_reaches_the_batch_backend():
 _PROBE = textwrap.dedent(
     """
     import json
+    from al_dic.solver import icgn2_kernels as nk2
     from al_dic.solver import numba_kernels as nk
+
+    def kernel(name):
+        return getattr(nk, name, None) or getattr(nk2, name)
 
     if not nk.HAS_NUMBA:
         print(json.dumps({"skip": "numba not installed"}))
         raise SystemExit(0)
 
-    before = {n: len(getattr(nk, n).signatures or []) for n in %(names)r}
+    before = {n: len(kernel(n).signatures or []) for n in %(names)r}
 
     from al_dic.gui.kernel_warmup import _correlate_tiny_pair
     _correlate_tiny_pair()
 
-    after = {n: len(getattr(nk, n).signatures or []) for n in %(names)r}
+    after = {n: len(kernel(n).signatures or []) for n in %(names)r}
     print(json.dumps({"before": before, "after": after}))
     """
 )
@@ -77,7 +83,7 @@ _PROBE = textwrap.dedent(
 
 @pytest.mark.slow
 def test_warmup_compiles_every_kernel_the_first_run_needs():
-    """In a fresh interpreter, the warm-up compiles all four solver kernels."""
+    """In a fresh interpreter, the warm-up compiles every solver kernel."""
     import json
 
     proc = subprocess.run(

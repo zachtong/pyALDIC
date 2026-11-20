@@ -54,6 +54,11 @@ params:
   reference_mode: incremental # incremental | accumulative
   init_guess_mode: fft        # fft | previous | seed_propagation | auto
   size_of_fft_search_region: 20
+  # Solver. Left out, the engine runs AL-DIC (use_global_step: true).
+  # Local DIC, optionally with the 2nd-order subset shape function (which is
+  # available for Local DIC only, so the two lines go together):
+  # use_global_step: false
+  # shape_function_order: second
   method_to_compute_strain: 2 # 2 = plane fitting (default)
   strain_plane_fit_rad: 25.0
   strain_edge_trim_alpha: 0.7

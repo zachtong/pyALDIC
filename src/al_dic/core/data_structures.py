@@ -327,6 +327,15 @@ class DICPara:
     cluster_no: int = 0
     icgn_max_iter: int = 100
     min_valid_ratio: float = 0.5  # min fraction of subset pixels in mask
+    # Subset shape function for Local DIC (use_global_step=False).
+    # None = first order (6 parameters). "second" refines every converged node
+    # with a 12-parameter shape function and keeps the first-order result where
+    # that refinement is not trustworthy.
+    # The first-order default is None, not "first", on purpose: the session
+    # serializer omits None fields whose default is None, and builds up to
+    # 1.0.5 reject fields they do not know. A first-order session therefore
+    # stays readable by those builds.
+    shape_function_order: Literal["second"] | None = None
 
     # --- 7. ADMM ---
     mu: float = 1e-3
@@ -441,6 +450,11 @@ class FrameResult:
         U_accum: Cumulative displacement from frame 1, same layout.
         F: Deformation gradient vector (4*n_nodes,) interleaved [F11,F21,F12,F22,...].
         bad_pt_num: Number of bad points detected per ADMM step.
+        shape_order: Shape-function order each node ended with, (n_nodes,)
+            int8 on this frame pair's mesh: 0 = not solved (value filled
+            from neighbours), 1 = first order, 2 = second order. ``None``
+            when the second-order stage did not run (kept ``None`` so such
+            sessions stay readable by builds that predate the field).
     """
 
     U: NDArray[np.float64]
@@ -448,6 +462,7 @@ class FrameResult:
     F: NDArray[np.float64] | None = None
     bad_pt_num: NDArray[np.int64] | None = None
     ref_frame: int = 0
+    shape_order: NDArray[np.int8] | None = None
 
 
 @dataclass(frozen=True)

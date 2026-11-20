@@ -463,6 +463,103 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "es": "No se pudo cargar la imagen",
     },
 
+    # ========== WorkflowTypePanel / CanvasConfigOverlay — shape function ==========
+    "Shape Function": {
+        "zh_CN": "形函数",
+        "zh_TW": "形函數",
+        "ja":    "形状関数",
+        "ko":    "형상 함수",
+        "de":    "Formfunktion",
+        "fr":    "Fonction de forme",
+        "es":    "Función de forma",
+    },
+    "1st order": {
+        "zh_CN": "一阶",
+        "zh_TW": "一階",
+        "ja":    "1次",
+        "ko":    "1차",
+        "de":    "1. Ordnung",
+        "fr":    "1er ordre",
+        "es":    "1.er orden",
+    },
+    "2nd order": {
+        "zh_CN": "二阶",
+        "zh_TW": "二階",
+        "ja":    "2次",
+        "ko":    "2차",
+        "de":    "2. Ordnung",
+        "fr":    "2e ordre",
+        "es":    "2.º orden",
+    },
+    "1st order: each subset can translate, stretch, shear and\n"
+    "rotate. The standard choice.\n\n"
+    "2nd order: each subset can also bend. Removes the error a\n"
+    "1st-order subset makes where strain changes within the\n"
+    "subset, at about twice the noise. Most useful with a larger\n"
+    "subset and low image noise. A subset that cannot support it\n"
+    "keeps its 1st-order result.\n\n"
+    "Available for Local DIC only.": {
+        "zh_CN": "一阶：每个子集可以平移、拉伸、剪切和旋转。\n"
+                 "标准选择。\n\n"
+                 "二阶：每个子集还可以弯曲。可消除一阶子集在\n"
+                 "应变于子集内变化处产生的误差，\n"
+                 "代价是噪声约为两倍。配合较大的子集和\n"
+                 "较低的图像噪声时最有用。无法支持二阶的子集\n"
+                 "保留其一阶结果。\n\n"
+                 "仅适用于 Local DIC。",
+        "zh_TW": "一階：每個子集可以平移、拉伸、剪切和旋轉。\n"
+                 "標準選擇。\n\n"
+                 "二階：每個子集還可以彎曲。可消除一階子集在\n"
+                 "應變於子集內變化處產生的誤差，\n"
+                 "代價是雜訊約為兩倍。搭配較大的子集和\n"
+                 "較低的影像雜訊時最有用。無法支援二階的子集\n"
+                 "保留其一階結果。\n\n"
+                 "僅適用於 Local DIC。",
+        "ja":    "1次：各サブセットは並進・伸縮・せん断・回転できます。\n"
+                 "標準的な選択です。\n\n"
+                 "2次：各サブセットは曲げ変形も表現できます。サブセット内で\n"
+                 "ひずみが変化する箇所で1次サブセットに生じる誤差を\n"
+                 "取り除きますが、ノイズは約2倍になります。大きめのサブセットと\n"
+                 "低い画像ノイズの組み合わせで最も有効です。2次を適用できない\n"
+                 "サブセットは1次の結果を保持します。\n\n"
+                 "Local DIC でのみ利用できます。",
+        "ko":    "1차: 각 서브셋이 이동, 신축, 전단, 회전할 수 있습니다.\n"
+                 "표준 선택입니다.\n\n"
+                 "2차: 각 서브셋이 휘어질 수도 있습니다. 서브셋 안에서\n"
+                 "변형률이 변하는 곳에서 1차 서브셋이 만드는 오차를\n"
+                 "제거하지만 노이즈는 약 2배가 됩니다. 더 큰 서브셋과\n"
+                 "낮은 이미지 노이즈에서 가장 유용합니다. 2차를 적용할 수 없는\n"
+                 "서브셋은 1차 결과를 유지합니다.\n\n"
+                 "Local DIC에서만 사용할 수 있습니다.",
+        "de":    "1. Ordnung: Jedes Subset kann sich verschieben, dehnen, scheren\n"
+                 "und drehen. Die Standardwahl.\n\n"
+                 "2. Ordnung: Jedes Subset kann sich zusätzlich biegen. Beseitigt den\n"
+                 "Fehler, den ein Subset 1. Ordnung dort macht, wo sich die Dehnung\n"
+                 "innerhalb des Subsets ändert, bei etwa doppeltem Rauschen. Am\n"
+                 "nützlichsten mit einem größeren Subset und geringem Bildrauschen.\n"
+                 "Ein Subset, das sie nicht tragen kann, behält sein Ergebnis\n"
+                 "1. Ordnung.\n\n"
+                 "Nur für Local DIC verfügbar.",
+        "fr":    "1er ordre : chaque imagette peut se translater, s'étirer, se cisailler\n"
+                 "et tourner. Le choix standard.\n\n"
+                 "2e ordre : chaque imagette peut aussi se courber. Supprime l'erreur\n"
+                 "qu'une imagette du 1er ordre commet là où la déformation varie\n"
+                 "à l'intérieur de l'imagette, au prix d'un bruit environ deux fois plus\n"
+                 "élevé. Surtout utile avec une imagette plus grande et un faible bruit\n"
+                 "d'image. Une imagette qui ne peut pas le supporter conserve son\n"
+                 "résultat du 1er ordre.\n\n"
+                 "Disponible uniquement pour Local DIC.",
+        "es":    "1.er orden: cada subconjunto puede trasladarse, estirarse, cizallarse\n"
+                 "y rotar. La opción estándar.\n\n"
+                 "2.º orden: cada subconjunto también puede curvarse. Elimina el error\n"
+                 "que comete un subconjunto de 1.er orden donde la deformación cambia\n"
+                 "dentro del subconjunto, a costa de aproximadamente el doble de ruido.\n"
+                 "Es más útil con un subconjunto mayor y poco ruido de imagen.\n"
+                 "Un subconjunto que no puede admitirlo conserva su resultado\n"
+                 "de 1.er orden.\n\n"
+                 "Disponible solo para Local DIC.",
+    },
+
     # ========== AdvancedTuningWidget ==========
     "AL-DIC Iterations": {
         "zh_CN": "AL-DIC 迭代次数",

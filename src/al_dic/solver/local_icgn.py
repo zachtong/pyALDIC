@@ -122,6 +122,53 @@ def local_icgn(
     Returns:
         (U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain)
     """
+    out = local_icgn_full(
+        U0, coordinates_fem, Df, f_img, g_img, para, tol,
+        n_workers=n_workers, ctx=ctx,
+    )
+    return (out.U, out.F, out.local_time, out.conv_iter, out.bad_pt_num,
+            out.mark_hole_strain)
+
+
+@dataclass(frozen=True)
+class LocalICGNOutput:
+    """Result of the local IC-GN step for one frame pair.
+
+    The first six attributes are the values ``local_icgn`` returns, in
+    that order. ``shape_order`` is ``None`` unless the second-order stage
+    ran (``DICPara.shape_function_order``); then it is (n_nodes,) int8:
+    0 = not solved (value filled from neighbours), 1 = first order,
+    2 = second order.
+    """
+
+    U: NDArray[np.float64]
+    F: NDArray[np.float64]
+    local_time: float
+    conv_iter: NDArray[np.int64]
+    bad_pt_num: int
+    mark_hole_strain: NDArray[np.int64]
+    shape_order: NDArray[np.int8] | None = None
+
+
+def local_icgn_full(
+    U0: NDArray[np.float64],
+    coordinates_fem: NDArray[np.float64],
+    Df: ImageGradients,
+    f_img: NDArray[np.float64],
+    g_img: NDArray[np.float64],
+    para: DICPara,
+    tol: float,
+    n_workers: int | None = None,
+    ctx: LocalICGNContext | None = None,
+) -> LocalICGNOutput:
+    """Local IC-GN step, including the optional second-order stage.
+
+    Same arguments as :func:`local_icgn`. With
+    ``para.shape_function_order is None`` this runs exactly the first-order
+    solve and post-processing. With ``"second"`` every converged node is
+    refined between the two; bad-point detection still uses the first-order
+    iteration counts, so the same nodes are filled as in a first-order run.
+    """
     t0 = time.perf_counter()
 
     if ctx is None:
@@ -132,10 +179,39 @@ def local_icgn(
         ctx, None, U0_2d, g_img, tol,
     )
 
+    shape_order = None
+    if para.shape_function_order is not None:
+        from .shape_order import refine_shape_order
+
+        stage = refine_shape_order(ctx, U_2d, F_2d, conv_iter, g_img, tol)
+        U_2d, F_2d = stage.U_2d, stage.F_2d
+        # A node flagged as a bad point is replaced by a neighbour average
+        # in the post-processing below, whatever the stage did with it.
+        bad_pts, _ = _detect_bad_points(ctx, conv_iter)
+        shape_order = stage.order.copy()
+        shape_order[bad_pts] = 0
+
     local_time = time.perf_counter() - t0
 
-    return local_icgn_postprocess(
-        ctx, U_2d, F_2d, conv_iter, solve_time_seconds=local_time,
+    U, F, local_time, conv_iter_out, bad_pt_num, mark_hole_strain = (
+        local_icgn_postprocess(
+            ctx, U_2d, F_2d, conv_iter, solve_time_seconds=local_time,
+        )
+    )
+    return LocalICGNOutput(
+        U=U, F=F, local_time=local_time, conv_iter=conv_iter_out,
+        bad_pt_num=bad_pt_num, mark_hole_strain=mark_hole_strain,
+        shape_order=shape_order,
+    )
+
+
+def _detect_bad_points(
+    ctx: LocalICGNContext, conv_iter: NDArray[np.int64],
+) -> tuple[NDArray[np.int64], int]:
+    """Bad points of the local step, from first-order iteration counts."""
+    return detect_bad_points(
+        conv_iter, ctx.max_iter, ctx.coordinates_fem,
+        sigma_factor=1.0, min_threshold=6,
     )
 
 
@@ -221,7 +297,6 @@ def local_icgn_postprocess(
         (U, F, local_time, conv_iter, bad_pt_num, mark_hole_strain).
     """
     n_nodes = ctx.n_nodes
-    max_iter = ctx.max_iter
 
     U = np.empty(2 * n_nodes, dtype=np.float64)
     U[0::2] = U_2d_full[:, 0]
@@ -236,10 +311,7 @@ def local_icgn_postprocess(
     mark_hole = ctx.pre["mark_hole"]
     mark_hole_strain = np.where(mark_hole)[0].astype(np.int64)
 
-    bad_pts, bad_pt_num = detect_bad_points(
-        conv_iter_full, max_iter, ctx.coordinates_fem,
-        sigma_factor=1.0, min_threshold=6,
-    )
+    bad_pts, bad_pt_num = _detect_bad_points(ctx, conv_iter_full)
 
     U[2 * bad_pts] = np.nan
     U[2 * bad_pts + 1] = np.nan

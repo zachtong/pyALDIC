@@ -60,6 +60,60 @@ def test_incremental_sub_panel_visibility_follows_mode():
     assert panel._inc_panel.isHidden() is False
 
 
+def test_new_project_defaults_to_local_dic():
+    """A fresh project starts on Local DIC; AL-DIC is an explicit choice."""
+    state = AppState.instance()
+    panel = WorkflowTypePanel()
+
+    assert state.use_admm is False
+    assert panel._solver.currentData() == "local"
+
+
+def test_shape_function_defaults_to_first_order():
+    state = AppState.instance()
+    panel = WorkflowTypePanel()
+
+    assert state.shape_function_order == "first"
+    assert panel._shape_order.currentData() == "first"
+    assert panel._shape_order.isEnabled() is True     # Local DIC is the default
+
+
+def test_choosing_second_order_updates_state():
+    state = AppState.instance()
+    panel = WorkflowTypePanel()
+
+    panel._shape_order.setCurrentIndex(panel._shape_order.findData("second"))
+    assert state.shape_function_order == "second"
+    panel._shape_order.setCurrentIndex(panel._shape_order.findData("first"))
+    assert state.shape_function_order == "first"
+
+
+def test_shape_function_is_available_for_local_dic_only():
+    """Second order exists for Local DIC only: with AL-DIC the control is
+    disabled. The user's choice is kept, so switching back restores it."""
+    state = AppState.instance()
+    panel = WorkflowTypePanel()
+    panel._shape_order.setCurrentIndex(panel._shape_order.findData("second"))
+
+    panel._solver.setCurrentText("AL-DIC")
+    assert panel._shape_order.isEnabled() is False
+    assert state.shape_function_order == "second"
+
+    panel._solver.setCurrentText("Local DIC")
+    assert panel._shape_order.isEnabled() is True
+    assert panel._shape_order.currentData() == "second"
+
+
+def test_panel_starts_from_the_saved_shape_function():
+    state = AppState.instance()
+    state.shape_function_order = "second"
+    state.use_admm = True
+    panel = WorkflowTypePanel()
+
+    assert panel._shape_order.currentData() == "second"
+    assert panel._shape_order.isEnabled() is False
+
+
 def test_solver_switch_updates_state_use_admm():
     """ADMM iteration control was moved from WorkflowTypePanel to
     AdvancedTuningWidget (ADVANCED section). The panel now only

@@ -6,6 +6,36 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **A 2nd-order shape function for Local DIC.** Under Workflow Type, below
+  Solver, the new Shape Function setting chooses between 1st order (as
+  before) and 2nd order. With the 2nd order each subset can also bend,
+  which removes the error a 1st-order subset makes where the strain changes
+  within the subset: next to holes and notches, in localization bands, in
+  bending. The price is about twice the random error, so it pays off with a
+  larger subset and low image noise, and on a uniform strain field it only
+  adds noise; the extra noise shows most where the speckle is poor, so keep
+  such areas out of the Region of Interest. A subset that cannot support it
+  keeps its 1st-order result. A run takes roughly one and a half to two
+  times as long.
+  The overlay at the top-left of the preview shows which one the next run
+  will use. AL-DIC always uses the 1st order. In scripts, pass
+  `shape_function_order="second"` together with `use_global_step=False`;
+  each frame's result then carries `shape_order` (per node: 0 not solved,
+  1 first order, 2 second order), which the NPZ and MAT exports include. A
+  session saved with the 2nd order cannot be opened by pyALDIC 1.0.5 or
+  older.
+
+### Changed
+
+- **New projects start on the Local DIC solver.** The Solver choice under
+  Workflow Type used to start on AL-DIC; it now starts on Local DIC, which
+  runs about three times faster. AL-DIC is still there: pick it from the same
+  Solver list. A saved session opens with the solver it was saved with.
+  Scripts are not affected: `use_global_step` in the Python API keeps its
+  default.
+
 ## [1.0.5] — 2026-11-11
 
 ### Fixed

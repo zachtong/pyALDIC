@@ -75,6 +75,8 @@ established abbreviations stay literal English across all 8 languages:
 | Subset step | 子集步长 | 子集步長 | サブセットステップ | 서브셋 스텝 | Subset-Schritt | Pas d'imagette | Paso del subconjunto |
 | Search range | 搜索范围 | 搜尋範圍 | 探索範囲 | 탐색 범위 | Suchbereich | Plage de recherche | Rango de búsqueda |
 | Shape function | 形函数 | 形函數 | 形状関数 | 형상 함수 | Formfunktion | Fonction de forme | Función de forma |
+| 1st order (shape function) | 一阶 | 一階 | 1次 | 1차 | 1. Ordnung | 1er ordre | 1.er orden |
+| 2nd order (shape function) | 二阶 | 二階 | 2次 | 2차 | 2. Ordnung | 2e ordre | 2.º orden |
 | Reference frame | 参考帧 | 參考影格 | 参照フレーム | 참조 프레임 | Referenzbild | Image de référence | Fotograma de referencia |
 | Deformed frame | 变形帧 | 變形影格 | 変形フレーム | 변형된 프레임 | Verformtes Bild | Image déformée | Fotograma deformado |
 | Displacement field | 位移场 | 位移場 | 変位場 | 변위장 | Verschiebungsfeld | Champ de déplacement | Campo de desplazamiento |

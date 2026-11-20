@@ -200,3 +200,25 @@ def test_gui_path_inherited_roi_warns(qapp, tmp_path, monkeypatch):
     assert len(warnings) == 1
     title, text, informative, details = warnings[0]
     assert "Region of Interest" in informative  # the advice
+
+
+@pytest.mark.parametrize("use_admm, chosen, expected", [
+    (False, "first", None),
+    (False, "second", "second"),
+    (True, "second", None),       # AL-DIC is first order whatever was chosen
+])
+def test_gui_passes_the_shape_function_for_local_dic_only(
+    qapp, tmp_path, monkeypatch, use_admm, chosen, expected,
+):
+    _, masks = drift_data()
+    state = AppState.instance()
+    _drift_state(
+        state, tmp_path, 2, {k: m > 0.5 for k, m in enumerate(masks[:2])},
+    )
+    state.use_admm = use_admm
+    state.shape_function_order = chosen
+
+    _, captured = _capture_run(state, monkeypatch)
+
+    assert captured.para.use_global_step is use_admm
+    assert captured.para.shape_function_order == expected
