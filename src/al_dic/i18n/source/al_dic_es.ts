@@ -1011,32 +1011,38 @@ Solo relevante para el modo de estimación inicial FFT.</translation>
         <translation>2.º orden</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="119"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>Auto</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
         <source>1st order</source>
         <translation>1.er orden</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Starting Points</source>
         <translation>Puntos iniciales</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>Previous frame</source>
         <translation>Fotograma anterior</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every frame</source>
         <translation>FFT cada fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="133"/>
         <source>FFT every %1 fr</source>
         <translation>FFT cada %1 fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="134"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2631,17 +2637,17 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>Construyendo configuración del flujo…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="434"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="435"/>
         <source>Loading images...</source>
         <translation>Cargando imágenes…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="448"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="449"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  %1 imágenes cargadas, shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="460"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="461"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  Máscara ROI: %1, %2 píxeles (%3%)</translation>
     </message>
@@ -2683,82 +2689,108 @@ Solo afecta a la inicialización de los puntos iniciales; los demás nodos usan 
         <translation>  Refinamiento de malla: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="91"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="92"/>
+        <source>2nd order</source>
+        <translation>2.º orden</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="94"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>Auto</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <source>1st order</source>
+        <translation>1.er orden</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="100"/>
+        <source>Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.</source>
+        <translation>Sugerencia: un tamaño del subconjunto de %1 px con la función de forma «%2» reduciría el error de desplazamiento en aproximadamente un %3 %.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="108"/>
+        <source>Subset size and shape function look appropriate for this deformation.</source>
+        <translation>El tamaño del subconjunto y la función de forma son adecuados para esta deformación.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="113"/>
         <source>Error: %1</source>
         <translation>Error: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="117"/>
         <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
         <translation>Ejecución cancelada. Asigne a los fotogramas de referencia indicados su propia región de interés, o vuelva a ejecutar y continúe con la región del fotograma 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="102"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="124"/>
         <source>Cannot start analysis</source>
         <translation>No se puede iniciar el análisis</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="128"/>
         <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
         <translation>Se necesitan al menos 2 imágenes. Cargue una carpeta de imágenes en la sección %1 antes de ejecutar la DIC.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
         <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
         <translation>Defina primero una región de interés: dibuje o importe una para el fotograma 1 en la sección %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="116"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="138"/>
         <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
         <translation>La región de interés del fotograma 1 está vacía (ningún píxel seleccionado). Vuelva a dibujarla en la sección %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="121"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
         <source>Region of Interest too small</source>
         <translation>Región de interés demasiado pequeña</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="127"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="149"/>
         <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
         <translation>La región de interés mide %1×%2 px, pero el %3 actual (%4) requiere al menos %5×%5 px. Amplíe la región de interés o reduzca el %3.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
         <source>Starting Points required</source>
         <translation>Se requieren puntos iniciales</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="137"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="159"/>
         <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
         <translation>Coloque al menos un punto inicial en el lienzo antes de ejecutar: haga clic en «%1» o «%2» en la sección %3.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="165"/>
         <source>Invalid Starting Points</source>
         <translation>Puntos iniciales no válidos</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="169"/>
         <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
         <translation>Uno o más puntos iniciales no están en ninguna parte de la región de interés. Haga clic en «%1» en la sección %2 y vuelva a colocar los puntos iniciales.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
         <source>DIC analysis failed</source>
         <translation>El análisis DIC falló</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="158"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="180"/>
         <source>Failed to start analysis</source>
         <translation>No se pudo iniciar el análisis</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="161"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="183"/>
         <source>Failed to process results</source>
         <translation>No se pudieron procesar los resultados</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="166"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
         <source>The analysis stopped with a runtime error:
 
 %1
@@ -2771,7 +2803,7 @@ See the console log for the full traceback.</source>
 Consulte el registro de la consola para ver la traza completa.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="172"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
         <source>%1
 
 See the console log for the full traceback.</source>
@@ -2780,12 +2812,12 @@ See the console log for the full traceback.</source>
 Consulte el registro de la consola para ver la traza completa.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="199"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>Cobertura incompleta de las regiones de interés</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="182"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>Esta ejecución incremental tiene %n fotograma de referencia sin región de interés propia: fotograma %1.</numerusform>
@@ -2793,7 +2825,7 @@ Consulte el registro de la consola para ver la traza completa.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="210"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2802,17 +2834,17 @@ Consulte el registro de la consola para ver la traza completa.</translation>
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="216"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>Un fotograma de referencia sin región de interés propia reutiliza sin cambios la región del fotograma 1: nada mueve la región junto con la probeta. Donde la probeta ha salido de esa región, la parte exterior no se mide desde dicho fotograma, y los nodos que quedan allí dejan de seguirse o copian su desplazamiento del nodo medido más cercano. La ejecución informa de estos nodos al terminar.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="226"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>Para medir toda la probeta, asigne a cada fotograma de referencia su propia región de interés que cubra la probeta en ese fotograma (la importación por lotes puede asignar regiones de interés a muchos fotogramas a la vez). Un fotograma de referencia con región propia se mide en una cuadrícula que cubre esa región.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="211"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="233"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>¿Continuar con la región del fotograma 1?</translation>
     </message>
@@ -3969,7 +4001,13 @@ con ruido o cuando la precisión de la deformación es importante.</translation>
         <translation>2.º orden</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="101"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>Auto</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
         <source>1st order: each subset can translate, stretch, shear and
 rotate. The standard choice.
 
@@ -3978,6 +4016,9 @@ rotate. The standard choice.
 subset, at about twice the noise. Most useful with a larger
 subset and low image noise. A subset that cannot support it
 keeps its 1st-order result.
+
+Auto: solves the 1st order everywhere, then uses the 2nd order
+only where it is predicted to be more accurate.
 
 Available for Local DIC only.</source>
         <translation>1.er orden: cada subconjunto puede trasladarse, estirarse, cizallarse
@@ -3990,30 +4031,33 @@ Es más útil con un subconjunto mayor y poco ruido de imagen.
 Un subconjunto que no puede admitirlo conserva su resultado
 de 1.er orden.
 
+Auto: resuelve el 1.er orden en todas partes y usa el 2.º orden
+solo donde se prevé que es más preciso.
+
 Disponible solo para Local DIC.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="114"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
         <source>Shape Function</source>
         <translation>Función de forma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="136"/>
         <source>Every Frame</source>
         <translation>Cada fotograma</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="133"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
         <source>Every N Frames</source>
         <translation>Cada N fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="134"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="138"/>
         <source>Custom Frames</source>
         <translation>Fotogramas personalizados</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -4026,27 +4070,27 @@ Cada N fotogramas: reiniciar cada N fotogramas (equilibrio entre velocidad y rob
 Fotogramas personalizados: lista de índices definida por el usuario.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="146"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="150"/>
         <source>Reference Update</source>
         <translation>Actualización de la referencia</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="160"/>
         <source>Update reference every N frames</source>
         <translation>Actualizar la referencia cada N fotogramas</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="158"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="162"/>
         <source>Interval</source>
         <translation>Intervalo</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="167"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>Índices de fotograma separados por comas para usar como fotogramas de referencia (base 0)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="175"/>
         <source>Reference Frames</source>
         <translation>Fotogramas de referencia</translation>
     </message>

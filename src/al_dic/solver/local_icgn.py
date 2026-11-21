@@ -136,7 +136,8 @@ class LocalICGNOutput:
 
     The first six attributes are the values ``local_icgn`` returns, in
     that order. ``shape_order`` is ``None`` unless the second-order stage
-    ran (``DICPara.shape_function_order``); then it is (n_nodes,) int8:
+    ran (``DICPara.shape_function_order`` is "second" or "auto"); then it
+    is (n_nodes,) int8:
     0 = not solved (value filled from neighbours), 1 = first order,
     2 = second order.
     """
@@ -148,6 +149,7 @@ class LocalICGNOutput:
     bad_pt_num: int
     mark_hole_strain: NDArray[np.int64]
     shape_order: NDArray[np.int8] | None = None
+    prediction: object | None = None   # ShapeOrderPrediction, when requested
 
 
 def local_icgn_full(
@@ -160,14 +162,21 @@ def local_icgn_full(
     tol: float,
     n_workers: int | None = None,
     ctx: LocalICGNContext | None = None,
+    with_prediction: bool = False,
 ) -> LocalICGNOutput:
     """Local IC-GN step, including the optional second-order stage.
 
     Same arguments as :func:`local_icgn`. With
     ``para.shape_function_order is None`` this runs exactly the first-order
     solve and post-processing. With ``"second"`` every converged node is
-    refined between the two; bad-point detection still uses the first-order
-    iteration counts, so the same nodes are filled as in a first-order run.
+    refined between the two; with ``"auto"`` only the nodes where second
+    order is predicted to be more accurate. Bad-point detection still uses
+    the first-order iteration counts, so the same nodes are filled as in a
+    first-order run.
+
+    ``with_prediction=True`` also returns the per-node error prediction of
+    the two orders for this frame pair (computed once and shared with
+    ``"auto"``); the results are not affected.
     """
     t0 = time.perf_counter()
 
@@ -180,10 +189,30 @@ def local_icgn_full(
     )
 
     shape_order = None
+    prediction = None
+    if with_prediction or para.shape_function_order == "auto":
+        from .shape_order_criterion import predict_shape_order
+
+        # Made from the first-order result, before any refinement.
+        try:
+            prediction = predict_shape_order(
+                ctx, U_2d, F_2d, conv_iter, g_img, para.winstepsize,
+            )
+        except Exception:
+            # "auto" cannot run without it; a prediction wanted only for the
+            # post-run advice must not cost the user the run.
+            if para.shape_function_order == "auto":
+                raise
+            logger.warning("Shape-order prediction failed; no advice for this run.",
+                           exc_info=True)
+            prediction = None
     if para.shape_function_order is not None:
         from .shape_order import refine_shape_order
 
-        stage = refine_shape_order(ctx, U_2d, F_2d, conv_iter, g_img, tol)
+        select = prediction.select if para.shape_function_order == "auto" else None
+        stage = refine_shape_order(
+            ctx, U_2d, F_2d, conv_iter, g_img, tol, select=select,
+        )
         U_2d, F_2d = stage.U_2d, stage.F_2d
         # A node flagged as a bad point is replaced by a neighbour average
         # in the post-processing below, whatever the stage did with it.
@@ -202,6 +231,7 @@ def local_icgn_full(
         U=U, F=F, local_time=local_time, conv_iter=conv_iter_out,
         bad_pt_num=bad_pt_num, mark_hole_strain=mark_hole_strain,
         shape_order=shape_order,
+        prediction=prediction if with_prediction else None,
     )
 
 

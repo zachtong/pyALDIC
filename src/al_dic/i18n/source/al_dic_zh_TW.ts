@@ -1010,32 +1010,38 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>二階</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="119"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>自動</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
         <source>1st order</source>
         <translation>一階</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Starting Points</source>
         <translation>種子點</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>Previous frame</source>
         <translation>上一影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every frame</source>
         <translation>每影格 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="133"/>
         <source>FFT every %1 fr</source>
         <translation>每 %1 影格 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="134"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2624,17 +2630,17 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>正在建立管線設定…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="434"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="435"/>
         <source>Loading images...</source>
         <translation>正在載入影像…</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="448"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="449"/>
         <source>  Loaded %1 images, shape=%2</source>
         <translation>  已載入 %1 張影像，shape=%2</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_controller.py" line="460"/>
+        <location filename="../../gui/controllers/pipeline_controller.py" line="461"/>
         <source>  ROI mask: %1, %2 pixels (%3%)</source>
         <translation>  ROI 遮罩：%1，%2 像素（%3%）</translation>
     </message>
@@ -2673,82 +2679,108 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>  網格加密：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="91"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="92"/>
+        <source>2nd order</source>
+        <translation>二階</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="94"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>自動</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <source>1st order</source>
+        <translation>一階</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="100"/>
+        <source>Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.</source>
+        <translation>建議：採用 %1 px 的子集尺寸和「%2」形函數，預計位移誤差可降低約 %3 %。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="108"/>
+        <source>Subset size and shape function look appropriate for this deformation.</source>
+        <translation>目前的子集尺寸和形函數適合此變形。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="113"/>
         <source>Error: %1</source>
         <translation>錯誤：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="117"/>
         <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
         <translation>已取消執行。請為列出的參考影格指定各自的感興趣區域，或重新執行並沿用第 1 影格的區域繼續。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="102"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="124"/>
         <source>Cannot start analysis</source>
         <translation>無法開始分析</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="128"/>
         <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
         <translation>至少需要 2 張影像。請先在「%1」區段載入影像資料夾，再執行 DIC。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
         <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
         <translation>請先定義感興趣區域：在「%1」區段為第 1 影格繪製或匯入一個。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="116"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="138"/>
         <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
         <translation>第 1 影格的感興趣區域為空（未選取任何像素）。請在「%1」區段重新繪製。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="121"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
         <source>Region of Interest too small</source>
         <translation>感興趣區域過小</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="127"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="149"/>
         <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
         <translation>感興趣區域為 %1×%2 px，但目前的%3（%4）至少需要 %5×%5 px。請擴大感興趣區域或減小%3。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
         <source>Starting Points required</source>
         <translation>需要種子點</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="137"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="159"/>
         <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
         <translation>執行前請在畫布上放置至少一個種子點：點擊「%3」區段中的「%1」或「%2」。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="165"/>
         <source>Invalid Starting Points</source>
         <translation>種子點無效</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="169"/>
         <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
         <translation>有一個或多個種子點不在感興趣區域的任何部分內。請點擊「%2」區段中的「%1」，然後重新放置種子點。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
         <source>DIC analysis failed</source>
         <translation>DIC 分析失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="158"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="180"/>
         <source>Failed to start analysis</source>
         <translation>啟動分析失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="161"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="183"/>
         <source>Failed to process results</source>
         <translation>處理結果失敗</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="166"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
         <source>The analysis stopped with a runtime error:
 
 %1
@@ -2761,7 +2793,7 @@ See the console log for the full traceback.</source>
 完整的回溯資訊請參閱主控台記錄。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="172"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
         <source>%1
 
 See the console log for the full traceback.</source>
@@ -2770,19 +2802,19 @@ See the console log for the full traceback.</source>
 完整的回溯資訊請參閱主控台記錄。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="199"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>感興趣區域涵蓋不完整</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="182"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>本次增量追蹤執行中有 %n 個參考影格沒有自己的感興趣區域：影格 %1。</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="210"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2790,17 +2822,17 @@ See the console log for the full traceback.</source>
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="216"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>沒有自己感興趣區域的參考影格會原樣沿用第 1 影格的區域：該區域不會隨試樣移動。試樣移出該區域後，區域外的部分不會以這類參考影格為基準進行量測，位於其中的節點將不再被追蹤，或其位移從最近的已量測節點複製而來。執行結束時會報告這些節點。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="226"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>要量測整個試樣，請為每個參考影格單獨指定一個涵蓋該影格中試樣的感興趣區域（批次匯入可一次為多個影格指定感興趣區域）。擁有自己區域的參考影格會在涵蓋該區域的量測網格上進行量測。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="211"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="233"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>是否沿用第 1 影格的區域繼續？</translation>
     </message>
@@ -3951,7 +3983,13 @@ AL-DIC：全域 FEM 正則化的增廣拉格朗日方法。
         <translation>二階</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="104"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="101"/>
+        <source>Auto</source>
+        <comment>Shape function: order chosen per node</comment>
+        <translation>自動</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
         <source>1st order: each subset can translate, stretch, shear and
 rotate. The standard choice.
 
@@ -3960,6 +3998,9 @@ rotate. The standard choice.
 subset, at about twice the noise. Most useful with a larger
 subset and low image noise. A subset that cannot support it
 keeps its 1st-order result.
+
+Auto: solves the 1st order everywhere, then uses the 2nd order
+only where it is predicted to be more accurate.
 
 Available for Local DIC only.</source>
         <translation>一階：每個子集可以平移、拉伸、剪切和旋轉。
@@ -3971,30 +4012,33 @@ Available for Local DIC only.</source>
 較低的影像雜訊時最有用。無法支援二階的子集
 保留其一階結果。
 
+自動：先在全場求解一階，再僅在預測二階
+更準確的位置使用二階。
+
 僅適用於 Local DIC。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="114"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
         <source>Shape Function</source>
         <translation>形函數</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="136"/>
         <source>Every Frame</source>
         <translation>每個影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="133"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
         <source>Every N Frames</source>
         <translation>每 N 個影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="134"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="138"/>
         <source>Custom Frames</source>
         <translation>自訂影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -4007,27 +4051,27 @@ Custom Frames: user-defined list of reference frame indices.</source>
 自訂影格：由使用者指定參考影格索引清單。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="146"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="150"/>
         <source>Reference Update</source>
         <translation>參考影格更新</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="160"/>
         <source>Update reference every N frames</source>
         <translation>每 N 個影格更新一次參考影格</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="158"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="162"/>
         <source>Interval</source>
         <translation>間隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="167"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>用作參考影格的影格索引清單（0 為起始），用逗號分隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="175"/>
         <source>Reference Frames</source>
         <translation>參考影格清單</translation>
     </message>

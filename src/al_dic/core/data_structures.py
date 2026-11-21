@@ -330,12 +330,13 @@ class DICPara:
     # Subset shape function for Local DIC (use_global_step=False).
     # None = first order (6 parameters). "second" refines every converged node
     # with a 12-parameter shape function and keeps the first-order result where
-    # that refinement is not trustworthy.
+    # that refinement is not trustworthy. "auto" refines only the nodes where
+    # second order is predicted to be more accurate (bias against noise).
     # The first-order default is None, not "first", on purpose: the session
     # serializer omits None fields whose default is None, and builds up to
     # 1.0.5 reject fields they do not know. A first-order session therefore
     # stays readable by those builds.
-    shape_function_order: Literal["second"] | None = None
+    shape_function_order: Literal["second", "auto"] | None = None
 
     # --- 7. ADMM ---
     mu: float = 1e-3
@@ -589,6 +590,40 @@ class RefGridExtent:
 
 
 @dataclass(frozen=True)
+class ShapeAdvice:
+    """Post-run suggestion for the subset size and shape function (Local DIC).
+
+    Produced from the error prediction of one frame pair; it never changes a
+    parameter by itself.
+
+    Attributes:
+        status: ``"suggest"`` (a clearly better setting was found),
+            ``"keep"`` (the current setting is appropriate) or
+            ``"unavailable"`` (no statement can be made).
+        reason: For ``"unavailable"``: ``"too_few_nodes"``,
+            ``"noise_unknown"`` or ``"model_mismatch"``. Empty otherwise.
+        frame: 0-based index of the frame pair the advice is based on.
+        current_winsize, current_order: The setting the run used; orders
+            are ``"first"``, ``"second"`` or ``"auto"``.
+        suggested_winsize, suggested_order: The suggested setting (equal to
+            the current one unless ``status == "suggest"``).
+        predicted_gain: Fraction by which the predicted displacement error
+            drops with the suggested setting (0 unless suggesting).
+        n_nodes: Number of nodes the prediction is based on.
+    """
+
+    status: str = "unavailable"
+    reason: str = ""
+    frame: int = 0
+    current_winsize: int = 0
+    current_order: str = "first"
+    suggested_winsize: int = 0
+    suggested_order: str = "first"
+    predicted_gain: float = 0.0
+    n_nodes: int = 0
+
+
+@dataclass(frozen=True)
 class TrackingDiagnostics:
     """Advisory record of how well the nodes were tracked through a run.
 
@@ -668,6 +703,9 @@ class PipelineResult:
     stopped_at_frame: int | None = None  # 1-based frame index that failed
     stop_reason: str = ""
     tracking_diagnostics: TrackingDiagnostics | None = None
+    # Suggestion for subset size / shape function from the last frame pair of
+    # a Local DIC run; None for AL-DIC runs and for runs with no frame pair.
+    shape_advice: ShapeAdvice | None = None
 
 
 # ---------------------------------------------------------------------------

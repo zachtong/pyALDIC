@@ -33,12 +33,12 @@ def images():
 
 
 def _para(**overrides):
-    return dicpara_default(
+    settings = dict(
         winsize=WINSIZE, winstepsize=STEP, use_global_step=False,
         reference_mode="accumulative",
         gridxy_roi_range=GridxyROIRange(gridx=(0, W - 1), gridy=(0, H - 1)),
-        **overrides,
     )
+    return dicpara_default(**{**settings, **overrides})
 
 
 def _run(images, **overrides):
@@ -127,3 +127,134 @@ def test_local_icgn_wrapper_returns_the_legacy_tuple(images):
     assert legacy[4] == full.bad_pt_num
     np.testing.assert_array_equal(legacy[5], full.mark_hole_strain)
     assert full.shape_order is None
+
+
+# --- Auto: second order only where it is predicted to be more accurate ---
+
+def _u_half(x, y):
+    """Strong curvature in the left half of the image only."""
+    weight = 0.5 * (1.0 - np.tanh((x - W / 2) / 25.0))
+    return 2.3 + weight * 0.35 * np.cos(2 * np.pi * (y - H / 2) / 70.0)
+
+
+@pytest.fixture(scope="module")
+def half_curved_images():
+    ref = make_speckle(H, W, seed=5)
+    clean = warp_lagrangian(ref, _u_half, _v)
+    rng = np.random.default_rng(42)
+    noise = 0.005
+    return (ref + rng.standard_normal(ref.shape) * noise,
+            clean + rng.standard_normal(ref.shape) * noise)
+
+
+def test_auto_refines_where_the_bias_is_and_nowhere_else(half_curved_images):
+    first = _run(half_curved_images)
+    second = _run(half_curved_images, shape_function_order="second")
+    auto = _run(half_curved_images, shape_function_order="auto")
+
+    coords = auto.dic_mesh.coordinates_fem
+    order = auto.result_disp[0].shape_order
+    rows = (coords[:, 1] > 70) & (coords[:, 1] < H - 70)
+    left = rows & (coords[:, 0] > 70) & (coords[:, 0] < W / 2 - 60)
+    right = rows & (coords[:, 0] > W / 2 + 60) & (coords[:, 0] < W - 70)
+    assert np.mean(order[left] == 2) > 0.4
+    assert np.mean(order[right] == 2) < 0.03
+
+    truth = _u_half(coords[:, 0], coords[:, 1])
+
+    def rms(result, where):
+        return float(np.sqrt(np.mean((result.result_disp[0].U[0::2][where] - truth[where]) ** 2)))
+
+    # Where the bias is, Auto recovers most of what second order recovers ...
+    assert rms(auto, left) < 0.6 * rms(first, left)
+    # ... and where there is none it keeps the first-order noise level.
+    assert rms(auto, right) < 1.05 * rms(first, right)
+    assert rms(second, right) > 1.5 * rms(first, right)
+    assert np.all(np.isfinite(auto.result_disp[0].U))
+
+
+def test_auto_leaves_a_uniform_field_first_order(images):
+    """A rigid shift has no bias to remove: Auto must not add noise."""
+    ref = images[0]
+    rng = np.random.default_rng(7)
+    shifted = warp_lagrangian(ref, lambda x, y: 2.3 + 0.0 * x, _v)
+    pair = (ref + rng.standard_normal(ref.shape) * 0.01,
+            shifted + rng.standard_normal(ref.shape) * 0.01)
+
+    auto = _run(pair, shape_function_order="auto")
+    first = _run(pair)
+
+    order = auto.result_disp[0].shape_order
+    assert np.mean(order == 2) < 0.01
+    kept = order == 1
+    np.testing.assert_array_equal(
+        auto.result_disp[0].U.reshape(-1, 2)[kept], first.result_disp[0].U.reshape(-1, 2)[kept])
+
+
+# --- advice record ---
+
+def test_local_run_carries_advice_and_aldic_run_does_not(images):
+    local = _run(images)
+    advice = local.shape_advice
+    assert advice is not None
+    assert advice.status in ("suggest", "keep", "unavailable")
+    assert advice.current_winsize == WINSIZE and advice.current_order == "first"
+    assert advice.frame == 0
+
+    mask = np.ones((H, W))
+    aldic = run_aldic(
+        dicpara_default(
+            winsize=WINSIZE, winstepsize=STEP, reference_mode="accumulative",
+            gridxy_roi_range=GridxyROIRange(gridx=(0, W - 1), gridy=(0, H - 1)),
+            admm_max_iter=2,
+        ),
+        list(images), [mask, mask], compute_strain=False,
+    )
+    assert aldic.shape_advice is None
+
+
+def test_making_the_prediction_does_not_change_the_result(images):
+    ref, deformed = images
+    coords = node_grid(H, W, step=16, margin=48)
+    grads = compute_image_gradient(ref, np.ones_like(ref), img_raw=ref)
+    u0 = np.column_stack([_u(coords[:, 0], coords[:, 1]),
+                          _v(coords[:, 0], coords[:, 1])]).ravel()
+    for order in (None, "second", "auto"):
+        para = _para(shape_function_order=order)
+        plain = local_icgn_full(u0, coords, grads, ref, deformed, para, para.tol)
+        with_pred = local_icgn_full(u0, coords, grads, ref, deformed, para, para.tol,
+                                    with_prediction=True)
+        np.testing.assert_array_equal(plain.U, with_pred.U)
+        np.testing.assert_array_equal(plain.F, with_pred.F)
+        assert plain.prediction is None and with_pred.prediction is not None
+
+
+def test_no_advice_for_an_incremental_run(images):
+    """In incremental mode each pair sees only an increment while the bias of
+    the pairs adds up, so one pair would understate it: no advice."""
+    ref, deformed = images
+    mask = np.ones((H, W))
+    frames, masks = [ref, deformed, deformed], [mask, mask, mask]
+
+    incremental = run_aldic(_para(reference_mode="incremental"), frames, masks,
+                            compute_strain=False)
+    accumulative = run_aldic(_para(), frames, masks, compute_strain=False)
+
+    assert incremental.shape_advice is None
+    assert accumulative.shape_advice is not None
+    assert accumulative.shape_advice.frame == 1
+
+
+def test_a_failing_prediction_does_not_fail_the_run(images, monkeypatch):
+    from al_dic.solver import shape_order_criterion
+
+    def boom(*args, **kwargs):
+        raise MemoryError("neighbour lists")
+
+    monkeypatch.setattr(shape_order_criterion, "predict_shape_order", boom)
+
+    result = _run(images)                               # advice only: run completes
+    assert result.shape_advice is None
+    assert np.all(np.isfinite(result.result_disp[0].U))
+    with pytest.raises(MemoryError):                    # "auto" cannot do without it
+        _run(images, shape_function_order="auto")

@@ -9,7 +9,7 @@ import pytest
 
 from al_dic.core.data_structures import (
     DICMesh, DICPara, FrameResult, FrameSchedule, FrameTrackingStats,
-    GridxyROIRange, PipelineResult, RefGridExtent, StrainResult,
+    GridxyROIRange, PipelineResult, RefGridExtent, ShapeAdvice, StrainResult,
     TrackingDiagnostics,
 )
 from al_dic.io.session_serialize import (
@@ -346,3 +346,18 @@ def test_load_rejects_pickle(tmp_path):
              obj=np.array([{"x": 1}], dtype=object))
     with pytest.raises(ValueError):
         load_result_npz(str(p))
+
+
+def test_shape_advice_roundtrip_beside_the_root():
+    """The advice is a side record: stored next to ``root`` so builds that
+    predate it still decode the session, and absent when there is none."""
+    advice = ShapeAdvice(status="suggest", frame=1, current_winsize=32,
+                         current_order="first", suggested_winsize=64,
+                         suggested_order="auto", predicted_gain=0.31, n_nodes=512)
+    arrays, manifest = serialize_result(replace(_make_result(), shape_advice=advice))
+
+    assert "shape_advice" not in manifest["root"]["fields"]
+    assert deserialize_result(arrays, manifest).shape_advice == advice
+
+    _, plain = serialize_result(_make_result())
+    assert "shape_advice" not in plain

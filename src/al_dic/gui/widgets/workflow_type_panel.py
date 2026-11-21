@@ -97,6 +97,8 @@ class WorkflowTypePanel(QWidget):
         self._shape_order = QComboBox()
         self._shape_order.addItem(self.tr("1st order"), "first")
         self._shape_order.addItem(self.tr("2nd order"), "second")
+        self._shape_order.addItem(
+            self.tr("Auto", "Shape function: order chosen per node"), "auto")
         _shape_idx = self._shape_order.findData(state.shape_function_order)
         if _shape_idx >= 0:
             self._shape_order.setCurrentIndex(_shape_idx)
@@ -108,6 +110,8 @@ class WorkflowTypePanel(QWidget):
             "subset, at about twice the noise. Most useful with a larger\n"
             "subset and low image noise. A subset that cannot support it\n"
             "keeps its 1st-order result.\n\n"
+            "Auto: solves the 1st order everywhere, then uses the 2nd order\n"
+            "only where it is predicted to be more accurate.\n\n"
             "Available for Local DIC only."
         ))
         shape_row = QHBoxLayout()

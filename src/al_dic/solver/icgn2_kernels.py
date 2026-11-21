@@ -426,3 +426,91 @@ def icgn2_refine_parallel(
         znssd[i] = zn
 
     return p_out, iters, status, znssd
+
+
+@njit(parallel=True, cache=JIT_CACHE)
+def first_order_znssd_parallel(
+    coords, u_2d, f_2d, active,
+    ref_all, mask_all, XX_all, YY_all, meanf_all, bottomf_all,
+    img_def,
+):
+    """ZNSSD of the first-order match at every active node.
+
+    Evaluates the residual the first-order solve converged to, with the
+    same pixels and the same warp (``f_2d`` is ``[ux, vx, uy, vy]``). The
+    residual is the basis of the image-noise estimate used to predict the
+    random error of both shape-function orders.
+
+    Returns:
+        (znssd, n_pix): ZNSSD and the number of connected pixels per node;
+        ZNSSD is NaN for inactive nodes and for a warp that leaves the image.
+    """
+    n = coords.shape[0]
+    h, w = img_def.shape
+    Sy = ref_all.shape[1]
+    Sx = ref_all.shape[2]
+    znssd = np.full(n, np.nan)
+    n_pix = np.zeros(n, dtype=np.int64)
+
+    for i in prange(n):
+        if not active[i]:
+            continue
+        x0 = coords[i, 0]
+        y0 = coords[i, 1]
+        u = u_2d[i, 0]
+        v = u_2d[i, 1]
+        ux = f_2d[i, 0]
+        vx = f_2d[i, 1]
+        uy = f_2d[i, 2]
+        vy = f_2d[i, 3]
+        g = np.zeros((Sy, Sx))
+        ok = True
+        count = 0
+        for a in range(Sy):
+            for b in range(Sx):
+                if mask_all[i, a, b] < 0.5:
+                    continue
+                xx = XX_all[i, a, b]
+                yy = YY_all[i, a, b]
+                xw = x0 + xx + u + ux * xx + uy * yy
+                yw = y0 + yy + v + vx * xx + vy * yy
+                if (not (xw >= _MARGIN)) or xw > w - 1 - _MARGIN \
+                        or (not (yw >= _MARGIN)) or yw > h - 1 - _MARGIN:
+                    ok = False
+                    break
+                g[a, b] = _bicubic_interp(img_def, yw, xw, h, w)
+                count += 1
+            if not ok:
+                break
+        if not ok or count < _MIN_PIXELS:
+            continue
+
+        n_valid = 0
+        g_sum = 0.0
+        for a in range(Sy):
+            for b in range(Sx):
+                if mask_all[i, a, b] > 0.5 and abs(g[a, b]) > _ZERO_PIXEL:
+                    n_valid += 1
+                    g_sum += g[a, b]
+        if n_valid < _MIN_PIXELS:
+            continue
+        meang = g_sum / n_valid
+        var_sum = 0.0
+        for a in range(Sy):
+            for b in range(Sx):
+                if mask_all[i, a, b] > 0.5 and abs(g[a, b]) > _ZERO_PIXEL:
+                    d = g[a, b] - meang
+                    var_sum += d * d
+        bottomg = np.sqrt(max((n_valid - 1) * (var_sum / n_valid), 1e-30))
+
+        total = 0.0
+        for a in range(Sy):
+            for b in range(Sx):
+                if mask_all[i, a, b] > 0.5 and abs(g[a, b]) > _ZERO_PIXEL:
+                    res = ((ref_all[i, a, b] - meanf_all[i]) / bottomf_all[i]
+                           - (g[a, b] - meang) / bottomg)
+                    total += res * res
+        znssd[i] = total
+        n_pix[i] = n_valid
+
+    return znssd, n_pix

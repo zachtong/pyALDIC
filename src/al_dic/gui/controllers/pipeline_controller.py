@@ -293,11 +293,12 @@ class PipelineController:
             )
             # Second order exists for Local DIC only; AL-DIC is first order.
             shape_order = (
-                "second"
-                if not state.use_admm and state.shape_function_order == "second"
+                state.shape_function_order
+                if not state.use_admm
+                and state.shape_function_order in ("second", "auto")
                 else None
             )
-            shape_info = ", shape=second" if shape_order else ""
+            shape_info = f", shape={shape_order}" if shape_order else ""
             # Parameter dump: key=value pairs stay literal (English keys
             # are the canonical parameter names); only the prose around
             # them is translated.
@@ -621,6 +622,7 @@ class PipelineController:
                 # sees the displacement overlay immediately.
                 self._state.set_current_frame(1)
                 self._report_tracking_quality(result)
+                self._report_shape_advice(result)
             else:
                 self._state.set_run_state(RunState.IDLE)
         except Exception as e:
@@ -633,6 +635,31 @@ class PipelineController:
             )
             print(tb, flush=True)
             self._state.set_run_state(RunState.IDLE)
+
+    def _report_shape_advice(self, result: PipelineResult) -> None:
+        """Log the subset-size / shape-function suggestion of a Local DIC
+        run. Advisory: nothing is changed, and an error here is only logged."""
+        try:
+            advice = getattr(result, "shape_advice", None)  # stubs too
+            if advice is None or result.stopped_early:
+                return
+            m = PipelineMessages()
+            if advice.status == "suggest":
+                # The GUI shows the subset as winsize + 1; the gain is a
+                # prediction, so it is rounded to the nearest 5 %.
+                percent = int(5 * round(100.0 * advice.predicted_gain / 5.0))
+                self._state.log_message.emit(
+                    m.shape_suggestion(
+                        advice.suggested_winsize + 1,
+                        m.shape_order_name(advice.suggested_order),
+                        percent,
+                    ),
+                    "info",
+                )
+            elif advice.status == "keep":
+                self._state.log_message.emit(m.shape_settings_fit(), "info")
+        except Exception:
+            logger.exception("Shape-function advice report failed; results kept.")
 
     def _report_tracking_quality(self, result: PipelineResult) -> None:
         """Log the findings; a complete run's WARNING also asks for the

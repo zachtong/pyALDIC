@@ -33,6 +33,7 @@ from al_dic.core.data_structures import (
     PipelineResult,
     RefGridExtent,
     StrainResult,
+    ShapeAdvice,
     TrackingDiagnostics,
 )
 
@@ -58,6 +59,7 @@ def _build_registry() -> dict[str, type]:
         TrackingDiagnostics,
         FrameTrackingStats,
         RefGridExtent,
+        ShapeAdvice,
     ]
     try:  # pragma: no cover - only present on seed-propagation runs
         from al_dic.solver.seed_prop_pipeline import ReseedEvent
@@ -78,7 +80,10 @@ _REGISTRY = _build_registry()
 # manifest (field name -> record type). Builds up to 0.10.0 decode only
 # "root" and reject record types they do not know, so a record inside
 # "root" would make every session with results unreadable there.
-_SIDE_RECORDS: dict[str, type] = {"tracking_diagnostics": TrackingDiagnostics}
+_SIDE_RECORDS: dict[str, type] = {
+    "tracking_diagnostics": TrackingDiagnostics,
+    "shape_advice": ShapeAdvice,
+}
 
 
 def _array_key(arr: np.ndarray) -> str:

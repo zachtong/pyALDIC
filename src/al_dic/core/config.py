@@ -102,8 +102,8 @@ def validate_dicpara(p: DICPara) -> None:
             f"icgn_max_iter must be a positive integer (got {p.icgn_max_iter})."
         )
 
-    # shape_function_order: None (first order) or "second"; Local DIC only.
-    valid_shape_orders = (None, "second")
+    # shape_function_order: None (first order), "second" or "auto"; Local DIC only.
+    valid_shape_orders = (None, "second", "auto")
     if p.shape_function_order not in valid_shape_orders:
         raise ValueError(
             f"shape_function_order must be one of {valid_shape_orders} "
@@ -111,8 +111,8 @@ def validate_dicpara(p: DICPara) -> None:
         )
     if p.shape_function_order is not None and p.use_global_step:
         raise ValueError(
-            "shape_function_order='second' is available for Local DIC only: "
-            "set use_global_step=False."
+            f"shape_function_order='{p.shape_function_order}' is available for "
+            "Local DIC only: set use_global_step=False."
         )
 
     # init_guess_mode: enum

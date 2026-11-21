@@ -86,6 +86,28 @@ class PipelineMessages(QObject):
     def refinement(self, dump: str) -> str:
         return tr_args(self.tr("  Refinement: %1"), dump)
 
+    def shape_order_name(self, order: str) -> str:
+        """Display name of a shape-function order code."""
+        if order == "second":
+            return self.tr("2nd order")
+        if order == "auto":
+            return self.tr("Auto", "Shape function: order chosen per node")
+        return self.tr("1st order")
+
+    def shape_suggestion(self, size_px: int, shape: str, percent: int) -> str:
+        """Console line: a clearly better subset size / shape function."""
+        return tr_args(
+            self.tr("Suggestion: a subset size of %1 px with the %2 shape "
+                    "function is predicted to lower the displacement error "
+                    "by about %3 %."),
+            size_px, shape, percent)
+
+    def shape_settings_fit(self) -> str:
+        """Console line: nothing clearly better than the current setting."""
+        return self.tr(
+            "Subset size and shape function look appropriate for this "
+            "deformation.")
+
     def error_line(self, detail: str) -> str:
         """Console line of a failed run; ``detail`` is the exception."""
         return tr_args(self.tr("Error: %1"), detail)

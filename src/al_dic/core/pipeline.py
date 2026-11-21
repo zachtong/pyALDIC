@@ -408,6 +408,32 @@ def _auto_tune_beta(
     return float(beta)
 
 
+def _make_shape_advice(prediction, para: DICPara, ref_mask, frame: int):
+    """Subset-size / shape-function suggestion for one frame pair, or None.
+
+    The suggestion is advisory; any failure here is logged and ignored so
+    it can never cost the user a finished run.
+    """
+    try:
+        from ..solver.shape_advisor import advise_shape_settings
+
+        roi_min_dim = None
+        if ref_mask is not None:
+            rows = np.flatnonzero(np.any(ref_mask > 0.5, axis=1))
+            cols = np.flatnonzero(np.any(ref_mask > 0.5, axis=0))
+            if rows.size and cols.size:
+                roi_min_dim = float(min(rows[-1] - rows[0] + 1, cols[-1] - cols[0] + 1))
+        return advise_shape_settings(
+            prediction,
+            winsize=para.winsize, winstepsize=para.winstepsize,
+            current_order=para.shape_function_order or "first",
+            roi_min_dim=roi_min_dim, frame=frame,
+        )
+    except Exception:
+        logger.warning("Shape-function advice could not be computed.", exc_info=True)
+        return None
+
+
 def _apply_post_solve_corrections(
     U_subpb2: NDArray[np.float64],
     F_subpb2: NDArray[np.float64],
@@ -958,6 +984,7 @@ def run_aldic(
     # auto-place (a region with no viable seed), stop the loop and keep the
     # frames already computed rather than discarding the whole run.
     stopped_early = False
+    shape_advice = None
     stopped_at_frame: int | None = None
     stop_reason = ""
     # Distinguishes a user Cancel (deliver the partial results like a success,
@@ -1565,10 +1592,24 @@ def run_aldic(
                 icgn_ctx_cache.popitem(last=False)  # evict LRU
         else:
             icgn_ctx_cache.move_to_end(_icgn_key)
+        # The subset-size / shape-function suggestion is made from the last
+        # frame pair of a Local DIC run in which every frame is matched to
+        # frame 0 (accumulative): that pair holds the largest deformation,
+        # and it costs one extra pass over that pair only. Not when the
+        # reference is updated: each pair then sees only an increment, while
+        # the bias of the pairs adds up over the run, so one pair would
+        # understate it.
+        _want_advice = (
+            not para.use_global_step
+            and frame_idx == n_frames - 1
+            and set(schedule.ref_frame_set) == {0}
+        )
         _s4 = local_icgn_full(
             current_U0, dic_mesh.coordinates_fem, Df, f_img_raw, g_img_icgn, para, tol,
-            ctx=icgn_ctx,
+            ctx=icgn_ctx, with_prediction=_want_advice,
         )
+        if _s4.prediction is not None:
+            shape_advice = _make_shape_advice(_s4.prediction, para, f_mask, frame_idx - 1)
         U_subpb1, F_subpb1, local_time = _s4.U, _s4.F, _s4.local_time
         mark_hole_strain = _s4.mark_hole_strain
         shape_order_s4 = _s4.shape_order
@@ -2010,6 +2051,7 @@ def run_aldic(
         stopped_at_frame=stopped_at_frame,
         stop_reason=stop_reason,
         tracking_diagnostics=tracking,
+        shape_advice=None if stopped_early else shape_advice,
     )
 
     progress(1.0, "Pipeline complete.")

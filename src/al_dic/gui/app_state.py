@@ -125,7 +125,7 @@ class AppState(QObject):
         # Solver selection
         self.use_admm: bool = False      # False = Local DIC (default), True = AL-DIC (ADMM)
         self.admm_max_iter: int = 3      # ADMM iteration count (1-10)
-        # Subset shape function for Local DIC: "first" | "second".
+        # Subset shape function for Local DIC: "first" | "second" | "auto".
         # AL-DIC always runs first order, whatever is stored here.
         self.shape_function_order: str = "first"
         # Initial guess parameters

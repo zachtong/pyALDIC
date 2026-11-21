@@ -205,7 +205,9 @@ def test_gui_path_inherited_roi_warns(qapp, tmp_path, monkeypatch):
 @pytest.mark.parametrize("use_admm, chosen, expected", [
     (False, "first", None),
     (False, "second", "second"),
+    (False, "auto", "auto"),
     (True, "second", None),       # AL-DIC is first order whatever was chosen
+    (True, "auto", None),
 ])
 def test_gui_passes_the_shape_function_for_local_dic_only(
     qapp, tmp_path, monkeypatch, use_admm, chosen, expected,
@@ -222,3 +224,42 @@ def test_gui_passes_the_shape_function_for_local_dic_only(
 
     assert captured.para.use_global_step is use_admm
     assert captured.para.shape_function_order == expected
+
+
+def _advice_lines(qapp, advice, stopped_early=False):
+    from types import SimpleNamespace
+
+    state = AppState.instance()
+    logs: list = []
+    state.log_message.connect(lambda msg, lvl: logs.append((msg, lvl)))
+    ctrl = PipelineController(state, None)
+    ctrl._report_shape_advice(SimpleNamespace(shape_advice=advice, stopped_early=stopped_early))
+    return logs
+
+
+def test_shape_suggestion_is_logged_with_the_gui_subset_size(qapp):
+    from al_dic.core.data_structures import ShapeAdvice
+
+    advice = ShapeAdvice(status="suggest", current_winsize=32, current_order="first",
+                         suggested_winsize=48, suggested_order="auto",
+                         predicted_gain=0.27, n_nodes=900)
+    logs = _advice_lines(qapp, advice)
+
+    assert len(logs) == 1 and logs[0][1] == "info"
+    text = logs[0][0]
+    assert "49 px" in text            # the GUI shows winsize + 1
+    assert "Auto" in text
+    assert "25 %" in text             # rounded to the nearest 5 %
+
+
+def test_kept_setting_is_logged_and_unavailable_advice_is_silent(qapp):
+    from al_dic.core.data_structures import ShapeAdvice
+
+    kept = _advice_lines(qapp, ShapeAdvice(status="keep", current_winsize=32,
+                                           suggested_winsize=32))
+    assert len(kept) == 1 and "appropriate" in kept[0][0]
+    assert _advice_lines(qapp, ShapeAdvice(status="unavailable", reason="too_few_nodes")) == []
+    assert _advice_lines(qapp, None) == []
+    suggest = ShapeAdvice(status="suggest", suggested_winsize=48, suggested_order="auto",
+                          predicted_gain=0.3)
+    assert _advice_lines(qapp, suggest, stopped_early=True) == []

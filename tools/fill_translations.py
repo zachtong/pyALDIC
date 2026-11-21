@@ -498,6 +498,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "subset, at about twice the noise. Most useful with a larger\n"
     "subset and low image noise. A subset that cannot support it\n"
     "keeps its 1st-order result.\n\n"
+    "Auto: solves the 1st order everywhere, then uses the 2nd order\n"
+    "only where it is predicted to be more accurate.\n\n"
     "Available for Local DIC only.": {
         "zh_CN": "一阶：每个子集可以平移、拉伸、剪切和旋转。\n"
                  "标准选择。\n\n"
@@ -506,6 +508,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "代价是噪声约为两倍。配合较大的子集和\n"
                  "较低的图像噪声时最有用。无法支持二阶的子集\n"
                  "保留其一阶结果。\n\n"
+                 "自动：先在全场求解一阶，再仅在预测二阶\n"
+                 "更准确的位置使用二阶。\n\n"
                  "仅适用于 Local DIC。",
         "zh_TW": "一階：每個子集可以平移、拉伸、剪切和旋轉。\n"
                  "標準選擇。\n\n"
@@ -514,6 +518,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "代價是雜訊約為兩倍。搭配較大的子集和\n"
                  "較低的影像雜訊時最有用。無法支援二階的子集\n"
                  "保留其一階結果。\n\n"
+                 "自動：先在全場求解一階，再僅在預測二階\n"
+                 "更準確的位置使用二階。\n\n"
                  "僅適用於 Local DIC。",
         "ja":    "1次：各サブセットは並進・伸縮・せん断・回転できます。\n"
                  "標準的な選択です。\n\n"
@@ -522,6 +528,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "取り除きますが、ノイズは約2倍になります。大きめのサブセットと\n"
                  "低い画像ノイズの組み合わせで最も有効です。2次を適用できない\n"
                  "サブセットは1次の結果を保持します。\n\n"
+                 "自動：まず全体を1次で解き、2次のほうが高精度と\n"
+                 "予測される箇所だけに2次を使用します。\n\n"
                  "Local DIC でのみ利用できます。",
         "ko":    "1차: 각 서브셋이 이동, 신축, 전단, 회전할 수 있습니다.\n"
                  "표준 선택입니다.\n\n"
@@ -530,6 +538,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "제거하지만 노이즈는 약 2배가 됩니다. 더 큰 서브셋과\n"
                  "낮은 이미지 노이즈에서 가장 유용합니다. 2차를 적용할 수 없는\n"
                  "서브셋은 1차 결과를 유지합니다.\n\n"
+                 "자동: 먼저 전체를 1차로 풀고, 2차가 더 정확할 것으로\n"
+                 "예측되는 곳에만 2차를 사용합니다.\n\n"
                  "Local DIC에서만 사용할 수 있습니다.",
         "de":    "1. Ordnung: Jedes Subset kann sich verschieben, dehnen, scheren\n"
                  "und drehen. Die Standardwahl.\n\n"
@@ -539,6 +549,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "nützlichsten mit einem größeren Subset und geringem Bildrauschen.\n"
                  "Ein Subset, das sie nicht tragen kann, behält sein Ergebnis\n"
                  "1. Ordnung.\n\n"
+                 "Auto: löst überall die 1. Ordnung und verwendet die 2. Ordnung\n"
+                 "nur dort, wo sie voraussichtlich genauer ist.\n\n"
                  "Nur für Local DIC verfügbar.",
         "fr":    "1er ordre : chaque imagette peut se translater, s'étirer, se cisailler\n"
                  "et tourner. Le choix standard.\n\n"
@@ -548,6 +560,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "élevé. Surtout utile avec une imagette plus grande et un faible bruit\n"
                  "d'image. Une imagette qui ne peut pas le supporter conserve son\n"
                  "résultat du 1er ordre.\n\n"
+                 "Auto : résout le 1er ordre partout, puis n'utilise le 2e ordre\n"
+                 "que là où il est prévu plus précis.\n\n"
                  "Disponible uniquement pour Local DIC.",
         "es":    "1.er orden: cada subconjunto puede trasladarse, estirarse, cizallarse\n"
                  "y rotar. La opción estándar.\n\n"
@@ -557,7 +571,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "Es más útil con un subconjunto mayor y poco ruido de imagen.\n"
                  "Un subconjunto que no puede admitirlo conserva su resultado\n"
                  "de 1.er orden.\n\n"
+                 "Auto: resuelve el 1.er orden en todas partes y usa el 2.º orden\n"
+                 "solo donde se prevé que es más preciso.\n\n"
                  "Disponible solo para Local DIC.",
+    },
+
+    # ========== PipelineMessages — subset size / shape function suggestion ==========
+    "Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.": {
+        "zh_CN": "建议：采用 %1 px 的子集尺寸和“%2”形函数，预计位移误差可降低约 %3 %。",
+        "zh_TW": "建議：採用 %1 px 的子集尺寸和「%2」形函數，預計位移誤差可降低約 %3 %。",
+        "ja":    "提案：サブセットサイズ %1 px と形状関数「%2」を使うと、変位誤差が約 %3 % 減ると予測されます。",
+        "ko":    "제안: 서브셋 크기 %1 px와 형상 함수 '%2'를 사용하면 변위 오차가 약 %3 % 줄어들 것으로 예측됩니다.",
+        "de":    "Vorschlag: Eine Subset-Größe von %1 px mit der Formfunktion „%2“ senkt den Verschiebungsfehler voraussichtlich um etwa %3 %.",
+        "fr":    "Suggestion : une taille d'imagette de %1 px avec la fonction de forme « %2 » devrait réduire l'erreur de déplacement d'environ %3 %.",
+        "es":    "Sugerencia: un tamaño del subconjunto de %1 px con la función de forma «%2» reduciría el error de desplazamiento en aproximadamente un %3 %.",
+    },
+    "Subset size and shape function look appropriate for this deformation.": {
+        "zh_CN": "当前的子集尺寸和形函数适合此变形。",
+        "zh_TW": "目前的子集尺寸和形函數適合此變形。",
+        "ja":    "現在のサブセットサイズと形状関数は、この変形に適しています。",
+        "ko":    "현재 서브셋 크기와 형상 함수는 이 변형에 적합합니다.",
+        "de":    "Subset-Größe und Formfunktion passen zu dieser Verformung.",
+        "fr":    "La taille d'imagette et la fonction de forme conviennent à cette déformation.",
+        "es":    "El tamaño del subconjunto y la función de forma son adecuados para esta deformación.",
     },
 
     # ========== AdvancedTuningWidget ==========
@@ -3595,6 +3631,10 @@ DISAMBIGUATED: dict[tuple[str, str], dict[str, str]] = {
     ("Light", "Color theme"): {
         "zh_CN": "浅色", "zh_TW": "淺色", "ja": "ライト", "ko": "라이트",
         "de": "Hell", "fr": "Clair", "es": "Claro",
+    },
+    ("Auto", "Shape function: order chosen per node"): {
+        "zh_CN": "自动", "zh_TW": "自動", "ja": "自動", "ko": "자동",
+        "de": "Auto", "fr": "Auto", "es": "Auto",
     },
 }
 
