@@ -88,16 +88,6 @@ def test_choosing_second_order_updates_state():
     assert state.shape_function_order == "first"
 
 
-def test_auto_shape_function_can_be_chosen():
-    state = AppState.instance()
-    panel = WorkflowTypePanel()
-
-    index = panel._shape_order.findData("auto")
-    assert index >= 0
-    panel._shape_order.setCurrentIndex(index)
-    assert state.shape_function_order == "auto"
-
-
 def test_shape_function_is_available_for_local_dic_only():
     """Second order exists for Local DIC only: with AL-DIC the control is
     disabled. The user's choice is kept, so switching back restores it."""

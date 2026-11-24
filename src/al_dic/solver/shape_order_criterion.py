@@ -1,4 +1,9 @@
-"""Predict, node by node, which subset shape-function order is more accurate.
+"""Predict, node by node, the error of the two subset shape-function orders.
+
+The prediction feeds the post-run suggestion for the subset size and shape
+function (:mod:`al_dic.solver.shape_advisor`). ``select`` marks the nodes
+where second order is predicted to be the more accurate one; no solver
+option chooses the order per node from it.
 
 Model (Zhao & Pan, Mech. Syst. Signal Process. 222 (2025) 111792), for a
 subset of half-width ``M``:
@@ -39,7 +44,7 @@ from .local_icgn import LocalICGNContext, _detect_bad_points
 
 __all__ = [
     "ShapeOrderPrediction", "predict_shape_order", "fit_displacement_derivatives",
-    "fit_displacement_model", "fit_radius",
+    "fit_displacement_model", "fit_radius", "estimate_noise_inflation",
 ]
 
 #: Radius of the polynomial fit, in subset sizes and in node steps; the larger
@@ -117,6 +122,23 @@ class ShapeOrderPrediction:
     lap_gain: NDArray[np.float64]
     quart_gain: NDArray[np.float64]
     fit_residual: NDArray[np.float64]
+
+
+def estimate_noise_inflation(half: int, spacing: float) -> tuple[float, float]:
+    """How much noisier the fitted derivatives are than independent nodes imply.
+
+    ``lap_gain`` and ``quart_gain`` assume independent noise at the nodes.
+    Nodes closer than a subset share pixels, so their noise is correlated and
+    the fitted Laplacian and quartic term scatter more than that. Measured on
+    pure-noise fields (subsets 17 to 97 px, node steps 4 to 16 px), the
+    variance of the Laplacian is about ``subset / spacing`` times the
+    independent-noise value and that of the quartic term about half of it.
+
+    Returns:
+        (laplacian factor, quartic factor), each at least 1.
+    """
+    ratio = (2 * half + 1) / float(spacing)
+    return max(1.0, ratio), max(1.0, 0.5 * ratio)
 
 
 def fit_radius(winsize: int, winstepsize: int) -> float:
@@ -468,14 +490,11 @@ def predict_shape_order(
     # The fitted Laplacian carries the noise of its own estimate. Only the
     # part that stands out from it counts as bias: the estimate's variance is
     # the scatter of the displacement about the fit (or the predicted noise,
-    # if larger) times the gain of the fit. Nodes closer than a subset share
-    # pixels, so their errors are correlated and the independent-noise gain
-    # understates that variance by about (subset / step)^2. On real images
-    # the scatter is mostly systematic (interpolation bias, lens distortion);
-    # without this step it reads as curvature and even a rigid rotation is
-    # sent to second order.
-    size = 2 * half + 1
-    correlation = max(1.0, (size / spacing) ** 2)
+    # if larger) times the gain of the fit, times the inflation for nodes
+    # that share pixels. On real images the scatter is mostly systematic
+    # (interpolation bias, lens distortion); without this step it reads as
+    # curvature.
+    correlation, _ = estimate_noise_inflation(half, spacing)
     with np.errstate(invalid="ignore"):
         scatter_sq = np.maximum(2.0 * resid ** 2, sigma ** 2)
         significant_sq = np.maximum(

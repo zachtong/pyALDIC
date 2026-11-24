@@ -115,8 +115,6 @@ class CanvasConfigOverlay(QFrame):
         order = str(getattr(self._state, "shape_function_order", "first"))
         if not use_admm and order == "second":
             return self.tr("2nd order")
-        if not use_admm and order == "auto":
-            return self.tr("Auto", "Shape function: order chosen per node")
         return self.tr("1st order")
 
     def _format_init(self) -> str:

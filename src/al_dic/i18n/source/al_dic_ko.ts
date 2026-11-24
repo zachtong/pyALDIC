@@ -1010,38 +1010,32 @@ FFT 초기 추정 모드에만 관련됩니다.</translation>
         <translation>2차</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="119"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>자동</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
         <source>1st order</source>
         <translation>1차</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
         <source>Starting Points</source>
         <translation>시드점</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Previous frame</source>
         <translation>이전 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>FFT every frame</source>
         <translation>매 프레임 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="133"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every %1 fr</source>
         <translation>%1 프레임마다 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="134"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2463,57 +2457,57 @@ Results were restored. To show the background images, select the folder that now
         <translation>IC-GN 서브셋 윈도우 크기(픽셀, 홀수)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="62"/>
+        <location filename="../../gui/widgets/param_panel.py" line="63"/>
         <source>Subset Step</source>
         <translation>서브셋 스텝</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="65"/>
+        <location filename="../../gui/widgets/param_panel.py" line="66"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>노드 간격(픽셀, 2의 거듭제곱이어야 함)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="73"/>
-        <location filename="../../gui/widgets/param_panel.py" line="198"/>
+        <location filename="../../gui/widgets/param_panel.py" line="74"/>
         <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Search Range</source>
         <translation>탐색 범위</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="88"/>
+        <location filename="../../gui/widgets/param_panel.py" line="89"/>
         <source>Refine Inner Boundary</source>
         <translation>내부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="91"/>
+        <location filename="../../gui/widgets/param_panel.py" line="92"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>내부 마스크 경계를 따라 메시를 국소적으로 세분화합니다
 (관심 영역 내부의 구멍). 기포/공극 가장자리에 유용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="95"/>
+        <location filename="../../gui/widgets/param_panel.py" line="96"/>
         <source>Refine Outer Boundary</source>
         <translation>외부 경계 세분화</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="98"/>
+        <location filename="../../gui/widgets/param_panel.py" line="99"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>관심 영역 외부 경계를 따라 메시를 국소적으로 세분화합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="113"/>
+        <location filename="../../gui/widgets/param_panel.py" line="114"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
         <translation>세분화 강도. 최소 요소 크기 = max(2, subset_step / 2^level). 내부·외부 경계와 브러시로 칠한 영역에 모두 일괄 적용됩니다. 사용 가능한 레벨은 서브셋 크기와 스텝에 따라 달라집니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="119"/>
+        <location filename="../../gui/widgets/param_panel.py" line="120"/>
         <source>Refinement Level</source>
         <translation>세분화 레벨</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="179"/>
+        <location filename="../../gui/widgets/param_panel.py" line="191"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2524,7 +2518,7 @@ For large rotations in incremental mode, this must cover
   반경 × sin(단계 각).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="198"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2533,48 +2527,48 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 시드점 초기화에만 영향을 주며, 다른 노드는 F-aware 전파(노드별 탐색 없음)를 사용합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="194"/>
-        <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="206"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Starting Point Search</source>
         <translation>시드점 탐색</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="262"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>약함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="251"/>
+        <location filename="../../gui/widgets/param_panel.py" line="263"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>중간</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="252"/>
+        <location filename="../../gui/widgets/param_panel.py" line="264"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="253"/>
+        <location filename="../../gui/widgets/param_panel.py" line="265"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>매우 강함</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="254"/>
+        <location filename="../../gui/widgets/param_panel.py" line="266"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>극강</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="260"/>
+        <location filename="../../gui/widgets/param_panel.py" line="272"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="282"/>
+        <location filename="../../gui/widgets/param_panel.py" line="294"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>최소 요소 크기 = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
@@ -2684,103 +2678,97 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>2차</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="94"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>자동</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="93"/>
         <source>1st order</source>
         <translation>1차</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="100"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="98"/>
         <source>Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.</source>
         <translation>제안: 서브셋 크기 %1 px와 형상 함수 &apos;%2&apos;를 사용하면 변위 오차가 약 %3 % 줄어들 것으로 예측됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="108"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
         <source>Subset size and shape function look appropriate for this deformation.</source>
         <translation>현재 서브셋 크기와 형상 함수는 이 변형에 적합합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="113"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
         <source>Error: %1</source>
         <translation>오류: %1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="117"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="115"/>
         <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
         <translation>실행이 취소되었습니다. 나열된 참조 프레임에 각각 자체 관심 영역을 지정하거나, 다시 실행하여 프레임 1의 영역으로 계속하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="124"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="122"/>
         <source>Cannot start analysis</source>
         <translation>분석을 시작할 수 없음</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="128"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="126"/>
         <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
         <translation>이미지가 2개 이상 필요합니다. DIC를 실행하기 전에 %1 섹션에서 이미지 폴더를 불러오세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="131"/>
         <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
         <translation>먼저 관심 영역을 정의하세요. %1 섹션에서 프레임 1의 관심 영역을 그리거나 가져옵니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="138"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="136"/>
         <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
         <translation>프레임 1의 관심 영역이 비어 있습니다(선택된 픽셀 없음). %1 섹션에서 다시 그리세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="141"/>
         <source>Region of Interest too small</source>
         <translation>관심 영역이 너무 작음</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="149"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
         <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
         <translation>관심 영역이 %1×%2 px이지만 현재 %3(%4)에는 최소 %5×%5 px가 필요합니다. 관심 영역을 넓히거나 %3을(를) 줄이세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="153"/>
         <source>Starting Points required</source>
         <translation>시드점 필요</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="159"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="157"/>
         <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
         <translation>실행하기 전에 캔버스에 시드점을 하나 이상 배치하세요. %3 섹션에서 “%1” 또는 “%2”를 클릭합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="165"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="163"/>
         <source>Invalid Starting Points</source>
         <translation>잘못된 시드점</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="169"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="167"/>
         <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
         <translation>하나 이상의 시드점이 관심 영역의 어느 부분에도 있지 않습니다. %2 섹션에서 “%1”을(를) 클릭한 다음 시드점을 다시 배치하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="175"/>
         <source>DIC analysis failed</source>
         <translation>DIC 분석 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="180"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="178"/>
         <source>Failed to start analysis</source>
         <translation>분석 시작 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="183"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="181"/>
         <source>Failed to process results</source>
         <translation>결과 처리 실패</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="186"/>
         <source>The analysis stopped with a runtime error:
 
 %1
@@ -2793,7 +2781,7 @@ See the console log for the full traceback.</source>
 전체 트레이스백은 콘솔 로그를 참조하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="192"/>
         <source>%1
 
 See the console log for the full traceback.</source>
@@ -2802,19 +2790,19 @@ See the console log for the full traceback.</source>
 전체 트레이스백은 콘솔 로그를 참조하세요.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="199"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="197"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>관심 영역 적용 범위 불완전</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="202"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>이번 증분 추적 실행에서 참조 프레임 %n개에 자체 관심 영역이 없습니다: 프레임 %1.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="210"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="208"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2822,17 +2810,17 @@ See the console log for the full traceback.</source>
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="216"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="214"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>자체 관심 영역이 없는 참조 프레임은 프레임 1의 영역을 그대로 재사용합니다. 이 영역은 시편을 따라 움직이지 않습니다. 시편이 이 영역 밖으로 이동하면 영역 밖의 부분은 그러한 참조 프레임에서 측정되지 않으며, 그곳의 노드는 더 이상 추적되지 않거나 가장 가까운 측정된 노드에서 변위가 복사됩니다. 실행이 끝나면 이러한 노드가 보고됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="226"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="224"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>시편 전체를 측정하려면 각 참조 프레임에 해당 프레임의 시편을 덮는 자체 관심 영역을 지정하세요(일괄 가져오기로 여러 프레임에 관심 영역을 한 번에 지정할 수 있습니다). 자체 영역이 있는 참조 프레임은 그 영역을 덮는 측정 격자에서 측정됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="233"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="231"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>프레임 1의 영역으로 계속하시겠습니까?</translation>
     </message>
@@ -3042,173 +3030,173 @@ See the console log for the full traceback.</source>
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="59"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="60"/>
         <source>Run DIC Analysis</source>
         <translation>DIC 분석 실행</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="72"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="73"/>
         <source>Cancel</source>
         <translation>취소</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="78"/>
         <source>Cancel the current analysis. Frames already computed are kept so you can review or export the partial run.</source>
         <translation>현재 분석을 취소합니다. 이미 계산된 프레임은 유지되므로 부분 결과를 검토하거나 내보낼 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="85"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="86"/>
         <source>Export Results</source>
         <translation>결과 내보내기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="93"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="94"/>
         <source>Open Strain Window</source>
         <translation>변형률 창 열기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="97"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>별도의 후처리 창에서 변형률을 계산·시각화합니다. 완료된 실행의 변위 결과가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="105"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="106"/>
         <source>PROGRESS</source>
         <translation>진행률</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="412"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="115"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
         <source>Ready</source>
         <translation>준비됨</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="514"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="123"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="420"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="520"/>
         <source>ELAPSED  %1</source>
         <translation>경과 시간  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="416"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="522"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="526"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="128"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="422"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="528"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="532"/>
         <source>REMAINING  %1</source>
         <translation>남은 시간  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="135"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
         <source>FIELD</source>
         <translation>필드</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="144"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
         <source>Show on</source>
         <translation>표시 기준</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="149"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="155"/>
         <source>Deformed frame</source>
         <translation>변형된 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
         <source>Reference frame</source>
         <translation>참조 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="152"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="158"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
         <translation>필드를 변형된 노드 위치에 그리거나 참조 프레임에서의 위치에 그립니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="166"/>
         <source>Show background image</source>
         <translation>배경 이미지 표시</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="169"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>선택을 해제하면 뒤에 스페클 이미지 없이 필드만 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
         <source>Hidden background</source>
         <translation>숨김 시 배경</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
         <source>White</source>
         <translation>흰색</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="185"/>
         <source>Black</source>
         <translation>검정</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="186"/>
         <source>Transparent</source>
         <translation>투명</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>배경을 숨겼을 때 이미지를 대신할 채우기입니다. 내보낼 때 PNG와 TIFF는 투명도를 유지하며, 다른 형식은 흰색이 됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="192"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Hide untracked regions</source>
         <translation>추적되지 않은 영역 숨기기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="195"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
         <source>Leave areas without a tracked node transparent, for example material that left the field of view, instead of filling them with values copied from distant nodes. Also used for exported images and animations; data files always keep NaN there.</source>
         <translation>추적된 노드가 없는 영역(예: 시야 밖으로 나간 재료)을 먼 노드에서 복사한 값으로 채우지 않고 투명하게 둡니다. 내보내는 이미지와 애니메이션에도 적용되며, 데이터 파일에서는 이 영역이 항상 NaN으로 유지됩니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="205"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="211"/>
         <source>VISUALIZATION</source>
         <translation>시각화</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="210"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="216"/>
         <source>Colormap</source>
         <translation>색상 맵</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="229"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="235"/>
         <source>Opacity</source>
         <translation>불투명도</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>오버레이 불투명도(0 = 투명, 100 = 불투명)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
         <source>PHYSICAL UNITS</source>
         <translation>물리 단위</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
         <source>LOG</source>
         <translation>로그</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="260"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="381"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="387"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>실행 전에 각 빨간 영역에 시드점을 하나 이상 배치하세요(빨강 = 시드점 필요).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="503"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  프레임 %2</translation>
     </message>
@@ -3349,6 +3337,39 @@ Suggested actions:
 권장 조치:
 - 시드점의 위치를 확인하세요.
 - 자세한 내용은 콘솔 로그를 참조하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>ShapeSuggestionBar</name>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>2nd order</source>
+        <translation>2차</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>1st order</source>
+        <translation>1차</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="90"/>
+        <source>Apply</source>
+        <translation>적용</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="92"/>
+        <source>Set the subset size and the shape function to the suggested values. Nothing is recomputed until you run again.</source>
+        <translation>서브셋 크기와 형상 함수를 제안값으로 설정합니다. 다시 실행하기 전에는 다시 계산되지 않습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="102"/>
+        <source>Suggested: subset size %1 px, %2 shape function (predicted to lower the displacement error by about %3 %).</source>
+        <translation>제안: 서브셋 크기 %1 px, 형상 함수 &apos;%2&apos; (변위 오차가 약 %3 % 줄어들 것으로 예측).</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="116"/>
+        <source>Suggested setting applied: subset size %1 px, %2 shape function. Run again to use it.</source>
+        <translation>제안된 설정을 적용했습니다: 서브셋 크기 %1 px, 형상 함수 &apos;%2&apos;. 이 설정을 사용하려면 다시 실행하세요.</translation>
     </message>
 </context>
 <context>
@@ -3951,45 +3972,36 @@ Accurate for small, monotonic deformation only.</source>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
-        <source>Local DIC: Independent subset matching (IC-GN). Fast,
-preserves sharp local features. Best for small
-deformations or high-quality images.
+        <source>Local DIC: each subset is matched independently (IC-GN).
+Fast; keeps sharp local features. The default.
 
-AL-DIC: Augmented Lagrangian with global FEM
-regularization. Enforces displacement compatibility
-between subsets. Best for large deformations, noisy
-images, or when strain accuracy matters.</source>
-        <translation>Local DIC: 독립 서브셋 매칭(IC-GN). 빠르고
-국소 특징을 보존합니다. 작은 변형이나 고품질
-이미지에 적합합니다.
+AL-DIC: adds a global FEM step that makes the
+displacement field continuous from subset to subset.
+About 3 times slower than Local DIC.</source>
+        <translation>Local DIC: 각 서브셋을 독립적으로 매칭합니다(IC-GN).
+빠르고 날카로운 국소 특징을 보존합니다. 기본값입니다.
 
-AL-DIC: 전역 FEM 정칙화를 갖춘 증강 라그랑주.
-서브셋 간 변위 적합성을 강제합니다. 큰 변형,
-노이즈 이미지, 변형률 정확도가 중요한 경우에 적합합니다.</translation>
+AL-DIC: 전역 FEM 단계를 추가하여
+서브셋 사이에서 변위장을 연속으로 만듭니다.
+계산 시간은 Local DIC의 약 3배입니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="88"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="86"/>
         <source>Solver</source>
         <translation>솔버</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="98"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="96"/>
         <source>1st order</source>
         <translation>1차</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="99"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="97"/>
         <source>2nd order</source>
         <translation>2차</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="101"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>자동</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="102"/>
         <source>1st order: each subset can translate, stretch, shear and
 rotate. The standard choice.
 
@@ -3998,9 +4010,6 @@ rotate. The standard choice.
 subset, at about twice the noise. Most useful with a larger
 subset and low image noise. A subset that cannot support it
 keeps its 1st-order result.
-
-Auto: solves the 1st order everywhere, then uses the 2nd order
-only where it is predicted to be more accurate.
 
 Available for Local DIC only.</source>
         <translation>1차: 각 서브셋이 이동, 신축, 전단, 회전할 수 있습니다.
@@ -4012,33 +4021,30 @@ Available for Local DIC only.</source>
 낮은 이미지 노이즈에서 가장 유용합니다. 2차를 적용할 수 없는
 서브셋은 1차 결과를 유지합니다.
 
-자동: 먼저 전체를 1차로 풀고, 2차가 더 정확할 것으로
-예측되는 곳에만 2차를 사용합니다.
-
 Local DIC에서만 사용할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="112"/>
         <source>Shape Function</source>
         <translation>형상 함수</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="136"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
         <source>Every Frame</source>
         <translation>매 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="131"/>
         <source>Every N Frames</source>
         <translation>N 프레임마다</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="138"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
         <source>Custom Frames</source>
         <translation>사용자 지정 프레임</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="135"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -4051,27 +4057,27 @@ N 프레임마다: N 프레임마다 리셋(속도-견고성 균형).
 사용자 지정: 사용자 정의 참조 프레임 인덱스 목록.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="150"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="144"/>
         <source>Reference Update</source>
         <translation>참조 프레임 갱신</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="160"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="154"/>
         <source>Update reference every N frames</source>
         <translation>N 프레임마다 참조 프레임 갱신</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="162"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
         <source>Interval</source>
         <translation>간격</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="165"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>참조 프레임으로 사용할 프레임 인덱스(0부터, 쉼표 구분)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="175"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="169"/>
         <source>Reference Frames</source>
         <translation>참조 프레임</translation>
     </message>

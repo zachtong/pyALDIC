@@ -2,9 +2,9 @@
 
 Given the error prediction of one finished frame pair
 (:mod:`al_dic.solver.shape_order_criterion`), rank a short ladder of
-subset sizes, each with the first-order shape function and with the
-automatic choice, by their predicted displacement error, and report the
-best one only when it is clearly better than the current setting.
+subset sizes, each with the first-order and with the second-order shape
+function, by their predicted displacement error, and report the best one
+only when it is clearly better than the current setting.
 
 The advisor is built to stay quiet rather than to guess:
 
@@ -27,7 +27,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from ..core.data_structures import ShapeAdvice
-from .shape_order_criterion import ShapeOrderPrediction
+from .shape_order_criterion import ShapeOrderPrediction, estimate_noise_inflation
 
 __all__ = ["advise_shape_settings", "candidate_winsizes"]
 
@@ -117,7 +117,7 @@ def advise_shape_settings(
         prediction: Error prediction of the frame pair, made at ``winsize``.
         winsize: Current subset size parameter (the subset spans ``winsize + 1`` px).
         winstepsize: Node step (px).
-        current_order: ``"first"``, ``"second"`` or ``"auto"``.
+        current_order: ``"first"`` or ``"second"``.
         roi_min_dim: Smaller dimension of the ROI (px), if known.
         frame: Index of the frame pair, recorded in the advice.
 
@@ -163,12 +163,11 @@ def advise_shape_settings(
     lap = prediction.bias_first[nodes] * 6.0 / (half * (half + 1))
     quart = prediction.bias_second[nodes] * 2520.0 / (half ** 2 * (half + 1) ** 2)
     # Remove the part of the measured derivatives that is their own noise.
-    # Nodes closer than a subset share pixels, so their noise is correlated
-    # and the independent-noise gain understates the variance by (size/step)^2.
-    correlation = max(1.0, (size / max(float(winstepsize), prediction.spacing)) ** 2)
-    lap_sq = np.maximum(lap ** 2 - noisy_sq * prediction.lap_gain[nodes] * correlation, 0.0)
+    lap_factor, quart_factor = estimate_noise_inflation(
+        half, max(float(winstepsize), prediction.spacing))
+    lap_sq = np.maximum(lap ** 2 - noisy_sq * prediction.lap_gain[nodes] * lap_factor, 0.0)
     quart_sq = np.maximum(
-        quart ** 2 - noisy_sq * prediction.quart_gain[nodes] * correlation, 0.0)
+        quart ** 2 - noisy_sq * prediction.quart_gain[nodes] * quart_factor, 0.0)
 
     def predicted(candidate: int, order: str) -> float:
         m = candidate // 2
@@ -176,18 +175,14 @@ def advise_shape_settings(
         var = noise_sq / scale ** 2
         first = (m * (m + 1) / 6.0) ** 2 * lap_sq + var + floor_sq
         second = (m ** 2 * (m + 1) ** 2 / 2520.0) ** 2 * quart_sq + 4.0 * var + floor_sq
-        if order == "first":
-            return _trimmed_rms(first)
-        if order == "second":
-            return _trimmed_rms(second)
-        return _trimmed_rms(np.minimum(first, second))
+        return _trimmed_rms(second if order == "second" else first)
 
     current = predicted(winsize, current_order)
     bias_now_sq = (half * (half + 1) / 6.0) ** 2 * lap_sq
     may_grow = float(np.mean(bias_now_sq > noise_sq)) <= MAX_BIAS_SHARE
     sizes = [w for w in candidate_winsizes(winsize, winstepsize, roi_min_dim)
              if may_grow or w <= winsize]
-    scored = [(predicted(w, order), w, order) for w in sizes for order in ("first", "auto")]
+    scored = [(predicted(w, order), w, order) for w in sizes for order in ("first", "second")]
     best_error = min(s[0] for s in scored)
     # Among near-equal candidates prefer the smallest change: same subset
     # size, then same shape function, then the smaller subset.

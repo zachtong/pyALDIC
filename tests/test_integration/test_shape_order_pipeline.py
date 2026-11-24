@@ -147,50 +147,6 @@ def half_curved_images():
             clean + rng.standard_normal(ref.shape) * noise)
 
 
-def test_auto_refines_where_the_bias_is_and_nowhere_else(half_curved_images):
-    first = _run(half_curved_images)
-    second = _run(half_curved_images, shape_function_order="second")
-    auto = _run(half_curved_images, shape_function_order="auto")
-
-    coords = auto.dic_mesh.coordinates_fem
-    order = auto.result_disp[0].shape_order
-    rows = (coords[:, 1] > 70) & (coords[:, 1] < H - 70)
-    left = rows & (coords[:, 0] > 70) & (coords[:, 0] < W / 2 - 60)
-    right = rows & (coords[:, 0] > W / 2 + 60) & (coords[:, 0] < W - 70)
-    assert np.mean(order[left] == 2) > 0.4
-    assert np.mean(order[right] == 2) < 0.03
-
-    truth = _u_half(coords[:, 0], coords[:, 1])
-
-    def rms(result, where):
-        return float(np.sqrt(np.mean((result.result_disp[0].U[0::2][where] - truth[where]) ** 2)))
-
-    # Where the bias is, Auto recovers most of what second order recovers ...
-    assert rms(auto, left) < 0.6 * rms(first, left)
-    # ... and where there is none it keeps the first-order noise level.
-    assert rms(auto, right) < 1.05 * rms(first, right)
-    assert rms(second, right) > 1.5 * rms(first, right)
-    assert np.all(np.isfinite(auto.result_disp[0].U))
-
-
-def test_auto_leaves_a_uniform_field_first_order(images):
-    """A rigid shift has no bias to remove: Auto must not add noise."""
-    ref = images[0]
-    rng = np.random.default_rng(7)
-    shifted = warp_lagrangian(ref, lambda x, y: 2.3 + 0.0 * x, _v)
-    pair = (ref + rng.standard_normal(ref.shape) * 0.01,
-            shifted + rng.standard_normal(ref.shape) * 0.01)
-
-    auto = _run(pair, shape_function_order="auto")
-    first = _run(pair)
-
-    order = auto.result_disp[0].shape_order
-    assert np.mean(order == 2) < 0.01
-    kept = order == 1
-    np.testing.assert_array_equal(
-        auto.result_disp[0].U.reshape(-1, 2)[kept], first.result_disp[0].U.reshape(-1, 2)[kept])
-
-
 # --- advice record ---
 
 def test_local_run_carries_advice_and_aldic_run_does_not(images):
@@ -219,7 +175,7 @@ def test_making_the_prediction_does_not_change_the_result(images):
     grads = compute_image_gradient(ref, np.ones_like(ref), img_raw=ref)
     u0 = np.column_stack([_u(coords[:, 0], coords[:, 1]),
                           _v(coords[:, 0], coords[:, 1])]).ravel()
-    for order in (None, "second", "auto"):
+    for order in (None, "second"):
         para = _para(shape_function_order=order)
         plain = local_icgn_full(u0, coords, grads, ref, deformed, para, para.tol)
         with_pred = local_icgn_full(u0, coords, grads, ref, deformed, para, para.tol,
@@ -253,8 +209,7 @@ def test_a_failing_prediction_does_not_fail_the_run(images, monkeypatch):
 
     monkeypatch.setattr(shape_order_criterion, "predict_shape_order", boom)
 
-    result = _run(images)                               # advice only: run completes
-    assert result.shape_advice is None
-    assert np.all(np.isfinite(result.result_disp[0].U))
-    with pytest.raises(MemoryError):                    # "auto" cannot do without it
-        _run(images, shape_function_order="auto")
+    for order in (None, "second"):                      # the prediction only feeds the advice
+        result = _run(images, shape_function_order=order)
+        assert result.shape_advice is None
+        assert np.all(np.isfinite(result.result_disp[0].U))

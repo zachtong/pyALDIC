@@ -330,13 +330,12 @@ class DICPara:
     # Subset shape function for Local DIC (use_global_step=False).
     # None = first order (6 parameters). "second" refines every converged node
     # with a 12-parameter shape function and keeps the first-order result where
-    # that refinement is not trustworthy. "auto" refines only the nodes where
-    # second order is predicted to be more accurate (bias against noise).
+    # that refinement is not trustworthy.
     # The first-order default is None, not "first", on purpose: the session
     # serializer omits None fields whose default is None, and builds up to
     # 1.0.5 reject fields they do not know. A first-order session therefore
     # stays readable by those builds.
-    shape_function_order: Literal["second", "auto"] | None = None
+    shape_function_order: Literal["second"] | None = None
 
     # --- 7. ADMM ---
     mu: float = 1e-3
@@ -604,7 +603,7 @@ class ShapeAdvice:
             ``"noise_unknown"`` or ``"model_mismatch"``. Empty otherwise.
         frame: 0-based index of the frame pair the advice is based on.
         current_winsize, current_order: The setting the run used; orders
-            are ``"first"``, ``"second"`` or ``"auto"``.
+            are ``"first"`` or ``"second"``.
         suggested_winsize, suggested_order: The suggested setting (equal to
             the current one unless ``status == "suggest"``).
         predicted_gain: Fraction by which the predicted displacement error

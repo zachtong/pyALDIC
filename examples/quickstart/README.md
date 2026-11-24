@@ -19,13 +19,13 @@ guess defaults to **FFT**, which is the recommended setting for all three cases.
 ### `01_tension_without_holes`
 Uniaxial tension of an aluminum dog-bone specimen — a smooth uniaxial-tension field.
 - Subset size **31 px**, step **16 px**, search range **20 px**
-- Solver: **AL-DIC** (or **Local DIC** for a faster first run); initial guess: **FFT**
+- Solver: **Local DIC** (the default); initial guess: **FFT**
 
 ### `02_tension_with_holes`
 Uniaxial tension of a perforated aluminum specimen — tension with stress
 concentration around the holes.
 - Subset size **31 px**, step **16 px**, search range **20 px**
-- Solver: **AL-DIC**; initial guess: **FFT**
+- Solver: **Local DIC** (the default); initial guess: **FFT**
 - Cut the two holes out of the ROI (ROI → *Cut*) so the automatic masked-subset
   window splitting handles the hole boundaries.
 
@@ -40,8 +40,7 @@ grows with distance from the center.
 - Subset size **41 px**, step **16 px**, search range **40 px** — the search
   range must cover the per-step edge motion, radius × sin(per-step angle); 40 px
   is generous for this sequence.
-- Solver: **AL-DIC** (the global step enforces the rotation compatibility);
-  initial guess: **FFT**
+- Solver: **Local DIC** (the default); initial guess: **FFT**
 
 *The values above are recommended starting points; fine-tune the subset and
 search range for your region of interest.*

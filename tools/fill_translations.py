@@ -491,6 +491,47 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "fr":    "2e ordre",
         "es":    "2.º orden",
     },
+    "Local DIC: each subset is matched independently (IC-GN).\n"
+    "Fast; keeps sharp local features. The default.\n\n"
+    "AL-DIC: adds a global FEM step that makes the\n"
+    "displacement field continuous from subset to subset.\n"
+    "About 3 times slower than Local DIC.": {
+        "zh_CN": "Local DIC：各子集独立匹配（IC-GN）。\n"
+                 "速度快，保留局部锐利特征。默认选项。\n\n"
+                 "AL-DIC：增加一步全局 FEM 求解，\n"
+                 "使位移场在子集之间连续。\n"
+                 "耗时约为 Local DIC 的 3 倍。",
+        "zh_TW": "Local DIC：各子集獨立匹配（IC-GN）。\n"
+                 "速度快，保留局部銳利特徵。預設選項。\n\n"
+                 "AL-DIC：增加一步全域 FEM 求解，\n"
+                 "使位移場在子集之間連續。\n"
+                 "耗時約為 Local DIC 的 3 倍。",
+        "ja":    "Local DIC: 各サブセットを独立にマッチングします(IC-GN)。\n"
+                 "高速で、局所的な鋭い特徴を保持します。既定の設定です。\n\n"
+                 "AL-DIC: 全体 FEM ステップを追加し、\n"
+                 "サブセット間で変位場を連続にします。\n"
+                 "計算時間は Local DIC の約 3 倍です。",
+        "ko":    "Local DIC: 각 서브셋을 독립적으로 매칭합니다(IC-GN).\n"
+                 "빠르고 날카로운 국소 특징을 보존합니다. 기본값입니다.\n\n"
+                 "AL-DIC: 전역 FEM 단계를 추가하여\n"
+                 "서브셋 사이에서 변위장을 연속으로 만듭니다.\n"
+                 "계산 시간은 Local DIC의 약 3배입니다.",
+        "de":    "Local DIC: Jedes Subset wird unabhängig angepasst (IC-GN).\n"
+                 "Schnell; erhält scharfe lokale Merkmale. Die Voreinstellung.\n\n"
+                 "AL-DIC: ergänzt einen globalen FEM-Schritt, der das\n"
+                 "Verschiebungsfeld von Subset zu Subset stetig macht.\n"
+                 "Etwa 3-mal langsamer als Local DIC.",
+        "fr":    "Local DIC : chaque imagette est appariée indépendamment (IC-GN).\n"
+                 "Rapide ; préserve les détails locaux nets. Réglage par défaut.\n\n"
+                 "AL-DIC : ajoute une étape FEM globale qui rend le\n"
+                 "champ de déplacement continu d'une imagette à l'autre.\n"
+                 "Environ 3 fois plus lent que Local DIC.",
+        "es":    "Local DIC: cada subconjunto se ajusta de forma independiente (IC-GN).\n"
+                 "Rápido; conserva los detalles locales nítidos. Opción predeterminada.\n\n"
+                 "AL-DIC: añade un paso FEM global que hace que el\n"
+                 "campo de desplazamiento sea continuo de un subconjunto a otro.\n"
+                 "Aproximadamente 3 veces más lento que Local DIC.",
+    },
     "1st order: each subset can translate, stretch, shear and\n"
     "rotate. The standard choice.\n\n"
     "2nd order: each subset can also bend. Removes the error a\n"
@@ -498,8 +539,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
     "subset, at about twice the noise. Most useful with a larger\n"
     "subset and low image noise. A subset that cannot support it\n"
     "keeps its 1st-order result.\n\n"
-    "Auto: solves the 1st order everywhere, then uses the 2nd order\n"
-    "only where it is predicted to be more accurate.\n\n"
     "Available for Local DIC only.": {
         "zh_CN": "一阶：每个子集可以平移、拉伸、剪切和旋转。\n"
                  "标准选择。\n\n"
@@ -508,8 +547,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "代价是噪声约为两倍。配合较大的子集和\n"
                  "较低的图像噪声时最有用。无法支持二阶的子集\n"
                  "保留其一阶结果。\n\n"
-                 "自动：先在全场求解一阶，再仅在预测二阶\n"
-                 "更准确的位置使用二阶。\n\n"
                  "仅适用于 Local DIC。",
         "zh_TW": "一階：每個子集可以平移、拉伸、剪切和旋轉。\n"
                  "標準選擇。\n\n"
@@ -518,8 +555,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "代價是雜訊約為兩倍。搭配較大的子集和\n"
                  "較低的影像雜訊時最有用。無法支援二階的子集\n"
                  "保留其一階結果。\n\n"
-                 "自動：先在全場求解一階，再僅在預測二階\n"
-                 "更準確的位置使用二階。\n\n"
                  "僅適用於 Local DIC。",
         "ja":    "1次：各サブセットは並進・伸縮・せん断・回転できます。\n"
                  "標準的な選択です。\n\n"
@@ -528,8 +563,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "取り除きますが、ノイズは約2倍になります。大きめのサブセットと\n"
                  "低い画像ノイズの組み合わせで最も有効です。2次を適用できない\n"
                  "サブセットは1次の結果を保持します。\n\n"
-                 "自動：まず全体を1次で解き、2次のほうが高精度と\n"
-                 "予測される箇所だけに2次を使用します。\n\n"
                  "Local DIC でのみ利用できます。",
         "ko":    "1차: 각 서브셋이 이동, 신축, 전단, 회전할 수 있습니다.\n"
                  "표준 선택입니다.\n\n"
@@ -538,8 +571,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "제거하지만 노이즈는 약 2배가 됩니다. 더 큰 서브셋과\n"
                  "낮은 이미지 노이즈에서 가장 유용합니다. 2차를 적용할 수 없는\n"
                  "서브셋은 1차 결과를 유지합니다.\n\n"
-                 "자동: 먼저 전체를 1차로 풀고, 2차가 더 정확할 것으로\n"
-                 "예측되는 곳에만 2차를 사용합니다.\n\n"
                  "Local DIC에서만 사용할 수 있습니다.",
         "de":    "1. Ordnung: Jedes Subset kann sich verschieben, dehnen, scheren\n"
                  "und drehen. Die Standardwahl.\n\n"
@@ -549,8 +580,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "nützlichsten mit einem größeren Subset und geringem Bildrauschen.\n"
                  "Ein Subset, das sie nicht tragen kann, behält sein Ergebnis\n"
                  "1. Ordnung.\n\n"
-                 "Auto: löst überall die 1. Ordnung und verwendet die 2. Ordnung\n"
-                 "nur dort, wo sie voraussichtlich genauer ist.\n\n"
                  "Nur für Local DIC verfügbar.",
         "fr":    "1er ordre : chaque imagette peut se translater, s'étirer, se cisailler\n"
                  "et tourner. Le choix standard.\n\n"
@@ -560,8 +589,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "élevé. Surtout utile avec une imagette plus grande et un faible bruit\n"
                  "d'image. Une imagette qui ne peut pas le supporter conserve son\n"
                  "résultat du 1er ordre.\n\n"
-                 "Auto : résout le 1er ordre partout, puis n'utilise le 2e ordre\n"
-                 "que là où il est prévu plus précis.\n\n"
                  "Disponible uniquement pour Local DIC.",
         "es":    "1.er orden: cada subconjunto puede trasladarse, estirarse, cizallarse\n"
                  "y rotar. La opción estándar.\n\n"
@@ -571,8 +598,6 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
                  "Es más útil con un subconjunto mayor y poco ruido de imagen.\n"
                  "Un subconjunto que no puede admitirlo conserva su resultado\n"
                  "de 1.er orden.\n\n"
-                 "Auto: resuelve el 1.er orden en todas partes y usa el 2.º orden\n"
-                 "solo donde se prevé que es más preciso.\n\n"
                  "Disponible solo para Local DIC.",
     },
 
@@ -585,6 +610,37 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "de":    "Vorschlag: Eine Subset-Größe von %1 px mit der Formfunktion „%2“ senkt den Verschiebungsfehler voraussichtlich um etwa %3 %.",
         "fr":    "Suggestion : une taille d'imagette de %1 px avec la fonction de forme « %2 » devrait réduire l'erreur de déplacement d'environ %3 %.",
         "es":    "Sugerencia: un tamaño del subconjunto de %1 px con la función de forma «%2» reduciría el error de desplazamiento en aproximadamente un %3 %.",
+    },
+    "Suggested: subset size %1 px, %2 shape function (predicted to lower the displacement error by about %3 %).": {
+        "zh_CN": "建议：子集尺寸 %1 px，“%2”形函数（预计位移误差可降低约 %3 %）。",
+        "zh_TW": "建議：子集尺寸 %1 px，「%2」形函數（預計位移誤差可降低約 %3 %）。",
+        "ja":    "提案：サブセットサイズ %1 px、形状関数「%2」（変位誤差が約 %3 % 減ると予測）。",
+        "ko":    "제안: 서브셋 크기 %1 px, 형상 함수 '%2' (변위 오차가 약 %3 % 줄어들 것으로 예측).",
+        "de":    "Vorschlag: Subset-Größe %1 px, Formfunktion „%2“ (senkt den Verschiebungsfehler voraussichtlich um etwa %3 %).",
+        "fr":    "Suggestion : taille d'imagette %1 px, fonction de forme « %2 » (devrait réduire l'erreur de déplacement d'environ %3 %).",
+        "es":    "Sugerencia: tamaño del subconjunto %1 px, función de forma «%2» (reduciría el error de desplazamiento en aproximadamente un %3 %).",
+    },
+    "Apply": {
+        "zh_CN": "应用", "zh_TW": "套用", "ja": "適用", "ko": "적용",
+        "de": "Anwenden", "fr": "Appliquer", "es": "Aplicar",
+    },
+    "Set the subset size and the shape function to the suggested values. Nothing is recomputed until you run again.": {
+        "zh_CN": "将子集尺寸和形函数设为建议值。重新运行之前不会重新计算。",
+        "zh_TW": "將子集尺寸和形函數設為建議值。重新執行之前不會重新計算。",
+        "ja":    "サブセットサイズと形状関数を提案値に設定します。再実行するまで再計算は行われません。",
+        "ko":    "서브셋 크기와 형상 함수를 제안값으로 설정합니다. 다시 실행하기 전에는 다시 계산되지 않습니다.",
+        "de":    "Setzt Subset-Größe und Formfunktion auf die vorgeschlagenen Werte. Neu berechnet wird erst beim nächsten Lauf.",
+        "fr":    "Règle la taille d'imagette et la fonction de forme sur les valeurs suggérées. Rien n'est recalculé avant la prochaine exécution.",
+        "es":    "Establece el tamaño del subconjunto y la función de forma en los valores sugeridos. No se recalcula nada hasta la próxima ejecución.",
+    },
+    "Suggested setting applied: subset size %1 px, %2 shape function. Run again to use it.": {
+        "zh_CN": "已应用建议设置：子集尺寸 %1 px，“%2”形函数。请重新运行以使用该设置。",
+        "zh_TW": "已套用建議設定：子集尺寸 %1 px，「%2」形函數。請重新執行以使用該設定。",
+        "ja":    "提案された設定を適用しました：サブセットサイズ %1 px、形状関数「%2」。この設定を使うには再実行してください。",
+        "ko":    "제안된 설정을 적용했습니다: 서브셋 크기 %1 px, 형상 함수 '%2'. 이 설정을 사용하려면 다시 실행하세요.",
+        "de":    "Vorgeschlagene Einstellung übernommen: Subset-Größe %1 px, Formfunktion „%2“. Zum Verwenden erneut ausführen.",
+        "fr":    "Réglage suggéré appliqué : taille d'imagette %1 px, fonction de forme « %2 ». Relancez l'analyse pour l'utiliser.",
+        "es":    "Ajuste sugerido aplicado: tamaño del subconjunto %1 px, función de forma «%2». Vuelva a ejecutar para usarlo.",
     },
     "Subset size and shape function look appropriate for this deformation.": {
         "zh_CN": "当前的子集尺寸和形函数适合此变形。",
@@ -3631,10 +3687,6 @@ DISAMBIGUATED: dict[tuple[str, str], dict[str, str]] = {
     ("Light", "Color theme"): {
         "zh_CN": "浅色", "zh_TW": "淺色", "ja": "ライト", "ko": "라이트",
         "de": "Hell", "fr": "Clair", "es": "Claro",
-    },
-    ("Auto", "Shape function: order chosen per node"): {
-        "zh_CN": "自动", "zh_TW": "自動", "ja": "自動", "ko": "자동",
-        "de": "Auto", "fr": "Auto", "es": "Auto",
     },
 }
 

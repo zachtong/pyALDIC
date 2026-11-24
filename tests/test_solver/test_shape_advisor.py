@@ -74,7 +74,7 @@ def test_suggestion_is_never_outside_the_ladder_or_the_limits(seed):
         fitted=rng.random(n) > rng.uniform(0, 1),
         noise_sd=float(rng.choice([0.01, np.nan])),
     )
-    order = str(rng.choice(["first", "second", "auto"]))
+    order = str(rng.choice(["first", "second"]))
 
     advice = _advise(pred, winsize=winsize, step=step, order=order, roi=roi)
 
@@ -85,7 +85,7 @@ def test_suggestion_is_never_outside_the_ladder_or_the_limits(seed):
     assert 0.74 * winsize <= advice.suggested_winsize <= 2.01 * winsize
     assert advice.suggested_winsize % 2 == 0
     if advice.status == "suggest":
-        assert advice.suggested_order in ("first", "auto")
+        assert advice.suggested_order in ("first", "second")
         assert advice.predicted_gain >= shape_advisor.MIN_GAIN
         assert (advice.suggested_winsize, advice.suggested_order) != (winsize, order)
     else:
@@ -113,7 +113,7 @@ def test_measured_curvature_that_is_only_noise_is_not_treated_as_bias():
     assert advice.suggested_order == "first" and advice.suggested_winsize > 32
 
 
-def test_bias_dominated_field_suggests_auto_not_a_larger_subset():
+def test_bias_dominated_field_suggests_second_order_not_a_larger_subset():
     """Where the deformation already varies within the subset, the measured
     curvature is attenuated and a larger subset would hide more of it: the
     advisor may change the shape function or shrink, never grow."""
@@ -121,14 +121,14 @@ def test_bias_dominated_field_suggests_auto_not_a_larger_subset():
     lap = 5.0 * sigma / (half * (half + 1) / 6.0)      # bias 5x the noise
     advice = _advise(_prediction(lap=lap, quart=lap * 1e-4, sigma=sigma))
     assert advice.status == "suggest"
-    assert advice.suggested_order == "auto"
+    assert advice.suggested_order == "second"
     assert advice.suggested_winsize <= 32
 
 
 def test_bias_in_a_small_region_does_not_block_a_larger_subset():
     half, sigma = 16, 0.02
     lap = np.zeros(N)
-    lap[: int(0.03 * N)] = 5.0 * sigma / (half * (half + 1) / 6.0)   # 3 % of nodes
+    lap[: int(0.03 * N)] = 1.5 * sigma / (half * (half + 1) / 6.0)   # 3 % of nodes
     advice = _advise(_prediction(lap=lap, sigma=sigma))
     assert advice.status == "suggest"
     assert advice.suggested_winsize > 32

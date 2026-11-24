@@ -1010,38 +1010,32 @@ Only relevant for the FFT init-guess mode.</source>
         <translation>二阶</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="119"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>自动</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
         <source>1st order</source>
         <translation>一阶</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
         <source>Starting Points</source>
         <translation>种子点</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Previous frame</source>
         <translation>上一帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>FFT every frame</source>
         <translation>每帧 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="133"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every %1 fr</source>
         <translation>每 %1 帧 FFT</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="134"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2463,57 +2457,57 @@ Results were restored. To show the background images, select the folder that now
         <translation>IC-GN 子集窗口尺寸（像素，奇数）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="62"/>
+        <location filename="../../gui/widgets/param_panel.py" line="63"/>
         <source>Subset Step</source>
         <translation>子集步长</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="65"/>
+        <location filename="../../gui/widgets/param_panel.py" line="66"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>节点间距（像素，必须是 2 的幂）</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="73"/>
-        <location filename="../../gui/widgets/param_panel.py" line="198"/>
+        <location filename="../../gui/widgets/param_panel.py" line="74"/>
         <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Search Range</source>
         <translation>搜索范围</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="88"/>
+        <location filename="../../gui/widgets/param_panel.py" line="89"/>
         <source>Refine Inner Boundary</source>
         <translation>加密内部边界</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="91"/>
+        <location filename="../../gui/widgets/param_panel.py" line="92"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>沿内部掩模边界局部加密网格
 （感兴趣区域内部的孔洞）。适合气泡 / 空洞边缘。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="95"/>
+        <location filename="../../gui/widgets/param_panel.py" line="96"/>
         <source>Refine Outer Boundary</source>
         <translation>加密外部边界</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="98"/>
+        <location filename="../../gui/widgets/param_panel.py" line="99"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>沿感兴趣区域的外部边界局部加密网格。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="113"/>
+        <location filename="../../gui/widgets/param_panel.py" line="114"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
         <translation>加密强度。最小单元尺寸 = max(2, subset_step / 2^level)。对内部边界、外部边界和画笔加密区域统一生效。可用级别取决于子集尺寸和步长。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="119"/>
+        <location filename="../../gui/widgets/param_panel.py" line="120"/>
         <source>Refinement Level</source>
         <translation>加密级别</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="179"/>
+        <location filename="../../gui/widgets/param_panel.py" line="191"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2524,7 +2518,7 @@ For large rotations in incremental mode, this must cover
   半径 × sin(单步角度)。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="198"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2533,48 +2527,48 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
 仅影响种子点引导；其他节点使用 F-aware 传播（无需逐节点搜索）。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="194"/>
-        <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="206"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Starting Point Search</source>
         <translation>种子点搜索</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="262"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>轻度</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="251"/>
+        <location filename="../../gui/widgets/param_panel.py" line="263"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>中等</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="252"/>
+        <location filename="../../gui/widgets/param_panel.py" line="264"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>强</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="253"/>
+        <location filename="../../gui/widgets/param_panel.py" line="265"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>超强</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="254"/>
+        <location filename="../../gui/widgets/param_panel.py" line="266"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>极限</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="260"/>
+        <location filename="../../gui/widgets/param_panel.py" line="272"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="282"/>
+        <location filename="../../gui/widgets/param_panel.py" line="294"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>最小单元尺寸 = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
@@ -2684,103 +2678,97 @@ Only affects Starting Point bootstrap; other nodes use F-aware propagation (no p
         <translation>二阶</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="94"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>自动</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="93"/>
         <source>1st order</source>
         <translation>一阶</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="100"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="98"/>
         <source>Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.</source>
         <translation>建议：采用 %1 px 的子集尺寸和“%2”形函数，预计位移误差可降低约 %3 %。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="108"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
         <source>Subset size and shape function look appropriate for this deformation.</source>
         <translation>当前的子集尺寸和形函数适合此变形。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="113"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
         <source>Error: %1</source>
         <translation>错误：%1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="117"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="115"/>
         <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
         <translation>已取消运行。请为列出的参考帧指定各自的感兴趣区域，或重新运行并沿用第 1 帧的区域继续。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="124"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="122"/>
         <source>Cannot start analysis</source>
         <translation>无法开始分析</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="128"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="126"/>
         <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
         <translation>至少需要 2 张图像。请先在“%1”部分加载图像文件夹，再运行 DIC。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="131"/>
         <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
         <translation>请先定义感兴趣区域：在“%1”部分为第 1 帧绘制或导入一个。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="138"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="136"/>
         <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
         <translation>第 1 帧的感兴趣区域为空（未选中任何像素）。请在“%1”部分重新绘制。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="141"/>
         <source>Region of Interest too small</source>
         <translation>感兴趣区域过小</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="149"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
         <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
         <translation>感兴趣区域为 %1×%2 px，但当前的%3（%4）至少需要 %5×%5 px。请扩大感兴趣区域或减小%3。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="153"/>
         <source>Starting Points required</source>
         <translation>需要种子点</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="159"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="157"/>
         <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
         <translation>运行前请在画布上放置至少一个种子点：点击“%3”部分中的“%1”或“%2”。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="165"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="163"/>
         <source>Invalid Starting Points</source>
         <translation>种子点无效</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="169"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="167"/>
         <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
         <translation>有一个或多个种子点不在感兴趣区域的任何部分内。请点击“%2”部分中的“%1”，然后重新放置种子点。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="175"/>
         <source>DIC analysis failed</source>
         <translation>DIC 分析失败</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="180"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="178"/>
         <source>Failed to start analysis</source>
         <translation>启动分析失败</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="183"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="181"/>
         <source>Failed to process results</source>
         <translation>处理结果失败</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="186"/>
         <source>The analysis stopped with a runtime error:
 
 %1
@@ -2793,7 +2781,7 @@ See the console log for the full traceback.</source>
 完整的回溯信息请参见控制台日志。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="192"/>
         <source>%1
 
 See the console log for the full traceback.</source>
@@ -2802,19 +2790,19 @@ See the console log for the full traceback.</source>
 完整的回溯信息请参见控制台日志。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="199"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="197"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>感兴趣区域覆盖不完整</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="202"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>本次增量追踪运行中有 %n 个参考帧没有自己的感兴趣区域：帧 %1。</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="210"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="208"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2822,17 +2810,17 @@ See the console log for the full traceback.</source>
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="216"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="214"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>没有自己感兴趣区域的参考帧会原样沿用第 1 帧的区域：该区域不会随试样移动。试样移出该区域后，区域外的部分不会以这类参考帧为基准进行测量，位于其中的节点将不再被追踪，或其位移从最近的已测量节点复制。运行结束时会报告这些节点。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="226"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="224"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>要测量整个试样，请为每个参考帧单独指定一个覆盖该帧中试样的感兴趣区域（批量导入可一次为多帧指定感兴趣区域）。拥有自己区域的参考帧会在覆盖该区域的测量网格上进行测量。</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="233"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="231"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>是否沿用第 1 帧的区域继续？</translation>
     </message>
@@ -3042,173 +3030,173 @@ See the console log for the full traceback.</source>
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="59"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="60"/>
         <source>Run DIC Analysis</source>
         <translation>运行 DIC 分析</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="72"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="73"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="78"/>
         <source>Cancel the current analysis. Frames already computed are kept so you can review or export the partial run.</source>
         <translation>取消当前分析。已计算的帧会被保留，你可以查看或导出这部分结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="85"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="86"/>
         <source>Export Results</source>
         <translation>导出结果</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="93"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="94"/>
         <source>Open Strain Window</source>
         <translation>打开应变窗口</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="97"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>在独立的后处理窗口中计算并可视化应变。需先完成一次运行以获得位移结果。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="105"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="106"/>
         <source>PROGRESS</source>
         <translation>进度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="412"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="115"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
         <source>Ready</source>
         <translation>就绪</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="514"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="123"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="420"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="520"/>
         <source>ELAPSED  %1</source>
         <translation>已用时间  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="416"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="522"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="526"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="128"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="422"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="528"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="532"/>
         <source>REMAINING  %1</source>
         <translation>剩余时间  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="135"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
         <source>FIELD</source>
         <translation>场变量</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="144"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
         <source>Show on</source>
         <translation>显示于</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="149"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="155"/>
         <source>Deformed frame</source>
         <translation>变形帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
         <source>Reference frame</source>
         <translation>参考帧</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="152"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="158"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
         <translation>将场绘制在变形后的节点位置，或绘制在其在参考帧中的位置。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="166"/>
         <source>Show background image</source>
         <translation>显示背景图像</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="169"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>取消勾选可仅显示场，其后不显示散斑图像。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
         <source>Hidden background</source>
         <translation>隐藏背景填充</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
         <source>White</source>
         <translation>白色</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="185"/>
         <source>Black</source>
         <translation>黑色</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="186"/>
         <source>Transparent</source>
         <translation>透明</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>背景隐藏时用什么替代图像。导出时 PNG 和 TIFF 会保留透明度，其他格式改用白色。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="192"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Hide untracked regions</source>
         <translation>隐藏未追踪区域</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="195"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
         <source>Leave areas without a tracked node transparent, for example material that left the field of view, instead of filling them with values copied from distant nodes. Also used for exported images and animations; data files always keep NaN there.</source>
         <translation>让没有已追踪节点的区域（例如已移出视场的材料）保持透明，而不是用从远处节点复制的值填充。导出的图像和动画也采用此设置；数据文件中这些区域始终为 NaN。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="205"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="211"/>
         <source>VISUALIZATION</source>
         <translation>可视化</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="210"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="216"/>
         <source>Colormap</source>
         <translation>颜色映射</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="229"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="235"/>
         <source>Opacity</source>
         <translation>不透明度</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>叠加图不透明度（0 = 透明，100 = 不透明）</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
         <source>PHYSICAL UNITS</source>
         <translation>物理单位</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
         <source>LOG</source>
         <translation>日志</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="260"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="381"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="387"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>运行前请在每个红色区域放置至少一个种子点（红色 = 需要种子点）。</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="503"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  第 %2 帧</translation>
     </message>
@@ -3349,6 +3337,39 @@ Suggested actions:
 建议操作：
 - 检查种子点的位置。
 - 详细信息请参见控制台日志。</translation>
+    </message>
+</context>
+<context>
+    <name>ShapeSuggestionBar</name>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>2nd order</source>
+        <translation>二阶</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>1st order</source>
+        <translation>一阶</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="90"/>
+        <source>Apply</source>
+        <translation>应用</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="92"/>
+        <source>Set the subset size and the shape function to the suggested values. Nothing is recomputed until you run again.</source>
+        <translation>将子集尺寸和形函数设为建议值。重新运行之前不会重新计算。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="102"/>
+        <source>Suggested: subset size %1 px, %2 shape function (predicted to lower the displacement error by about %3 %).</source>
+        <translation>建议：子集尺寸 %1 px，“%2”形函数（预计位移误差可降低约 %3 %）。</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="116"/>
+        <source>Suggested setting applied: subset size %1 px, %2 shape function. Run again to use it.</source>
+        <translation>已应用建议设置：子集尺寸 %1 px，“%2”形函数。请重新运行以使用该设置。</translation>
     </message>
 </context>
 <context>
@@ -3951,45 +3972,36 @@ Accurate for small, monotonic deformation only.</source>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
-        <source>Local DIC: Independent subset matching (IC-GN). Fast,
-preserves sharp local features. Best for small
-deformations or high-quality images.
+        <source>Local DIC: each subset is matched independently (IC-GN).
+Fast; keeps sharp local features. The default.
 
-AL-DIC: Augmented Lagrangian with global FEM
-regularization. Enforces displacement compatibility
-between subsets. Best for large deformations, noisy
-images, or when strain accuracy matters.</source>
-        <translation>Local DIC：独立子集匹配（IC-GN）。速度快，
-保留局部锐利特征。适合小变形
-或高质量图像。
+AL-DIC: adds a global FEM step that makes the
+displacement field continuous from subset to subset.
+About 3 times slower than Local DIC.</source>
+        <translation>Local DIC：各子集独立匹配（IC-GN）。
+速度快，保留局部锐利特征。默认选项。
 
-AL-DIC：全局 FEM 正则化的增广拉格朗日方法。
-强制子集间的位移相容性。适合大变形、
-噪声图像，或对应变精度要求高的场景。</translation>
+AL-DIC：增加一步全局 FEM 求解，
+使位移场在子集之间连续。
+耗时约为 Local DIC 的 3 倍。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="88"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="86"/>
         <source>Solver</source>
         <translation>求解器</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="98"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="96"/>
         <source>1st order</source>
         <translation>一阶</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="99"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="97"/>
         <source>2nd order</source>
         <translation>二阶</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="101"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>自动</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="102"/>
         <source>1st order: each subset can translate, stretch, shear and
 rotate. The standard choice.
 
@@ -3998,9 +4010,6 @@ rotate. The standard choice.
 subset, at about twice the noise. Most useful with a larger
 subset and low image noise. A subset that cannot support it
 keeps its 1st-order result.
-
-Auto: solves the 1st order everywhere, then uses the 2nd order
-only where it is predicted to be more accurate.
 
 Available for Local DIC only.</source>
         <translation>一阶：每个子集可以平移、拉伸、剪切和旋转。
@@ -4012,33 +4021,30 @@ Available for Local DIC only.</source>
 较低的图像噪声时最有用。无法支持二阶的子集
 保留其一阶结果。
 
-自动：先在全场求解一阶，再仅在预测二阶
-更准确的位置使用二阶。
-
 仅适用于 Local DIC。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="112"/>
         <source>Shape Function</source>
         <translation>形函数</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="136"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
         <source>Every Frame</source>
         <translation>每帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="131"/>
         <source>Every N Frames</source>
         <translation>每 N 帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="138"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
         <source>Custom Frames</source>
         <translation>自定义帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="135"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -4051,27 +4057,27 @@ Custom Frames: user-defined list of reference frame indices.</source>
 自定义帧：由用户指定参考帧索引列表。</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="150"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="144"/>
         <source>Reference Update</source>
         <translation>参考帧更新</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="160"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="154"/>
         <source>Update reference every N frames</source>
         <translation>每 N 帧更新一次参考帧</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="162"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
         <source>Interval</source>
         <translation>间隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="165"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>用作参考帧的帧索引列表（0 为起始），用逗号分隔</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="175"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="169"/>
         <source>Reference Frames</source>
         <translation>参考帧列表</translation>
     </message>

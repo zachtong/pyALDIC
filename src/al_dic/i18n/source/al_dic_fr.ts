@@ -1011,38 +1011,32 @@ Uniquement pertinent pour le mode d&apos;estimation initiale FFT.</translation>
         <translation>2e ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="119"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>Auto</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="120"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="118"/>
         <source>1st order</source>
         <translation>1er ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="125"/>
         <source>Starting Points</source>
         <translation>Points de départ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="127"/>
         <source>Previous frame</source>
         <translation>Image précédente</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="129"/>
         <source>FFT every frame</source>
         <translation>FFT chaque image</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="133"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="131"/>
         <source>FFT every %1 fr</source>
         <translation>FFT toutes les %1 images</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/canvas_config_overlay.py" line="134"/>
+        <location filename="../../gui/widgets/canvas_config_overlay.py" line="132"/>
         <source>FFT</source>
         <translation>FFT</translation>
     </message>
@@ -2470,57 +2464,57 @@ Les résultats ont été restaurés. Pour afficher les images de fond, sélectio
         <translation>Taille de la fenêtre d&apos;imagette IC-GN en pixels (nombre impair)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="62"/>
+        <location filename="../../gui/widgets/param_panel.py" line="63"/>
         <source>Subset Step</source>
         <translation>Pas d&apos;imagette</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="65"/>
+        <location filename="../../gui/widgets/param_panel.py" line="66"/>
         <source>Node spacing in pixels (must be power of 2)</source>
         <translation>Espacement des nœuds en pixels (doit être une puissance de 2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="73"/>
-        <location filename="../../gui/widgets/param_panel.py" line="198"/>
+        <location filename="../../gui/widgets/param_panel.py" line="74"/>
         <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Search Range</source>
         <translation>Plage de recherche</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="88"/>
+        <location filename="../../gui/widgets/param_panel.py" line="89"/>
         <source>Refine Inner Boundary</source>
         <translation>Raffiner la limite interne</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="91"/>
+        <location filename="../../gui/widgets/param_panel.py" line="92"/>
         <source>Locally refine the mesh along internal mask boundaries
 (holes inside the Region of Interest). Useful for bubble / void edges.</source>
         <translation>Raffiner localement le maillage le long des limites internes du masque
 (trous à l&apos;intérieur de la région d&apos;intérêt). Utile pour les bords de bulles / vides.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="95"/>
+        <location filename="../../gui/widgets/param_panel.py" line="96"/>
         <source>Refine Outer Boundary</source>
         <translation>Raffiner la limite externe</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="98"/>
+        <location filename="../../gui/widgets/param_panel.py" line="99"/>
         <source>Locally refine the mesh along the outer Region of Interest
 boundary.</source>
         <translation>Raffiner localement le maillage le long de la limite externe de la région d&apos;intérêt.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="113"/>
+        <location filename="../../gui/widgets/param_panel.py" line="114"/>
         <source>Refinement aggressiveness. min element size = max(2, subset_step / 2^level). Applies uniformly to inner-, outer-boundary AND brush-painted refinement zones. Available levels depend on subset size and subset step.</source>
         <translation>Intensité du raffinement. Taille minimale d&apos;élément = max(2, subset_step / 2^level). S&apos;applique uniformément aux limites internes, externes ET aux zones peintes au pinceau. Les niveaux disponibles dépendent de la taille et du pas d&apos;imagette.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="119"/>
+        <location filename="../../gui/widgets/param_panel.py" line="120"/>
         <source>Refinement Level</source>
         <translation>Niveau de raffinement</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="179"/>
+        <location filename="../../gui/widgets/param_panel.py" line="191"/>
         <source>Maximum per-frame displacement the FFT search can detect (pixels).
 Set comfortably larger than the expected inter-frame motion.
 For large rotations in incremental mode, this must cover
@@ -2531,7 +2525,7 @@ Pour les grandes rotations en mode incrémental, cela doit couvrir :
   rayon × sin(angle par étape).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="186"/>
+        <location filename="../../gui/widgets/param_panel.py" line="198"/>
         <source>Initial half-width (pixels) of the single-point NCC search at each Starting Point.
 Auto-expands 2x per retry if the peak is clipped, up to image half-size.
 Only affects Starting Point bootstrap; other nodes use F-aware propagation (no per-node search).</source>
@@ -2540,48 +2534,48 @@ S&apos;étend automatiquement d&apos;un facteur 2 par tentative si le pic est tr
 N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœuds utilisent la propagation F-aware (pas de recherche par nœud).</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="194"/>
-        <location filename="../../gui/widgets/param_panel.py" line="210"/>
+        <location filename="../../gui/widgets/param_panel.py" line="206"/>
+        <location filename="../../gui/widgets/param_panel.py" line="222"/>
         <source>Starting Point Search</source>
         <translation>Recherche aux points de départ</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="250"/>
+        <location filename="../../gui/widgets/param_panel.py" line="262"/>
         <source>Light</source>
         <comment>Mesh refinement severity</comment>
         <translation>Léger</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="251"/>
+        <location filename="../../gui/widgets/param_panel.py" line="263"/>
         <source>Medium</source>
         <comment>Mesh refinement severity</comment>
         <translation>Moyen</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="252"/>
+        <location filename="../../gui/widgets/param_panel.py" line="264"/>
         <source>Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Fort</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="253"/>
+        <location filename="../../gui/widgets/param_panel.py" line="265"/>
         <source>Extra Heavy</source>
         <comment>Mesh refinement severity</comment>
         <translation>Très fort</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="254"/>
+        <location filename="../../gui/widgets/param_panel.py" line="266"/>
         <source>Ultra</source>
         <comment>Mesh refinement severity</comment>
         <translation>Ultra</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="260"/>
+        <location filename="../../gui/widgets/param_panel.py" line="272"/>
         <source>%1 (L%2)</source>
         <translation>%1 (L%2)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/param_panel.py" line="282"/>
+        <location filename="../../gui/widgets/param_panel.py" line="294"/>
         <source>min element size = %1 px  (subset_step=%2, level=%3)</source>
         <translation>taille min. d&apos;élément = %1 px  (subset_step=%2, level=%3)</translation>
     </message>
@@ -2694,103 +2688,97 @@ N&apos;affecte que l&apos;initialisation des points de départ ; les autres nœu
         <translation>2e ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="94"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>Auto</translation>
-    </message>
-    <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="95"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="93"/>
         <source>1st order</source>
         <translation>1er ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="100"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="98"/>
         <source>Suggestion: a subset size of %1 px with the %2 shape function is predicted to lower the displacement error by about %3 %.</source>
         <translation>Suggestion : une taille d&apos;imagette de %1 px avec la fonction de forme « %2 » devrait réduire l&apos;erreur de déplacement d&apos;environ %3 %.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="108"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="106"/>
         <source>Subset size and shape function look appropriate for this deformation.</source>
         <translation>La taille d&apos;imagette et la fonction de forme conviennent à cette déformation.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="113"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="111"/>
         <source>Error: %1</source>
         <translation>Erreur : %1</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="117"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="115"/>
         <source>Run canceled. Give the listed reference frames a Region of Interest of their own, or run again and continue with frame 1&apos;s region.</source>
         <translation>Exécution annulée. Donnez aux images de référence listées leur propre région d&apos;intérêt, ou relancez et continuez avec la région de l&apos;image 1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="124"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="122"/>
         <source>Cannot start analysis</source>
         <translation>Impossible de lancer l&apos;analyse</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="128"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="126"/>
         <source>Need at least 2 images. Load an image folder in the %1 section before running DIC.</source>
         <translation>Au moins 2 images sont nécessaires. Chargez un dossier d&apos;images dans la section %1 avant de lancer la DIC.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="133"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="131"/>
         <source>Define a Region of Interest first: draw or import one for frame 1 in the %1 section.</source>
         <translation>Définissez d&apos;abord une région d&apos;intérêt : dessinez-en ou importez-en une pour l&apos;image 1 dans la section %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="138"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="136"/>
         <source>The Region of Interest of frame 1 is empty (no pixels selected). Draw it again in the %1 section.</source>
         <translation>La région d&apos;intérêt de l&apos;image 1 est vide (aucun pixel sélectionné). Redessinez-la dans la section %1.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="143"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="141"/>
         <source>Region of Interest too small</source>
         <translation>Région d&apos;intérêt trop petite</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="149"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="147"/>
         <source>The Region of Interest is %1×%2 px, but the current %3 (%4) needs at least %5×%5 px. Enlarge the Region of Interest or reduce %3.</source>
         <translation>La région d&apos;intérêt mesure %1×%2 px, mais le %3 actuel (%4) exige au moins %5×%5 px. Agrandissez la région d&apos;intérêt ou réduisez le %3.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="155"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="153"/>
         <source>Starting Points required</source>
         <translation>Points de départ requis</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="159"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="157"/>
         <source>Place at least one Starting Point on the canvas before running: click “%1” or “%2” in the %3 section.</source>
         <translation>Placez au moins un point de départ sur le canevas avant de lancer l&apos;exécution : cliquez sur « %1 » ou « %2 » dans la section %3.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="165"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="163"/>
         <source>Invalid Starting Points</source>
         <translation>Points de départ non valides</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="169"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="167"/>
         <source>One or more Starting Points do not lie in any part of the Region of Interest. Click “%1” in the %2 section, then place the Starting Points again.</source>
         <translation>Un ou plusieurs points de départ ne se trouvent dans aucune partie de la région d&apos;intérêt. Cliquez sur « %1 » dans la section %2, puis placez à nouveau les points de départ.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="177"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="175"/>
         <source>DIC analysis failed</source>
         <translation>Échec de l&apos;analyse DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="180"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="178"/>
         <source>Failed to start analysis</source>
         <translation>Échec du lancement de l&apos;analyse</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="183"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="181"/>
         <source>Failed to process results</source>
         <translation>Échec du traitement des résultats</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="188"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="186"/>
         <source>The analysis stopped with a runtime error:
 
 %1
@@ -2803,7 +2791,7 @@ See the console log for the full traceback.</source>
 Consultez le journal de la console pour la trace complète.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="194"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="192"/>
         <source>%1
 
 See the console log for the full traceback.</source>
@@ -2812,12 +2800,12 @@ See the console log for the full traceback.</source>
 Consultez le journal de la console pour la trace complète.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="199"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="197"/>
         <source>Incomplete Region of Interest Coverage</source>
         <translation>Couverture incomplète par les régions d&apos;intérêt</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="204"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="202"/>
         <source>This incremental run has %n reference frame(s) with no Region of Interest of their own: frame(s) %1.</source>
         <translation>
             <numerusform>Cette exécution incrémentale compte %n image de référence sans région d&apos;intérêt propre : image %1.</numerusform>
@@ -2825,7 +2813,7 @@ Consultez le journal de la console pour la trace complète.</translation>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../gui/controllers/pipeline_messages.py" line="210"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="208"/>
         <source>%1 and %n more</source>
         <comment>List of frame numbers cut short: %1 = the frame numbers shown, %n = how many more frames there are</comment>
         <translation>
@@ -2834,17 +2822,17 @@ Consultez le journal de la console pour la trace complète.</translation>
         </translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="216"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="214"/>
         <source>A reference frame without a Region of Interest of its own reuses frame 1&apos;s region unchanged: nothing moves the region with the specimen. Where the specimen has moved out of that region, the part outside it is not measured from such a frame, and the nodes there stop being tracked or have their displacement copied from the nearest measured node. The run reports these nodes when it finishes.</source>
         <translation>Une image de référence sans région d&apos;intérêt propre reprend telle quelle la région de l&apos;image 1 : rien ne déplace la région avec l&apos;éprouvette. Là où l&apos;éprouvette est sortie de cette région, la partie extérieure n&apos;est pas mesurée à partir d&apos;une telle image, et les nœuds qui s&apos;y trouvent cessent d&apos;être suivis ou voient leur déplacement copié depuis le nœud mesuré le plus proche. L&apos;exécution signale ces nœuds à la fin.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="226"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="224"/>
         <source>To measure the whole specimen, give each reference frame its own Region of Interest that covers the specimen in that frame (Batch Import can assign Regions of Interest to many frames at once). A reference frame with a region of its own is measured on a grid that covers that region.</source>
         <translation>Pour mesurer toute l&apos;éprouvette, donnez à chaque image de référence sa propre région d&apos;intérêt couvrant l&apos;éprouvette dans cette image (l&apos;import par lot permet d&apos;attribuer des régions d&apos;intérêt à de nombreuses images à la fois). Une image de référence dotée de sa propre région est mesurée sur une grille qui couvre cette région.</translation>
     </message>
     <message>
-        <location filename="../../gui/controllers/pipeline_messages.py" line="233"/>
+        <location filename="../../gui/controllers/pipeline_messages.py" line="231"/>
         <source>Continue with frame 1&apos;s region?</source>
         <translation>Continuer avec la région de l&apos;image 1 ?</translation>
     </message>
@@ -3054,173 +3042,173 @@ Consultez le journal de la console pour la trace complète.</translation>
 <context>
     <name>RightSidebar</name>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="59"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="60"/>
         <source>Run DIC Analysis</source>
         <translation>Exécuter l&apos;analyse DIC</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="72"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="73"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="77"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="78"/>
         <source>Cancel the current analysis. Frames already computed are kept so you can review or export the partial run.</source>
         <translation>Annuler l&apos;analyse en cours. Les images déjà calculées sont conservées, ce qui permet de consulter ou d&apos;exporter le résultat partiel.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="85"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="86"/>
         <source>Export Results</source>
         <translation>Exporter les résultats</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="93"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="94"/>
         <source>Open Strain Window</source>
         <translation>Ouvrir la fenêtre de déformation</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="96"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="97"/>
         <source>Compute and visualize strain in a separate post-processing window. Requires displacement results from a completed Run.</source>
         <translation>Calculer et visualiser la déformation dans une fenêtre de post-traitement séparée. Nécessite des résultats de déplacement d&apos;une exécution terminée.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="105"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="106"/>
         <source>PROGRESS</source>
         <translation>PROGRESSION</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="114"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="412"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="115"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="418"/>
         <source>Ready</source>
         <translation>Prêt</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="122"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="414"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="514"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="123"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="420"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="520"/>
         <source>ELAPSED  %1</source>
         <translation>ÉCOULÉ  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="127"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="416"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="522"/>
-        <location filename="../../gui/panels/right_sidebar.py" line="526"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="128"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="422"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="528"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="532"/>
         <source>REMAINING  %1</source>
         <translation>RESTANT  %1</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="135"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="141"/>
         <source>FIELD</source>
         <translation>CHAMP</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="144"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
         <source>Show on</source>
         <translation>Afficher sur</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="149"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="155"/>
         <source>Deformed frame</source>
         <translation>Image déformée</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="150"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="156"/>
         <source>Reference frame</source>
         <translation>Image de référence</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="152"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="158"/>
         <source>Plot the field at the deformed node positions, or at their positions in the reference frame.</source>
         <translation>Tracer le champ aux positions déformées des nœuds, ou à leurs positions dans l&apos;image de référence.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="160"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="166"/>
         <source>Show background image</source>
         <translation>Afficher l&apos;image de fond</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="163"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="169"/>
         <source>Uncheck to show the field on its own, with no speckle image behind it.</source>
         <translation>Décochez pour n&apos;afficher que le champ, sans image de mouchetis derrière.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="174"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
         <source>Hidden background</source>
         <translation>Arrière-plan masqué</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="178"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="184"/>
         <source>White</source>
         <translation>Blanc</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="179"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="185"/>
         <source>Black</source>
         <translation>Noir</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="180"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="186"/>
         <source>Transparent</source>
         <translation>Transparent</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="183"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="189"/>
         <source>What replaces the image when it is hidden. Transparency is kept for PNG and TIFF on export; other formats get white.</source>
         <translation>Ce qui remplace l&apos;image lorsqu&apos;elle est masquée. À l&apos;export, la transparence est conservée pour PNG et TIFF ; les autres formats reçoivent du blanc.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="192"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="198"/>
         <source>Hide untracked regions</source>
         <translation>Masquer les zones non suivies</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="195"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="201"/>
         <source>Leave areas without a tracked node transparent, for example material that left the field of view, instead of filling them with values copied from distant nodes. Also used for exported images and animations; data files always keep NaN there.</source>
         <translation>Laisser transparentes les zones sans nœud suivi, par exemple le matériau sorti du champ de vision, au lieu de les remplir avec des valeurs copiées depuis des nœuds éloignés. S&apos;applique aussi aux images et animations exportées ; les fichiers de données y gardent toujours NaN.</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="205"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="211"/>
         <source>VISUALIZATION</source>
         <translation>VISUALISATION</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="210"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="216"/>
         <source>Colormap</source>
         <translation>Palette</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="229"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="235"/>
         <source>Opacity</source>
         <translation>Opacité</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="236"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
         <source>Overlay opacity (0 = transparent, 100 = opaque)</source>
         <translation>Opacité de la superposition (0 = transparent, 100 = opaque)</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="242"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
         <source>PHYSICAL UNITS</source>
         <translation>UNITÉS PHYSIQUES</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="248"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
         <source>LOG</source>
         <translation>JOURNAL</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="254"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="260"/>
         <source>Clear</source>
         <translation>Effacer</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="381"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="387"/>
         <source>Place at least one Starting Point in each red region before running (red = needs a Starting Point).</source>
         <translation>Placez au moins un point de départ dans chaque région rouge avant de lancer l&apos;exécution (rouge = point de départ requis).</translation>
     </message>
     <message>
-        <location filename="../../gui/panels/right_sidebar.py" line="497"/>
+        <location filename="../../gui/panels/right_sidebar.py" line="503"/>
         <source>%1  —  Frame %2</source>
         <translation>%1  —  Image %2</translation>
     </message>
@@ -3361,6 +3349,39 @@ Suggested actions:
 Actions suggérées :
 - Vérifiez la position des points de départ.
 - Consultez le journal de la console pour plus de détails.</translation>
+    </message>
+</context>
+<context>
+    <name>ShapeSuggestionBar</name>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>2nd order</source>
+        <translation>2e ordre</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="86"/>
+        <source>1st order</source>
+        <translation>1er ordre</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="90"/>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="92"/>
+        <source>Set the subset size and the shape function to the suggested values. Nothing is recomputed until you run again.</source>
+        <translation>Règle la taille d&apos;imagette et la fonction de forme sur les valeurs suggérées. Rien n&apos;est recalculé avant la prochaine exécution.</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="102"/>
+        <source>Suggested: subset size %1 px, %2 shape function (predicted to lower the displacement error by about %3 %).</source>
+        <translation>Suggestion : taille d&apos;imagette %1 px, fonction de forme « %2 » (devrait réduire l&apos;erreur de déplacement d&apos;environ %3 %).</translation>
+    </message>
+    <message>
+        <location filename="../../gui/widgets/shape_suggestion_bar.py" line="116"/>
+        <source>Suggested setting applied: subset size %1 px, %2 shape function. Run again to use it.</source>
+        <translation>Réglage suggéré appliqué : taille d&apos;imagette %1 px, fonction de forme « %2 ». Relancez l&apos;analyse pour l&apos;utiliser.</translation>
     </message>
 </context>
 <context>
@@ -3968,46 +3989,36 @@ Précis uniquement pour les petites déformations monotones.</translation>
     </message>
     <message>
         <location filename="../../gui/widgets/workflow_type_panel.py" line="79"/>
-        <source>Local DIC: Independent subset matching (IC-GN). Fast,
-preserves sharp local features. Best for small
-deformations or high-quality images.
+        <source>Local DIC: each subset is matched independently (IC-GN).
+Fast; keeps sharp local features. The default.
 
-AL-DIC: Augmented Lagrangian with global FEM
-regularization. Enforces displacement compatibility
-between subsets. Best for large deformations, noisy
-images, or when strain accuracy matters.</source>
-        <translation>Local DIC : Appariement d&apos;imagettes indépendant (IC-GN). Rapide,
-préserve les détails locaux. Idéal pour les petites
-déformations ou les images de haute qualité.
+AL-DIC: adds a global FEM step that makes the
+displacement field continuous from subset to subset.
+About 3 times slower than Local DIC.</source>
+        <translation>Local DIC : chaque imagette est appariée indépendamment (IC-GN).
+Rapide ; préserve les détails locaux nets. Réglage par défaut.
 
-AL-DIC : Lagrangien augmenté avec régularisation
-FEM globale. Impose la compatibilité des déplacements
-entre imagettes. Idéal pour les grandes déformations, les images
-bruitées ou lorsque la précision de la déformation est importante.</translation>
+AL-DIC : ajoute une étape FEM globale qui rend le
+champ de déplacement continu d&apos;une imagette à l&apos;autre.
+Environ 3 fois plus lent que Local DIC.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="88"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="86"/>
         <source>Solver</source>
         <translation>Solveur</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="98"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="96"/>
         <source>1st order</source>
         <translation>1er ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="99"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="97"/>
         <source>2nd order</source>
         <translation>2e ordre</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="101"/>
-        <source>Auto</source>
-        <comment>Shape function: order chosen per node</comment>
-        <translation>Auto</translation>
-    </message>
-    <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="106"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="102"/>
         <source>1st order: each subset can translate, stretch, shear and
 rotate. The standard choice.
 
@@ -4016,9 +4027,6 @@ rotate. The standard choice.
 subset, at about twice the noise. Most useful with a larger
 subset and low image noise. A subset that cannot support it
 keeps its 1st-order result.
-
-Auto: solves the 1st order everywhere, then uses the 2nd order
-only where it is predicted to be more accurate.
 
 Available for Local DIC only.</source>
         <translation>1er ordre : chaque imagette peut se translater, s&apos;étirer, se cisailler
@@ -4031,33 +4039,30 @@ qu&apos;une imagette du 1er ordre commet là où la déformation varie
 d&apos;image. Une imagette qui ne peut pas le supporter conserve son
 résultat du 1er ordre.
 
-Auto : résout le 1er ordre partout, puis n&apos;utilise le 2e ordre
-que là où il est prévu plus précis.
-
 Disponible uniquement pour Local DIC.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="118"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="112"/>
         <source>Shape Function</source>
         <translation>Fonction de forme</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="136"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="130"/>
         <source>Every Frame</source>
         <translation>Chaque image</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="137"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="131"/>
         <source>Every N Frames</source>
         <translation>Toutes les N images</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="138"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="132"/>
         <source>Custom Frames</source>
         <translation>Images personnalisées</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="141"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="135"/>
         <source>When the reference frame refreshes during incremental tracking.
 Every Frame: reset reference every frame (smallest per-step displacement,
 most robust for large deformation).
@@ -4070,27 +4075,27 @@ Toutes les N images : réinitialiser toutes les N images (compromis vitesse/robu
 Images personnalisées : liste d&apos;indices définis par l&apos;utilisateur.</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="150"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="144"/>
         <source>Reference Update</source>
         <translation>Mise à jour de la référence</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="160"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="154"/>
         <source>Update reference every N frames</source>
         <translation>Mettre à jour la référence toutes les N images</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="162"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="156"/>
         <source>Interval</source>
         <translation>Intervalle</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="171"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="165"/>
         <source>Comma-separated frame indices to use as reference frames (0-based)</source>
         <translation>Indices d&apos;images séparés par des virgules pour les images de référence (base 0)</translation>
     </message>
     <message>
-        <location filename="../../gui/widgets/workflow_type_panel.py" line="175"/>
+        <location filename="../../gui/widgets/workflow_type_panel.py" line="169"/>
         <source>Reference Frames</source>
         <translation>Images de référence</translation>
     </message>

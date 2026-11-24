@@ -197,13 +197,11 @@ class TestDICPara:
         with pytest.raises(ValueError, match="shape_function_order"):
             dicpara_default(shape_function_order="second", use_global_step=True)
 
-    def test_shape_function_order_auto_with_local_dic(self):
-        p = dicpara_default(shape_function_order="auto", use_global_step=False)
-        assert p.shape_function_order == "auto"
-
-    def test_shape_function_order_auto_needs_local_dic(self):
+    def test_shape_function_order_has_no_per_node_auto(self):
+        # Choosing the order per node was tried and withdrawn: only the
+        # first and the second order are offered.
         with pytest.raises(ValueError, match="shape_function_order"):
-            dicpara_default(shape_function_order="auto", use_global_step=True)
+            dicpara_default(shape_function_order="auto", use_global_step=False)
 
     def test_shape_function_order_rejects_unknown_value(self):
         with pytest.raises(ValueError, match="shape_function_order"):

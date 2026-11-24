@@ -76,13 +76,11 @@ class WorkflowTypePanel(QWidget):
         self._solver.addItem(self.tr("Local DIC"), "local")
         self._solver.setCurrentIndex(0 if state.use_admm else 1)
         self._solver.setToolTip(self.tr(
-            "Local DIC: Independent subset matching (IC-GN). Fast,\n"
-            "preserves sharp local features. Best for small\n"
-            "deformations or high-quality images.\n\n"
-            "AL-DIC: Augmented Lagrangian with global FEM\n"
-            "regularization. Enforces displacement compatibility\n"
-            "between subsets. Best for large deformations, noisy\n"
-            "images, or when strain accuracy matters."
+            "Local DIC: each subset is matched independently (IC-GN).\n"
+            "Fast; keeps sharp local features. The default.\n\n"
+            "AL-DIC: adds a global FEM step that makes the\n"
+            "displacement field continuous from subset to subset.\n"
+            "About 3 times slower than Local DIC."
         ))
         solver_row = QHBoxLayout()
         solver_lbl = QLabel(self.tr("Solver"))
@@ -97,8 +95,6 @@ class WorkflowTypePanel(QWidget):
         self._shape_order = QComboBox()
         self._shape_order.addItem(self.tr("1st order"), "first")
         self._shape_order.addItem(self.tr("2nd order"), "second")
-        self._shape_order.addItem(
-            self.tr("Auto", "Shape function: order chosen per node"), "auto")
         _shape_idx = self._shape_order.findData(state.shape_function_order)
         if _shape_idx >= 0:
             self._shape_order.setCurrentIndex(_shape_idx)
@@ -110,8 +106,6 @@ class WorkflowTypePanel(QWidget):
             "subset, at about twice the noise. Most useful with a larger\n"
             "subset and low image noise. A subset that cannot support it\n"
             "keeps its 1st-order result.\n\n"
-            "Auto: solves the 1st order everywhere, then uses the 2nd order\n"
-            "only where it is predicted to be more accurate.\n\n"
             "Available for Local DIC only."
         ))
         shape_row = QHBoxLayout()
@@ -185,6 +179,7 @@ class WorkflowTypePanel(QWidget):
             self._on_tracking_mode_changed
         )
         self._solver.currentIndexChanged.connect(self._on_solver_changed)
+        state.params_changed.connect(self._sync_shape_order)
         self._shape_order.currentIndexChanged.connect(
             self._on_shape_order_changed
         )
@@ -214,6 +209,16 @@ class WorkflowTypePanel(QWidget):
         use_admm = self._solver.currentData() == "aldic"
         self._shape_order.setEnabled(not use_admm)
         state.set_param("use_admm", use_admm)
+
+    def _sync_shape_order(self) -> None:
+        """Follow a shape function set elsewhere (the Apply button of the
+        post-run suggestion)."""
+        index = self._shape_order.findData(AppState.instance().shape_function_order)
+        if index < 0 or index == self._shape_order.currentIndex():
+            return
+        self._shape_order.blockSignals(True)
+        self._shape_order.setCurrentIndex(index)
+        self._shape_order.blockSignals(False)
 
     def _on_shape_order_changed(self, _index: int) -> None:
         """Store the chosen shape-function order (combobox userData code)."""

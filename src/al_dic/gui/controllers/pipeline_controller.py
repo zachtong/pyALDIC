@@ -295,7 +295,7 @@ class PipelineController:
             shape_order = (
                 state.shape_function_order
                 if not state.use_admm
-                and state.shape_function_order in ("second", "auto")
+                and state.shape_function_order == "second"
                 else None
             )
             shape_info = f", shape={shape_order}" if shape_order else ""

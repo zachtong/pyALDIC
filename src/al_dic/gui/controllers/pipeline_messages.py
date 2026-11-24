@@ -90,8 +90,6 @@ class PipelineMessages(QObject):
         """Display name of a shape-function order code."""
         if order == "second":
             return self.tr("2nd order")
-        if order == "auto":
-            return self.tr("Auto", "Shape function: order chosen per node")
         return self.tr("1st order")
 
     def shape_suggestion(self, size_px: int, shape: str, percent: int) -> str:

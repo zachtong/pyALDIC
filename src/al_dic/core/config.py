@@ -102,8 +102,8 @@ def validate_dicpara(p: DICPara) -> None:
             f"icgn_max_iter must be a positive integer (got {p.icgn_max_iter})."
         )
 
-    # shape_function_order: None (first order), "second" or "auto"; Local DIC only.
-    valid_shape_orders = (None, "second", "auto")
+    # shape_function_order: None (first order) or "second"; Local DIC only.
+    valid_shape_orders = (None, "second")
     if p.shape_function_order not in valid_shape_orders:
         raise ValueError(
             f"shape_function_order must be one of {valid_shape_orders} "

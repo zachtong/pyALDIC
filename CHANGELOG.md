@@ -18,33 +18,30 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   adds noise; the extra noise shows most where the speckle is poor, so keep
   such areas out of the Region of Interest. A subset that cannot support it
   keeps its 1st-order result. A run takes roughly one and a half to two
-  times as long. The third choice, **Auto**, solves the 1st order
-  everywhere and then uses the 2nd order only at the nodes where it is
-  predicted to be more accurate, so a uniform strain field is left
-  untouched; nodes next to the edge of the Region of Interest or a hole
-  stay 1st order.
+  times as long.
   The overlay at the top-left of the preview shows which one the next run
   will use. AL-DIC always uses the 1st order. In scripts, pass
-  `shape_function_order="second"` (or `"auto"`) together with
-  `use_global_step=False`;
+  `shape_function_order="second"` together with `use_global_step=False`;
   each frame's result then carries `shape_order` (per node: 0 not solved,
   1 first order, 2 second order), which the NPZ and MAT exports include. A
-  session saved with the 2nd order or Auto cannot be opened by pyALDIC 1.0.5
-  or older.
+  session saved with the 2nd order cannot be opened by pyALDIC 1.0.5 or
+  older.
 - **A suggestion for the subset size and shape function after a Local DIC
   run.** When a Local DIC run in accumulative mode completes, the console
-  log may add one line:
-  either a subset size and shape function predicted to lower the
-  displacement error by at least 20 %, or a note that the current setting
-  looks appropriate. It is estimated from the last frame of the run by
-  weighing the error a 1st-order subset makes (from the curvature of the
-  measured displacement) against the random error (from the image noise and
-  the speckle). Only the current subset size and sizes of 0.75, 1.5 and 2
-  times it are considered, never one outside the range of the Subset Size
-  control, below the Subset Step, or above a quarter of the smaller side of
-  the Region of Interest. Nothing is changed automatically, and no line is
-  shown when the estimate cannot be trusted. In scripts the same information
-  is in `result.shape_advice`.
+  log may add one line: either a subset size and shape function predicted
+  to lower the displacement error by at least 20 %, or a note that the
+  current setting looks appropriate. A suggestion also appears under the
+  progress display with an **Apply** button, which sets Subset Size and
+  Shape Function to the suggested values; it does not start a run. The
+  suggestion is estimated from the last frame of the run by weighing the
+  error a 1st-order subset makes (from the curvature of the measured
+  displacement) against the random error (from the image noise and the
+  speckle). Only the current subset size and sizes of 0.75, 1.5 and 2 times
+  it are considered, each with the 1st and the 2nd order, never a size
+  outside the range of the Subset Size control, below the Subset Step, or
+  above a quarter of the smaller side of the Region of Interest. No
+  suggestion is shown when the estimate cannot be trusted. In scripts the
+  same information is in `result.shape_advice`.
 
 ### Changed
 
@@ -54,6 +51,13 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   Solver list. A saved session opens with the solver it was saved with.
   Scripts are not affected: `use_global_step` in the Python API keeps its
   default.
+- **The Solver tooltip and the manual describe AL-DIC by what it does.**
+  They used to call it the better choice for noisy images and for strain
+  accuracy. In our tests at the default settings, strain computed with the
+  same strain window was as noisy with AL-DIC as with Local DIC, so the text
+  now says what the solver adds (a global FEM step that makes the
+  displacement field continuous from subset to subset) and what it costs
+  (about three times the run time). The solvers themselves are unchanged.
 
 ## [1.0.5] — 2026-11-11
 

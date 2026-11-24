@@ -55,6 +55,7 @@ class ParamPanel(QWidget):
                 "IC-GN subset window size in pixels (odd number)"),
         )
         self._subset_size.valueChanged.connect(self._on_subset_size_changed)
+        state.params_changed.connect(self._sync_subset_size)
 
         # --- Subset Step ---
         self._subset_step = self._add_power_of_2_combo(
@@ -160,6 +161,17 @@ class ParamPanel(QWidget):
             self._subset_size.setValue(display_value)
             self._subset_size.blockSignals(False)
         AppState.instance().set_param("subset_size", display_value - 1)
+        self._update_refinement_ui()
+
+    def _sync_subset_size(self) -> None:
+        """Follow a subset size set elsewhere (the Apply button of the
+        post-run suggestion)."""
+        display_value = AppState.instance().subset_size + 1
+        if self._subset_size.value() == display_value:
+            return
+        self._subset_size.blockSignals(True)
+        self._subset_size.setValue(display_value)
+        self._subset_size.blockSignals(False)
         self._update_refinement_ui()
 
     def _on_subset_step_changed(self, value_text: str) -> None:

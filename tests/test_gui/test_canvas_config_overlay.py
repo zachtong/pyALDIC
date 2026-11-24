@@ -32,12 +32,6 @@ def test_overlay_shows_the_shape_function():
     assert overlay._shape_lbl.text() == "2nd order"
 
 
-def test_overlay_shows_auto():
-    state, overlay = _overlay()
-    state.set_param("shape_function_order", "auto")
-    assert overlay._shape_lbl.text() == "Auto"
-
-
 def test_overlay_shows_first_order_for_aldic():
     """AL-DIC always runs first order, so that is what the overlay reports
     even if second order is still selected for Local DIC."""

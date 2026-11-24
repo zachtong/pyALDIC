@@ -110,6 +110,7 @@ WIDGETS_TO_CONSTRUCT = [
     "al_dic.gui.widgets.color_range:ColorRange",
     "al_dic.gui.widgets.roi_hint:ROIHint",
     "al_dic.gui.widgets.canvas_config_overlay:CanvasConfigOverlay",
+    "al_dic.gui.widgets.shape_suggestion_bar:ShapeSuggestionBar",
 ]
 
 

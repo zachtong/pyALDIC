@@ -28,6 +28,7 @@ from al_dic.gui.widgets.color_range import ColorRange
 from al_dic.gui.widgets.console_log import ConsoleLog
 from al_dic.gui.widgets.field_selector import FieldSelector
 from al_dic.gui.widgets.physical_units_widget import PhysicalUnitsWidget
+from al_dic.gui.widgets.shape_suggestion_bar import ShapeSuggestionBar
 
 try:
     from al_dic.gui.icons import icon_download, icon_play, icon_stop
@@ -130,6 +131,11 @@ class RightSidebar(QWidget):
         )
         stats_row.addWidget(self._remaining_label)
         layout.addLayout(stats_row)
+
+        # Suggested subset size / shape function of the last Local DIC run,
+        # with an Apply button. Hidden unless there is one to apply.
+        self._shape_suggestion = ShapeSuggestionBar()
+        layout.addWidget(self._shape_suggestion)
 
         # --- Field section ---
         self._add_section_label(layout, self.tr("FIELD"))
