@@ -59,6 +59,20 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   displacement field continuous from subset to subset) and what it costs
   (about three times the run time). The solvers themselves are unchanged.
 
+### Fixed
+
+- **The Eulerian strain type now reports the Euler-Almansi strain.** The
+  manual and the export files describe this strain type as
+  e = ½(I − F⁻ᵀF⁻¹), but the program computed a different expression taken
+  over from the MATLAB code: a 10 % stretch gave 0.111 where the
+  Euler-Almansi strain is 0.087, and a specimen that only rotated showed
+  non-zero normal strain. It is now computed from the definition and is zero
+  under any rigid rotation. **Results computed with the Eulerian strain type
+  change**; a saved session shows the old numbers until Compute Strain is
+  pressed again. Infinitesimal and Green-Lagrangian results are unchanged. A
+  node whose measured gradients describe an impossible deformation
+  (det F ≤ 0) is left empty.
+
 ## [1.0.5] — 2026-11-11
 
 ### Fixed

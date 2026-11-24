@@ -172,3 +172,44 @@ class TestComputeStrain:
 
         result = compute_strain(mesh, para, np.zeros(2 * n), region_map)
         np.testing.assert_allclose(result.strain_exx, 0.0, atol=1e-10)
+
+    @pytest.mark.parametrize("strain_type", [1, 2])
+    def test_finite_strain_is_zero_for_a_rigid_rotation(self, strain_type):
+        """A specimen turned by 10 degrees is not strained, in either finite measure."""
+        mesh, region_map = _make_mesh_and_map()
+        x, y = mesh.coordinates_fem[:, 0], mesh.coordinates_fem[:, 1]
+        theta = np.radians(10.0)
+        U = np.zeros(2 * x.size)
+        U[0::2] = (np.cos(theta) - 1.0) * x - np.sin(theta) * y
+        U[1::2] = np.sin(theta) * x + (np.cos(theta) - 1.0) * y
+        para = DICPara(
+            winstepsize=16, method_to_compute_strain=3,
+            strain_type=strain_type, strain_smoothness=0.0,
+        )
+
+        result = compute_strain(mesh, para, U, region_map)
+
+        for field in (result.strain_exx, result.strain_eyy, result.strain_exy):
+            np.testing.assert_allclose(field, 0.0, atol=1e-10)
+
+    def test_eulerian_almansi_of_a_homogeneous_deformation(self):
+        """Stretch plus shear, through the whole strain computation."""
+        mesh, region_map = _make_mesh_and_map()
+        x, y = mesh.coordinates_fem[:, 0], mesh.coordinates_fem[:, 1]
+        dudx, dvdx, dudy, dvdy = 0.10, 0.03, 0.06, -0.04
+        U = np.zeros(2 * x.size)
+        U[0::2] = dudx * x + dudy * y
+        U[1::2] = dvdx * x + dvdy * y
+        para = DICPara(
+            winstepsize=16, method_to_compute_strain=3,
+            strain_type=1, strain_smoothness=0.0,
+        )
+
+        result = compute_strain(mesh, para, U, region_map)
+
+        Finv = np.linalg.inv(np.array([[1.0 + dudx, dudy], [dvdx, 1.0 + dvdy]]))
+        expected = 0.5 * (np.eye(2) - Finv.T @ Finv)
+        np.testing.assert_allclose(result.strain_exx, expected[0, 0], atol=1e-10)
+        np.testing.assert_allclose(result.strain_eyy, expected[1, 1], atol=1e-10)
+        # the result is reported with y pointing up, which reverses the shear
+        np.testing.assert_allclose(result.strain_exy, -expected[0, 1], atol=1e-10)
