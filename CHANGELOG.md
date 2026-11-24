@@ -6,6 +6,8 @@ and versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-11-24
+
 ### Added
 
 - **A 2nd-order shape function for Local DIC.** Under Workflow Type, below
